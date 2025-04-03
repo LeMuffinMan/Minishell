@@ -24,7 +24,8 @@ LIBFT_SRC_DIR = libft/src
 LIBFT_OBJ_DIR = libft/obj
 
 SRC_FILES = \
-    $(SRC_DIR)/main.c
+    $(SRC_DIR)/main.c \
+    $(SRC_DIR)/exec.c
 
 # vpath %.c src
 # vpath %.h include

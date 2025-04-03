@@ -13,6 +13,7 @@
 #include <readline/readline.h> // compiler avec -l readline
 #include <stdio.h>
 #include <stdlib.h>
+#include <minishell.h>
 
 int	main(void)
 {
@@ -26,9 +27,10 @@ int	main(void)
 		line = readline(prompt);
 		if (line == NULL)
       exit (1);
-		printf("%s\n", line);
+		/* printf("%s\n", line); */
 		/* parser(line); */
 		/* exec(line); */
+		exec();
 		free(line);
 	}
 	return (0);

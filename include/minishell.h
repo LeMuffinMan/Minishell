@@ -36,4 +36,6 @@ typedef struct s_parse
   char **content;
 } t_parse;
 
+int exec (void);
+
 #endif
