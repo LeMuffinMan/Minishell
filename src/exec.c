@@ -24,7 +24,7 @@ char	*ft_join(char *s1, char *s2, char *old_str)
 	int		j;
 
 	i = 0;
-	new_str = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
+	new_str = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 2));
 	if (new_str == NULL)
 		return (NULL);
 	while (s1 && s1[i])
@@ -91,7 +91,8 @@ int	builtin_echo(char **arg)
 	if (option == 0)
 		s = ft_join(s, "\n", s);
 	// si on dup2 au tout debut, ici 1 ecrira bien ou je vuex ?
-	ft_putstr_fd(s, 1);
+	if (s)
+		ft_putstr_fd(s, 1);
 	free(s);
 	return (0);
 }
