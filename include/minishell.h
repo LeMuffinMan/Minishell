@@ -36,6 +36,16 @@ typedef struct s_parse
   char **content;
 } t_parse;
 
-int exec (char **arg);
+typedef struct s_env
+{
+  char *line;
+  struct s_env *prev;
+  struct s_env *next;
+} t_env;
+
+int exec (char **arg, t_env **env);
+void	add_back(t_env **lst, int n, char **env);
+void	add_first_node(t_env **lst, t_env *new, char **env);
+void	free_list(t_env **l);
 
 #endif

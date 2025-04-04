@@ -44,13 +44,13 @@ char	*ft_join(char *s1, char *s2, char *old_str)
 	return (new_str);
 }
 
-//tests : 
-//echo 
-//echo -n 
-//echo -n -n -n 
-//echo -n hello
-//echo -n -n hello
-//echo hello
+// tests :
+// echo
+// echo -n
+// echo -n -n -n
+// echo -n hello
+// echo -n -n hello
+// echo hello
 int	builtin_echo(char **arg)
 {
 	int		option;
@@ -63,7 +63,7 @@ int	builtin_echo(char **arg)
 	if (!arg[1])
 	{
 		ft_putstr_fd("\n", 1);
-		return(0);
+		return (0);
 	}
 	i = 1;
 	// Si on a comme 1er param le -n : skip pour trouver des str a afficher
@@ -75,8 +75,7 @@ int	builtin_echo(char **arg)
 	// si on a deja un -n, on skip tout ceux qui suivent
 	if (option == 1)
 	{
-		while (arg[i] && !ft_strncmp(arg[i], "-n", 2)
-			&& ft_strlen(arg[1]) == 2)
+		while (arg[i] && !ft_strncmp(arg[i], "-n", 2) && ft_strlen(arg[1]) == 2)
 			i++;
 	}
 	// on join tous les args avec un space entre chaque, sauf le dernier
@@ -97,11 +96,11 @@ int	builtin_echo(char **arg)
 	return (0);
 }
 
-//tester en unsetant PWD ...
+// tester en unsetant PWD ...
 int	builtin_pwd(void)
 {
 	char	buf[PATH_MAX];
-	char *s;
+	char	*s;
 
 	s = NULL;
 	if (getcwd(buf, sizeof(buf)) != NULL)
@@ -120,21 +119,82 @@ int	builtin_pwd(void)
 	return (0);
 }
 
-/* int builtin_env(t_env **env) */
-/* { */
-/* 	char *s; */
-/* 	int i; */
-/**/
-/* 	i = 0; */
-/* 	s = NULL; */
-/* 	while (*env) */
-/* 	{ */
-/* 		s = ft_join(s, *env, s);	 */
-/* 		*env = (*env)->next; */
-/* 	} */
-/* 	ft_putstr_fd(s, 1); */
-/* 	return (0); */
-/* } */
+
+
+// a voir
+int	builtin_exit(char **arg, t_env **env)
+{
+	int	n;
+
+	if (!arg[1])
+	{
+		free_list(env); //double free ?
+		exit(0);
+	}
+	if (arg[2])
+	{
+		ft_putstr_fd("minishell: exit: too many arguments\n", 2);
+		exit(1);
+	}
+	//Si on a autre chose que des digits : 
+	//message d'erreur + retour d'erreur 2
+	n = ft_atoi(arg[1]);
+	if (n > 255)
+		n = n % 256;
+	exit(n);
+	return (0);
+}
+
+//ajouter l'acces a des dossiers non permis ?
+int	builtin_cd(char **arg)
+{
+	char	*s;
+
+	/* char *new_path; */
+	/* char	buf[PATH_MAX]; */
+	/* new_path = NULL; */
+	s = NULL;
+	if (!arg[1])
+	{
+		// si HOME existe : on chdir(HOME)
+		// si non :
+		ft_putstr_fd("minishell: cd: HOME not set", 1);
+		return (1);
+	}
+	if (arg[1][0] && arg[1][0] == '/') // Si on chere cd ~ on doit adapter ca
+	{
+		if (access(arg[1], F_OK) == 0)
+			chdir(arg[1]); // a proteger !
+		else
+		{
+			s = ft_join("minishell: cd: ", arg[1], s);
+			s = ft_join(s, ": No such file or directory\n", s);
+			ft_putstr_fd(s, 2);
+			free(s);
+			return (1);
+		}
+	}
+	else if (arg[1][0]) // on est sur un chemin relatif 
+	{
+		if (access(arg[1], F_OK) == 0)
+			chdir(arg[1]); // a proteger !
+	}
+	/* free(new_path); */
+	return (0);
+}
+
+int builtin_env(t_env **env)
+{
+	t_env *tmp;
+
+	tmp = *env;
+	while (tmp)
+	{
+		printf("%s\n", tmp->line);
+		tmp = tmp->next;
+	}
+	return (0);
+}
 
 /* int builtin_unset(t_env **env, char *var) */
 /* { */
@@ -148,75 +208,77 @@ int	builtin_pwd(void)
 /* 	} */
 /* 	return (0); */
 /* } */
-
-/* int builtin_export(t_env **env, char *var) */
-/* { */
-/* 	while(*env->next) */
-/* 		*env = (*env)->next; */
-/* 	//ajouter un maillon a env, avec la string var */
-/* 	return (0); */
-/* } */
-
-//a voir
-int builtin_exit(char **arg)
+/**/
+int builtin_export(t_env **env, char **arg)
 {
-	int n;
-
-	if (!arg[1])
-		exit (0);
-	if (arg[2])
+	t_env *tmp;
+	char *s;
+	int i;
+	char **line;
+	
+	i = 0;
+	s = NULL;
+	line = NULL;
+	tmp = *env;
+	if (!arg[1]) //export sans arguments affiche l'env avec declare + x au debut de chaque lignes 
 	{
-		ft_putstr_fd("minishell: exit: too many arguments\n", 2);
-		exit (1);
+		while (tmp)
+		{
+			//le format d'affichage est pas bon : VAR="ewfwe"
+			s = ft_join(s, "declare -x ", s);
+			line = ft_split(tmp->line, '=');
+			s = ft_join(s, line[0], s);
+			s = ft_join(s, "=\"", s);
+			if (line[1])
+				s = ft_join(s, line[1], s);
+			s = ft_join(s, "\"\n", s);
+			ft_putstr_fd(s, 1);
+			tmp = tmp->next;
+			free(s);
+			s = NULL;
+			ft_free(line);
+			line = NULL;
+		}
+		if (s)
+			free(s);
+		if (line)
+			ft_free(line);
+		return (0);
 	}
-	n = ft_atoi(arg[1]);
-	if (n > 255)
-		n = n % 256;
-	exit(n);
+	else //Il faut gerer export VAR=efef VAR1=fewfwe VAR2=efgeg
+	{
+		while (arg[i])
+		{
+
+			i++;
+		}
+	}
+	while(tmp->next)
+		tmp = tmp->next;
+	//ajouter un maillon a env, avec la string var
 	return (0);
 }
 
-int builtin_cd(char *path)
+int	exec(char **arg, t_env **env)
 {
-	char *new_path;
-
-	new_path = NULL;
-	if (!path)
-	{
-		//si HOME existe : on chdir(HOME)
-		//si non : 
-		ft_putstr_fd("minishell: cd: HOME not set", 1);
-		return (1);
-	}
-	//savoir si on a un chemin absolu ou relatif
-	//si absolu : 
-	chdir(path);
-	//si relatif :
-	//construire le chemin
-	chdir(new_path);
-	free(new_path);
-	return (0);
-}
-
-int	exec(char **arg)
-{
-	 /* faire un switch case et y mettre les returns */
-	if (!ft_strncmp(arg[0], "echo", 4))
-		builtin_echo(arg);
-	/* else if (!ft_strncmp(arg[0], "cd", 2))  */
-	/* 	builtin_cd(arg); */
+	/* faire un switch case et y mettre les returns */
+	if (!*arg)
+		return (0);
+	else if (!ft_strncmp(arg[0], "echo", 4))
+		return(builtin_echo(arg));
+	else if (!ft_strncmp(arg[0], "cd", 2))
+		return(builtin_cd(arg));
 	else if (!ft_strncmp(arg[0], "pwd", 3))
-		builtin_pwd();
-	/* else if (!ft_strncmp(arg[0], "export", 6)) */
-	/* 	builtin_export(arg); */
+		return(builtin_pwd());
+	else if (!ft_strncmp(arg[0], "export", 6))
+		return (builtin_export(env, arg));
 	/* else if (!ft_strncmp(arg[0], "unset", 5)) */
 	/* 	builtin_unset(arg); */
-	/* else if (!ft_strncmp(arg[0], "env", 3)) */
-	/* 	builtin_env(arg); */
+	else if (!ft_strncmp(arg[0], "env", 3))
+		return (builtin_env(env));
 	else if (!ft_strncmp(arg[0], "exit", 4))
-		builtin_exit(arg);
+		return(builtin_exit(arg, env));
 	else // pas printf ! utiliser fd_putstr_fd
 		printf("error : not a builtin\n");
-	/* return(fct) pour faire remonter le code d'erreur ? */
 	return (0);
 }
