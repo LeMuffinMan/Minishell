@@ -10,28 +10,40 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <readline/readline.h> // compiler avec -l readline
 #include <stdio.h>
+#include <readline/readline.h> // compiler avec -l readline
 #include <stdlib.h>
 #include <minishell.h>
+#include "libft.h"
 
 int	main(void)
 {
 	char	*line;
 	char	*prompt;
+	char 	**arg;
+	/* int i; */
 
+	/* i = 0; */
   //isatty : pour 
 	prompt = "[Minishell]$ ";
 	while (1)
 	{
 		line = readline(prompt);
 		if (line == NULL)
-      exit (1);
+      exit (0);
 		/* printf("%s\n", line); */
 		/* parser(line); */
 		/* exec(line); */
-		exec();
+
+		arg = ft_split(line, ' ');
+		/* while(arg[i]) */
+		/* { */
+		/* 	printf("%s\n", arg[i]); */
+		/* 	i++; */
+		/* } */
+		exec(arg);
 		free(line);
+		ft_free(arg);
 	}
 	return (0);
 }

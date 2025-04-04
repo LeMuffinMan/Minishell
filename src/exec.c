@@ -51,7 +51,7 @@ char	*ft_join(char *s1, char *s2, char *old_str)
 //echo -n hello
 //echo -n -n hello
 //echo hello
-int	builtin_echo(char **content)
+int	builtin_echo(char **arg)
 {
 	int		option;
 	int		i;
@@ -60,9 +60,14 @@ int	builtin_echo(char **content)
 	// booleen ?
 	s = NULL;
 	option = 0;
+	if (!arg[1])
+	{
+		ft_putstr_fd("\n", 1);
+		return(0);
+	}
 	i = 1;
 	// Si on a comme 1er param le -n : skip pour trouver des str a afficher
-	if (!ft_strncmp(content[i], "-n", 2) && ft_strlen(content[i]) == 2)
+	if (!ft_strncmp(arg[i], "-n", 2) && ft_strlen(arg[i]) == 2)
 	{
 		option = 1;
 		i++;
@@ -70,15 +75,15 @@ int	builtin_echo(char **content)
 	// si on a deja un -n, on skip tout ceux qui suivent
 	if (option == 1)
 	{
-		while (content[i] && !ft_strncmp(content[i], "-n", 2)
-			&& ft_strlen(content[1]) == 2)
+		while (arg[i] && !ft_strncmp(arg[i], "-n", 2)
+			&& ft_strlen(arg[1]) == 2)
 			i++;
 	}
 	// on join tous les args avec un space entre chaque, sauf le dernier
-	while (content[i])
+	while (arg[i])
 	{
-		s = ft_join(s, content[i], s);
-		if (content[i + 1])
+		s = ft_join(s, arg[i], s);
+		if (arg[i + 1])
 			s = ft_join(s, " ", s);
 		i++;
 	}
@@ -87,6 +92,7 @@ int	builtin_echo(char **content)
 		s = ft_join(s, "\n", s);
 	// si on dup2 au tout debut, ici 1 ecrira bien ou je vuex ?
 	ft_putstr_fd(s, 1);
+	free(s);
 	return (0);
 }
 
@@ -97,76 +103,83 @@ int	builtin_pwd(void)
 	char *s;
 
 	s = NULL;
-	if (arg[1])
-	{
-		ft_putstr_fd("Error : pwd does not support options\n", 1);
-		// echo $? pour un pwd -e en bash renvoie exit code = 2
-		return (2);
-	}
 	if (getcwd(buf, sizeof(buf)) != NULL)
 	{
 		s = ft_join(buf, "\n", s);
 		ft_putstr_fd(s, 1);
+		free(s);
 		return (0);
 	}
 	else
 	{
 		perror("pwd");
-		//  1 ?
+		//  1 ou errno ?
 		return (1);
 	}
 	return (0);
 }
 
-int builtin_env(t_env **env)
-{
-	char *s;
-	int i;
+/* int builtin_env(t_env **env) */
+/* { */
+/* 	char *s; */
+/* 	int i; */
+/**/
+/* 	i = 0; */
+/* 	s = NULL; */
+/* 	while (*env) */
+/* 	{ */
+/* 		s = ft_join(s, *env, s);	 */
+/* 		*env = (*env)->next; */
+/* 	} */
+/* 	ft_putstr_fd(s, 1); */
+/* 	return (0); */
+/* } */
 
-	i = 0;
-	s = NULL;
-	while (*env)
-	{
-		s = ft_join(s, *env, s);	
-		*env = (*env)->next;
-	}
-	ft_putstr_fd(s, 1);
-	return (0);
-}
+/* int builtin_unset(t_env **env, char *var) */
+/* { */
+/* 		//on veut refaire la liste chainee de l'env en virant juste var si on la trouve */
+/* 	while (*env) */
+/* 	{ */
+/* 		if (ft_strncmp(var, (*env)->s, ft_strlen((*env)->s))) */
+/* 			*env = (*env)->next; */
+/* 		else  */
+/* 			//delete le maillon et rejoin la liste */
+/* 	} */
+/* 	return (0); */
+/* } */
 
-int builtin_unset(t_env **env, char *var)
-{
-		//on veut refaire la liste chainee de l'env en virant juste var si on la trouve
-	while (*env)
-	{
-		if (ft_strncmp(var, (*env)->s, ft_strlen((*env)->s)))
-			*env = (*env)->next;
-		else 
-			//delete le maillon et rejoin la liste
-	}
-	return (0);
-}
-
-int builtin_export(t_env **env, char *var)
-{
-	while(*env->next)
-		*env = (*env)->next;
-	//ajouter un maillon a env, avec la string var
-	return (0);
-}
+/* int builtin_export(t_env **env, char *var) */
+/* { */
+/* 	while(*env->next) */
+/* 		*env = (*env)->next; */
+/* 	//ajouter un maillon a env, avec la string var */
+/* 	return (0); */
+/* } */
 
 //a voir
-int builtin_exit(t_env **env, int n)
+int builtin_exit(char **arg)
 {
+	int n;
+
+	if (!arg[1])
+		exit (0);
+	if (arg[2])
+	{
+		ft_putstr_fd("minishell: exit: too many arguments\n", 2);
+		exit (1);
+	}
+	n = ft_atoi(arg[1]);
 	if (n > 255)
-		n = n % 255;
+		n = n % 256;
 	exit(n);
+	return (0);
 }
 
 int builtin_cd(char *path)
 {
 	char *new_path;
 
+	new_path = NULL;
 	if (!path)
 	{
 		//si HOME existe : on chdir(HOME)
@@ -180,26 +193,27 @@ int builtin_cd(char *path)
 	//si relatif :
 	//construire le chemin
 	chdir(new_path);
+	free(new_path);
+	return (0);
 }
 
-int	exec(void)
+int	exec(char **arg)
 {
-	char	*content[] = {"pwd", NULL};
-
-	if (!ft_strncmp(content[0], "echo", 4))
-		builtin_echo(content);
-	/* else if (!ft_strncmp(content[0], "cd", 2))  */
-	/* 	builtin_cd(content); */
-	else if (!ft_strncmp(content[0], "pwd", 3))
-		builtin_pwd(content);
-	/* else if (!ft_strncmp(content[0], "export", 6)) */
-	/* 	builtin_export(content); */
-	/* else if (!ft_strncmp(content[0], "unset", 5)) */
-	/* 	builtin_unset(content); */
-	/* else if (!ft_strncmp(content[0], "env", 3)) */
-	/* 	builtin_env(content); */
-	/* else if (!ft_strncmp(content[0], "exit", 4)) */
-	/* 	builtin_exit(content); */
+	 /* faire un switch case et y mettre les returns */
+	if (!ft_strncmp(arg[0], "echo", 4))
+		builtin_echo(arg);
+	/* else if (!ft_strncmp(arg[0], "cd", 2))  */
+	/* 	builtin_cd(arg); */
+	else if (!ft_strncmp(arg[0], "pwd", 3))
+		builtin_pwd();
+	/* else if (!ft_strncmp(arg[0], "export", 6)) */
+	/* 	builtin_export(arg); */
+	/* else if (!ft_strncmp(arg[0], "unset", 5)) */
+	/* 	builtin_unset(arg); */
+	/* else if (!ft_strncmp(arg[0], "env", 3)) */
+	/* 	builtin_env(arg); */
+	else if (!ft_strncmp(arg[0], "exit", 4))
+		builtin_exit(arg);
 	else // pas printf ! utiliser fd_putstr_fd
 		printf("error : not a builtin\n");
 	/* return(fct) pour faire remonter le code d'erreur ? */
