@@ -17,31 +17,99 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-char	*ft_join(char *s1, char *s2, char *old_str)
+int should_swap(t_env *tmp, t_env *next)
 {
-	char	*new_str;
+  int longest_len;
+
+  if (ft_strlen(tmp->line) > ft_strlen(next->line))
+    longest_len = ft_strlen(tmp->line);
+  else
+    longest_len = ft_strlen(next->line);
+
+  if (ft_strncmp(tmp->line, next->line, longest_len) > 0)
+    return (1);
+  return (0);
+}
+
+void swap_lines(t_env *tmp, t_env *next)
+{
+  char *temp;
+
+  temp = tmp->line;
+  tmp->line = next->line;
+  next->line = temp;
+}
+
+int sort_env(t_env **env)
+{
+  int swapped;
+  t_env *tmp;
+
+  if (!env || !(*env))
+    return (1);
+
+  swapped = 1;
+  while (swapped)
+  {
+    swapped = 0;
+    tmp = *env;
+    while (tmp && tmp->next)
+    {
+      if (should_swap(tmp, tmp->next))
+      {
+        swap_lines(tmp, tmp->next);
+        swapped = 1;
+        tmp = *env;
+      }
+      tmp = tmp->next;
+    }
+  }
+  return (0);
+}
+
+void join_strs(char *line, va_list strs)
+{
+	char	*str;
 	int		i;
 	int		j;
 
 	i = 0;
-	new_str = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 2));
-	if (new_str == NULL)
+	str = va_arg(strs, char *);
+	while (str)
+	{
+		j = 0;
+		while (str[j])
+			line[i++] = str[j++];
+		str = va_arg(strs, char *);
+	}
+	line[i] = '\0';
+}
+
+
+char *build_line(char *s, ...)
+{
+	va_list	strs;
+	int		line_len;
+	char	*line;
+	char	*str;
+
+	line_len = 0;
+	va_start(strs, s);
+	str = va_arg(strs, char *);
+	while (str)
+	{
+		line_len += ft_strlen(str);
+		str = va_arg(strs, char *);
+	}
+	va_end(strs);
+	line = malloc(sizeof(char) * (line_len + 1));
+	if (!line)
 		return (NULL);
-	while (s1 && s1[i])
-	{
-		new_str[i] = s1[i];
-		i++;
-	}
-	j = 0;
-	while (s2 && s2[j])
-	{
-		new_str[i] = s2[j];
-		i++;
-		j++;
-	}
-	new_str[i] = '\0';
-	free(old_str);
-	return (new_str);
+	va_start(strs, s);
+	join_strs(line, strs);
+	va_end(strs);
+
+	return (line);
 }
 
 // tests :
@@ -81,14 +149,14 @@ int	builtin_echo(char **arg)
 	// on join tous les args avec un space entre chaque, sauf le dernier
 	while (arg[i])
 	{
-		s = ft_join(s, arg[i], s);
+		s = build_line(s, arg[i], s);
 		if (arg[i + 1])
-			s = ft_join(s, " ", s);
+			s = build_line(s, " ", s);
 		i++;
 	}
 	// si on n'avait pas de -n : on join le \n
 	if (option == 0)
-		s = ft_join(s, "\n", s);
+		s = build_line(s, "\n", s);
 	// si on dup2 au tout debut, ici 1 ecrira bien ou je vuex ?
 	if (s)
 		ft_putstr_fd(s, 1);
@@ -105,7 +173,7 @@ int	builtin_pwd(void)
 	s = NULL;
 	if (getcwd(buf, sizeof(buf)) != NULL)
 	{
-		s = ft_join(buf, "\n", s);
+		s = build_line(buf, "\n", s);
 		ft_putstr_fd(s, 1);
 		free(s);
 		return (0);
@@ -119,13 +187,27 @@ int	builtin_pwd(void)
 	return (0);
 }
 
+int is_only_numeric_argument(char *s)
+{
+	int i;
 
+	i = 0;
+	while (s[i])
+	{
+		if (s[i] > '9' || s[i] < '0')
+			return (0);
+		i++;
+	}
+	return (1);
+}
 
 // a voir
 int	builtin_exit(char **arg, t_env **env)
 {
 	int	n;
+	char *s;
 
+	s = NULL;
 	if (!arg[1])
 	{
 		free_list(env); //double free ?
@@ -134,7 +216,16 @@ int	builtin_exit(char **arg, t_env **env)
 	if (arg[2])
 	{
 		ft_putstr_fd("minishell: exit: too many arguments\n", 2);
-		exit(1);
+		return (1);
+	}
+	//a tester
+	if (!is_only_numeric_argument(arg[1]))
+	{
+		s = build_line(NULL, "minishell: exit: ", arg[1], ": numeric argument required\n", NULL);
+		ft_putstr_fd(s, 1);
+		free(s);
+		/* free_list(env); */ // segfault ?
+		exit (2);
 	}
 	//Si on a autre chose que des digits : 
 	//message d'erreur + retour d'erreur 2
@@ -146,6 +237,7 @@ int	builtin_exit(char **arg, t_env **env)
 }
 
 //ajouter l'acces a des dossiers non permis ?
+//cd dans un fichier ?
 int	builtin_cd(char **arg)
 {
 	char	*s;
@@ -167,8 +259,8 @@ int	builtin_cd(char **arg)
 			chdir(arg[1]); // a proteger !
 		else
 		{
-			s = ft_join("minishell: cd: ", arg[1], s);
-			s = ft_join(s, ": No such file or directory\n", s);
+			s = build_line("minishell: cd: ", arg[1], s);
+			s = build_line(s, ": No such file or directory\n", s);
 			ft_putstr_fd(s, 2);
 			free(s);
 			return (1);
@@ -188,6 +280,10 @@ int builtin_env(t_env **env)
 	t_env *tmp;
 
 	tmp = *env;
+	/* if (!env) */
+	/* PWD=/home/muffin */
+	/* SHLVL=1 */
+	/* _=/usr/bin/env */
 	while (tmp)
 	{
 		printf("%s\n", tmp->line);
@@ -196,19 +292,37 @@ int builtin_env(t_env **env)
 	return (0);
 }
 
-/* int builtin_unset(t_env **env, char *var) */
-/* { */
-/* 		//on veut refaire la liste chainee de l'env en virant juste var si on la trouve */
-/* 	while (*env) */
-/* 	{ */
-/* 		if (ft_strncmp(var, (*env)->s, ft_strlen((*env)->s))) */
-/* 			*env = (*env)->next; */
-/* 		else  */
-/* 			//delete le maillon et rejoin la liste */
-/* 	} */
-/* 	return (0); */
-/* } */
-/**/
+int builtin_unset(t_env **env, char **arg)
+{
+	t_env *tmp;
+	int i;
+
+	i = 1;
+	while (arg[i])
+	{
+		tmp = *env;
+		while (tmp)
+		{
+			if (ft_strncmp(arg[i], tmp->line, ft_strlen(arg[i])) == 0 &&
+    		tmp->line[ft_strlen(arg[i])] == '=')
+				{
+					if (tmp->prev)
+						tmp->prev->next = tmp->next;
+					if (tmp->next)
+						tmp->next->prev = tmp->prev;
+					free(tmp->line);
+					free(tmp);
+					break;
+				}
+				else
+					tmp = tmp->next;
+		}
+		i++;
+	}
+	return (0);
+}
+
+
 int builtin_export(t_env **env, char **arg)
 {
 	t_env *tmp;
@@ -216,22 +330,18 @@ int builtin_export(t_env **env, char **arg)
 	int i;
 	char **line;
 	
-	i = 0;
 	s = NULL;
 	line = NULL;
 	tmp = *env;
+	//LS_COLOR et la ligne longue disparait ??
+	sort_env(&tmp);
 	if (!arg[1]) //export sans arguments affiche l'env avec declare + x au debut de chaque lignes 
 	{
 		while (tmp)
 		{
-			//le format d'affichage est pas bon : VAR="ewfwe"
-			s = ft_join(s, "declare -x ", s);
 			line = ft_split(tmp->line, '=');
-			s = ft_join(s, line[0], s);
-			s = ft_join(s, "=\"", s);
-			if (line[1])
-				s = ft_join(s, line[1], s);
-			s = ft_join(s, "\"\n", s);
+			/* if (line[1]) comment ca se pass si PWD= ? */
+			s = build_line(NULL, "declare -x ", line[0], "=\"", line[1], "\"\n", NULL);
 			ft_putstr_fd(s, 1);
 			tmp = tmp->next;
 			free(s);
@@ -245,11 +355,12 @@ int builtin_export(t_env **env, char **arg)
 			ft_free(line);
 		return (0);
 	}
-	else //Il faut gerer export VAR=efef VAR1=fewfwe VAR2=efgeg
+	else 
 	{
+		i = 1;
 		while (arg[i])
 		{
-
+			add_back(env, arg[i]);
 			i++;
 		}
 	}
@@ -272,8 +383,8 @@ int	exec(char **arg, t_env **env)
 		return(builtin_pwd());
 	else if (!ft_strncmp(arg[0], "export", 6))
 		return (builtin_export(env, arg));
-	/* else if (!ft_strncmp(arg[0], "unset", 5)) */
-	/* 	builtin_unset(arg); */
+	else if (!ft_strncmp(arg[0], "unset", 5))
+		return(builtin_unset(env, arg));
 	else if (!ft_strncmp(arg[0], "env", 3))
 		return (builtin_env(env));
 	else if (!ft_strncmp(arg[0], "exit", 4))

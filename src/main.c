@@ -12,8 +12,8 @@
 
 #include "libft.h"
 #include <minishell.h>
-#include <readline/readline.h> // compiler avec -l readline
 #include <stdio.h>
+#include <readline/readline.h> // compiler avec -l readline
 #include <stdlib.h>
 
 
@@ -29,22 +29,22 @@ void	free_list(t_env **l)
 	while (tmp)
 	{
 		next_node = tmp->next;
-		free(tmp);
 		free(tmp->line);
+		free(tmp);
 		tmp = next_node;
 	}
 	*l = NULL;
 }
 
-void	add_first_node(t_env **lst, t_env *new, char **env)
+void	add_first_node(t_env **lst, t_env *new, char *s)
 {
 	*lst = new;
 	new->prev = NULL;
 	new->next = NULL;
-	new->line = ft_strdup(env[0]);
+	new->line = ft_strdup(s);
 }
 
-void	add_back(t_env **lst, int n, char **env)
+void	add_back(t_env **lst, char *s)
 {
 	t_env	*ptr;
 	t_env	*new;
@@ -56,7 +56,7 @@ void	add_back(t_env **lst, int n, char **env)
 		exit(1);
 	}
 	if (*lst == NULL)
-		add_first_node(lst, new, env);
+		add_first_node(lst, new, s);
 	else
 	{
 		ptr = *lst;
@@ -65,7 +65,7 @@ void	add_back(t_env **lst, int n, char **env)
 		ptr->next = new;
 		new->prev = ptr;
 		new->next = NULL;
-		new->line = ft_strdup(env[n]);
+		new->line = ft_strdup(s);
 	}
 }
 
@@ -76,7 +76,7 @@ int	init_env(t_env **new_env, char **env)
 	i = 0;
 	while (env[i])
 	{
-		add_back(new_env, i, env);
+		add_back(new_env, env[i]);
 		i++;
 	}
 	return (0);
@@ -90,7 +90,7 @@ int	main(int ac, char **av, char **env)
 	int		error_code;
 	t_env	*new_env;
 	/* t_env	*tmp; */
-
+/* utiliser getenv ?*/
 	/* int i; */
 	/* i = 0; */
 	// isatty : pour
