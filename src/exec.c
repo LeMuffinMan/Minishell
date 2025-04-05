@@ -12,9 +12,7 @@
 
 #include "libft.h"
 #include "minishell.h"
-#include <limits.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
 
 int	exec(char **arg, t_env **env)
