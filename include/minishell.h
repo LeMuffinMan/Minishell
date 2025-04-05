@@ -48,4 +48,17 @@ void	add_back(t_env **lst, char *s);
 void	add_first_node(t_env **lst, t_env *new, char *s);
 void	free_list(t_env **l);
 
+//utils/builtins_utils
+char *build_line(char *s, ...);
+int sort_env(t_env **env);
+
+//builtins
+int	builtin_cd(char **arg);
+int	builtin_echo(char **arg);
+int builtin_env(t_env **env);
+int	builtin_exit(char **arg, t_env **env);
+int builtin_export(t_env **env, char **arg);
+int	builtin_pwd(void);
+int builtin_unset(t_env **env, char **arg);
+
 #endif

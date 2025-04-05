@@ -25,7 +25,16 @@ LIBFT_OBJ_DIR = libft/obj
 
 SRC_FILES = \
     $(SRC_DIR)/main.c \
-    $(SRC_DIR)/exec.c
+    $(SRC_DIR)/exec.c \
+    $(SRC_DIR)/builtins/echo.c \
+    $(SRC_DIR)/builtins/cd.c \
+    $(SRC_DIR)/builtins/pwd.c \
+    $(SRC_DIR)/builtins/unset.c \
+    $(SRC_DIR)/builtins/export.c \
+    $(SRC_DIR)/builtins/env.c \
+    $(SRC_DIR)/builtins/exit.c \
+		$(SRC_DIR)/utils/builtins_utils.c
+
 
 # vpath %.c src
 # vpath %.h include
