@@ -53,7 +53,7 @@ char *build_line(char *s, ...);
 int sort_env(t_env **env);
 
 //builtins
-int	builtin_cd(char **arg);
+int	builtin_cd(char **arg, t_env **env);
 int	builtin_echo(char **arg);
 int builtin_env(t_env **env);
 int	builtin_exit(char **arg, t_env **env);

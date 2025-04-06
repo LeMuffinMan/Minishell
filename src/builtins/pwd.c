@@ -8,7 +8,6 @@
 #include "minishell.h"
 
 
-//REVOIR BUILD LINE !
 // tester en unsetant PWD ...
 int	builtin_pwd(void)
 {
@@ -18,7 +17,7 @@ int	builtin_pwd(void)
 	s = NULL;
 	if (getcwd(buf, sizeof(buf)) != NULL)
 	{
-		s = build_line(buf, "\n", s);
+		s = build_line(NULL, buf, "\n", NULL);
 		ft_putstr_fd(s, 1);
 		free(s);
 		return (0);

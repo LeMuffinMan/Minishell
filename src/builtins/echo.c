@@ -2,6 +2,7 @@
 #include "libft.h"
 #include "minishell.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 
 //REVOIR BUILD LINE !
@@ -19,10 +20,11 @@ int	builtin_echo(char **arg)
 	char	*s;
 
 	// booleen ?
-	s = NULL;
+	s = ft_strdup("");
 	option = 0;
 	if (!arg[1])
 	{
+		free(s);
 		ft_putstr_fd("\n", 1);
 		return (0);
 	}
@@ -42,17 +44,19 @@ int	builtin_echo(char **arg)
 	// on join tous les args avec un space entre chaque, sauf le dernier
 	while (arg[i])
 	{
-		s = build_line(s, arg[i], s);
+		s = ft_strjoin(s, arg[i], s);
 		if (arg[i + 1])
-			s = build_line(s, " ", s);
+			s = ft_strjoin(s, " ", s);
 		i++;
 	}
 	// si on n'avait pas de -n : on join le \n
 	if (option == 0)
-		s = build_line(s, "\n", s);
+		s = ft_strjoin(s, "\n", s);
 	// si on dup2 au tout debut, ici 1 ecrira bien ou je vuex ?
 	if (s)
 		ft_putstr_fd(s, 1);
 	free(s);
 	return (0);
 }
+
+

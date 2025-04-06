@@ -1,6 +1,7 @@
 
 #include "libft.h"
 #include "minishell.h"
+#include <stdlib.h>
 
 static int should_swap(t_env *tmp, t_env *next)
 {
@@ -55,16 +56,25 @@ int sort_env(t_env **env)
 int builtin_env(t_env **env)
 {
 	t_env *tmp;
+	char *s;
 
+  s = ft_strdup("");
+
+	if (!*env)
+	{
+
+	}
 	tmp = *env;
-	/* if (!env) */
-	/* PWD=/home/muffin */
-	/* SHLVL=1 */
-	/* _=/usr/bin/env */
 	while (tmp)
 	{
-		ft_putstr_fd(tmp->line, 1);
+	  if (tmp->line)
+	  {
+	    s = ft_strjoin(s, tmp->line, s);
+	    s = ft_strjoin(s, "\n", s);
+	  }
 		tmp = tmp->next;
 	}
+	ft_putstr_fd(s, 1);
+	free(s);
 	return (0);
 }

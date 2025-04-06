@@ -12,7 +12,7 @@ int is_only_numeric_argument(char *s)
 	i = 0;
 	while (s[i])
 	{
-		if (s[i] > '9' || s[i] < '0')
+		if ((s[i] > '9' || s[i] < '0') && (s[i] != '-' && s[i] != '+'))
 			return (0);
 		i++;
 	}
@@ -62,7 +62,8 @@ char *build_line(char *s, ...)
 	va_start(strs, s);
 	join_strs(line, strs);
 	va_end(strs);
-
+	if (s)
+		free(s);
 	return (line);
 }
 
@@ -72,10 +73,12 @@ int	builtin_exit(char **arg, t_env **env)
 	int	n;
 	char *s;
 
+  (void)env;
 	s = NULL;
 	if (!arg[1])
 	{
-		free_list(env); //double free ?
+		free_list(env);
+		ft_free(arg);
 		exit(0);
 	}
 	if (arg[2])
@@ -89,7 +92,8 @@ int	builtin_exit(char **arg, t_env **env)
 		s = build_line(NULL, "minishell: exit: ", arg[1], ": numeric argument required\n", NULL);
 		ft_putstr_fd(s, 1);
 		free(s);
-		/* free_list(env); */ // segfault ?
+		free_list(env);
+		ft_free(arg);
 		exit (2);
 	}
 	//Si on a autre chose que des digits : 
@@ -97,6 +101,8 @@ int	builtin_exit(char **arg, t_env **env)
 	n = ft_atoi(arg[1]);
 	if (n > 255)
 		n = n % 256;
+	free_list(env);
+	ft_free(arg);
 	exit(n);
 	return (0);
 }

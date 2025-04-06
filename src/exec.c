@@ -23,7 +23,7 @@ int	exec(char **arg, t_env **env)
 	else if (!ft_strncmp(arg[0], "echo", 4))
 		return(builtin_echo(arg));
 	else if (!ft_strncmp(arg[0], "cd", 2))
-		return(builtin_cd(arg));
+		return(builtin_cd(arg, env));
 	else if (!ft_strncmp(arg[0], "pwd", 3))
 		return(builtin_pwd());
 	else if (!ft_strncmp(arg[0], "export", 6))

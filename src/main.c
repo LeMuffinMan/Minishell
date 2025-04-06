@@ -15,6 +15,8 @@
 #include <stdio.h>
 #include <readline/readline.h> // compiler avec -l readline
 #include <stdlib.h>
+#include <limits.h>
+#include <unistd.h>
 
 
 void	free_list(t_env **l)
@@ -25,7 +27,6 @@ void	free_list(t_env **l)
 	tmp = *l;
 	if (!*l)
 		return ;
-	(*l)->prev->next = NULL;
 	while (tmp)
 	{
 		next_node = tmp->next;
@@ -69,10 +70,45 @@ void	add_back(t_env **lst, char *s)
 	}
 }
 
+int build_minimal_env(t_env **env)
+{
+	char *s;
+	char	buf[PATH_MAX];
+
+	s = NULL;
+	if (getcwd(buf, sizeof(buf)) != NULL)
+		s = ft_strdup(buf);
+	else
+	{
+		perror("getcwd");
+		/* (void)s = NULL; */
+		//  1 ou errno ?
+	//  free avant !
+		return (1);
+	}
+	s = ft_strjoin("PWD=", s, s);
+	add_back(env, s);
+ 	free(s);
+  s = ft_strdup("SHLVL=1");
+	add_back(env, s);
+	free(s);
+	s = ft_strdup("_=/usr/bin/env"); //A CHANGER !
+	add_back(env, s);
+	free(s);
+	return (0);
+}
+
 int	init_env(t_env **new_env, char **env)
 {
 	int	i;
 
+	if (!*env)
+	{
+		build_minimal_env(new_env);	
+	/* PWD=/home/muffin */
+	/* SHLVL=1 */
+	/* _=/usr/bin/env */
+	}
 	i = 0;
 	while (env[i])
 	{
@@ -98,17 +134,18 @@ int	main(int ac, char **av, char **env)
 	(void)av;
 	new_env = NULL;
 	prompt = "[Minishell]$ ";
-	if (*env)
-		init_env(&new_env, env);
-	else 
-		new_env = NULL;
+	init_env(&new_env, env);
 	/* else  */
 	// init un env vide
 	while (1)
 	{
 		line = readline(prompt);
 		if (line == NULL)
+		{
+			free(arg);
+			free_list(&new_env);
 			exit(error_code);
+		}
 		/* printf("%s\n", line); */
 		/* parser(line); */
 		/* exec(line); */
@@ -120,7 +157,10 @@ int	main(int ac, char **av, char **env)
 		/* } */
 		error_code = exec(arg, &new_env);
 		free(line);
+		line = NULL;
 		ft_free(arg);
+		arg = NULL;
 	}
+	free_list(&new_env);
 	exit(error_code);
 }
