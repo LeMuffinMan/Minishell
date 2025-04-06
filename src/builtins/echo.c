@@ -13,6 +13,10 @@
 // echo -n hello
 // echo -n -n hello
 // echo hello
+//
+//
+// Si echo $_
+// 	on veut afficher le dernier argument !
 int	builtin_echo(char **arg)
 {
 	int		option;

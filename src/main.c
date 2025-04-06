@@ -30,34 +30,67 @@ void	free_list(t_env **l)
 	while (tmp)
 	{
 		next_node = tmp->next;
-		free(tmp->line);
+		free(tmp->key);
+		free(tmp->value);
 		free(tmp);
 		tmp = next_node;
 	}
 	*l = NULL;
 }
 
-void	add_first_node(t_env **lst, t_env *new, char *s)
+void set_node(t_env *node, int mode)
 {
+	if (mode == 1)
+	{
+		node->env = 1;
+		node->exported = 0;
+	}
+	if (mode == 2)
+	{
+		node->env = 0;
+		node->exported = 1;
+	}
+	if (mode == 3)
+	{
+		node->env = 1;
+		node->exported = 1;
+	}
+	else
+	{
+		node->env = 0;
+		node->exported = 0;
+	}
+}
+
+void	add_first_node(t_env **lst, t_env *new, char *s, int mode)
+{
+	char **key_value;
+
+	key_value = ft_split(s, '=');
+	new->key = ft_strdup(key_value[0]);
+	if (key_value[1])
+		new->value = ft_strdup(key_value[1]);
+	ft_free(key_value);
 	*lst = new;
 	new->prev = NULL;
 	new->next = NULL;
-	new->line = ft_strdup(s);
+	set_node(new, mode);
 }
 
-void	add_back(t_env **lst, char *s)
+void	add_back(t_env **lst, char *s, int mode) // 0 = aucun des deux / 1 = env / 2 = export / 3 = env + export 
 {
 	t_env	*ptr;
 	t_env	*new;
+	char **key_value;
 
 	new = malloc(sizeof(t_env));
 	if (new == NULL)
 	{
-		free_list(lst);
+		/* free_list(lst); */
 		exit(1);
 	}
 	if (*lst == NULL)
-		add_first_node(lst, new, s);
+		add_first_node(lst, new, s, mode);
 	else
 	{
 		ptr = *lst;
@@ -66,11 +99,27 @@ void	add_back(t_env **lst, char *s)
 		ptr->next = new;
 		new->prev = ptr;
 		new->next = NULL;
-		new->line = ft_strdup(s);
+		key_value = ft_split(s, '=');
+		new->key = ft_strdup(key_value[0]);
+		if (key_value[1])
+			new->value = ft_strdup(key_value[1]);
+		ft_free(key_value);
+		set_node(new, mode);
 	}
 }
 
-int build_minimal_env(t_env **env)
+int init_last_cmd_var(char *name, t_env **env)
+{
+	char *s;
+
+	s = NULL;
+	s = ft_strjoin("_=/usr/bin/./", name, s);
+	add_back(env, s, 1);
+	free(s);
+	return (0);
+}
+
+int build_minimal_env(t_env **env, char **arg)
 {
 	char *s;
 	char	buf[PATH_MAX];
@@ -87,36 +136,70 @@ int build_minimal_env(t_env **env)
 		return (1);
 	}
 	s = ft_strjoin("PWD=", s, s);
-	add_back(env, s);
+	add_back(env, s, 3);
  	free(s);
   s = ft_strdup("SHLVL=1");
-	add_back(env, s);
+	add_back(env, s, 3);
 	free(s);
-	s = ft_strdup("_=/usr/bin/env"); //A CHANGER !
-	add_back(env, s);
+	s = ft_strdup("OLDPWD"); //updated in CD seule;ent ?
+	add_back(env, s, 2);
 	free(s);
+	init_last_cmd_var(arg[0], env);
 	return (0);
 }
 
-int	init_env(t_env **new_env, char **env)
+//a tester 
+int init_and_incremente_shlvl(char *s, t_env **env)
+{
+	int n;
+	int i;
+	char *line;
+	char *shlvl_n;
+
+	i = 7;
+	line = NULL;
+	while (s[i])
+	{
+		if (!ft_isdigit(s[i]))
+			break;
+		i++;
+	}
+	if ((size_t)i == ft_strlen(s))
+	{
+		n = ft_atoi(s + 7);
+		if (n < 0)
+			line = ft_strdup("SHLVL=0");
+		else 
+		{
+			shlvl_n = ft_itoa(n + 1);
+			line = ft_strjoin("SHLVL=", shlvl_n, shlvl_n); 
+		}
+	}
+	if (!line)
+		line = ft_strdup("SHLVL=1");
+	add_back(env, line, 3);
+	free(line);
+	return (0);
+}
+
+int	init_env(t_env **new_env, char **env, char **arg)
 {
 	int	i;
 
 	//pour simuler un environnement absent et tester les leaks
 	/* *env = NULL; */
 	if (!*env)
-	{
-		build_minimal_env(new_env);	
-	/* PWD=/home/muffin */
-	/* SHLVL=1 */
-	/* _=/usr/bin/env */
-	}
+		return(build_minimal_env(new_env, arg));	
 	i = 0;
 	while (env[i])
 	{
-		add_back(new_env, env[i]);
+		if (!ft_strncmp("SHLVL=", env[i], 6))
+			init_and_incremente_shlvl(env[i], new_env);
+		else if (ft_strncmp("_=", env[i], 2))
+			add_back(new_env, env[i], 1);
 		i++;
 	}
+	init_last_cmd_var(arg[0], new_env);
 	return (0);
 }
 
@@ -136,7 +219,7 @@ int	main(int ac, char **av, char **env)
 	(void)av;
 	new_env = NULL;
 	prompt = "[Minishell]$ ";
-	init_env(&new_env, env);
+	init_env(&new_env, env, av);
 	/* else  */
 	// init un env vide
 	while (1)

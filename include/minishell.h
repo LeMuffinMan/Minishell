@@ -38,22 +38,26 @@ typedef struct s_parse
 
 typedef struct s_env
 {
-  char *line;
-  // int exported; //booleen ?
-  // int local; //pour le cas de VAR=var puis export VAR
-  // un booleen pour garder une variable invisible ? : PWD doit marcher avec echo $PWD meme si elle n'est pas dans env ou export
+  char *key;
+  char *value;
+  //booleen ?
+  int env; 
+  int exported;
+  //si un bool == 1 on veut l'afficher dans env ou export
+  //si les deux == 0 : variables de shell, non exportees 
   struct s_env *prev;
   struct s_env *next;
 } t_env;
 
 int exec (char **arg, t_env **env);
-void	add_back(t_env **lst, char *s);
-void	add_first_node(t_env **lst, t_env *new, char *s);
+void	add_back(t_env **lst, char *s, int mode);
+void	add_first_node(t_env **lst, t_env *new, char *s, int mode);
 void	free_list(t_env **l);
 
 //utils/builtins_utils
 char *build_line(char *s, ...);
 int sort_env(t_env **env);
+int is_only_numeric_argument(char *s);
 
 //builtins
 int	builtin_cd(char **arg, t_env **env);

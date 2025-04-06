@@ -21,33 +21,55 @@
 //
 //Attention : 
 //echo $_ renvoie le dernier argument : echo; echo $_ : echo // echo hello; echo $_ : hello
+/* int update_last_cmd_var(t_env **env, char *last_cmd) */
+/* { */
+/* 	t_env *tmp; */
+/* 	char *s; */
+/**/
+/* 	tmp = *env; */
+/* 	//on cherche _= */
+/* 	s = ft_strdup("_="); */
+/* 	s = ft_strjoin(s, last_cmd, s); */
+/* 	//trouver le path pour la last cmd  */
+/* 	//si elle a echoue, comment fait bash ? */
+/* 	while (tmp) */
+/* 	{ */
+/* 		if (!ft_strncmp("_", tmp->key, ft_strlen(tmp_key))) */
+/* 			break; */
+/* 		tmp = tmp->next; */
+/* 	} */
+/* 	//si on est arrive au bout de la liste */
+/* 	if (!tmp) */
+/* 		add_back(env, s, 1);	 */
+/* 	//si on a deja un _ on free la line et on la realloue */
+/* 	else */
+/* 	{ */
+/* 		free(tmp->line); */
+/* 		tmp->line = ft_strdup(s); */
+/* 	} */
+/* 	free(s); */
+/* 	return (0); */
+/* } */
+
 int update_last_cmd_var(t_env **env, char *last_cmd)
 {
 	t_env *tmp;
-	char *s;
 
+	//la variable doit contenir le PATH !
 	tmp = *env;
-	//on cherche _=
-	s = ft_strdup("_=");
-	s = ft_strjoin(s, last_cmd, s);
-	//trouver le path pour la last cmd 
-	//si elle a echoue, comment fait bash ?
 	while (tmp)
 	{
-		if (!ft_strncmp("_=", tmp->line, 2))
+		if (!ft_strncmp("_", tmp->key, ft_strlen(tmp->key)))
 			break;
 		tmp = tmp->next;
 	}
-	//si on est arrive au bout de la liste
-	if (!tmp)
-		add_back(env, s);	
-	//si on a deja un _ on free la line et on la realloue
-	else
-	{
-		free(tmp->line);
-		tmp->line = ft_strdup(s);
-	}
-	free(s);
+	/* if (!tmp) //ca ne devrait pas pouvoir etre possible */
+	/* 	add_back(env, s, 1);	 */
+	/* else */
+	/* { */
+		free(tmp->value);
+		tmp->value = ft_strdup(last_cmd);
+	/* } */
 	return (0);
 }
 

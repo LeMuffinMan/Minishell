@@ -30,13 +30,11 @@ int builtin_unset(t_env **env, char **arg)
 		tmp = *env;
 		while (tmp)
 		{
-			if (ft_strncmp(arg[i], tmp->line, ft_strlen(arg[i])) == 0 &&
-    		tmp->line[ft_strlen(arg[i])] == '=')
+			if (!ft_strncmp(arg[i], tmp->key, ft_strlen(arg[i])))
 				{
 					if (env_size(*env) == 1)
 					{
-						free(tmp->line);	
-						free(tmp);
+						free_list(env);	
 						*env = NULL;
 						tmp = NULL;
 						break;
@@ -48,7 +46,8 @@ int builtin_unset(t_env **env, char **arg)
 						*env = tmp->next;
 						tmp->next->prev = tmp->prev;
 					}
-					free(tmp->line);
+					free(tmp->key);
+					free(tmp->value);
 					free(tmp);
 					break;
 				}
@@ -62,3 +61,14 @@ int builtin_unset(t_env **env, char **arg)
 	return (0);
 }
 
+/* Remove each variable or function name. If the -v option is given, each name */
+/* refers to a shell variable and that variable is removed. If the -f option is given, */
+/* the names refer to shell functions, and the function definition is removed. If */
+/* the -n option is supplied, and name is a variable with the nameref attribute, */
+/* name will be unset rather than the variable it references. -n has no effect if */
+/* the -f option is supplied. If no options are supplied, each name refers to a */
+/* variable; if there is no variable by that name, a function with that name, if */
+/* any, is unset. Readonly variables and functions may not be unset. Some shell */
+/* variables lose their special behavior if they are unset; such behavior is noted in */
+/* the description of the individual variables. The return status is zero unless a */
+/* name is readonly or may not be unset. */

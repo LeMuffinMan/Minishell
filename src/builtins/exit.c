@@ -106,3 +106,11 @@ int	builtin_exit(char **arg, t_env **env)
 	exit(n);
 	return (0);
 }
+/* Exit status: */
+/*        125    if the env command itself fails */
+/**/
+/*        126    if COMMAND is found but cannot be invoked */
+/**/
+/*        127    if COMMAND cannot be found */
+/**/
+/*        -      the exit status of COMMAND otherwise */
