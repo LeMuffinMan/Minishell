@@ -87,7 +87,7 @@ void	add_back(t_env **lst, char *s, int mode) // 0 = aucun des deux / 1 = env / 
 	if (new == NULL)
 	{
 		/* free_list(lst); */
-		exit(1);
+		exit(139);
 	}
 	if (*lst == NULL)
 		add_first_node(lst, new, s, mode);
@@ -166,7 +166,7 @@ int init_and_incremente_shlvl(char *s, t_env **env)
 	}
 	if ((size_t)i == ft_strlen(s))
 	{
-		n = ft_atoi(s + 7);
+		n = ft_atoi(s + 6);
 		if (n < 0)
 			line = ft_strdup("SHLVL=0");
 		else 
@@ -182,6 +182,7 @@ int init_and_incremente_shlvl(char *s, t_env **env)
 	return (0);
 }
 
+//les add back marchent pas du tout !
 int	init_env(t_env **new_env, char **env, char **arg)
 {
 	int	i;
@@ -195,8 +196,14 @@ int	init_env(t_env **new_env, char **env, char **arg)
 	{
 		if (!ft_strncmp("SHLVL=", env[i], 6))
 			init_and_incremente_shlvl(env[i], new_env);
-		else if (ft_strncmp("_=", env[i], 2))
-			add_back(new_env, env[i], 1);
+		else
+			add_back(new_env, env[i], 3); //pas sur
+		/* t_env *tmp; */
+		/**/
+		/* tmp = *new_env; */
+		/* while(tmp) */
+		/* 	tmp = tmp->next; */
+		/* printf("%s=%s\n", tmp->key, tmp->value); */
 		i++;
 	}
 	init_last_cmd_var(arg[0], new_env);

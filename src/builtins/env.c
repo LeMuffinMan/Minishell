@@ -58,19 +58,23 @@
 int builtin_env(t_env **env)
 {
 	t_env *tmp;
-	char *s;
 
-  s = NULL;
 	if (!*env)
 	  return (0); // 0 ?
 	tmp = *env;
 	while (tmp)
 	{
+	  #include <stdio.h>
+	  /* printf("%s %s\n", tmp->value, tmp->key); */
 	  if (tmp->value && tmp->env == 1)
-	    s = build_line(s, tmp->key, "=", tmp->value, "\n");
+	  {
+			ft_putstr_fd(tmp->key, 1);
+			ft_putstr_fd("=", 1);
+			ft_putstr_fd(tmp->value, 1);
+			ft_putstr_fd("\n", 1);
+		}
+	    /* s = build_line(s, tmp->key, "=", tmp->value, "\n"); */
 		tmp = tmp->next;
 	}
-	ft_putstr_fd(s, 1);
-	free(s);
 	return (0);
 }
