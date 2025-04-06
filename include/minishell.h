@@ -39,6 +39,9 @@ typedef struct s_parse
 typedef struct s_env
 {
   char *line;
+  // int exported; //booleen ?
+  // int local; //pour le cas de VAR=var puis export VAR
+  // un booleen pour garder une variable invisible ? : PWD doit marcher avec echo $PWD meme si elle n'est pas dans env ou export
   struct s_env *prev;
   struct s_env *next;
 } t_env;

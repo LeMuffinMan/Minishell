@@ -23,8 +23,79 @@ char *get_home_path(t_env **env)
 	return (path);
 }
 
+char *get_pwd_from_env(t_env **env)
+{
+	t_env *tmp;
+
+	while (tmp)
+	{
+		if (!ft_strncmp("PWD=", tmp->line, ft_strlen(tmp->line)))
+			break;
+		tmp = tmp->next;
+	}
+	//si on a trouve PWD dans l'env
+	if (tmp)
+		return (tmp->line);
+	else //pas sur du tout de ce qui suit 
+		return (NULL); //Si null c'est qu'on n'a pas trouve
+}
+
+int update_old_pwd(char *s)
+{
+	//Si PWD n'existe pas 
+	if (!updated_var)
+	{
+
+	}
+}
+
+//env -i bash
+//
+//env 
+//cd ..
+//env
+//==> OLDPWD existe et est a jour
+//env
+//unset PWD
+//env
+//==>Ne doit afficher ni PWD ni OLD_PWD
+//env
+//unset PWD
+//export PWD=lol
+//pwd
+//env
+//==>ne change PAS la variable PWD 
+//cd ..
+//env 
+//==>PWD est a jour et OLD_PWD = lo,
+//
+//
+//Quand on fait cd :
+//Si la variable n'existe pas : on annule la mise a jour
+//si elle existe, on la met a jour, et on update / cree OLD_PWD
+//Si PWD est declaree en locale mais pas exportee : on cree OLDPWD a partir de la varialbe localem mais on ne l'exporte pas PWD
+//Dans tous les cas, un echo $PWD doit afficher le path actuel meme si pas exportee
+int change_directory_and_update_env(t_env **env, char *path)
+{
+	char	buf[PATH_MAX];
+	char *old_pwd;
+
+	old_pwd = get_pwd_from_env(env);
+	if (chdir(s) == 0)
+	{
+		update_old_pwd(old_pwd);
+		getcwd(buf, sizeof(buf));
+		//securiser !!
+		update_env_var("PWD=", buf);
+	}
+	else
+	{
+		//dossier introuvable / pas de permissions
+	}
+}
 //ajouter l'acces a des dossiers non permis ?
 //cd dans un fichier ?
+//mkdir -p a/b/c && cd $_
 int	builtin_cd(char **arg, t_env **env)
 {
 	char	*s;

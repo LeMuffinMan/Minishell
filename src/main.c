@@ -102,6 +102,8 @@ int	init_env(t_env **new_env, char **env)
 {
 	int	i;
 
+	//pour simuler un environnement absent et tester les leaks
+	/* *env = NULL; */
 	if (!*env)
 	{
 		build_minimal_env(new_env);	

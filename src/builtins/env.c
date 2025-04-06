@@ -53,6 +53,7 @@ int sort_env(t_env **env)
   return (0);
 }
 
+//ne pas afficher les variables non exportees ? ou justement on affiche tout ?
 int builtin_env(t_env **env)
 {
 	t_env *tmp;
