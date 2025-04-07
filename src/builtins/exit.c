@@ -90,7 +90,7 @@ int	builtin_exit(char **arg, t_env **env)
 	if (!is_only_numeric_argument(arg[1]))
 	{
 		s = build_line(NULL, "minishell: exit: ", arg[1], ": numeric argument required\n", NULL);
-		ft_putstr_fd(s, 1);
+		ft_putstr_fd(s, 2);
 		free(s);
 		free_list(env);
 		ft_free(arg);

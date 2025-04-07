@@ -107,6 +107,11 @@ void	add_back(t_env **lst, char *s, int mode) // 0 = aucun des deux / 1 = env / 
 		set_node(new, mode);
 	}
 }
+//lst_utils
+
+
+
+
 
 int init_last_cmd_var(char *name, t_env **env)
 {
@@ -209,6 +214,8 @@ int	init_env(t_env **new_env, char **env, char **arg)
 	init_last_cmd_var(arg[0], new_env);
 	return (0);
 }
+
+//init
 
 int	main(int ac, char **av, char **env)
 {

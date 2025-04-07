@@ -105,53 +105,182 @@ int envsize(t_env *env)
 	return (i);
 }
 
-//a tester 
-char *build_export_output(t_env **env)
+//probleme ici : cree des fuites 
+int copy_node(t_env **dest, t_env **src)
 {
-	int i;
+    if (!*src || !*dest)
+        return (1);
+    (*dest)->key = NULL;
+    (*dest)->value = NULL;
+    (*dest)->next = NULL;
+    if ((*src)->key)
+        (*dest)->key = ft_strdup((*src)->key);
+    if ((*src)->value)
+        (*dest)->value = ft_strdup((*src)->value);
+    (*dest)->env = (*src)->env;
+    (*dest)->exported = (*src)->exported;
+    return (0);
+}
+
+int copy_list(t_env **dest, t_env **src)
+{
 	t_env *tmp;
-	t_env *min_node;
-	t_env *last_node;
-	char *line;
+	t_env *last;
+	t_env *new_node;
+
+	tmp = *src;
+	while (tmp)
+	{
+    new_node = malloc(sizeof(t_env));
+    if (!new_node)
+    {
+    	exit (1);
+    }
+		copy_node(&new_node, &tmp);
+    if (!*dest)
+    	*dest = new_node;
+    else
+    	last->next = new_node;
+    last = new_node;
+		tmp = tmp->next;
+	}
+	return (0);
+}
+
+int compare_keys(char *key1, char *key2)
+{
 	char *longest_key;
 
-	i = 0; 
-	line = NULL;
-	min_node = *env;
-	tmp = *env;
-	while (i < envsize(*env))
-	{
-		while (tmp)
-		{
-			if (ft_strlen(tmp->key) > ft_strlen(min_node->key))
-				longest_key = tmp->key;
-			else 
-				longest_key = min_node->key;
-			/* si on a trouve un node plus petit que notre min node */
-			if (ft_strncmp(tmp->key, min_node->key, ft_strlen(longest_key)) < 0) 
-			{
-				if (ft_strlen(tmp->key) > ft_strlen(last_node->key)) 
-					longest_key = tmp->key;
-				else
-					longest_key = last_node->key;
-					/* et qu'il est aussi superieur au dernier node ajoute*/
-				if (ft_strncmp(tmp->key, last_node->key, ft_strlen(longest_key) > 0))  
-					min_node = tmp;
-			}
-			tmp = tmp->next;
-		}
-		last_node = min_node;
-		if (tmp->exported == 1)
-			line = build_line(line, "declare -x ", tmp->key, "=\"", tmp->value, "\"\n", NULL);
-		i++;
-	}
-	return (line);
-
-	//on cherche le plus petit de toutes les key : pas de doublons
-		//si il est sur un bool exported
-			//on join toute la ligne 
-	//on cherche le plus petit plus grand que le precedent 
+	if (ft_strlen(key1) > ft_strlen(key2))
+		longest_key = key1;
+	else
+		longest_key = key2;
+	return (ft_strncmp(key1, key2, ft_strlen(longest_key)));
 }
+
+
+int swap_nodes(t_env *n1, t_env *n2)
+{
+	char *tmp_key;
+	char *tmp_value;
+	int tmp_env;
+	int tmp_exported;
+
+	tmp_key = n1->key;
+	tmp_value = n1->value;
+	tmp_env = n1->env;
+	tmp_exported = n1->exported;
+
+	n1->key = n2->key;
+	n1->value = n2->value;
+	n1->env = n2->env;
+	n1->exported = n2->exported;
+
+	n2->key = tmp_key;
+	n2->value = tmp_value;
+	n2->env = tmp_env;
+	n2->exported = tmp_exported;
+
+	return (0);
+}
+
+
+int sort_list(t_env **l)
+{
+	t_env *tmp;
+
+	tmp = *l;
+	if (!tmp)
+		return (1);
+	while (tmp->next)
+	{
+		/* if (tmp && tmp->next && tmp->key && tmp->next->key) */
+		/* { */
+			if (compare_keys(tmp->key, tmp->next->key))
+				swap_nodes(tmp, tmp->next);
+		/* } */
+		tmp = tmp->next;
+	}
+	return (0);
+}
+
+char *build_export_output(t_env **env)
+{
+	t_env *copy;
+	t_env *to_free;
+	char *line;
+
+	copy = NULL;
+	line = ft_strdup("");
+	copy_list(&copy, env);
+	sort_list(&copy);
+	to_free = copy;
+	while (copy)
+	{
+		line = ft_strjoin(line, "declare -x ", line);
+		line = ft_strjoin(line, copy->key, line);
+		if (copy->value)
+		{
+			line = ft_strjoin(line, "=", line);
+			line = ft_strjoin(line, "\"", line);
+			line = ft_strjoin(line, copy->value, line);
+			line = ft_strjoin(line, "\"\n", line);
+		}
+		copy = copy->next;
+	}
+	free_list(&to_free);	
+	return (line);
+}
+//a tester 
+/* char *build_export_output(t_env **env) */
+/* { */
+/* 	int i; */
+/* 	t_env *tmp; */
+/* 	t_env *min_node; */
+/* 	t_env *last_node; */
+/* 	char *line; */
+/* 	char *longest_key; */
+/**/
+/* 	i = 0;  */
+/* 	line = NULL; */
+/* 	tmp = *env; */
+/* 	min_node = tmp; */
+/* 	while (i < envsize(*env)) */
+/* 	{ */
+/* 		while (tmp) */
+/* 		{ */
+/* 			if (tmp->key) */
+/* 			{ */
+/* 				if (ft_strlen(tmp->key) > ft_strlen(min_node->key)) */
+/* 					longest_key = tmp->key; */
+/* 				else  */
+/* 					longest_key = min_node->key; */
+				/* si on a trouve un node plus petit que notre min node */
+/* 				if (last_node && ft_strncmp(tmp->key, min_node->key, ft_strlen(longest_key)) < 0 */
+/* 				&& last_node->key)  */
+/* 				{ */
+/* 					if (ft_strlen(tmp->key) > ft_strlen(last_node->key))  */
+/* 						longest_key = tmp->key; */
+/* 					else */
+/* 						longest_key = last_node->key; */
+						/* et qu'il est aussi superieur au dernier node ajoute*/
+/* 					if (ft_strncmp(tmp->key, last_node->key, ft_strlen(longest_key) > 0))   */
+/* 						min_node = tmp; */
+/* 				} */
+/* 			} */
+/* 			tmp = tmp->next; */
+/* 		} */
+/* 		last_node = min_node; */
+/* 		if (min_node->exported == 1) */
+/* 			line = build_line(line, "declare -x ", min_node->key, "=\"", min_node->value, "\"\n", NULL); */
+/* 		i++; */
+/* 	} */
+/* 	return (line); */
+/* 	//on cherche le plus petit de toutes les key : pas de doublons */
+/* 		//si il est sur un bool exported */
+/* 			//on join toute la ligne  */
+/* 	//on cherche le plus petit plus grand que le precedent  */
+/* } */
 
 int longest_strings_len(char *s1, char *s2)
 {
@@ -186,6 +315,9 @@ int builtin_export(t_env **env, char **arg)
 	if (!arg[1])
 	{
 		//declare -x KEY = "VALUE"
+		//copy env list
+		//bublesort env list
+		//build line
 		export_output = build_export_output(env);
 		ft_putstr_fd(export_output, 1);
 		free(export_output);
