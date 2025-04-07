@@ -226,6 +226,8 @@ char *build_export_output(t_env **env)
 			line = ft_strjoin(line, copy->value, line);
 			line = ft_strjoin(line, "\"\n", line);
 		}
+		else 
+			line = ft_strjoin(line, "\n", line);
 		copy = copy->next;
 	}
 	free_list(&to_free);	
