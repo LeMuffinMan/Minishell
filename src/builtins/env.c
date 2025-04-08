@@ -3,6 +3,10 @@
 #include "minishell.h"
 #include <stdlib.h>
 
+
+// A FIX 
+// des cas nulls ?
+
 /* static int should_swap(t_env *tmp, t_env *next) */
 /* { */
 /*   int longest_len; */

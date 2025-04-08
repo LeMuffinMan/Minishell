@@ -7,6 +7,7 @@
 #include "libft.h"
 #include "minishell.h"
 
+//des cas nuls ?
 
 // tester en unsetant PWD ...
 int	builtin_pwd(void)

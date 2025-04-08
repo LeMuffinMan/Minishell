@@ -5,6 +5,11 @@
 #include <stdio.h>
 
 
+//DECIDER
+//
+//- parsing clean les -n dupliques ?
+//- histoire du \n du prompt ?
+
 //REVOIR BUILD LINE !
 // tests :
 // echo
@@ -24,14 +29,13 @@ int	builtin_echo(char **arg)
 	char	*s;
 
 	// booleen ?
-	s = ft_strdup("");
 	option = 0;
 	if (!arg[1])
 	{
-		free(s);
 		ft_putstr_fd("\n", 1);
 		return (0);
 	}
+	s = ft_strdup("");
 	i = 1;
 	// Si on a comme 1er param le -n : skip pour trouver des str a afficher
 	if (!ft_strncmp(arg[i], "-n", 2) && ft_strlen(arg[i]) == 2)

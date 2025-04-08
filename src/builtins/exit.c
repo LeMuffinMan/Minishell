@@ -5,6 +5,8 @@
 /* #include <unistd.h> */
 #include <stdlib.h>
 
+//Traps ???
+
 int is_only_numeric_argument(char *s)
 {
 	int i;
@@ -79,6 +81,7 @@ int	builtin_exit(char **arg, t_env **env)
 	{
 		free_list(env);
 		ft_free(arg);
+		//exit avec le dernier code d'erreur  ?
 		exit(0);
 	}
 	if (arg[2])

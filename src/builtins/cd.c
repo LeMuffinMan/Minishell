@@ -27,50 +27,11 @@ char *get_value(t_env **env, char *key)
 	return (value);
 }
 
-/* char *get_home_path(t_env **env) */
-/* { */
-/* 	t_env *tmp; */
-/* 	char *path; */
-/**/
-/* 	tmp = *env; */
-/* 	path = NULL; */
-/* 	while (tmp) */
-/* 	{ */
-/* 		if (!ft_strncmp("HOME", tmp->key, ft_strlen(tmp->key))) */
-/* 		{ */
-/* 			path = tmp->value; */
-/* 			break ; */
-/* 		} */
-/* 		tmp = tmp->next; */
-/* 	} */
-/* 	return (path); */
-/* } */
-/**/
-/* char *get_pwd_from_env(t_env **env) */
-/* { */
-/* 	t_env *tmp; */
-/**/
-/* 	while (tmp) */
-/* 	{ */
-/* 		if (!ft_strncmp("PWD", tmp->line, ft_strlen(tmp->line))) */
-/* 			break; */
-/* 		tmp = tmp->next; */
-/* 	} */
-/* 	//si on a trouve PWD dans l'env */
-/* 	if (tmp) */
-/* 		return (tmp->line); */
-/* 	else //pas sur du tout de ce qui suit  */
-/* 		return (NULL); //Si null c'est qu'on n'a pas trouve */
-/* } */
-
-/* int update_old_pwd(char *s) */
-/* { */
-/* 	//Si PWD n'existe pas  */
-/* 	if (!updated_var) */
-/* 	{ */
-/**/
-/* 	} */
-/* } */
+/* DECIDER : */
+// - CDPATH
+// - cd -
+// - cd ~
+// - update PWD et OLDPWD
 
 //env -i bash
 //
