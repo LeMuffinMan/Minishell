@@ -6,31 +6,37 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 23:46:28 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/03 02:04:41 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/09 05:56:23 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parsing.h"
+#include "stack.h"
 #include "libft.h"
 #include <unistd.h>
 
-bool	parse_path_without_env(char *str)
+bool	parse_path_without_env(t_parse *node)
 {
 	char	**tmp_cmd;
 
-	tmp_cmd = ft_split(str, ' ');
-	if (!tmp_cmd || !tmp_cmd[0])
+	tmp_cmd = ft_split(node->content[0], ' ');
+	if (!tmp_cmd)
 	{
 		free_tab(tmp_cmd);
-		free(str);
-		str = NULL;
-		return (false);
+		free_parse(node,
+			"Malloc failed in function 'parse_path_whithout env'",
+			MEM_ALLOC);
 	}
-	if (!verif_access_exec(tmp_cmd[0]))
+	if (!tmp_cmd[0])
 	{
 		free_tab(tmp_cmd);
 		return (false);
 	}
+	if (!verif_access_exec(tmp_cmd[0], &node->error))
+	{
+		free_tab(tmp_cmd);
+		return (false);
+	}
+	free_tab(tmp_cmd);
 	return (true);
 }
 
@@ -63,32 +69,14 @@ char	*extract_path(char **envp)
 	return (res);
 }
 
-bool	verif_access_exec(char *tmp_cmd)
-{
-	int	i;
-
-	i = access(tmp_cmd, F_OK);
-	if (i == 0)
-	{
-		i = access(tmp_cmd, X_OK);
-		if (i != 0)
-			return (false);
-	}
-	else
-		return (false);
-	return (true);
-}
-
-char	*verif_path(t_pipex *pipex, char **path, char *cmd)
+char	*verif_path(char **path, char *cmd, int *error)
 {
 	int		i;
 	char	*tmp_cmd;
 	char	*tmp_path;
 
-	i = 0;
-	tmp_cmd = NULL;
-	tmp_path = NULL;
-	while (path[++i] && pipex->error != PERMISSION_DENIED)
+	i = -1;
+	while (path[++i] && *error != PERMISSION_DENIED)
 	{
 		tmp_path = ft_strjoin(path[i], "/");
 		if (!tmp_path)
@@ -97,13 +85,10 @@ char	*verif_path(t_pipex *pipex, char **path, char *cmd)
 		free(tmp_path);
 		if (!tmp_cmd)
 			return (NULL);
-		if (verif_access_exec(pipex, tmp_cmd))
+		if (verif_access_exec(tmp_cmd, error))
 			break ;
-		else
-		{
-			free(tmp_cmd);
-			tmp_cmd = NULL;
-		}
+		free(tmp_cmd);
+		tmp_cmd = NULL;
 	}
 	return (tmp_cmd);
 }
@@ -123,7 +108,7 @@ char	**split_the_path(char *path)
 		return (NULL);
 	new_path = ft_split(tmp, ':');
 	free(tmp);
-	if (!new_path || !new_path[0])
+	if (!new_path)
 	{
 		free_tab(new_path);
 		return (NULL);
@@ -131,7 +116,7 @@ char	**split_the_path(char *path)
 	return (new_path);
 }
 
-char	*extract_cmd(char *arg, char **path)
+char	*parse_cmd(char *arg, char **path, int *error)
 {
 	char	*cmd;
 	char	**split_cmd;
@@ -144,14 +129,12 @@ char	*extract_cmd(char *arg, char **path)
 		if (split_cmd && !split_cmd[0])
 		{
 			free_tab(split_cmd);
-			ft_error("Command not found", CMD_NOT_FOUND);
+			*error = 127;
+			return (cmd);
 		}
-		else
-			ft_error("Problem with the split of 'extract_cmd'", MEM_ALLOC);
+		return (NULL);
 	}
-	cmd = verif_path(pipex, path, split_cmd[0]);
-	if (!cmd)
-		problem_cmd(pipex, path, split_cmd);
+	cmd = verif_path(path, split_cmd[0], error);
 	free_tab(path);
 	free_tab(split_cmd);
 	return (cmd);

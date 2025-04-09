@@ -1,20 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putendl_fd.c                                    :+:      :+:    :+:   */
+/*   stack.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/14 18:18:24 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/03 17:14:46 by asinsard         ###   ########lyon.fr   */
+/*   Created: 2025/04/08 17:12:50 by asinsard          #+#    #+#             */
+/*   Updated: 2025/04/09 04:00:46 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
-#include <unistd.h>
+#ifndef STACK_H
+# define STACK_H
 
-void	ft_putendl_fd(const char *s, int fd)
+# include "token.h"
+
+# define E_IO 5
+# define MEM_ALLOC 12
+
+enum e_token;
+typedef	enum e_token t_token;
+
+typedef struct s_parse
 {
-	write(fd, s, ft_strlen(s));
-	write(fd, "\n", 1);
-}
+	int				error;
+	struct s_parse	*next;
+	struct s_parse	*prev;
+	char			**content;
+	enum e_token	token;
+}	t_parse;
+
+void	add_back(t_parse **head, char *str);
+void	free_parse(t_parse *stack, const char *str, int error);
+
+#endif

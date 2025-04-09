@@ -1,16 +1,26 @@
-#include <unistd.h>
-#include <stdlib.h>
+
+// #include "parser.h"
 #include "libft.h"
 #include <stdio.h>
 
-int	main(void)
-{
-	char	**str;
 
-	str = malloc(sizeof(char *) * 2);
-	str[0] = ft_strdup("Salut");
-	str[1] = NULL;
-	printf("%s\n", str[0]);
-	free_tab(str);
+char	**split_line(char *line)
+{
+	
+}
+
+int	main(int ac, char **av)
+{
+	int	i = 0;
+	char	**array;
+	
+	array = ft_split(av[1], ' ');
+	while (array[i])
+	{
+		printf("%d = %s\n", i + 1, array[i]);
+		free(array[i]);
+		i++;
+	}
+	free(array);
 	return (0);
 }

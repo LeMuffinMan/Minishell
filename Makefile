@@ -7,14 +7,14 @@ BOLD_CYAN			=	\e[1;36m
 STOP_COLOR			=	\e[0m
 
 -include $(DEPS) $(DEPS_BONUS)
-vpath %.c src/parsing:./
+vpath %.c src/parsing/token:src/parsing/token/stack:src/parsing/lexer:src
 vpath %.h include:src/libft/include
 vpath %.a src/libft/obj
 
 CC					=	cc
 FLAG				=	-Wall -Wextra -Werror -g -MMD -MP -I$(LIBFT_HEAD_DIR) -I$(HEAD_DIR)
 NAME				=	parsing
-HEAD				=	parsing.h
+HEAD				=	token.h stack.h display.h lexer.h
 HEAD_DIR			=	include/
 
 LIBFT_DIR			=	src/libft/
@@ -23,13 +23,19 @@ LIB_LIBFT			=	$(LIBFT_DIR)obj/libft.a
 LIBFT_FLAG			=	-L$(LIBFT_DIR)src/ $(LIB_LIBFT)
 LIBFT_HEAD			=	libft.h get_next_line.h ft_printf.h
 
-SRC					=	create_list.c \
-						main.c \
-						tokenize.c
+SRC					=	concat_args.c \
+						create_tokenize_list.c \
+						display_list.c \
+						handle_cmd_and_path_utils.c \
+						handle_cmd_and_path.c \
+						tokenize_utils.c \
+						tokenize.c \
+						lexer.c \
+						main.c
 
 DEPS				=	$(SRC:%.c=$(OBJ_DIR)%.d)
 OBJ					=	$(SRC:%.c=$(OBJ_DIR)%.o)
-OBJ_DIR				=	objs/
+OBJ_DIR				=	.objs/
 
 $(OBJ_DIR)%.o:%.c $(HEAD) $(LIBFT_HEAD) Makefile $(LIBFT_DIR)Makefile
 	@mkdir -p $(OBJ_DIR)

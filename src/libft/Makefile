@@ -46,10 +46,12 @@ SRCMANDATORY	=	free_tab.c \
 					ft_strmapi.c \
 					ft_strcmp.c \
 					ft_strncmp.c \
+					ft_strndup.c \
 					ft_strnstr.c \
 					ft_strrchr.c \
 					ft_strtrim.c \
 					ft_substr.c \
+					ft_tab_len.c \
 					ft_tolower.c \
 					ft_toupper.c \
 					ft_printf.c \

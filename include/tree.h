@@ -1,20 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putendl_fd.c                                    :+:      :+:    :+:   */
+/*   tree.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/14 18:18:24 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/03 17:14:46 by asinsard         ###   ########lyon.fr   */
+/*   Created: 2025/04/08 21:07:56 by asinsard          #+#    #+#             */
+/*   Updated: 2025/04/08 21:11:23 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
-#include <unistd.h>
+#ifndef TREE_H
+# define TREE_H
 
-void	ft_putendl_fd(const char *s, int fd)
+#include "stack.h"
+
+struct s_parse;
+typedef struct s_parse t_parse;
+
+typedef struct s_tree
 {
-	write(fd, s, ft_strlen(s));
-	write(fd, "\n", 1);
-}
+	struct s_tree	*left;
+	struct s_tree	*right;
+	t_parse			*content;
+}	t_tree;
+
+
+
+#endif

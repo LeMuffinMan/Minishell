@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 18:24:06 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/02 23:30:46 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/09 05:31:43 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void				*ft_memcpy(void *dest, const void *src, size_t n);
 void				*ft_memmove(void *dest, const void *src, size_t n);
 void				*ft_memset(void *s, int c, size_t n);
 void				ft_putchar_fd(char c, int fd);
-void				ft_putendl_fd(char *s, int fd);
+void				ft_putendl_fd(const char *s, int fd);
 void				ft_putnbr_fd(int n, int fd);
 void				ft_putstr_fd(const char *s, int fd);
 char				**ft_split(const char *s, char c);
@@ -52,10 +52,12 @@ size_t				ft_strlen(const char *str);
 char				*ft_strmapi(const char *s, char (*f)(unsigned int, char));
 int					ft_strcmp(const char *s1, const char *s2);
 int					ft_strncmp(const char *s1, const char *s2, int size);
+char				*ft_strndup(const char *s, int end);
 char				*ft_strnstr(const char *big, const char *little, size_t n);
 char				*ft_substr(const char *s, unsigned int start, size_t len);
 char				*ft_strrchr(const char *s, int c);
 char				*ft_strtrim(const char *s1, const char *set);
+int					ft_tab_len(char **tab);
 int					ft_tolower(int c);
 int					ft_toupper(int c);
 void				free_tab(char **tab);

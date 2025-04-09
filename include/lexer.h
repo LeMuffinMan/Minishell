@@ -1,20 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putendl_fd.c                                    :+:      :+:    :+:   */
+/*   lexer.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/14 18:18:24 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/03 17:14:46 by asinsard         ###   ########lyon.fr   */
+/*   Created: 2025/04/09 00:13:42 by asinsard          #+#    #+#             */
+/*   Updated: 2025/04/09 04:01:29 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
-#include <unistd.h>
+#ifndef LEXER_H
+# define LEXER_H
 
-void	ft_putendl_fd(const char *s, int fd)
+# define MEM_ALLOC 12
+
+typedef struct s_lexer
 {
-	write(fd, s, ft_strlen(s));
-	write(fd, "\n", 1);
-}
+	struct s_lexer	*next;
+	struct s_lexer	*prev;
+	char			*arg;
+}	t_lexer;
+
+void	parse_line(char *str, t_lexer **stack);
+void	free_lexer(t_lexer *head, const char *str, int error);
+
+#endif
