@@ -13,6 +13,7 @@
 #include "minishell.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "libft.h"
 
 // singleton :
 //
@@ -81,55 +82,46 @@ void free_array(void **array)
 //renvoie 0 si le node a ete ajoute
 //renvoie 1 si le node n'a pas ete ajoute (si il existe deja ?)
 //renvoie < 0 si y'a eu une erreur : -1 pour malloc qui foire
-int	add_to_garbage_collector(void *ptr, t_var_type type)
+int add_to_garbage_collector(void *ptr, void (*free_fct)(void*))
 {
-  t_gar **garbage_collector;
-  t_gar *new_node;
-  t_gar *tmp;
-  int count;
-
-  count = 0;
-  garbage_collector = get_garbage_collector();
-  tmp = *garbage_collector;
-  //on veut savoir si on a deja la zone memoire pointee par ptr dans notre gc 
-  while (tmp)
-  {
-    if (ptr == tmp->allocated_memory) //la zone memoire est deja repertoriee dans le gc : on n'ajoute pas pour eviter le double free
-      return (1);
-    tmp = tmp->next;
-  }
-  //si on arrive la, c'est qu'il FAUT ajouter le node 
-  new_node = malloc(sizeof(t_gar)); 
-  if (!new_node)
-    return (-1); // malloc echoue
-  new_node->next = NULL;
-  new_node->allocated_memory = ptr;
-  if (type == PTR)
-    new_node->free_fct = &free;
-  else if (type == ARRAY)
-    new_node->free_fct = &free_array;
-  else if (type == ENV)
-    new_node->free_fct = &free_env;
-  else if (type == PARSE)
-    new_node->free_fct = &free_parse;
-  if (*garbage_collector == NULL) //si le gc est vide : new_node devient le 1er node 
-    *garbage_collector = new_node;
-  else 
-  {
+    t_gar **garbage_collector;
+    t_gar *new_node;
+    t_gar *tmp;
+    garbage_collector = get_garbage_collector();
     tmp = *garbage_collector;
-    while (tmp->next)
-      tmp = tmp->next;
-    tmp->next = new_node;
-  }
-	return (0);
+    while (tmp)
+    {
+        if (ptr == tmp->allocated_memory)
+            return (1); // on a deja ajoute cette zone memoire au gc
+        tmp = tmp->next;
+    }
+    new_node = malloc(sizeof(t_gar)); 
+    if (!new_node)
+        return (-1); // malloc failed
+    new_node->next = NULL;
+    new_node->allocated_memory = ptr;
+    new_node->free_fct = free_fct;
+    if (*garbage_collector == NULL)
+        *garbage_collector = new_node;
+    else 
+    {
+        tmp = *garbage_collector;
+        while (tmp->next)
+            tmp = tmp->next;
+        tmp->next = new_node;
+    }
+    return (0);
 }
+//tests pour add_to_garbage_collector
 
-	//tests pour add_to_garbage_collector
 int main (void)
 {
 	char *s;
 	int i;
 	t_gar	**gc;
+	char *to_split = "hello world";
+	char **split;
+	t_env *env;
 
   gc = get_garbage_collector();
 	s = malloc(sizeof(char) * 4);
@@ -139,21 +131,33 @@ int main (void)
 	  s[i] = i + 48;
 	  i++;
   }
-  printf("allocated string : %s\n", s);
+  printf("allocated string : %s | %p\n", s, s);
   //si il a pu ajouter le node sans erreur / si le node existait deja 
-	if (add_to_garbage_collector(s, PTR) == 0)
-	  printf("the string inside gc : %s\n", (char *)(*gc)->allocated_memory);
-  if (add_to_garbage_collector(s, PTR) == 1) //si on tente d'ajouter un noeud qu'on a deja ajoute : 
+	if (add_to_garbage_collector(s, &free) == 0)
+	  printf("the string inside gc : %s | %p\n", (char *)(*gc)->allocated_memory, (*gc)->allocated_memory);
+  if (add_to_garbage_collector(s, &free) == 1) //si on tente d'ajouter un noeud qu'on a deja ajoute : 
     printf("%s is already inside gc !\n", s);
-  
+
+  split = ft_split(to_split, ' ');
+  i = 0;
+  while (split[i])
+  {
+    printf("allocated splited %d : %s\n", split[i]);
+    i++;
+  }
+  if (add_to_garbage_collector(split, (void(*)(void*))&free_array) == 0)
+    printf("the split array inside gc : %p\n", (*gc)->next->allocated_memory);
+  if (add_to_garbage_collector(split, (void(*)(void*))&free_array) == 1)
+    printf("the split array is already inside the gc\n");
+  //meme test avec env
 	return (0);
 }
 
 //le wrapper renvoie le retour de malloc (un pointeur)
 //juste avant, il tente d'ajouter ce pointeur au gc si il n'y est pas deja 
-void	*garbage_collector_wrapper(void *ptr, t_var_type type)
+void	*garbage_collector_wrapper(void *ptr,  void (*free_fct)(void*))
 {
-	add_to_garbage_collector(ptr, type);
+	add_to_garbage_collector(ptr, &free);
 	return (ptr);
 }
 
