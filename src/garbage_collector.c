@@ -10,10 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft.h"
 #include "minishell.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "libft.h"
 
 // singleton :
 //
@@ -33,14 +33,13 @@
 t_gar	**get_garbage_collector(void)
 {
 	t_gar static *garbage_collector = NULL;
-	//la norme me fera chier pour ca ?
-
+	// la norme me fera chier pour ca ?
 	/* if (garbage_collector == NULL) */
 	/* 	garbage_collector = NULL; */
 	return (&garbage_collector);
 }
 
- //tests pour get_garbage_collector
+// tests pour get_garbage_collector
 /* int	main(void) */
 /* { */
 /* 	t_gar	**gc; */
@@ -56,130 +55,208 @@ t_gar	**get_garbage_collector(void)
 /* 	gc = get_garbage_collector(); */
 /*   //renvoie exactement la meme adresse (grace a la static)  */
 /* 	printf("%p\n", gc); */
-/*   return (0);	 */
+/*   return (0);		*/
 /* } */
 
-void free_array(void **array)
+void	free_array(void **array)
 {
-  int i;
+	int	i;
 
-  i = 0;
-  while (array[i])
-  {
-    free(array[i]);
-    i++;
-  }
-  free(array);
-}
-
-//parcours tout le gc pour chercher le pointeur qu'on veut free
-//si il le trouve, il le free correctement (des char *s ou des char **s ou des listes)
-  //return le nombre de nodes free
-	// return 0 si rien n'a ete free
-	// return -1 si le free a foire ?
-//
-//va au bout du gc, et ajoute le node avec la memoire allouee pointee par ptr
-//renvoie 0 si le node a ete ajoute
-//renvoie 1 si le node n'a pas ete ajoute (si il existe deja ?)
-//renvoie < 0 si y'a eu une erreur : -1 pour malloc qui foire
-int add_to_garbage_collector(void *ptr, void (*free_fct)(void*))
-{
-    t_gar **garbage_collector;
-    t_gar *new_node;
-    t_gar *tmp;
-    garbage_collector = get_garbage_collector();
-    tmp = *garbage_collector;
-    while (tmp)
-    {
-        if (ptr == tmp->allocated_memory)
-            return (1); // on a deja ajoute cette zone memoire au gc
-        tmp = tmp->next;
-    }
-    new_node = malloc(sizeof(t_gar)); 
-    if (!new_node)
-        return (-1); // malloc failed
-    new_node->next = NULL;
-    new_node->allocated_memory = ptr;
-    new_node->free_fct = free_fct;
-    if (*garbage_collector == NULL)
-        *garbage_collector = new_node;
-    else 
-    {
-        tmp = *garbage_collector;
-        while (tmp->next)
-            tmp = tmp->next;
-        tmp->next = new_node;
-    }
-    return (0);
-}
-//tests pour add_to_garbage_collector
-
-int main (void)
-{
-	char *s;
-	int i;
-	t_gar	**gc;
-	char *to_split = "hello world";
-	char **split;
-	t_env *env;
-
-  gc = get_garbage_collector();
-	s = malloc(sizeof(char) * 4);
 	i = 0;
-	while (i < 4)
+	while (array[i])
 	{
-	  s[i] = i + 48;
-	  i++;
-  }
-  printf("allocated string : %s | %p\n", s, s);
-  //si il a pu ajouter le node sans erreur / si le node existait deja 
-	if (add_to_garbage_collector(s, &free) == 0)
-	  printf("the string inside gc : %s | %p\n", (char *)(*gc)->allocated_memory, (*gc)->allocated_memory);
-  if (add_to_garbage_collector(s, &free) == 1) //si on tente d'ajouter un noeud qu'on a deja ajoute : 
-    printf("%s is already inside gc !\n", s);
+		free(array[i]);
+		i++;
+	}
+	free(array);
+}
 
-  split = ft_split(to_split, ' ');
-  i = 0;
-  while (split[i])
-  {
-    printf("allocated splited %d : %s\n", split[i]);
-    i++;
-  }
-  if (add_to_garbage_collector(split, (void(*)(void*))&free_array) == 0)
-    printf("the split array inside gc : %p\n", (*gc)->next->allocated_memory);
-  if (add_to_garbage_collector(split, (void(*)(void*))&free_array) == 1)
-    printf("the split array is already inside the gc\n");
-  //meme test avec env
+void	free_env(t_env **env)
+{
+	while (env)
+	{
+		if ((*env)->key)
+			free((*env)->key);
+		free(env);
+		*env = (*env)->next;
+	}
+}
+
+// parcours tout le gc pour chercher le pointeur qu'on veut free
+// si il le trouve,
+// il le free correctement (des char *s ou des char **s ou des listes)
+// return le nombre de nodes free
+// return 0 si rien n'a ete free
+// return -1 si le free a foire ?
+//
+// va au bout du gc, et ajoute le node avec la memoire allouee pointee par ptr
+// renvoie 0 si le node a ete ajoute
+// renvoie 1 si le node n'a pas ete ajoute (si il existe deja ?)
+// renvoie < 0 si y'a eu une erreur : -1 pour malloc qui foire
+int	add_to_garbage_collector(void *ptr, void (*free_fct)(void *))
+{
+	t_gar	**garbage_collector;
+	t_gar	*new_node;
+	t_gar	*tmp;
+
+	garbage_collector = get_garbage_collector();
+	tmp = *garbage_collector;
+	while (tmp)
+	{
+		if (ptr == tmp->allocated_memory)
+			return (1); // on a deja ajoute cette zone memoire au gc
+		tmp = tmp->next;
+	}
+	new_node = malloc(sizeof(t_gar));
+	if (!new_node)
+		return (-1); // malloc failed
+	new_node->next = NULL;
+	new_node->allocated_memory = ptr;
+	new_node->free_fct = free_fct;
+	if (*garbage_collector == NULL)
+		*garbage_collector = new_node;
+	else
+	{
+		tmp = *garbage_collector;
+		while (tmp->next)
+			tmp = tmp->next;
+		tmp->next = new_node;
+	}
 	return (0);
 }
 
-//le wrapper renvoie le retour de malloc (un pointeur)
-//juste avant, il tente d'ajouter ce pointeur au gc si il n'y est pas deja 
-void	*garbage_collector_wrapper(void *ptr,  void (*free_fct)(void*))
+// tests pour add_to_garbage_collector
+/* int	main(void) */
+/* { */
+/* 	char	*s; */
+/* 	int		i; */
+/* 	t_gar	**gc; */
+/* 	char	*to_split; */
+/* 	char	**split; */
+/* 	t_env	*env_list; */
+/* 	t_env	*env_node; */
+/**/
+/* 	to_split = "hello world"; */
+/* 	env_list = NULL; */
+/* 	gc = get_garbage_collector(); */
+/* 	s = malloc(sizeof(char) * 4); */
+/* 	i = 0; */
+/* 	while (i < 4) */
+/* 	{ */
+/* 		s[i] = i + 48; */
+/* 		i++; */
+/* 	} */
+/* 	printf("allocated string : %s | %p\n", s, s); */
+/* 	// si il a pu ajouter le node sans erreur / si le node existait deja */
+/* 	if (add_to_garbage_collector(s, &free) == 0) */
+/* 		printf("the string inside gc : %s | %p\n", */
+/* 			(char *)(*gc)->allocated_memory, (*gc)->allocated_memory); */
+/* 	if (add_to_garbage_collector(s, &free) == 1) */
+/* 		// si on tente d'ajouter un noeud qu'on a deja ajoute : */
+/* 		printf("%s is already inside gc !\n", s); */
+/* 	split = ft_split(to_split, ' '); */
+/* 	i = 0; */
+/* 	while (split[i]) */
+/* 	{ */
+/* 		printf("allocated splited %d : %s\n", i, split[i]); */
+/* 		i++; */
+/* 	} */
+/* 	if (add_to_garbage_collector(split, (void (*)(void *)) & free_array) == 0) */
+/* 		printf("the split array inside gc : %p\n", */
+/* 			(*gc)->next->allocated_memory); */
+/* 	if (add_to_garbage_collector(split, (void (*)(void *)) & free_array) == 1) */
+/* 		printf("the split array is already inside the gc\n"); */
+/* 	// env list */
+/* 	env_node = malloc(sizeof(t_env)); */
+/* 	env_node->key = strdup("KEY1"); */
+/* 	env_node->value = strdup("VALUE1"); */
+/* 	env_node->next = NULL; */
+/* 	env_node->prev = NULL; */
+/* 	env_list = env_node; */
+/* 	// Ajout d'un deuxième noeud */
+/* 	env_node->next = malloc(sizeof(t_env)); */
+/* 	env_node->next->prev = env_node; */
+/* 	env_node = env_node->next; */
+/* 	env_node->key = strdup("KEY2"); */
+/* 	env_node->value = strdup("VALUE2"); */
+/* 	env_node->next = NULL; */
+/* 	// Ajout de la liste au garbage collector */
+/* 	if (add_to_garbage_collector(env_list, (void (*)(void *)) & free_env) == 0) */
+/* 		printf("env list added to gc at %p\n", env_list); */
+/* 	else */
+/* 		printf("failed to add env list to gc\n"); */
+/* 	// Vérification de l'ajout en essayant de l'ajouter à nouveau */
+/* 	if (add_to_garbage_collector(env_list, (void (*)(void *)) & free_env) == 1) */
+/* 		printf("env list is already in gc\n"); */
+/* 	return (0); */
+/* } */
+
+// le wrapper renvoie le retour de malloc (un pointeur)
+// juste avant, il tente d'ajouter ce pointeur au gc si il n'y est pas deja
+void	*garbage_collector_wrapper(void *ptr, void (*free_fct)(void *))
 {
 	add_to_garbage_collector(ptr, &free);
 	return (ptr);
 }
 
-//tests wrapper
-/* int main (void) */
-/* { */
-/* 	char *s; */
-/* 	int i; */
-/* 	t_gar	**gc; */
-/**/
-/*   gc = get_garbage_collector(); */
-/* 	s = garbage_collector_wrapper(malloc(sizeof(char) * 4)); */
-/* 	i = 0; */
-/* 	while (i < 4) */
-/* 	{ */
-/* 	  s[i] = i + 48; */
-/* 	  i++; */
-/*   } */
-/*   printf("allocated string : %s at adress %p\n", s, s); */
-/*   printf("string found in gc : %s at adress %p\n", (char *)(*gc)->allocated_memory, (char *)(*gc)->allocated_memory); */
-/* 	return (0); */
-/* } */
+// tests wrapper
+int	main(void)
+{
+	char	*s;
+	int		i;
+	t_gar	**gc;
+	char	**split;
+	t_env	*env_list;
+	t_env	*env_node;
+
+	gc = get_garbage_collector();
+	s = garbage_collector_wrapper(malloc(sizeof(char) * 4), &free);
+	i = 0;
+	while (i < 4)
+	{
+		s[i] = i + 48;
+		i++;
+	}
+	printf("allocated string : %s at adress %p\n", s, s);
+	printf("string found in gc : %s at adress %p\n",
+		(char *)(*gc)->allocated_memory, (char *)(*gc)->allocated_memory);
+	//splited 
+	split = garbage_collector_wrapper(ft_split("Hello World", ' '), (void(*)(void *)) &free_array);
+    i = 0;
+	while (split[i])
+	{
+		printf("allocated splited %d : %s\n", i, split[i]);
+		i++;
+	}
+	if (add_to_garbage_collector(split, (void (*)(void *)) & free_array) == 0)
+		printf("the split array inside gc : %p\n",
+			(*gc)->next->allocated_memory);
+	if (add_to_garbage_collector(split, (void (*)(void *)) & free_array) == 1)
+		printf("the split array is already inside the gc\n");
+	//env free
+	env_node = garbage_collector_wrapper(malloc(sizeof(t_env), (void(*)(void *)) &free_env);
+	env_node->key = strdup("KEY1");
+	env_node->value = strdup("VALUE1");
+	env_node->next = NULL;
+	env_node->prev = NULL;
+	env_list = env_node;
+	// Ajout d'un deuxième noeud
+	env_node->next = malloc(sizeof(t_env));
+	env_node->next->prev = env_node;
+	env_node = env_node->next;
+	env_node->key = strdup("KEY2");
+	env_node->value = strdup("VALUE2");
+	env_node->next = NULL;
+	// Ajout de la liste au garbage collector
+	if (add_to_garbage_collector(env_list, (void (*)(void *)) & free_env) == 0)
+		printf("env list added to gc at %p\n", env_list);
+	else
+		printf("failed to add env list to gc\n");
+	// Vérification de l'ajout en essayant de l'ajouter à nouveau
+	if (add_to_garbage_collector(env_list, (void (*)(void *)) & free_env) == 1)
+		printf("env list is already in gc\n");
+	return (0);
+}
 
 // delete one node
 /* int	free_from_garbage_collector(void *ptr) */
@@ -217,22 +294,24 @@ void	*garbage_collector_wrapper(void *ptr,  void (*free_fct)(void*))
 /* 	i = 0; */
 /* 	while (i < 4) */
 /* 	{ */
-/* 	  s[i] = i + 48; */
-/* 	  i++; */
+/* 		s[i] = i + 48; */
+/* 		i++; */
 /*   } */
 /*   s[i] = '\0'; */
 /*   printf("string 1 local : %s | %p\n", s, s); */
-/*   printf("string 1 in gc : %s | %p\n", (char *)(*gc)->allocated_memory, (*gc)->allocated_memory); */
+/*   printf("string 1 in gc : %s | %p\n", (char *)(*gc)->allocated_memory,
+	(*gc)->allocated_memory); */
 /*   s1 = garbage_collector_wrapper(malloc(sizeof(char) * 5)); */
 /* 	i = 0; */
 /* 	while (i < 4) */
 /* 	{ */
-/* 	  s1[i] = i + 6 + '0'; */
-/* 	  i++; */
+/* 		s1[i] = i + 6 + '0'; */
+/* 		i++; */
 /*   } */
 /*   s1[i] = '\0'; */
 /*   printf("string 2 local : %s | %p\n", s1, s1); */
-/*   printf("string 2 in gc : %s | %p\n", (char *)(*gc)->next->allocated_memory, (*gc)->next->allocated_memory); */
+/*   printf("string 2 in gc : %s | %p\n", (char *)(*gc)->next->allocated_memory,
+	(*gc)->next->allocated_memory); */
 /*   return (0); */
 /* } */
 /**/
@@ -253,4 +332,3 @@ void	*garbage_collector_wrapper(void *ptr,  void (*free_fct)(void*))
 /* 	garbage_collector = NULL; */
 /* 	return (0); */
 /* } */
-
