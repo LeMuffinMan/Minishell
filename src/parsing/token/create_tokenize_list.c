@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   create_list.c                                      :+:      :+:    :+:   */
+/*   create_tokenize_list.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 02:24:25 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/09 01:56:09 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/09 17:54:33 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,13 +32,13 @@ static char	**alloc_tab(char *str)
 	return (res);
 }
 
-static t_parse	*add_new_node(char *str)
+static t_token	*add_new_node(char *str)
 {
-	t_parse	*new_node;
+	t_token	*new_node;
 
 	if (!str)
 		return (NULL);
-	new_node = malloc(sizeof(t_parse));
+	new_node = malloc(sizeof(t_token));
 	if (!new_node)
 		return (NULL);
 	new_node->next = NULL;
@@ -54,10 +54,10 @@ static t_parse	*add_new_node(char *str)
 	return (new_node);
 }
 
-void	add_back(t_parse **head, char *str)
+void	add_back(t_token **head, char *str)
 {
-	t_parse	*new_node;
-	t_parse	*tmp;
+	t_token	*new_node;
+	t_token	*tmp;
 
 	new_node = add_new_node(str);
 	if (!new_node)
@@ -77,10 +77,10 @@ void	add_back(t_parse **head, char *str)
 	new_node->prev = tmp;
 }
 
-void	free_parse(t_parse *stack, const char *str, int error)
+void	free_parse(t_token *stack, const char *str, int error)
 {
-	t_parse	*tmp;
-	t_parse	*next_node;
+	t_token	*tmp;
+	t_token	*next_node;
 
 	if (!stack)
 		return ;

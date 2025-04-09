@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 19:15:40 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/09 04:34:22 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/09 17:54:33 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static void	display_valid(t_parse *node, int i, char **arg, char **tok)
+static void	display_valid(t_token *node, int i, char **arg, char **tok)
 {
 	int	j;
 
@@ -49,9 +49,9 @@ static void	display_unvalid(int i, int error, char **arg)
 		BOLD_RED, error, BOLD_BLUE, STOP_COLOR);
 }
 
-void	display_list(t_parse *head)
+void	display_list(t_token *head)
 {
-	t_parse	*tmp;
+	t_token	*tmp;
 	int		i;
 	char	*tab[13] = {"Append", "Built_in", "CMD", "Double quote", "Here_doc",
 		"Limiter", "And", "Or", "Pipe", "Redirection infile",

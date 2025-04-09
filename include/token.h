@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 01:26:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/09 05:19:10 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/09 17:54:33 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,10 @@
 
 # include <stdbool.h>
 
-struct s_parse;
-typedef	struct s_parse t_parse;
+struct s_token;
+typedef	struct s_token t_token;
 
-typedef enum e_token
+typedef enum e_type
 {
 	APPEND,
 	BUILT_IN,
@@ -38,24 +38,24 @@ typedef enum e_token
 	S_QUOTE,
 	TRUNC,
 	WILDCARD
-}	t_token;
+}	t_type;
 
 /* ----------------------Token---------------------- */
-void	assign_token(t_parse **head, char **envp);
-void	concat_args(t_parse **head);
+void	assign_token(t_token **head, char **envp);
+void	concat_args(t_token **head);
 
 /* ------------------Handle command----------------- */
-bool	parse_path_without_env(t_parse *node);
+bool	parse_path_without_env(t_token *node);
 char	*extract_path(char **envp);
 bool	verif_access_exec(char *tmp_cmd, int *error);
 char	*verif_path(char **path, char *cmd, int *error);
 char	**split_the_path(char *path);
 char	*parse_cmd(char *arg, char **path, int *error);
-char	*verif_command(t_parse **node, char *tmp, char **path, char **envp);
-void	is_built_in(t_parse **node);
+char	*verif_command(t_token **node, char *tmp, char **path, char **envp);
+void	is_built_in(t_token **node);
 
 int		is_slash(const char *s1);
 int		env_is_alive(char **envp);
-void	replace_tab(t_parse **node, char *str);
+void	replace_tab(t_token **node, char *str);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 23:46:28 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/09 05:56:23 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/09 17:54:33 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "libft.h"
 #include <unistd.h>
 
-bool	parse_path_without_env(t_parse *node)
+bool	parse_path_without_env(t_token *node)
 {
 	char	**tmp_cmd;
 

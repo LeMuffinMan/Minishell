@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 02:33:29 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/09 02:48:38 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/09 17:54:33 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,13 +24,13 @@
 # include "stack.h"
 # include "lexer.h"
 
-struct s_parse;
-typedef struct s_parse t_parse;
+struct s_token;
+typedef struct s_token t_token;
 
 struct s_lexer;
 typedef struct s_lexer t_lexer;
 
-void	display_list(t_parse *head);
+void	display_list(t_token *head);
 void	display_lexer(t_lexer *head);
 
 #endif

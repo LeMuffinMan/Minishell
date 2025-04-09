@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 00:53:37 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/09 04:29:38 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/09 17:54:33 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ int	env_is_alive(char **envp)
 	return (0);
 }
 
-void	case_of_absolute_path(t_parse **node)
+void	case_of_absolute_path(t_token **node)
 {
 	char	*tmp;
 
@@ -62,7 +62,7 @@ void	case_of_absolute_path(t_parse **node)
 	free(tmp);
 }
 
-void	replace_tab(t_parse **node, char *str)
+void	replace_tab(t_token **node, char *str)
 {
 	char	*tmp;
 

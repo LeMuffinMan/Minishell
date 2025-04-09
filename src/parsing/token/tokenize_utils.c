@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 19:51:51 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/09 04:49:58 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/09 17:54:33 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include "libft.h"
 #include <stdlib.h>
 
-char	*verif_command(t_parse **node, char *tmp, char **path, char **envp)
+char	*verif_command(t_token **node, char *tmp, char **path, char **envp)
 {
 	tmp = extract_path(envp);
 	if (!tmp)
@@ -34,7 +34,7 @@ char	*verif_command(t_parse **node, char *tmp, char **path, char **envp)
 	return (tmp);
 }
 
-void	is_built_in(t_parse **node)
+void	is_built_in(t_token **node)
 {
 	if (ft_strncmp((*node)->content[0], "echo", 4) == 0
 		&& (*node)->content[0][4] == ' ')

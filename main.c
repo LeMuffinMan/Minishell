@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 03:09:12 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/09 05:26:19 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/09 18:15:57 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,26 +18,27 @@
 
 int	main(int ac, char **av, char **envp)
 {
-	t_parse	*tokenize;
+	t_token	*token;
 	t_lexer	*lexer;
 	int		i;
 
 	i = 0;
 	if (ac != 2)
 		ft_error("Usage: ./parsing arg\n", E_IO);
-	tokenize = NULL;
+	token = NULL;
 	lexer = NULL;
 	parse_line(av[1], &lexer);
 	while (lexer->next)
 	{
-		add_back(&tokenize, lexer->arg);
+		add_back(&token, lexer->arg);
 		lexer = lexer->next;
 	}
-	add_back(&tokenize, lexer->arg);
+	add_back(&token, lexer->arg);
+	// display_lexer(lexer);
 	free_lexer(lexer, NULL, 0);
-	assign_token(&tokenize, envp);
-	concat_args(&tokenize);
-	display_list(tokenize);
-	free_parse(tokenize, NULL, 0);
+	assign_token(&token, envp);
+	concat_args(&token);
+	display_list(token);
+	free_parse(token, NULL, 0);
 	return (0);
 }
