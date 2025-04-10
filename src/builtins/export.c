@@ -289,15 +289,36 @@ int print_array(char **array)
 	return (0);
 }
 
+int print_sorted_env(t_env **env)
+{
+	t_env *tmp;
+	char *s;
+
+	tmp = *env;
+	s = ft_strdup("declare -x ");
+	while (tmp)
+	{
+		s = ft_strjoin(s, tmp->key, s);
+		if (tmp->value)
+		{
+			s = ft_strjoin(s, "=\"", s);
+			s = ft_strjoin(s, tmp->value, s);
+			s = ft_strjoin(s, "\"\n", s);
+		}
+		ft_putstr_fd(s, 1);
+		free(s);
+		tmp = tmp->next;
+	}
+	return (0);
+}
+
 int builtin_export(t_env **env, char **arg)
 {
 	t_env *node;
 	t_env *copy;
 	char **key_value;
-	char **export_output;
 
 	node = NULL;
-	export_output = NULL;
 	copy = NULL;
 	if (!arg[1])
 	{
@@ -306,11 +327,9 @@ int builtin_export(t_env **env, char **arg)
 		//problemes a partir de la
 		if (copy)
 		{
-			export_output = join_export_output(&copy);
+			print_sorted_env(&copy);
 			free_list(&copy);
 		}
-		print_array(export_output);
-		ft_free(export_output);
 		/* print_env(&copy); */
 		//declare -x KEY = "VALUE"
 		//copy env list

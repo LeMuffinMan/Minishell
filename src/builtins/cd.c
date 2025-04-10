@@ -414,10 +414,8 @@ int builtin_cd_without_arg(t_env **env)
 int	builtin_cd(char **arg, t_env **env)
 {
 	char *path;
-	char *s;
 
 	/* print_env(env); */
-	s = NULL;
 	path = NULL;
 	if (array_size(arg) > 2)
 	{
