@@ -405,12 +405,8 @@ int builtin_cd_without_arg(t_env **env)
 	}
 	else
 	{
-
 		if (change_directory(s))
-		{
-			/* (void)env; */
 			update_env(env);
-		}
 	}
 	return (0);
 }

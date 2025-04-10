@@ -75,6 +75,7 @@ void	free_list(t_env **l);
 char *build_line(char *s, ...);
 int sort_env(t_env **env);
 int is_only_numeric_argument(char *s);
+int print_env(t_env **env);
 
 //builtins
 int	builtin_cd(char **arg, t_env **env);

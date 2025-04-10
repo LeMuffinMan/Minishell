@@ -75,117 +75,43 @@ int copy_node(t_env **dest, t_env **src)
     return (0);
 }
 
-int copy_list(t_env **dest, t_env **src)
-{
-	t_env *tmp;
-	t_env *last;
-	t_env *new_node;
-
-	tmp = *src;
-	while (tmp)
-	{
-    new_node = malloc(sizeof(t_env));
-    if (!new_node)
-    {
-    	exit (1);
-    }
-		copy_node(&new_node, &tmp);
-    if (!*dest)
-    	*dest = new_node;
-    else
-    	last->next = new_node;
-    last = new_node;
-		tmp = tmp->next;
-	}
-	return (0);
-}
-
-int compare_keys(char *key1, char *key2)
-{
-	char *longest_key;
-
-	if (ft_strlen(key1) > ft_strlen(key2))
-		longest_key = key1;
-	else
-		longest_key = key2;
-	return (ft_strncmp(key1, key2, ft_strlen(longest_key)));
-}
 
 
-int swap_nodes(t_env *n1, t_env *n2)
-{
-	char *tmp_key;
-	char *tmp_value;
-	int tmp_env;
-	int tmp_exported;
-
-	tmp_key = n1->key;
-	tmp_value = n1->value;
-	tmp_env = n1->env;
-	tmp_exported = n1->exported;
-
-	n1->key = n2->key;
-	n1->value = n2->value;
-	n1->env = n2->env;
-	n1->exported = n2->exported;
-
-	n2->key = tmp_key;
-	n2->value = tmp_value;
-	n2->env = tmp_env;
-	n2->exported = tmp_exported;
-
-	return (0);
-}
 
 
-int sort_list(t_env **l)
-{
-	t_env *tmp;
 
-	tmp = *l;
-	if (!tmp)
-		return (1);
-	while (tmp->next)
-	{
-		/* if (tmp && tmp->next && tmp->key && tmp->next->key) */
-		/* { */
-			if (compare_keys(tmp->key, tmp->next->key))
-				swap_nodes(tmp, tmp->next);
-		/* } */
-		tmp = tmp->next;
-	}
-	return (0);
-}
 
-char *build_export_output(t_env **env)
-{
-	t_env *copy;
-	t_env *to_free;
-	char *line;
 
-	copy = NULL;
-	line = ft_strdup("");
-	copy_list(&copy, env);
-	sort_list(&copy);
-	to_free = copy;
-	while (copy)
-	{
-		line = ft_strjoin(line, "declare -x ", line);
-		line = ft_strjoin(line, copy->key, line);
-		if (copy->value)
-		{
-			line = ft_strjoin(line, "=", line);
-			line = ft_strjoin(line, "\"", line);
-			line = ft_strjoin(line, copy->value, line);
-			line = ft_strjoin(line, "\"\n", line);
-		}
-		else 
-			line = ft_strjoin(line, "\n", line);
-		copy = copy->next;
-	}
-	free_list(&to_free);	
-	return (line);
-}
+
+/* char *build_export_output(t_env **env) */
+/* { */
+/* 	t_env *copy; */
+/* 	t_env *to_free; */
+/* 	char *line; */
+/**/
+/* 	copy = NULL; */
+/* 	line = ft_strdup(""); */
+/* 	copy_list(&copy, env); */
+/* 	sort_list(&copy); */
+/* 	to_free = copy; */
+/* 	while (copy) */
+/* 	{ */
+/* 		line = ft_strjoin(line, "declare -x ", line); */
+/* 		line = ft_strjoin(line, copy->key, line); */
+/* 		if (copy->value) */
+/* 		{ */
+/* 			line = ft_strjoin(line, "=", line); */
+/* 			line = ft_strjoin(line, "\"", line); */
+/* 			line = ft_strjoin(line, copy->value, line); */
+/* 			line = ft_strjoin(line, "\"\n", line); */
+/* 		} */
+/* 		else  */
+/* 			line = ft_strjoin(line, "\n", line); */
+/* 		copy = copy->next; */
+/* 	} */
+/* 	free_list(&to_free);	 */
+/* 	return (line); */
+/* } */
 
 int longest_strings_len(char *s1, char *s2)
 {
@@ -229,28 +155,129 @@ t_env *is_known_key(t_env **env, char *key)
 //
 //Test=rger
 //export test=
+//export VAR=5
 //change pas test
 //Pareil pour chaque arg
 //
+
+#include <stdio.h>
+int compare_keys(char *key1, char *key2)
+{
+	char *longest_key;
+
+	if (ft_strlen(key1) > ft_strlen(key2))
+		longest_key = key1;
+	else
+		longest_key = key2;
+	return (ft_strncmp(key1, key2, ft_strlen(longest_key)));
+}
+
+
+int swap_nodes(t_env *n1, t_env *n2)
+{
+	char *tmp_key;
+	char *tmp_value;
+	int tmp_env;
+	int tmp_exported;
+
+	tmp_key = n1->key;
+	tmp_value = n1->value;
+	tmp_env = n1->env;
+	tmp_exported = n1->exported;
+
+	n1->key = n2->key;
+	n1->value = n2->value;
+	n1->env = n2->env;
+	n1->exported = n2->exported;
+
+	n2->key = tmp_key;
+	n2->value = tmp_value;
+	n2->env = tmp_env;
+	n2->exported = tmp_exported;
+
+	return (0);
+}
+
+int sort_list(t_env **l)
+{
+	t_env *tmp;
+	int sorted;
+
+	sorted = 0;
+	tmp = *l;
+	if (!tmp)
+		return (1);
+	while(sorted == 0)
+	{
+		sorted = 1;
+		tmp = *l;
+		while (tmp->next)
+		{
+			if (compare_keys(tmp->key, tmp->next->key) > 0)
+			{
+				sorted = 0;
+				swap_nodes(tmp, tmp->next);
+			}
+			tmp = tmp->next;
+		}
+	}
+	return (0);
+}
+
+t_env *copy_list(t_env **env)
+{
+	t_env *tmp;
+	t_env *last;
+	t_env *new_node;
+	t_env *copy;
+
+	tmp = *env;
+	last = NULL;
+	copy = NULL;
+	while (tmp)
+	{
+		new_node = malloc(sizeof(t_env));
+		if (!new_node)
+			exit (1); // a mieux protegetr 
+		new_node->key = ft_strdup(tmp->key);
+		new_node->value = ft_strdup(tmp->value);
+		new_node->next = NULL;
+		if (last)
+			last->next = new_node;
+		else
+			copy = new_node;	
+		last = new_node;
+		tmp = tmp->next;
+	}
+	return (copy);
+}
+
 int builtin_export(t_env **env, char **arg)
 {
 	t_env *node;
+	t_env *copy;
 	char **key_value;
 	char *export_output;
 
 	node = NULL;
 	export_output = NULL;
+	copy = NULL;
 	if (!arg[1])
 	{
+		copy = copy_list(env);
+		sort_list(&copy);
+		if (copy)
+			print_env(&copy);
+		free_list(&copy);
 		//declare -x KEY = "VALUE"
 		//copy env list
 		//bublesort env list
 		//build line
-		export_output = build_export_output(env);
-		ft_putstr_fd(export_output, 1);
-		free(export_output);
+		/* export_output = build_export_output(env); */
+		/* ft_putstr_fd(export_output, 1); */
+		/* free(export_output); */
 	}
-	else if (!ft_strncmp("_=", arg[1], 2)) // perave ca
+	else if (!ft_strncmp("_=", arg[1], 3))
 		return(1);
 	else
 	{
