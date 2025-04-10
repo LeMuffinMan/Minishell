@@ -79,6 +79,13 @@ int	exec(char **arg, t_env **env)
 	/* if (arg[0]) */
 	/* 	update_last_cmd_var(env, arg[0]); */
 	/* faire un switch case et y mettre les returns */
+	//1 : ouvrir et remplir tous les here_docs 
+	//2 : open et rediriger tous les outputs / inputs vers / pour une cmd
+	//3 : checker si c'est un builtin ou une cmd 
+		//parent pour les builtins 
+		//enfants pour les cmds ?
+	//4 Wait 
+	//5 Mettre a jour l'environnement
 	if (!*arg)
 		return (0);
 	else if (!ft_strncmp(arg[0], "echo", 5))

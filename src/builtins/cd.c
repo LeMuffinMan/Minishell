@@ -7,25 +7,7 @@
 #include <limits.h>
 
 
-//recupere une valeur dans l'environnement par sa cle (export, env ET local)
-char *get_value(t_env **env, char *key)
-{
-	char *value;
-	t_env *tmp;
 
-	tmp = *env;
-	value = NULL;
-	while (tmp)
-	{
-		if (!ft_strncmp(key, tmp->key, ft_strlen(key)))
-		{
-			value = tmp->value;
-			break;
-		}
-		tmp = tmp->next;
-	}
-	return (value);
-}
 
 /* DECIDER : */
 // - CDPATH
@@ -124,49 +106,33 @@ char *get_value(t_env **env, char *key)
 /* 	return (0); */
 /* } */
 
-t_env **get_key_node(t_env **env, char *key)
-{
-	t_env **tmp;
 
-	tmp = env;
-	if (!key)
-		return (NULL);
-	while (tmp && *tmp)
-	{
-		if (!ft_strncmp((*tmp)->key, key, (ft_strlen(key) + 1))) //securiser en comparant la lnonguer dees strs ?
-			break;
-		*tmp = (*tmp)->next;
-	}
-	/* #include <stdio.h> */
-	/* printf("seek key : %s\nreturned node key : %s\n", key, (*tmp)->key); */
-	return (tmp);
-}
 
 //Problemes ici !
-int swap_and_update_pwd_values(t_env **env)
-{
-  char    buf[PATH_MAX];
-	t_env **pwd_node;
-	t_env **oldpwd_node;
-	
-	pwd_node = get_key_node(env, "PWD");
-	oldpwd_node = get_key_node(env, "OLDPWD");
-	if (!(*oldpwd_node)->value)
-		(*oldpwd_node)->value = ft_strdup((*pwd_node)->value);
-	else
-  	(*oldpwd_node)->value = (*pwd_node)->value;
-  if (getcwd(buf, sizeof(buf)) != NULL)
-  {
-      free((*pwd_node)->value);
-      (*pwd_node)->value = ft_strdup(buf);
-  }
-  else
-  {
+/* int swap_and_update_pwd_values(t_env **env) */
+/* { */
+/*   char    buf[PATH_MAX]; */
+/* 	t_env **pwd_node; */
+/* 	t_env **oldpwd_node; */
+/* 	 */
+/* 	pwd_node = get_key_node(env, "PWD"); */
+/* 	oldpwd_node = get_key_node(env, "OLDPWD"); */
+/* 	if (!(*oldpwd_node)->value) */
+/* 		(*oldpwd_node)->value = ft_strdup((*pwd_node)->value); */
+/* 	else */
+/*   	(*oldpwd_node)->value = (*pwd_node)->value; */
+/*   if (getcwd(buf, sizeof(buf)) != NULL) */
+/*   { */
+/*       free((*pwd_node)->value); */
+/*       (*pwd_node)->value = ft_strdup(buf); */
+/*   } */
+/*   else */
+/*   { */
       /* perror("getcwd"); */
-      return (1);
-  }
-  return (0);
-}
+/*       return (1); */
+/*   } */
+/*   return (0); */
+/* } */
 
 /* If the directory change is successful, cd sets the value of the PWD environment */
 /* variable to the new directory name, and sets the OLDPWD environment variable */
@@ -174,136 +140,138 @@ int swap_and_update_pwd_values(t_env **env)
 /* The return status is zero if the directory is successfully changed, non-zero oth- */
 /* erwise */
 
-			#include <stdio.h>
-int change_directory_and_update_env(t_env **env, char *path)
-{
-
-	if (!path)
-	{
-	#include <stdio.h>
-		(void)env;
-		printf("path NULL ??\n");
-		return (1);
-	}
-	if (chdir(path) == 0)
-	{
+/* 			#include <stdio.h> */
+/* int change_directory_and_update_env(t_env **env, char *path) */
+/* { */
+/**/
+/* 	if (!path) */
+/* 	{ */
+/* 	#include <stdio.h> */
+/* 		(void)env; */
+/* 		printf("path NULL ??\n"); */
+/* 		return (1); */
+/* 	} */
+/* 	if (chdir(path) == 0) */
+/* 	{ */
 		/* #include <stdio.h> */
 		/* printf("ici\n"); */
-		swap_and_update_pwd_values(env);
-		t_env *tmp;
-
-		tmp = *env;
-		int i = 1;
-		while (tmp)
-		{
-			printf("ENV : \n");
-			printf("#%d\n", i);
-			printf("key = %s\n", tmp->key);
-			printf("value = %s\n", tmp->key);
-			tmp = tmp->next;
-			i++;
-		}
-		return(0);
-	}
-	else 
-		return (1);
-}
-
-int is_directory(const char *path)
-{
-    struct stat statbuf;
-    if (stat(path, &statbuf) == 0)
-        return S_ISDIR(statbuf.st_mode); // Retourne 1 si c'est un répertoire, 0 sinon
-    return 0; // Si stat échoue, ce n'est pas un répertoire
-}
-
-int count_args(char** args)
-{
-	int i;
-
-	i = 0;
-	while (args[i])
-		i++;
-	return (i);
-}
+/* 		swap_and_update_pwd_values(env); */
+/* 		t_env *tmp; */
+/**/
+/* 		tmp = *env; */
+/* 		int i = 1; */
+/* 		while (tmp) */
+/* 		{ */
+/* 			printf("ENV : \n"); */
+/* 			printf("#%d\n", i); */
+/* 			printf("key = %s\n", tmp->key); */
+/* 			printf("value = %s\n", tmp->key); */
+/* 			tmp = tmp->next; */
+/* 			i++; */
+/* 		} */
+/* 		return(0); */
+/* 	} */
+/* 	else  */
+/* 		return (1); */
+/* } */
+/**/
+/* int is_directory(const char *path) */
+/* { */
+/*     struct stat statbuf; */
+/*     if (stat(path, &statbuf) == 0) */
+/*         return S_ISDIR(statbuf.st_mode); // Retourne 1 si c'est un répertoire, 0 sinon */
+/*     return 0; // Si stat échoue, ce n'est pas un répertoire */
+/* } */
+/**/
+/* int count_args(char** args) */
+/* { */
+/* 	int i; */
+/**/
+/* 	i = 0; */
+/* 	while (args[i]) */
+/* 		i++; */
+/* 	return (i); */
+/* } */
 
 		 //gerer CDPATH ?
  						 ///* If a non-empty directory name from CDPATH is used, or if ‘-’ is the first argu- */
 /* ment, and the directory change is successful, the absolute pathname of the new */
 /* working directory is written to the standard output. */
-int	builtin_cd(char **arg, t_env **env)
-{
-	char *s;
-
-	if (count_args(arg) > 2)
-	{
-		ft_putstr_fd("minishell: cd: too many arguments\n", 2);
-		return (1);
-	}
-	if (!arg[1])
-	{
-		s = get_value(env, "HOME"); //a revoir ?
-		if (!s)
-		{
-			ft_putstr_fd("minishell: cd: HOME not set\n", 1);
-			return (1);
-		}
-		else
-			return(change_directory_and_update_env(env, s));
-	}
-	else
-	{
-		s = ft_strdup("");
-		//si arg[1] == -
-			//on cd dans OLDPWD
-			//on imprime PWD dans STDOUT
-		if (!ft_strncmp(arg[1], "-", ft_strlen(arg[1])))
-		{
-			if (change_directory_and_update_env(env, get_value(env, "OLDPWD")))
-			{
-				ft_putstr_fd("minishell: cd: OLDPWD not set\n", 2);
-				return (1);
-			}
-			else
-			{
-				s = ft_strjoin(s, get_value(env, "PWD"), s);
-				s = ft_strjoin(s, "\n", s);
-				ft_putstr_fd(s, 1);
-				free(s);
-				return (0);
-			}
-		}
-		//Si on decide de gerer CDPATH :
-				//d'abord on cherche CDPATH dans l'env
-        //si y'en a pas, on continue normalement
- 				//si y'en a un : on cherche dans tous ces path si ya un dossier qui correspond
-        //si on trouve : on cd dedans et on imprime son pwd
-    //si on trouve pas : comme d'hab
-		if (is_directory(arg[1])) 
-      change_directory_and_update_env(env, arg[1]);
-    else
-    {
-    	if (access(arg[1], F_OK) != 0)
-    	{
-				s = ft_strjoin("minishell: cd: ", arg[1], s);
-    		s = ft_strjoin(s, ": No such file or directory\n", s);
-      	ft_putstr_fd(s, 2);
-      	free(s);
-      	return (1);
-    	}
-    	else
-    	{
-				s = ft_strjoin("minishell: cd: Not a directory: ", arg[1], s);
-    		s = ft_strjoin(s, "\n", s);
-      	ft_putstr_fd(s, 2);
-      	free(s);
-      	return (1);
-      }
-    }
-		free(s);
-  }
-	return (0);
-}
+/* int	builtin_cd(int ac, char **arg, t_env **env) */
+/* { */
+/* 	char *s; */
+/**/
+/* 	//CD ne prend qu'un argument ou aucun argument */
+/* 	if (count_args(arg) > 2) */
+/* 	{ */
+/* 		ft_putstr_fd("minishell: cd: too many arguments\n", 2); */
+/* 		return (1); */
+/* 	} */
+/* 	//sans argument on cherche la variable HOME */
+/* 	if (!arg[1]) */
+/* 	{ */
+/* 		s = get_value(env, "HOME"); //a revoir ? */
+/* 		if (!s) */
+/* 		{ */
+/* 			ft_putstr_fd("minishell: cd: HOME not set\n", 1); */
+/* 			return (1); */
+/* 		} */
+/* 		else */
+/* 			return(change_directory_and_update_env(env, s)); */
+/* 	} */
+/* 	else */
+/* 	{ */
+/* 		s = ft_strdup(""); */
+/* 		//si arg[1] == - */
+/* 			//on cd dans OLDPWD */
+/* 			//on imprime PWD dans STDOUT */
+/* 		if (!ft_strncmp(arg[1], "-", ft_strlen(arg[1]))) */
+/* 		{ */
+/* 			if (change_directory_and_update_env(env, get_value(env, "OLDPWD"))) */
+/* 			{ */
+/* 				ft_putstr_fd("minishell: cd: OLDPWD not set\n", 2); */
+/* 				return (1); */
+/* 			} */
+/* 			else */
+/* 			{ */
+/* 				s = ft_strjoin(s, get_value(env, "PWD"), s); */
+/* 				s = ft_strjoin(s, "\n", s); */
+/* 				ft_putstr_fd(s, 1); */
+/* 				free(s); */
+/* 				return (0); */
+/* 			} */
+/* 		} */
+/* 		//Si on decide de gerer CDPATH : */
+/* 				//d'abord on cherche CDPATH dans l'env */
+/*         //si y'en a pas, on continue normalement */
+/*  				//si y'en a un : on cherche dans tous ces path si ya un dossier qui correspond */
+/*         //si on trouve : on cd dedans et on imprime son pwd */
+/*     //si on trouve pas : comme d'hab */
+/* 		if (is_directory(arg[1]))  */
+/*       change_directory_and_update_env(env, arg[1]); */
+/*     else */
+/*     { */
+/*     	if (access(arg[1], F_OK) != 0) */
+/*     	{ */
+/* 				s = ft_strjoin("minishell: cd: ", arg[1], s); */
+/*     		s = ft_strjoin(s, ": No such file or directory\n", s); */
+/*       	ft_putstr_fd(s, 2); */
+/*       	free(s); */
+/*       	return (1); */
+/*     	} */
+/*     	else */
+/*     	{ */
+/* 				s = ft_strjoin("minishell: cd: Not a directory: ", arg[1], s); */
+/*     		s = ft_strjoin(s, "\n", s); */
+/*       	ft_putstr_fd(s, 2); */
+/*       	free(s); */
+/*       	return (1); */
+/*       } */
+/*     } */
+/* 		free(s); */
+/*   } */
+/* 	return (0); */
+/* } */
 /* Change the current working directory to directory.
  * If directory is not supplied, the value of the HOME shell variable is used.
  * If the shell variable CDPATH exists, it is used as a search path: each directory name in CDPATH is searched for */
@@ -320,3 +288,142 @@ int	builtin_cd(char **arg, t_env **env)
 /* ment, and the directory change is successful, the absolute pathname of the new */
 /* working directory is written to the standard output. */
 
+#include <stdio.h>
+t_env *get_key_node(t_env **env, char *key)
+{
+	t_env *tmp;
+
+	tmp = *env;
+	if (!key)
+		return (NULL);
+	while (tmp)
+	{
+		if (!ft_strncmp(tmp->key, key, (ft_strlen(key) + 1)))
+			break;
+		tmp = tmp->next;
+	}
+	/* if (tmp && tmp->key) */
+	/* 	printf("node key returned : %s\n", tmp->key); */
+	return (tmp);
+}
+
+int update_env(t_env **env)
+{
+	t_env *old_pwd;
+	t_env *pwd;
+	char	buf[PATH_MAX];
+
+	(void)buf;
+	old_pwd = get_key_node(env, "OLDPWD");
+	pwd = get_key_node(env, "PWD");
+	/* printf("OLDPWD node = %p\n", old_pwd); */
+	/* printf("PWD node = %p\n", pwd); */
+	if (old_pwd->value)
+		free(old_pwd->value);
+	old_pwd->value = ft_strdup(pwd->value);
+	if (pwd->value)
+		free(pwd->value);
+	if (getcwd(buf, sizeof(buf)) != NULL)
+		pwd->value = ft_strdup(buf);
+	else
+	{
+		perror("pwd");
+		//  1 ou errno ?
+		return (1);
+	}
+	return (0);
+}
+
+//recupere une valeur dans l'environnement par sa cle (export, env ET local)
+char *get_value(t_env **env, char *key)
+{
+	char *value;
+	t_env *tmp;
+
+	tmp = *env;
+	value = NULL;
+	while (tmp)
+	{
+		if (!ft_strncmp(key, tmp->key, ft_strlen(key)))
+		{
+			value = tmp->value;
+			break;
+		}
+		tmp = tmp->next;
+	}
+	return (value);
+}
+
+int change_directory(char *path)
+{
+	if (!path)
+		return (1);
+	if (chdir(path) == 0)
+		return(1);
+	else 
+		return (0);
+}
+
+int array_size(char **array)
+{
+	int i;
+
+	i = 0;
+	while (array[i])
+		i++;
+	return (i);
+}
+
+int print_env(t_env **env)
+{
+	t_env *tmp;
+	
+	tmp = *env;
+	while (tmp)
+	{
+		if (tmp->key && tmp->value)
+			printf("%s=%s\n", tmp->key, tmp->value);
+		if (tmp->key && !tmp->value)
+			printf("%s\n", tmp->key);
+		tmp = tmp->next;
+	}
+	return (0);
+}
+
+int	builtin_cd(char **arg, t_env **env)
+{
+	char *s;
+
+	/* print_env(env); */
+	if (array_size(arg) > 2)
+	{
+		ft_putstr_fd("minishell: cd: too many arguments\n", 2);
+		return (1);
+	}
+	if (array_size(arg) == 1)
+	{
+		s = get_value(env, "HOME"); //a revoir ?
+		if (!s)
+		{
+			ft_putstr_fd("minishell: cd: HOME not set\n", 1);
+			return (1);
+		}
+		else
+		{
+			if (change_directory(arg[1]))
+			{
+				(void)env;
+				update_env(env);
+			}
+		}
+	}
+	if (array_size(arg) == 2)
+	{
+			if (change_directory(arg[1]))
+			{
+				update_env(env);
+				(void)env;
+			}
+	}
+	return (0);
+}
