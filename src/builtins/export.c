@@ -43,7 +43,8 @@
 //on trie la liste
 //on join les key avec un bool 1 et des \n en une line
 
-int envsize(t_env *env)
+#include <stdio.h>
+int env_size(t_env *env)
 {
 	int i;
 	t_env *tmp;
@@ -55,6 +56,7 @@ int envsize(t_env *env)
 		i++;
 		tmp = tmp->next;
 	}
+	/* printf("%d\n", i); */
 	return (i);
 }
 
@@ -74,14 +76,6 @@ int copy_node(t_env **dest, t_env **src)
     (*dest)->exported = (*src)->exported;
     return (0);
 }
-
-
-
-
-
-
-
-
 
 /* char *build_export_output(t_env **env) */
 /* { */
@@ -160,7 +154,6 @@ t_env *is_known_key(t_env **env, char *key)
 //Pareil pour chaque arg
 //
 
-#include <stdio.h>
 int compare_keys(char *key1, char *key2)
 {
 	char *longest_key;
@@ -252,12 +245,56 @@ t_env *copy_list(t_env **env)
 	return (copy);
 }
 
+char **join_export_output(t_env **env)
+{
+	t_env *tmp;
+	char **array;
+	int i;
+
+	array = NULL;
+	array = malloc(sizeof(char *) * env_size(*env) + 1);
+	i = 0;
+	tmp = *env;
+	while (tmp)
+	{
+		array[i] = ft_strjoin(NULL, "declare -x", array[i]);
+		array[i] = ft_strjoin(array[i], tmp->key, array[i]);
+		array[i] = ft_strjoin(array[i], "=", array[i]);
+		if (tmp->value)
+		{
+			array[i] = ft_strjoin(array[i], "\"", array[i]);
+			array[i] = ft_strjoin(array[i], tmp->value, array[i]);
+			array[i] = ft_strjoin(array[i], "\"", array[i]);
+		}
+		i++;
+		tmp = tmp->next;
+	}
+	array[i] = NULL;
+	return (array);
+}
+
+int print_array(char **array)
+{
+	int i;
+	char *output;
+
+	i = 0;
+	while (array[i])
+	{
+		output = ft_strjoin(output, array[i], output);	
+		output = ft_strjoin(output, "\n", output);	
+	}
+	ft_putstr_fd(output, 1);
+	free(output);
+	return (0);
+}
+
 int builtin_export(t_env **env, char **arg)
 {
 	t_env *node;
 	t_env *copy;
 	char **key_value;
-	char *export_output;
+	char **export_output;
 
 	node = NULL;
 	export_output = NULL;
@@ -266,9 +303,15 @@ int builtin_export(t_env **env, char **arg)
 	{
 		copy = copy_list(env);
 		sort_list(&copy);
+		//problemes a partir de la
 		if (copy)
-			print_env(&copy);
-		free_list(&copy);
+		{
+			export_output = join_export_output(&copy);
+			free_list(&copy);
+		}
+		print_array(export_output);
+		ft_free(export_output);
+		/* print_env(&copy); */
 		//declare -x KEY = "VALUE"
 		//copy env list
 		//bublesort env list

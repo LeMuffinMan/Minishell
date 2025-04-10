@@ -4,20 +4,20 @@
 #include "minishell.h"
 #include <stdlib.h>
 
-int	env_size(t_env *lst)
-{
-	t_env	*ptr;
-	size_t	i;
-
-	i = 0;
-	ptr = lst;
-	while (ptr != NULL)
-	{
-		ptr = ptr->next;
-		i++;
-	}
-	return (i);
-}
+/* int	env_size(t_env *lst) */
+/* { */
+/* 	t_env	*ptr; */
+/* 	size_t	i; */
+/**/
+/* 	i = 0; */
+/* 	ptr = lst; */
+/* 	while (ptr != NULL) */
+/* 	{ */
+/* 		ptr = ptr->next; */
+/* 		i++; */
+/* 	} */
+/* 	return (i); */
+/* } */
 
 int builtin_unset(t_env **env, char **arg)
 {
