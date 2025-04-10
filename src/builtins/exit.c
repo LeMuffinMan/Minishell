@@ -84,6 +84,15 @@ int	builtin_exit(char **arg, t_env **env)
 		//exit avec le dernier code d'erreur  ?
 		exit(0);
 	}
+	if (ft_strlen(arg[1]) > 18)
+	{
+		s = ft_strjoin(s, "minishell: exit: ", s);
+		s = ft_strjoin(s, arg[1], s);
+		s = ft_strjoin(s, ": numeric argument required", s);
+		ft_putstr_fd(s, 2);
+		free(s);
+		return (2)
+	}
 	if (arg[2])
 	{
 		ft_putstr_fd("minishell: exit: too many arguments\n", 2);
@@ -92,7 +101,7 @@ int	builtin_exit(char **arg, t_env **env)
 	//a tester
 	if (!is_only_numeric_argument(arg[1]))
 	{
-		s = build_line(NULL, "minishell: exit: ", arg[1], ": numeric argument required\n", NULL);
+		s = build_line(NULL, "minishell: exit: ", arg[1], ": numeric argument required\n", NULL); // a virer 
 		ft_putstr_fd(s, 2);
 		free(s);
 		free_list(env);

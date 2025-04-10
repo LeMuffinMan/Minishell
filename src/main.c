@@ -199,6 +199,8 @@ int	init_env(t_env **new_env, char **env, char **arg)
 	i = 0;
 	while (env[i])
 	{
+		//des choses a revoir sur le shell level !
+		//on doit gerer SHLVL+=1 ?
 		if (!ft_strncmp("SHLVL=", env[i], 6))
 			init_and_incremente_shlvl(env[i], new_env);
 		else

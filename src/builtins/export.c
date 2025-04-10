@@ -245,34 +245,6 @@ t_env *copy_list(t_env **env)
 	return (copy);
 }
 
-char **join_export_output(t_env **env)
-{
-	t_env *tmp;
-	char **array;
-	int i;
-
-	array = NULL;
-	array = malloc(sizeof(char *) * env_size(*env) + 1);
-	i = 0;
-	tmp = *env;
-	while (tmp)
-	{
-		array[i] = ft_strjoin(NULL, "declare -x", array[i]);
-		array[i] = ft_strjoin(array[i], tmp->key, array[i]);
-		array[i] = ft_strjoin(array[i], "=", array[i]);
-		if (tmp->value)
-		{
-			array[i] = ft_strjoin(array[i], "\"", array[i]);
-			array[i] = ft_strjoin(array[i], tmp->value, array[i]);
-			array[i] = ft_strjoin(array[i], "\"", array[i]);
-		}
-		i++;
-		tmp = tmp->next;
-	}
-	array[i] = NULL;
-	return (array);
-}
-
 int print_array(char **array)
 {
 	int i;
@@ -324,20 +296,11 @@ int builtin_export(t_env **env, char **arg)
 	{
 		copy = copy_list(env);
 		sort_list(&copy);
-		//problemes a partir de la
 		if (copy)
 		{
 			print_sorted_env(&copy);
 			free_list(&copy);
 		}
-		/* print_env(&copy); */
-		//declare -x KEY = "VALUE"
-		//copy env list
-		//bublesort env list
-		//build line
-		/* export_output = build_export_output(env); */
-		/* ft_putstr_fd(export_output, 1); */
-		/* free(export_output); */
 	}
 	else if (!ft_strncmp("_=", arg[1], 3))
 		return(1);
