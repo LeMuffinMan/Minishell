@@ -357,11 +357,14 @@ char *get_value(t_env **env, char *key)
 int change_directory(char *path)
 {
 	if (!path)
-		return (1);
-	if (chdir(path) == 0)
-		return(1);
-	else 
 		return (0);
+	if (chdir(path) == 0)
+		return(0);
+	else 
+	{
+		perror(path);
+		return (1);
+	}
 }
 
 int array_size(char **array)
@@ -390,40 +393,61 @@ int print_env(t_env **env)
 	return (0);
 }
 
-int	builtin_cd(char **arg, t_env **env)
+int builtin_cd_without_arg(t_env **env)
 {
 	char *s;
 
+	s = get_value(env, "HOME"); //a revoir ?
+	if (!s)
+	{
+		ft_putstr_fd("minishell: cd: HOME not set\n", 1);
+		return (1);
+	}
+	else
+	{
+
+		if (change_directory(s))
+		{
+			/* (void)env; */
+			update_env(env);
+		}
+	}
+	return (0);
+}
+
+int	builtin_cd(char **arg, t_env **env)
+{
+	char *path;
+	char *s;
+
 	/* print_env(env); */
+	s = NULL;
+	path = NULL;
 	if (array_size(arg) > 2)
 	{
 		ft_putstr_fd("minishell: cd: too many arguments\n", 2);
 		return (1);
 	}
 	if (array_size(arg) == 1)
-	{
-		s = get_value(env, "HOME"); //a revoir ?
-		if (!s)
-		{
-			ft_putstr_fd("minishell: cd: HOME not set\n", 1);
-			return (1);
-		}
-		else
-		{
-			if (change_directory(arg[1]))
-			{
-				(void)env;
-				update_env(env);
-			}
-		}
-	}
+		builtin_cd_without_arg(env);
 	if (array_size(arg) == 2)
 	{
-			if (change_directory(arg[1]))
-			{
-				update_env(env);
-				(void)env;
-			}
+		if (!ft_strncmp(arg[1], "-", 2))
+			path = ft_strdup(get_value(env, "OLDPWD"));
+		else 
+			path = ft_strdup(arg[1]);
+		if (!change_directory(path))
+			update_env(env);
+		else 
+		{
+			if (path)
+				free(path);
+			return (1);
+		}
+		if (!ft_strncmp(arg[1], "-", 2))
+			builtin_pwd();
+		if (path && *path)
+			free(path);
 	}
 	return (0);
 }
