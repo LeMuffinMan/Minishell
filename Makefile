@@ -35,7 +35,6 @@ LIB_LIBFT			=	$(LIBFT_DIR)obj/libft.a
 LIBFT_FLAG			=	-L$(LIBFT_DIR)src/ $(LIB_LIBFT)
 LIBFT_HEAD			=	libft.h get_next_line.h ft_printf.h
 
-<<<<<<< HEAD
 SRC					=	main.c \
 						concat_args.c \
 						create_tokenize_list.c \
@@ -59,14 +58,14 @@ SRC					=	main.c \
 						utils/builtins_utils.c \
 						utils/env_utils.c \
 						utils/init_utils.c \
-						utils/prints.c \
+						utils/prints.c 
 
 DEPS				=	$(SRC:%.c=$(OBJ_DIR)%.d)
 OBJ					=	$(SRC:%.c=$(OBJ_DIR)%.o)
 OBJ_DIR				=	.objs/
 
 $(OBJ_DIR)%.o:%.c $(HEAD) $(LIBFT_HEAD) Makefile $(LIBFT_DIR)Makefile
-	@mkdir -p $(OBJ_DIR)
+	@mkdir -p $(@D) 
 	@echo "$(BOLD_PURPLE)"
 	$(CC) $(FLAG) -c $< -o $@
 	@echo "$(STOP_COLOR)"

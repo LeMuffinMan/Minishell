@@ -16,7 +16,7 @@
 #include "libft.h"
 #include <unistd.h>
 
-int	main(int ac, char **av, char **envp)
+int	parse(int ac, char **av, char **envp)
 {
 	t_token	*token;
 	t_lexer	*lexer;
@@ -24,8 +24,8 @@ int	main(int ac, char **av, char **envp)
 	int		i;
 
 	i = 0;
-	if (ac != 2)
-		ft_error("Usage: ./parsing arg\n", E_IO);
+	/* if (ac != 2) */
+	/* 	ft_error("Usage: ./parsing arg\n", E_IO); */
 	token = NULL;
 	lexer = NULL;
 	parse_line(av[1], &lexer);
