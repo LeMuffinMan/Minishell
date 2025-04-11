@@ -25,7 +25,7 @@ vpath %.a src/libft/obj
 
 CC					=	cc
 FLAG				=	-Wall -Wextra -Werror -g -MMD -MP -I$(LIBFT_HEAD_DIR) -I$(HEAD_DIR)
-NAME				=	parsing
+NAME				=	minishell
 HEAD				=	token.h list.h display.h lexer.h
 HEAD_DIR			=	include/
 
