@@ -368,3 +368,27 @@ int main(void)
     return (0);
 }
 
+//pour les alias : 
+//si cmd == alias
+//on rappelle le parser, mais avec le contenu de l'alias a la place de l'alias
+//
+//pour cd ~
+//on ouvre /etc/passwd et on cherche 1000:1000 ou alors on cherche /home/ ?
+//pour chaque ligne /home/ fait un split on cherche le champ 6
+//on fait un access sur le champ 6 et si c'est non on fait tous les autres
+//si oui : c'est le path
+//
+//variable PS1
+//\h The hostname, up to the first ‘.’.
+/* \H The hostname. */
+/*\n new line*/
+/* \s The name of the shell, the basename of $0 */
+/* \u  The username of the current user.*/
+/* \W The basename of $PWD, with $HOME abbreviated with a tilde */
+/* \e exit code */
+
+//foncions shell
+//appeler le parser pour recuperer un AST de chaque ligne
+//executer chaque AST dans l'ordre
+//reprendre l'execution normale
+// Gerer $0 $1 -> expand des argv (max 9)

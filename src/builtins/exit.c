@@ -91,7 +91,7 @@ int	builtin_exit(char **arg, t_env **env)
 		s = ft_strjoin(s, ": numeric argument required", s);
 		ft_putstr_fd(s, 2);
 		free(s);
-		return (2)
+		return (2);
 	}
 	if (arg[2])
 	{
