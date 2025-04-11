@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   stack.h                                            :+:      :+:    :+:   */
+/*   list.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 17:12:50 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/09 17:54:33 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/10 17:01:41 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef STACK_H
-# define STACK_H
+#ifndef list_H
+# define list_H
 
 # include "token.h"
 
@@ -27,10 +27,11 @@ typedef struct s_token
 	struct s_token	*next;
 	struct s_token	*prev;
 	char			**content;
-	enum e_type	token;
+	enum e_type		token;
+	int				priority;
 }	t_token;
 
 void	add_back(t_token **head, char *str);
-void	free_parse(t_token *stack, const char *str, int error);
+void	free_parse(t_token *list, const char *str, int error);
 
 #endif

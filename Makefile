@@ -7,14 +7,14 @@ BOLD_CYAN			=	\e[1;36m
 STOP_COLOR			=	\e[0m
 
 -include $(DEPS) $(DEPS_BONUS)
-vpath %.c src/parsing/token:src/parsing/token/stack:src/parsing/lexer:src
+vpath %.c src/parsing/token:src/parsing/lexer:src/parsing/tree:src
 vpath %.h include:src/libft/include
 vpath %.a src/libft/obj
 
 CC					=	cc
 FLAG				=	-Wall -Wextra -Werror -g -MMD -MP -I$(LIBFT_HEAD_DIR) -I$(HEAD_DIR)
 NAME				=	parsing
-HEAD				=	token.h stack.h display.h lexer.h
+HEAD				=	token.h list.h display.h lexer.h
 HEAD_DIR			=	include/
 
 LIBFT_DIR			=	src/libft/
@@ -25,7 +25,9 @@ LIBFT_HEAD			=	libft.h get_next_line.h ft_printf.h
 
 SRC					=	concat_args.c \
 						create_tokenize_list.c \
+						create_tree.c \
 						display_list.c \
+						display_tree.c \
 						handle_cmd_and_path_utils.c \
 						handle_cmd_and_path.c \
 						tokenize_utils.c \

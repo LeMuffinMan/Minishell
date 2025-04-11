@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 00:19:05 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/09 04:12:34 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/10 20:51:46 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ static void	add_lexer_back(t_lexer **head, char *str)
 	new_node->prev = tmp;
 }
 
-static int	alloc_lexer(char *str, char c, t_lexer **stack)
+static int	alloc_lexer(char *str, char c, t_lexer **list)
 {
 	int		i;
 	char	*res;
@@ -100,15 +100,15 @@ static int	alloc_lexer(char *str, char c, t_lexer **stack)
 	res = ft_strndup(str, i);
 	if (!res)
 	{
-		free_lexer(*stack,
+		free_lexer(*list,
 			"Malloc failed in function 'alloc_lexer'", MEM_ALLOC);
 	}
-	add_lexer_back(stack, res);
+	add_lexer_back(list, res);
 	free(res);
 	return (i);
 }
 
-void	parse_line(char *str, t_lexer **stack)
+void	parse_line(char *str, t_lexer **list)
 {
 	int		i;
 	int		start;
@@ -120,7 +120,7 @@ void	parse_line(char *str, t_lexer **stack)
 		if (str[i] == ' ')
 			i++;
 		else if (str[i] == '"' || str[i] == '\'')
-			i += alloc_lexer(&str[i], str[i], stack);
+			i += alloc_lexer(&str[i], str[i], list);
 		else
 		{
 			start = i;
@@ -129,9 +129,9 @@ void	parse_line(char *str, t_lexer **stack)
 			word = ft_strndup(&str[start], i - start);
 			if (!word)
 			{
-				free_lexer(*stack, "Malloc failed in parse_line", MEM_ALLOC);
+				free_lexer(*list, "Malloc failed in parse_line", MEM_ALLOC);
 			}
-			add_lexer_back(stack, word);
+			add_lexer_back(list, word);
 			free(word);
 		}
 	}

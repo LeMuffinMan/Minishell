@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 02:33:29 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/09 17:54:33 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/11 00:27:20 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,9 @@
 # define BOLD_CYAN "\e[1;36m"
 # define STOP_COLOR "\e[0m"
 
-# include "stack.h"
+# include "list.h"
 # include "lexer.h"
+# include "tree.h"
 
 struct s_token;
 typedef struct s_token t_token;
@@ -32,5 +33,6 @@ typedef struct s_lexer t_lexer;
 
 void	display_list(t_token *head);
 void	display_lexer(t_lexer *head);
+void	print_ast(t_tree *node, int depth);
 
 #endif

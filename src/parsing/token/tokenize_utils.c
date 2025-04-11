@@ -6,12 +6,12 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 19:51:51 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/09 17:54:33 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/10 20:51:46 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "token.h"
-#include "stack.h"
+#include "list.h"
 #include "libft.h"
 #include <stdlib.h>
 

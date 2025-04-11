@@ -6,11 +6,11 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 04:50:03 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/09 18:03:24 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/11 17:14:00 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "stack.h"
+#include "list.h"
 #include "libft.h"
 #include <stdlib.h>
 
@@ -38,8 +38,12 @@ static bool	is_same_family(t_token *node)
 		|| (node->token == BUILT_IN) || (node->token == HD)
 		|| (node->token == R_IN) || (node->token == TRUNC))
 	{
-		if (node->next->error != 0)
-			return (true);
+		if (node->next)
+		{
+			if ((node->next->error != 0) || (node->next->token == D_QUOTE)
+				|| (node->next->token == S_QUOTE))
+				return (true);
+		}	
 	}
 	return (false);
 }
@@ -87,6 +91,7 @@ static void	change_node(t_token **node)
 	(*node)->next = next_node->next;
 	free_tab(next_node->content);
 	free(next_node);
+	next_node = NULL;
 }
 
 void	concat_args(t_token **head)

@@ -6,11 +6,11 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 02:24:25 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/09 17:54:33 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/10 20:51:46 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "stack.h"
+#include "list.h"
 #include "libft.h"
 #include "ft_printf.h"
 #include <stdlib.h>
@@ -77,19 +77,19 @@ void	add_back(t_token **head, char *str)
 	new_node->prev = tmp;
 }
 
-void	free_parse(t_token *stack, const char *str, int error)
+void	free_parse(t_token *list, const char *str, int error)
 {
 	t_token	*tmp;
 	t_token	*next_node;
 
-	if (!stack)
+	if (!list)
 		return ;
-	if (stack->prev)
+	if (list->prev)
 	{
-		while (stack->prev)
-			stack = stack->prev;
+		while (list->prev)
+			list = list->prev;
 	}
-	tmp = stack;
+	tmp = list;
 	while (tmp)
 	{
 		next_node = tmp->next;
