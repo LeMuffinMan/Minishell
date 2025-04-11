@@ -19,12 +19,12 @@ BOLD_CYAN			=	\e[1;36m
 STOP_COLOR			=	\e[0m
 
 -include $(DEPS) $(DEPS_BONUS)
-vpath %.c src/parsing/token:src/parsing/lexer:src/parsing/tree:src
+vpath %.c src/parsing/token:src/parsing/lexer:src/parsing/tree:src/builtins:src/utils:src
 vpath %.h include:src/libft/include
 vpath %.a src/libft/obj
 
 CC					=	cc
-FLAG				=	-Wall -Wextra -Werror -g -MMD -MP -I$(LIBFT_HEAD_DIR) -I$(HEAD_DIR)
+FLAG				=	-Wall -Wextra -Werror -g3 -MMD -MP -I$(LIBFT_HEAD_DIR) -I$(HEAD_DIR)
 NAME				=	minishell
 HEAD				=	token.h list.h display.h lexer.h
 HEAD_DIR			=	include/
@@ -35,7 +35,8 @@ LIB_LIBFT			=	$(LIBFT_DIR)obj/libft.a
 LIBFT_FLAG			=	-L$(LIBFT_DIR)src/ $(LIB_LIBFT)
 LIBFT_HEAD			=	libft.h get_next_line.h ft_printf.h
 
-SRC					=	concat_args.c \
+SRC					=	main.c \
+						concat_args.c \
 						create_tokenize_list.c \
 						create_tree.c \
 						display_list.c \
@@ -45,7 +46,19 @@ SRC					=	concat_args.c \
 						tokenize_utils.c \
 						tokenize.c \
 						lexer.c \
-						main.c
+						exec.c \
+    				init.c \
+    				builtins/echo.c \
+    				builtins/cd.c \
+    				builtins/pwd.c \
+    				builtins/unset.c \
+    				builtins/export.c \
+    				builtins/env.c \
+    				builtins/exit.c \
+						utils/builtins_utils.c \
+						utils/env_utils.c \
+						utils/init_utils.c \
+						utils/prints.c \
 
 DEPS				=	$(SRC:%.c=$(OBJ_DIR)%.d)
 OBJ					=	$(SRC:%.c=$(OBJ_DIR)%.o)
