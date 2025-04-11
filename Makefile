@@ -19,7 +19,7 @@ BOLD_CYAN			=	\e[1;36m
 STOP_COLOR			=	\e[0m
 
 -include $(DEPS) $(DEPS_BONUS)
-vpath %.c src/parsing/token:src/parsing/lexer:src/parsing/tree:src/builtins:src/utils:src
+vpath %.c src/parsing/token:src/parsing/lexer:src/parsing/tree:src/builtins:src/utils:src/parsing:src
 vpath %.h include:src/libft/include
 vpath %.a src/libft/obj
 
@@ -36,6 +36,7 @@ LIBFT_FLAG			=	-L$(LIBFT_DIR)src/ $(LIB_LIBFT)
 LIBFT_HEAD			=	libft.h get_next_line.h ft_printf.h
 
 SRC					=	main.c \
+						parser.c \
 						concat_args.c \
 						create_tokenize_list.c \
 						create_tree.c \
@@ -77,7 +78,7 @@ $(NAME): $(OBJ)
 	@make -C $(LIBFT_DIR)
 	@echo "$(BOLD_GREEN)SUCCESS !!!$(STOP_COLOR)"
 	@echo "$(BOLD_BLUE)Creating executable $(NAME)...$(BOLD_PURPLE)"
-	$(CC) $(OBJ) $(PIPEX_FLAG) $(LIBFT_FLAG) -o $(NAME)
+	$(CC) $(OBJ) $(PIPEX_FLAG) $(LIBFT_FLAG) -l readline -o $(NAME)
 	@echo "$(STOP_COLOR)$(BOLD_GREEN)SUCCESS !!!$(STOP_COLOR)"
 
 clean:

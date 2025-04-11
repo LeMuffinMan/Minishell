@@ -21,10 +21,7 @@ int	print_array(char **array)
 
 	i = 0;
 	while (array[i])
-	{
-		output = ft_strjoin(output, array[i], output);
-		output = ft_strjoin(output, "\n", output);
-	}
+		output = ft_strjoin(array[i], "\n");
 	ft_putstr_fd(output, 1);
 	free(output);
 	return (0);
@@ -34,17 +31,25 @@ int	print_sorted_env(t_var **env)
 {
 	t_var	*tmp;
 	char	*s;
+	char *temp;
 
 	tmp = *env;
 	s = ft_strdup("declare -x ");
 	while (tmp)
 	{
-		s = ft_strjoin(s, tmp->key, s);
+		s = ft_strjoin(s, tmp->key);
+		temp = s;
 		if (tmp->value)
 		{
-			s = ft_strjoin(s, "=\"", s);
-			s = ft_strjoin(s, tmp->value, s);
-			s = ft_strjoin(s, "\"\n", s);
+			s = ft_strjoin(s, "=\"");
+			free(temp);
+			temp = s;
+			s = ft_strjoin(s, tmp->value);
+			free(temp);
+			temp = s;
+			s = ft_strjoin(s, "\"\n");
+			free(temp);
+			temp = s;
 		}
 		ft_putstr_fd(s, 1);
 		free(s);

@@ -65,14 +65,14 @@ void	add_first_node(t_var **lst, t_var *new, char *s, int mode)
 	new->key = ft_strdup(key_value[0]);
 	if (key_value[1])
 		new->value = ft_strdup(key_value[1]);
-	ft_free(key_value);
+	free_array(key_value);
 	*lst = new;
 	new->next = NULL;
 	set_node(new, mode);
 }
 
 // 0 = aucun des deux / 1 = env / 2 = export / 3 = env + export
-void	add_back(t_var **lst, char *s, int mode)
+void	add_back_var(t_var **lst, char *s, int mode)
 {
 	t_var	*ptr;
 	t_var	*new;
@@ -97,7 +97,7 @@ void	add_back(t_var **lst, char *s, int mode)
 		new->key = ft_strdup(key_value[0]);
 		if (key_value[1])
 			new->value = ft_strdup(key_value[1]);
-		ft_free(key_value);
+		free_array(key_value);
 		set_node(new, mode);
 	}
 }

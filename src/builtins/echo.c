@@ -16,6 +16,7 @@ int	builtin_echo(char **arg)
 	int		option;
 	int		i;
 	char	*s;
+	char *tmp;
 
 	// booleen ?
 	option = 0;
@@ -41,14 +42,18 @@ int	builtin_echo(char **arg)
 	// on join tous les args avec un space entre chaque, sauf le dernier
 	while (arg[i])
 	{
-		s = ft_strjoin(s, arg[i], s);
+		s = ft_strjoin(s, arg[i]);
 		if (arg[i + 1])
-			s = ft_strjoin(s, " ", s);
+		{
+			tmp = s;
+			s = ft_strjoin(s, " ");
+			free(tmp);
+		}
 		i++;
 	}
 	// si on n'avait pas de -n : on join le \n
 	if (option == 0)
-		s = ft_strjoin(s, "\n", s);
+		s = ft_strjoin(s, "\n");
 	// si on dup2 au tout debut, ici 1 ecrira bien ou je vuex ?
 	if (s)
 		ft_putstr_fd(s, 1);

@@ -97,7 +97,7 @@ int	update_last_cmd_var(t_var **env, char *last_cmd)
 		tmp = tmp->next;
 	}
 	if (!tmp) // ca ne devrait pas pouvoir etre possible
-		add_back(env, last_cmd, 1);
+		add_back_var(env, last_cmd, 1);
 	else
 	{
 		free(tmp->value);

@@ -18,7 +18,7 @@ int	builtin_pwd(void)
 	s = NULL;
 	if (getcwd(buf, sizeof(buf)) != NULL)
 	{
-		s = ft_strjoin(buf, "\n", s);
+		s = ft_strjoin(buf, "\n");
 		ft_putstr_fd(s, 1);
 		free(s);
 		return (0);

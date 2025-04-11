@@ -22,8 +22,8 @@ int	init_last_cmd_var(char *name, t_var **env)
 	char	*s;
 
 	s = NULL;
-	s = ft_strjoin("_=/usr/bin/./", name, s);
-	add_back(env, s, 1);
+	s = ft_strjoin("_=/usr/bin/./", name);
+	add_back_var(env, s, 1);
 	free(s);
 	return (0);
 }
@@ -44,14 +44,14 @@ int	build_minimal_env(t_var **env, char **arg)
 		//  free avant !
 		return (1);
 	}
-	s = ft_strjoin("PWD=", s, s);
-	add_back(env, s, 3);
+	s = ft_strjoin("PWD=", s);
+	add_back_var(env, s, 3);
 	free(s);
 	s = ft_strdup("SHLVL=1");
-	add_back(env, s, 3);
+	add_back_var(env, s, 3);
 	free(s);
 	s = ft_strdup("OLDPWD"); // updated in CD seule;ent ?
-	add_back(env, s, 2);
+	add_back_var(env, s, 2);
 	free(s);
 	init_last_cmd_var(arg[0], env);
 	return (0);
@@ -81,12 +81,13 @@ int	init_and_incremente_shlvl(char *s, t_var **env)
 		else
 		{
 			shlvl_n = ft_itoa(n + 1);
-			line = ft_strjoin("SHLVL=", shlvl_n, shlvl_n);
+			line = ft_strjoin("SHLVL=", shlvl_n);
+			free(shlvl_n);
 		}
 	}
 	if (!line)
 		line = ft_strdup("SHLVL=1");
-	add_back(env, line, 3);
+	add_back_var(env, line, 3);
 	free(line);
 	return (0);
 }
@@ -107,7 +108,7 @@ int	init_env(t_var **new_env, char **env, char **arg)
 		if (!ft_strncmp("SHLVL=", env[i], 6))
 			init_and_incremente_shlvl(env[i], new_env);
 		else
-			add_back(new_env, env[i], 3); // pas sur
+			add_back_var(new_env, env[i], 3); // pas sur
 		/* t_var *tmp; */
 		/**/
 		/* tmp = *new_env; */

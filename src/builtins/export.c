@@ -69,6 +69,20 @@
 // Pareil pour chaque arg
 //
 
+int free_array(char **array)
+{
+	int i;
+	
+	i = 0;
+	while(array[i])
+	{
+		free(array[i]);
+		i++;
+	}
+	free(array);
+	return (0);
+}
+
 t_var	*is_known_key(t_var **env, char *key)
 {
 	t_var	*tmp;
@@ -121,7 +135,7 @@ int	builtin_export(t_var **env, char **arg)
 	{
 		key_value = ft_split(arg[1], '=');
 		node = is_known_key(env, key_value[0]);
-		ft_free(key_value);
+		free_array(key_value);
 		// Si on a deja la cle dans les variables non visibles,
 			/* on la rend visible */
 		if (node)
@@ -131,7 +145,7 @@ int	builtin_export(t_var **env, char **arg)
 			return (0);
 		}
 		// sinon on l'ajoute et on la rend visible
-		add_back(env, arg[1], 3); // changer le systene de mode ?
+		add_back_var(env, arg[1], 3); // changer le systene de mode ?
 	}
 	return (0);
 }

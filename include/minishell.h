@@ -13,6 +13,8 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
+#include "tree.h"
+
 // typedef enum e_token
 // {
 //   APPEND,
@@ -66,12 +68,13 @@ typedef struct s_var
 // } t_gar;
 
 int exec (char **arg, t_var **env);
-void	add_back(t_var **lst, char *s, int mode);
+void	add_back_var(t_var **lst, char *s, int mode);
 void	add_first_node(t_var **lst, t_var *new, char *s, int mode);
 void	free_list(t_var **l);
 
 //BUILTINS
 //builtins/export
+int free_array(char **array);
 int	compare_keys(char *key1, char *key2);
 int builtin_export(t_var **env, char **arg);
 //builtins/cd
@@ -103,5 +106,7 @@ char	*get_value(t_var **env, char *key);
 int	update_env(t_var **env);
 //utils/prints.c
 int	print_sorted_env(t_var **env);
+
+t_tree	*parse(char *line, char **envp);
 
 #endif
