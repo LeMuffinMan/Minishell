@@ -6,7 +6,7 @@
 #    By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/04/01 17:44:57 by oelleaum         ###   ########lyon.fr    #
+#    Updated: 2025/04/11 17:23:17 by oelleaum         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,6 +35,7 @@ LIB_LIBFT			=	$(LIBFT_DIR)obj/libft.a
 LIBFT_FLAG			=	-L$(LIBFT_DIR)src/ $(LIB_LIBFT)
 LIBFT_HEAD			=	libft.h get_next_line.h ft_printf.h
 
+<<<<<<< HEAD
 SRC					=	main.c \
 						concat_args.c \
 						create_tokenize_list.c \
