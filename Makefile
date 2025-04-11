@@ -6,7 +6,7 @@
 #    By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/04/01 17:44:57 by oelleaum         ###   ########lyon.fr    #
+#    Updated: 2025/04/11 17:23:17 by oelleaum         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,6 +26,7 @@ LIBFT_OBJ_DIR = libft/obj
 SRC_FILES = \
     $(SRC_DIR)/main.c \
     $(SRC_DIR)/exec.c \
+    $(SRC_DIR)/init.c \
     $(SRC_DIR)/builtins/echo.c \
     $(SRC_DIR)/builtins/cd.c \
     $(SRC_DIR)/builtins/pwd.c \
@@ -33,8 +34,10 @@ SRC_FILES = \
     $(SRC_DIR)/builtins/export.c \
     $(SRC_DIR)/builtins/env.c \
     $(SRC_DIR)/builtins/exit.c \
-		$(SRC_DIR)/utils/builtins_utils.c
-
+	$(SRC_DIR)/utils/builtins_utils.c \
+	$(SRC_DIR)/utils/env_utils.c \
+	$(SRC_DIR)/utils/init_utils.c \
+	$(SRC_DIR)/utils/prints.c \
 
 # vpath %.c src
 # vpath %.h include

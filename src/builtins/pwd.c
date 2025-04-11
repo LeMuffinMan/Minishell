@@ -1,15 +1,15 @@
 
 
-#include <limits.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <stdio.h>
 #include "libft.h"
 #include "minishell.h"
+#include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-//des cas nuls ?
-
+// des cas nuls ?
 // tester en unsetant PWD ...
+// tester un unset avec un env vide
 int	builtin_pwd(void)
 {
 	char	buf[PATH_MAX];
@@ -18,7 +18,7 @@ int	builtin_pwd(void)
 	s = NULL;
 	if (getcwd(buf, sizeof(buf)) != NULL)
 	{
-		s = build_line(NULL, buf, "\n", NULL);
+		s = ft_strjoin(buf, "\n", s);
 		ft_putstr_fd(s, 1);
 		free(s);
 		return (0);
@@ -32,8 +32,10 @@ int	builtin_pwd(void)
 	return (0);
 }
 
-/* Print the absolute pathname of the current working directory. If the -P option */
-/* is supplied, the pathname printed will not contain symbolic links. If the -L */
+/* Print the absolute pathname of the current working directory. If the
+	-P option */
+/* is supplied, the pathname printed will not contain symbolic links. If the
+	-L */
 /* option is supplied, the pathname printed may contain symbolic links. The */
 /* return status is zero unless an error is encountered while determining the name */
 /* of the current directory or an invalid option is supplied. */

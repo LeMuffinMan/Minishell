@@ -1,25 +1,14 @@
 
 #include "libft.h"
 #include "minishell.h"
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
-
-//DECIDER
+// DECIDER
 //
 //- parsing clean les -n dupliques ?
 //- histoire du \n du prompt ?
 
-//REVOIR BUILD LINE !
-// tests :
-// echo
-// echo -n
-// echo -n -n -n
-// echo -n hello
-// echo -n -n hello
-// echo hello
-//
-//
 // Si echo $_
 // 	on veut afficher le dernier argument !
 int	builtin_echo(char **arg)
@@ -66,5 +55,3 @@ int	builtin_echo(char **arg)
 	free(s);
 	return (0);
 }
-
-
