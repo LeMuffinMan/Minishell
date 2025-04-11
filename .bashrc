@@ -5,6 +5,13 @@
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'
 alias echo='echo -n'
+alias gs='git status'            
+alias ga='git add .'            
+alias gc='git commit -m'       
+alias gp='git push'              
+alias gpo='git push origin'      
+alias gst='git stash'            
+alias gpl='git pull'              
 
 PS1='[\u@\h \W]\$ '
 PS2='>'
