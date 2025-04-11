@@ -4,10 +4,10 @@
 
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'
+alias echo='echo -n'
 
 PS1='[\u@\h \W]\$ '
 PS2='>'
-PS4='+'
 
 # export VAR=var
 # unset HOME
@@ -23,10 +23,12 @@ mkcd() {
     mkdir -p "$1" && cd "$1"
 }
 
-# --- Recherche rapide ---
-grepf() {
-    grep -rnw '.' -e "$1"
+# --- Raccourci Git ---
+gitpush() {
+    git add . && git commit -m "$1" && git push
 }
+
+
 
 # --- Gestion des processus ---
 # killp() {
@@ -51,12 +53,7 @@ currency() {
 
 # --- Sauvegarde rapide ---
 backup() {
-    cp "$1" "$1.bak_$(date +%Y%m%d_%H%M%S)"
-}
-
-# --- Raccourci Git ---
-gitpush() {
-    git add . && git commit -m "$1" && git push
+    cp "$1" "$1.bak"
 }
 
 # --- Calculatrice simple ---
