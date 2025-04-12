@@ -21,9 +21,9 @@ t_tree	*parse(char *line, char **envp)
 	t_token	*token;
 	t_lexer	*lexer;
 	t_tree	*root;
-	int		i;
+	/* int		i; */
 
-	i = 0;
+	/* i = 0; */
 	/* if (ac != 2) */
 	/* 	ft_error("Usage: ./parsing arg\n", E_IO); */
 	token = NULL;

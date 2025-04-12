@@ -6,41 +6,77 @@
 #include <readline/readline.h> // compiler avec -l readline
 #include <fcntl.h>
 
+// Virer les ' ?
+// Virer les tab et espaces des fct ?
+// Reconnaitre certaines commandes
+// mettre GNL
+// integrer source ?
+//
+// Alias :
+// ->exec : regenerer un char** pour les arg
+//
+// Var : 
+// revoir le double = check ?
+// ajouter a l'env
+//
+// Cmd :
+// seulement built in ?
+//
+// fct 
+// expands $1
+// env var
+// quotes
+// cmd substitution
+
 #define BUFFER_SIZE 1024
 
-typedef struct s_bashrc 
+typedef struct s_minishellrc 
 {
   char *line;
-  struct s_bashrc *next;
-} t_bashrc;
+  struct s_minishellrc *next;
+} t_minishellrc;
 
-typedef struct s_var
-{
-  char *key;
-  char *value;
-  struct s_var *next;
-} t_var;
+/* typedef struct s_var */
+/* { */
+/*   char *key; */
+/*   char *value; */
+/*   struct s_var *next; */
+/* } t_var; */
 
 typedef struct s_fct
 {
-  char *cmd_line;
-  struct s_var var; // je peux mettre t_var ici ?
+    char *name;
+    char **content;
   struct s_fct *next;
 } t_fct;
 
-void add_first_node_bashrc(t_bashrc **lst, t_bashrc *new, char *line)
+int free_array_minishell_rc(char **array)
+{
+    int i;
+
+    i = 0;
+    while (array && array[i])
+    {
+        free(array[i]);
+        i++;
+    }
+    free(array);
+    array = NULL;
+}
+
+void add_first_node_minishellrc(t_minishellrc **lst, t_minishellrc *new, char *line)
 {
     new->line = ft_strdup(line);
     new->next = NULL;
     *lst = new;
 }
 
-void add_back_bashrc(t_bashrc **lst, char *line) 
+void add_back_minishellrc(t_minishellrc **lst, char *line) 
 {
-    t_bashrc *ptr;
-    t_bashrc *new;
+    t_minishellrc *ptr;
+    t_minishellrc *new;
 
-    new = malloc(sizeof(t_bashrc));
+    new = malloc(sizeof(t_minishellrc));
     if (new == NULL)
     {
         exit(139);
@@ -50,7 +86,7 @@ void add_back_bashrc(t_bashrc **lst, char *line)
     
     if (*lst == NULL)
     {
-        add_first_node_bashrc(lst, new, line);
+        add_first_node_minishellrc(lst, new, line);
     }
     else
     {
@@ -62,10 +98,10 @@ void add_back_bashrc(t_bashrc **lst, char *line)
     }
 }
 
-void free_bashrc(t_bashrc **bashrc)
+void free_minishellrc(t_minishellrc **minishellrc)
 {
-    t_bashrc *current = *bashrc;
-    t_bashrc *next;
+    t_minishellrc *current = *minishellrc;
+    t_minishellrc *next;
 
     while (current != NULL)
     {
@@ -75,14 +111,14 @@ void free_bashrc(t_bashrc **bashrc)
         free(current);
         current = next;
     }
-    *bashrc = NULL;
+    *minishellrc = NULL;
 }
 
-int print_bashrc(t_bashrc **bashrc)
+int print_minishellrc(t_minishellrc **minishellrc)
 {
-    t_bashrc *tmp;
+    t_minishellrc *tmp;
 
-    tmp = *bashrc;
+    tmp = *minishellrc;
     while (tmp)
     {
         if (tmp->line)  // Vérifier que line n'est pas NULL
@@ -107,11 +143,12 @@ void	add_first_node_var(t_var **lst, t_var *new, char *s)
 	new->next = NULL;
 }
 
-void	add_back_var(t_var **lst, char *s) 
+void	add_back_var_minishellrc(t_var **lst, char *s) 
 {
 	t_var	*ptr;
 	t_var	*new;
 	char **key_value;
+	char *cleaned_s;
 
 	new = malloc(sizeof(t_var));
 	if (new == NULL)
@@ -129,8 +166,10 @@ void	add_back_var(t_var **lst, char *s)
 		ptr->next = new;
 		new->next = NULL;
     if (!ft_strncmp(s, "alias ", 6))
-      ft_memmove(s, s + 6, ft_strlen(s) - 5); 
-		key_value = ft_split(s, '=');
+      ft_memmove(s, s + 6, ft_strlen(s) - 5);
+        cleaned_s = ft_strtrim(s, "\n");
+		key_value = ft_split(cleaned_s, '=');
+		free(cleaned_s);
 		new->key = ft_strdup(key_value[0]);
 		if (key_value[1])
 			new->value = ft_strdup(key_value[1]);
@@ -186,104 +225,225 @@ int print_var(t_var **var)
   }
 }
 
-/* int add_back_fct(t_fct **fct) */
-/* { */
-/*   while (!find_closed_bracket(s)) */
-/*   { */
-/*     while (s[i] && s[i] == ' ') */
-/*       i++; */
-/*     if (s[i]) */
-/*     { */
-/*       //on tokenise les variables */
-/*         //pour plus loin : si on a un $( : on cree un t_var dedie */
-/*       //on tokenise les cmdlines */
-/*       //utiliser le parser normal  */
-/*     } */
-/*     tmp = tmp->next; */
-/*   } */
-  //tant qu'on n'a pas de }
-    //Tant qu'on n'a que des espaces on skip
-    //si fin de line, on tmp->next
-    //cmd_line = split(line + (spaces nb), ' ')
-    //add_back_cmd_line(cmd_line)
-  //si on a un }
-  //on recupere la ligne sans le }
-/*   return (0); */
-/* } */
-
-/* int is_a_shell_function(char *s) */
-/* { */
-/*   int i; */
-/*   int parenthesis; */
-/**/
-/*   i = 0; */
-/*   parenthesis = 1; */
-/*   while (s && s[i]) */
-/*   { */
-/*     if (s[i] == '(') */
-/*       parenthesis--; */
-/*     if (s[i] == ')' && parenthesis == 0) */
-/*       return (1); */
-/*     i++; */
-/*   } */
-/*   return (0); */
-/* } */
-
-int parse_bashrc(t_bashrc **bashrc)
+int add_back_fct(t_minishellrc **minishellrc, t_fct **shell_fct, char *name)
 {
-  t_bashrc *tmp;
+    t_minishellrc *tmp;
+    t_fct *temp;
+    t_fct *new_node;
+    int i;
+
+    if (!minishellrc || !*minishellrc)
+        return (1);
+
+    // Count lines until '}'
+    i = 0;
+    tmp = *minishellrc;
+    while(tmp && !ft_strchr(tmp->line, '}'))
+    {
+        i++;
+        tmp = tmp->next;
+    }
+    if (!tmp) // No closing brace found
+        return (1);
+
+    // Create new node
+    new_node = malloc(sizeof(t_fct));
+    if (!new_node)
+        return (1);
+    new_node->content = malloc(sizeof(char *) * (i + 1)); // Fixed allocation size
+    if (!new_node->content)
+    {
+        free(new_node);
+        return (1);
+    }
+
+    // Initialize new node
+    new_node->name = ft_strdup(name);
+    new_node->next = NULL;
+
+    // Copy content
+    tmp = *minishellrc;
+    if (ft_strchr(tmp->line, '{'))
+        tmp = tmp->next;
+    i = 0;
+    while(tmp && !ft_strchr(tmp->line, '}'))
+    {
+        new_node->content[i] = ft_strdup(tmp->line);
+        i++;
+        tmp = tmp->next;
+    }
+    new_node->content[i] = NULL;
+
+    // Add to list
+    if (!*shell_fct)
+    {
+        *shell_fct = new_node;
+    }
+    else 
+    {
+        temp = *shell_fct;
+        while (temp->next) // Fixed: stop at last node
+            temp = temp->next;
+        temp->next = new_node;
+    }
+
+    return (0);
+}
+
+//on cherche un char suivit de ()
+//puis on cherche un { : il ne doit pas y avoir de char ASCII entre les deux
+//Puis on cherche un }
+//on a trouve si tmp n'est pas null
+int is_a_shell_function(char *s)
+{
+    int i;
+    int parenthesis;
+
+    parenthesis = 0;
+    i = 0;
+    while (s && s[i])
+    {
+        if (s[i] == '(' && i != 0 && ft_isalpha(s[i - 1]))
+            parenthesis++;
+        if (s[i] == ')' && parenthesis == 1)
+            return (1);
+        i++;
+    }
+    return (0);
+}
+
+int free_fct(t_fct **fct)
+{
+    t_fct *tmp;
+    t_fct *next;
+
+    tmp = *fct; 
+    while (tmp)
+    {
+        free(tmp->name);
+        free_array_minishell_rc(tmp->content);
+        next = tmp->next;
+        free(tmp);
+        tmp = next;
+    }
+    fct = NULL;
+}
+
+void print_fct(t_fct **fct)
+{
+    t_fct *tmp;
+    int i;
+    
+    if (!fct || !*fct)  // Check if pointer is NULL or points to NULL
+        return;
+
+    tmp = *fct;
+    while (tmp)
+    {
+        if (tmp->name)  // Check if name exists
+            ft_putstr_fd(tmp->name, 1);
+            ft_putstr_fd("\n", 1);
+        
+        if (tmp->content)  // Check if content array exists
+        {
+            i = 0;
+            while (tmp->content[i])  // Check if current string exists
+            {
+                if (tmp->content[i])  // Additional safety check
+                    ft_putstr_fd(tmp->content[i], 1);
+                i++;
+            }
+        }
+        tmp = tmp->next;
+        ft_putstr_fd("\n", 1);
+    }
+}
+
+int parse_minishellrc(t_minishellrc **minishellrc)
+{
+  t_minishellrc *tmp;
   t_var *alias;
   t_var *var;
   char *ps1;
-  /* t_fct *fct; */
+  t_fct *fct;
+    char **name;
+    char *s;
   /* t_cmd_line *t_cmd_line; */
 
   ps1 = NULL;
-  tmp = *bashrc;
+  tmp = *minishellrc;
   alias = NULL;
   var = NULL;
+  fct = NULL;
   while (tmp)
   {
     if (tmp->line && tmp->line[0] != '#')
     {
       if (!ft_strncmp(tmp->line, "alias ", 6))
-        add_back_var(&alias, tmp->line);
+        add_back_var_minishellrc(&alias, tmp->line);
       else if (!ft_strncmp(tmp->line, "PS1", 4))
-        ps1 = ft_strdup(ft_strrchr(tmp->line, '='));
+        {
+            s = ft_strtrim(tmp->line, "\n");
+            ps1 = ft_strdup(ft_strrchr(s, '='));
+            free(s);
+        }
       else if (is_a_variable(tmp->line))
-        add_back_var(&var, tmp->line);
-      /* else if (is_a_shell_function(tmp->line)) */
-      /* { */
-        /* add_back_fct(&fct, tmp); */
-        /* tant qu'on n'a pas de } on tmp->next */
-      /* } */
+            {
+                s = ft_strtrim(tmp->line, "\n");
+                add_back_var_minishellrc(&var, s);
+                free(s);
+            }
+      else if (is_a_shell_function(tmp->line))
+      {
+        name = ft_split(tmp->line, '(');
+        if(ft_strchr(tmp->line, '{'))
+            tmp = tmp->next;
+        else 
+        {
+            while(ft_strchr(tmp->line, '{'))
+                tmp = tmp->next;
+            tmp = tmp->next;
+        }
+        add_back_fct(&tmp, &fct, name[0]);
+        free_array_minishell_rc(name);
+        while (!ft_strchr(tmp->line, '}'))
+            tmp = tmp->next;
+        tmp = tmp->next;
+      }
     }
+        if (tmp)
     tmp = tmp->next;
   }
-  ft_putstr_fd("alias : \n", 1);
+  ft_putstr_fd("---alias---\n", 1);
   print_var(&alias);
-  ft_putstr_fd("var : \n", 1);
+  ft_putstr_fd("-----------\n", 1);
+  ft_putstr_fd("---var---\n", 1);
   print_var(&var);
+  ft_putstr_fd("-----------\n", 1);
+  ft_putstr_fd("---fct---\n", 1);
+  print_fct(&fct);
+  ft_putstr_fd("-----------\n", 1);
   free_var(&alias);
   free_var(&var);
+  free_fct(&fct);
 }
 
-int load_bashrc(void)
+int load_minishellrc(void)
 {
     int fd;
     char buffer[BUFFER_SIZE + 1];
     char *line;
-    t_bashrc *bashrc;
+    t_minishellrc *minishellrc;
     char *temp;
     ssize_t bytes_read;
     size_t line_len;
     char *new_line;
     int i;
 
-    bashrc = NULL;
+    minishellrc = NULL;
     line = NULL;
     line_len = 0;
-    fd = open(".bashrc", O_RDONLY);
+    fd = open(".minishellrc", O_RDONLY);
     if (fd < 0)
         return (-1);
     
@@ -300,7 +460,7 @@ int load_bashrc(void)
                 if (new_line == NULL)
                 {
                     free(line);
-                    free_bashrc(&bashrc);
+                    free_minishellrc(&minishellrc);
                     close(fd);
                     exit(139);
                 }
@@ -312,7 +472,7 @@ int load_bashrc(void)
                 }
                 new_line[line_len] = '\n';
                 new_line[line_len + 1] = '\0';
-                add_back_bashrc(&bashrc, new_line);
+                add_back_minishellrc(&minishellrc, new_line);
                 free(new_line);
                 line_len = 0;
             }
@@ -322,7 +482,7 @@ int load_bashrc(void)
                 if (temp == NULL)
                 {
                     free(line);
-                    free_bashrc(&bashrc);
+                    free_minishellrc(&minishellrc);
                     close(fd);
                     exit(139);
                 }
@@ -345,26 +505,26 @@ int load_bashrc(void)
         line = realloc(line, line_len + 1);
         if (line == NULL)
         {
-            free_bashrc(&bashrc);
+            free_minishellrc(&minishellrc);
             close(fd);
             exit(139);
         }
         line[line_len] = '\0';
-        add_back_bashrc(&bashrc, line);
+        add_back_minishellrc(&minishellrc, line);
         free(line);
     }
     
     close(fd);
-    /* print_bashrc(&bashrc); */
-    parse_bashrc(&bashrc);
-    free_bashrc(&bashrc);
+    /* print_minishellrc(&minishellrc); */
+    parse_minishellrc(&minishellrc);
+    free_minishellrc(&minishellrc);
     return (0);
 }
 
 
 int main(void)
 {
-    load_bashrc();
+    load_minishellrc();
     return (0);
 }
 

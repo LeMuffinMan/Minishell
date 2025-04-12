@@ -21,9 +21,12 @@ int	print_array(char **array)
 
 	i = 0;
 	while (array[i])
+	{
 		output = ft_strjoin(array[i], "\n");
-	ft_putstr_fd(output, 1);
-	free(output);
+		ft_putstr_fd(output, 1);
+		free(output);
+		i++;
+	}
 	return (0);
 }
 

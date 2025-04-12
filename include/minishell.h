@@ -106,6 +106,7 @@ char	*get_value(t_var **env, char *key);
 int	update_env(t_var **env);
 //utils/prints.c
 int	print_sorted_env(t_var **env);
+int	print_array(char **array);
 
 t_tree	*parse(char *line, char **envp);
 
