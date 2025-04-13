@@ -237,6 +237,7 @@ char *exctract_branch(char *path_to_head)
   if (fd == -1) //retour d'erreur a refaire 
       return NULL;
   line = get_next_line(fd);
+    printf("%s\n", line);
   close(fd);
   if (!ft_strncmp("ref: refs/heads/", line, ft_strlen("ref: refs/heads/")))
   {
@@ -328,7 +329,6 @@ char *get_user()
   char *username;
   char *path;
 
-  //on cherche d'abord l'uid pour assigner user root ?
   username = NULL;
   d = opendir("/home");
   if (!d)
@@ -371,14 +371,18 @@ int main (void)
 /*prompt->ps1 = get_value(env, "PS1");*/
   prompt->user = NULL;
   /* prompt->user = get_value(env, "USER"); */
+  prompt->uid = ft_getuid();
+  if (!ft_strncmp(prompt->uid, "0", 2))
+    prompt->user = "root";
   if (!prompt->user)
     prompt->user = get_user(); //on fait un get_value, si il foire on fait un get_user
-  prompt->uid = ft_getuid();
   prompt->hostname = "Arch";
   /* prompt->hostname = get_hostname(); */
   prompt->pwd = "/home/muffin";
   /* prompt->pwd = get_value(env, "PWD"); */
   prompt->git_branch = get_branch("/home/muffin/42/Minishell");
+  if (prompt->git_branch)
+    printf("%s\n", prompt->git_branch);
   prompt->total_len = 0;
   prompt->prompt = NULL;
   expanded_prompt = get_prompt("[\\u@\\h Minishell \\W] \\g", prompt);
@@ -387,6 +391,7 @@ int main (void)
   free(expanded_prompt);
   free(prompt->git_branch);
   free(prompt->user);
+  free(prompt->uid);
   free(prompt);
   return (0);
 }
