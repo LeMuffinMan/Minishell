@@ -19,7 +19,7 @@ typedef struct s_prompt
 } t_prompt;
 
 
-int get_value_len(t_var **env, char c)
+int get_value_len(t_var **env, char *git_branch, char c)
 {
   if (c == 'u')
     /* return (ft_strlen(get_value(env, "USER"))); */
@@ -30,11 +30,13 @@ int get_value_len(t_var **env, char c)
   if (c == 'W')
     /* return (ft_strlen(get_value(env, "PWD"))); */
     return (ft_strlen("/home/muffin"));
+  if (c == 'g')
+    return (ft_strlen(git_branch));
   else 
     return (0);
 }
 
-int get_prompt_len(char *s, int size)
+int get_prompt_len(char *s, int size, t_prompt *prompt)
 {
   int i;
   int value_len;
@@ -46,7 +48,7 @@ int get_prompt_len(char *s, int size)
   {
     if (s[i] == '\\' && i < (size - 1))
     {
-      value_len = get_value_len(NULL, s[i+1]);
+      value_len = get_value_len(NULL, prompt->git_branch, s[i+1]);
       if (value_len)
         count += value_len;
       else 
@@ -161,7 +163,7 @@ char *get_prompt(char *ps1, t_prompt *prompt)
     if (!prompt->ps1)
         return (NULL);
     len = ft_strlen(prompt->ps1);
-    prompt->total_len = get_prompt_len(prompt->ps1, len);
+    prompt->total_len = get_prompt_len(prompt->ps1, len, prompt);
     prompt->prompt = malloc(sizeof(char) * (prompt->total_len + 4)); // +4 pour $, espace et \0
     if (!prompt->prompt)
         return (NULL);
@@ -274,6 +276,43 @@ char *get_branch (char *pwd)
 /*   return (0); */
 /* } */
 
+char *get_user()
+{
+  DIR *d;
+  struct dirent *dir;
+  char *username;
+  char *path;
+
+  //on cherche d'abord l'uid pour assigner user root ?
+  username = NULL;
+  d = opendir("/home");
+  if (!d)
+    return (NULL);
+  while ((dir = readdir(d)) != NULL)
+  {
+    path = ft_strjoin("/home/", dir->d_name, NULL);
+    if (ft_strncmp(dir->d_name, ".", 2) == 0 || ft_strncmp(dir->d_name, "..", 3) == 0)
+    {
+      free(path);
+      continue;
+    }
+    if (access(path, F_OK | X_OK) == 0)
+    {
+      if (!username) 
+        username = ft_strdup(dir->d_name);
+      else 
+      {
+        free(path);
+        closedir(d);
+        return (NULL);
+      }
+    }
+    free(path);
+  }
+  closedir(d);
+  if (username)
+  return (username);
+}
 
 int main (void)
 {
@@ -285,8 +324,10 @@ int main (void)
   prompt = malloc(sizeof(t_prompt));
   prompt->ps1 = NULL;  
 /*prompt->ps1 = get_value(env, "PS1");*/
-  prompt->user = "muffin";
-  /* prompt->user = get_user(); */
+  prompt->user = NULL;
+  /* prompt->user = get_value(env, "USER"); */
+  if (!prompt->user)
+    prompt->user = get_user(); //on fait un get_value, si il foire on fait un get_user
   prompt->uid = NULL;
   /* prompt->uid = get_uid(); */
   prompt->hostname = "Arch";
@@ -297,9 +338,11 @@ int main (void)
   prompt->total_len = 0;
   prompt->prompt = NULL;
   expanded_prompt = get_prompt("[\\u@\\h Minishell \\W] \\g", prompt);
-  printf("%s\n", expanded_prompt);
+  if (expanded_prompt)
+    printf("%s\n", expanded_prompt);
   free(expanded_prompt);
   free(prompt->git_branch);
+  free(prompt->user);
   free(prompt);
   return (0);
 }
