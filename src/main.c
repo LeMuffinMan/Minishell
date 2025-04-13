@@ -88,11 +88,13 @@ int main(int ac, char **av, char **env)
     error_code = 1;
     // pour ac et av : est-ce qu'on veut accepter des demarrages custom ?
     new_env = NULL;
-    prompt = "[Minishell]$ ";
     ast = NULL;
     /* utiliser getenv ?
         * Si on n'a pas d'env uniquement ?*/
     init_env(&new_env, env, av);
+    prompt = get_prompt(&new_env);
+    if (!prompt)
+        prompt = "[Minishell]$ ";
     while (1)
     {
         line = readline(prompt);
