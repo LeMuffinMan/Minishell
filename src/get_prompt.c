@@ -34,34 +34,6 @@ int get_value_len(t_var **env, char c)
     return (0);
 }
 
-///* int get_prompt_len(char *s, int size/* , t_env **env */) */
-/* { */
-/*   int i; */
-/*   int value_len; */
-/*   int count; */
-/**/
-/*   i = 0; */
-/*   count = 0; */
-/*   while (i < size) */
-/*   { */
-/*     if (s[i] == '\\' && i < (size - 1)) */
-/*     { */
-      /* value_len = get_value_len(env);  */
-/*       value_len = ft_strlen("muffin"); */
-/*       if (value_len) */
-/*         count+=value_len; */
-/*       else  */
-/*         count+=2; */
-/*         i+=2; */
-/*     } */
-/*     else */
-/*     { */
-/*       count++; */
-/*       i++; */
-/*     } */
-/*   } */
-/* } */
-
 int get_prompt_len(char *s, int size)
 {
   int i;
@@ -178,99 +150,6 @@ char ft_getuid()
     res = '#';
   return (res);
 }
-
-/* char *get_prompt(char *ps1, t_prompt *prompt) */
-/* { */
-/*   int i; */
-/*   int len; */
-/**/
-/*   prompt->ps1 = ps1; */
-/*   if (!prompt->ps1) */
-/*     return (NULL); */
-/*   len = ft_strlen(prompt->ps1); */
-/*   i = 0; */
-  //prompt->total_len = get_prompt_len(prompt->ps2, len/* , env */);
-/*   prompt->prompt = malloc(sizeof(char) * prompt->total_len + 4); //pour le $ et le \0 */
-  /* printf("allocated : %d\n", prompt->total_len + 4); */
-/*   while(i < prompt->total_len + 4) */
-/*   { */
-/*     printf("i = %d\nlen + 4 = %d\n", i, prompt->total_len + 4); */
-/*     if (prompt->ps1[i] == '\\' && i < prompt->total_len + 4) */
-/*     { */
-/*       if (prompt->user && prompt->ps1[i + 1] == 'u') */
-/*         i+=prompt_expand(prompt->prompt, prompt->user, i); */
-/*       else if (prompt->hostname && prompt->ps1[i + 1] == 'h') */
-/*         i+=prompt_expand(prompt->prompt, prompt->hostname, i); */
-/*       else if (prompt->pwd && prompt->ps1[i + 1] == 'W') */
-/*         i+=prompt_expand(prompt->prompt, prompt->pwd, i); */
-/*       else  */
-/*         i+=2; */
-/*     } */
-/*     else */
-/*     { */
-/*       prompt->prompt[i] = prompt->ps1[i]; */
-/*       i++; */
-/*     } */
-/*   } */
-/*   prompt->prompt[i] = '$'; */
-/**/
-/*   i++; */
-/*   prompt->prompt[i] = '\0'; */
-/*   return (prompt->prompt); */
-/* } */
-
-/* char *get_prompt(char *ps1, t_prompt *prompt) */
-/* { */
-/*     int i; */
-/*     int j; */
-/*     int len; */
-/**/
-/*     prompt->ps1 = ps1; */
-/*     if (!prompt->ps1) */
-/*         return (NULL); */
-/*     len = ft_strlen(prompt->ps1); */
-/*     prompt->total_len = get_prompt_len(prompt->ps1, len); */
-/*     prompt->prompt = malloc(sizeof(char) * (prompt->total_len + 4)); // +4 pour $, espace et \0 */
-/*     if (!prompt->prompt) */
-/*         return (NULL); */
-/*     i = 0; */
-/*     j = 0; */
-/*     while (prompt->ps1[i] && j < prompt->total_len + 3) // +3 pour $, espace et \0 */
-/*     { */
-/*         if (prompt->ps1[i] == '\\' && prompt->ps1[i + 1]) */
-/*         { */
-/*             if (prompt->user && prompt->ps1[i + 1] == 'u') */
-/*             { */
-/*                 j += ft_strlcpy_prompt(prompt->prompt + j, prompt->user, prompt->total_len + 4 - j); */
-/*                 i += 2; */
-/*             } */
-/*             else if (prompt->hostname && prompt->ps1[i + 1] == 'h') */
-/*             { */
-/*                 j += ft_strlcpy_prompt(prompt->prompt + j, prompt->hostname, prompt->total_len + 4 - j); */
-/*                 i += 2; */
-/*             } */
-/*             else if (prompt->pwd && prompt->ps1[i + 1] == 'W') */
-/*             { */
-/*                 j += ft_strlcpy_prompt(prompt->prompt + j, prompt->pwd, prompt->total_len + 4 - j); */
-/*                 i += 2; */
-/*             } */
-/*             else  */
-/*             { */
-/*                 prompt->prompt[j++] = prompt->ps1[i++]; */
-/*                 prompt->prompt[j++] = prompt->ps1[i++]; */
-/*             } */
-/*         } */
-/*         else */
-/*         { */
-/*             prompt->prompt[j++] = prompt->ps1[i++]; */
-/*         } */
-/*     } */
-/*     prompt->prompt[j++] = ' '; */
-/*     prompt->prompt[j++] = '$'; */
-  /* prompt->prompt[i] = ft_getuid(); */
-/*     prompt->prompt[j] = '\0'; */
-/*     return (prompt->prompt); */
-/* } */
 
 char *get_prompt(char *ps1, t_prompt *prompt)
 {
@@ -405,7 +284,7 @@ int main (void)
 
   prompt = malloc(sizeof(t_prompt));
   prompt->ps1 = NULL;  
-/* get_ps1()*/
+/*prompt->ps1 = get_value(env, "PS1");*/
   prompt->user = "muffin";
   /* prompt->user = get_user(); */
   prompt->uid = NULL;
@@ -413,7 +292,7 @@ int main (void)
   prompt->hostname = "Arch";
   /* prompt->hostname = get_hostname(); */
   prompt->pwd = "/home/muffin";
-  /* prompt->pwd = get_pwd(); */
+  /* prompt->pwd = get_value(env, "PWD"); */
   prompt->git_branch = get_branch("/home/muffin/42/Minishell");
   prompt->total_len = 0;
   prompt->prompt = NULL;
