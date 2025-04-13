@@ -15,6 +15,7 @@ alias gpl='git pull'
 
 PS1='[\u@\h \W]\$ '
 PS2='>'
+
 VAR='var'
 
 # export VAR=var
