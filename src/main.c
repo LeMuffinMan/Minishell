@@ -88,20 +88,23 @@ int main(int ac, char **av, char **env)
         * Si on n'a pas d'env uniquement ?*/
     init_env(&new_env, env, av);
     //execute_minishellrc
-    prompt = NULL;
-    prompt = get_prompt(&new_env);
-    if (!prompt)
-        prompt = "[Minishell]$ ";
     while (1)
     {
         //update env variables
         //update prompt
-        free(prompt);
-        prompt = get_prompt(&new_env);
+        //
+        prompt = NULL;
+        if (isatty(0))
+        {
+            if (prompt)
+                free(prompt);
+            prompt = get_prompt(&new_env);
+        }
         if (!prompt)
             prompt = "[Minishell]$ ";
         line = readline(prompt);
-        free(prompt);
+        if (isatty(0))
+            free(prompt);
         prompt = NULL;
         if (line == NULL)
         {

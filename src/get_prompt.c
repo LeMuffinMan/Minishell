@@ -10,13 +10,13 @@
 int get_value_len(t_var **env, t_prompt *prompt, char c)
 {
   (void)env;
-  if (c == 'u')
+  if (c == 'u' && prompt->user)
     return (ft_strlen(prompt->user));
-  if (c == 'h')
+  if (c == 'h' && prompt->hostname)
     return (ft_strlen(prompt->hostname));
-  if (c == 'W')
+  if (c == 'W' && prompt->pwd)
     return (ft_strlen(prompt->pwd));
-  if (c == 'g')
+  if (c == 'g' && prompt->git_branch)
     return (ft_strlen(prompt->git_branch));
   else 
     return (0);
@@ -155,15 +155,24 @@ char *ft_getuid()
 
 int cpy_prompt_element(t_prompt *prompt, int *i, int *j, char *value)
 {
+  int len;
+
   if (value)
   {
-    *j += ft_strlcpy(prompt->prompt + *j, value, prompt->total_len + 4 - *j);
-    *i += 2;
+    len = ft_strlen(value);
+    if (*j + len < prompt->total_len + 4)
+    {
+      ft_strlcpy(prompt->prompt + *j, value, len + 1);
+      *j += len;
+      *i += 2;
+    }
   }
   else
   {
-    if (*j < prompt->total_len + 3) prompt->prompt[*j++] = prompt->ps1[*i++];
-    if (*j < prompt->total_len + 3) prompt->prompt[*j++] = prompt->ps1[*i++];
+    if (*j < prompt->total_len + 3)
+      prompt->prompt[(*j)++] = prompt->ps1[(*i)++];
+    if (*j < prompt->total_len + 3)
+      prompt->prompt[(*j)++] = prompt->ps1[(*i)++];
   }
   return (0);
 }
@@ -215,9 +224,10 @@ int build_prompt(t_prompt *prompt)
         return (1);
     len = ft_strlen(prompt->ps1);
     prompt->total_len = build_prompt_len(prompt->ps1, len, prompt);
-    prompt->prompt = malloc(sizeof(char) * (prompt->total_len + 4)); // +4 pour $, espace et \0
+    prompt->prompt = malloc(sizeof(char) * (prompt->total_len + 4 + 1)); 
     if (!prompt->prompt)
         return (1);
+    ft_memset(prompt->prompt, 0, prompt->total_len + 4 + 1);
     expand_prompt(prompt, len);
     return (0);
 }
