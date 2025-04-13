@@ -92,7 +92,8 @@ int main(int ac, char **av, char **env)
     /* utiliser getenv ?
         * Si on n'a pas d'env uniquement ?*/
     init_env(&new_env, env, av);
-    prompt = get_prompt(&new_env);
+    prompt = NULL;
+    /* prompt = get_prompt(&new_env); */
     if (!prompt)
         prompt = "[Minishell]$ ";
     while (1)

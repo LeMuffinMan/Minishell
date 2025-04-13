@@ -128,29 +128,37 @@ int extract_uid(char *line)
   return (res);
 }
 
-char ft_getuid()
+char *ft_getuid()
 {
   char *line;
-  int uid;
-  char res;
-  //open /proc/self/status
-  //gnl dessus 
-  uid = -1;
-  res = '$';
-  while (line)
+  char *uid;
+  int fd;
+  int i;
+  int j;
+
+  uid = NULL;
+  fd = open("/proc/self/status", O_RDONLY);
+  if (fd == -1)
+      return (NULL);
+  line = get_next_line(fd);
+  while(line && ft_strncmp("Uid:", line, 4))
   {
-    if (!ft_strncmp(line, "Uid:", 4))
-    {
-      uid = extract_uid(line);
-      free(line);
-      break;
-    }
     free(line);
-    //gnl
+    line = get_next_line(fd);
   }
-  if (uid == 0)
-    res = '#';
-  return (res);
+  close(fd);
+  if (line && !ft_strncmp("Uid:", line, 4))
+  {
+    i = 4;
+    while (line[i] && !ft_isdigit(line[i]))
+        i++;
+    j = i;
+    while (line[j] && ft_isdigit(line[j]))
+        j++;
+    uid = ft_substr(line, i, j - i);
+  }
+  free(line);
+  return (uid);
 }
 
 char *get_prompt(char *ps1, t_prompt *prompt)
@@ -208,8 +216,10 @@ char *get_prompt(char *ps1, t_prompt *prompt)
         prompt->prompt[j++] = prompt->ps1[i];
     
     prompt->prompt[j++] = ' ';
-  //get_uid()
-    prompt->prompt[j++] = '$';
+    if (prompt->uid && !ft_strncmp(prompt->uid, "0", 2))
+      prompt->prompt[j++] = '#';
+    else
+      prompt->prompt[j++] = '$';
     prompt->prompt[j] = '\0';
     return (prompt->prompt);
 }
@@ -236,6 +246,14 @@ char *exctract_branch(char *path_to_head)
     free(tmp);
     return (git_branch);
   }
+  else if (!ft_strncmp("Umask:	0ref: refs/heads/get_user", line, ft_strlen("Umask:	0ref: refs/heads/get_user")))
+  {
+    tmp = line;
+    line += ft_strlen("ref: refs/heads/");
+    git_branch = ft_strdup(line);
+    free(tmp);
+    return (git_branch);
+  }
   else 
   {
     free(line);
@@ -243,21 +261,48 @@ char *exctract_branch(char *path_to_head)
   }
 }
 
-char *get_branch (char *pwd)
+char *trim_git_branch(char *s)
+{
+  int i;
+  int start;
+  int end;
+  char *trimmed;
+
+  if (!s)
+    return (NULL);
+  i = ft_strlen(s);
+  while (i > 0 && s[i] != '/')
+    i--;
+  start = i + 1;
+  end = ft_strlen(s) - 1;
+  while (end >= 0 && !ft_isalnum(s[end]))
+    end--;
+  if (end < start)
+    return (ft_strdup(""));
+  trimmed = malloc(sizeof(char) * (end - start + 2));
+  if (!trimmed)
+    return (NULL);
+  ft_strlcpy(trimmed, s + start, end - start + 2);
+  return (trimmed);
+}
+
+char *get_branch(char *pwd)
 {
   char *git_branch;
   char *path_to_head;
   char *tmp;
 
+  git_branch = NULL;
   path_to_head = ft_strjoin(pwd, "/.git/HEAD", NULL);
   if (access(path_to_head, F_OK | R_OK) == 0)
   {
     git_branch = exctract_branch(path_to_head);
-    free(path_to_head);
-    tmp = git_branch;
-    git_branch = ft_strtrim(git_branch, "\n");
-    free(tmp);
-    return (git_branch);
+    if (git_branch)
+    {
+      tmp = git_branch;
+      git_branch = trim_git_branch(git_branch);
+      free(tmp);
+    }
   }
   free(path_to_head);
   return (git_branch);
@@ -328,8 +373,7 @@ int main (void)
   /* prompt->user = get_value(env, "USER"); */
   if (!prompt->user)
     prompt->user = get_user(); //on fait un get_value, si il foire on fait un get_user
-  prompt->uid = NULL;
-  /* prompt->uid = get_uid(); */
+  prompt->uid = ft_getuid();
   prompt->hostname = "Arch";
   /* prompt->hostname = get_hostname(); */
   prompt->pwd = "/home/muffin";
