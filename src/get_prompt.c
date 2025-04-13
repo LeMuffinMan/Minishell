@@ -2,6 +2,9 @@
 #include "libft.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <dirent.h>
 
 typedef struct s_prompt 
 {
@@ -304,6 +307,11 @@ char *get_prompt(char *ps1, t_prompt *prompt)
                 j += ft_strlcpy(prompt->prompt + j, prompt->pwd, prompt->total_len + 4 - j);
                 i += 2;
             }
+            else if (prompt->git_branch && prompt->ps1[i + 1] == 'g')
+            {
+                j += ft_strlcpy(prompt->prompt + j, prompt->git_branch, prompt->total_len + 4 - j);
+                i += 2;
+            }
             else 
             {
                 if (j < prompt->total_len + 3) prompt->prompt[j++] = prompt->ps1[i++];
@@ -326,6 +334,68 @@ char *get_prompt(char *ps1, t_prompt *prompt)
 }
 
 
+char *exctract_branch(char *path_to_head)
+{
+  int fd;
+  ssize_t bytes_read;
+  char *line;
+  char *git_branch;
+  char *tmp;
+
+  fd = open(path_to_head, O_RDONLY);
+  if (fd == -1) //retour d'erreur a refaire 
+      return NULL;
+  line = get_next_line(fd);
+  close(fd);
+  if (!ft_strncmp("ref: refs/heads/", line, ft_strlen("ref: refs/heads/")))
+  {
+    tmp = line;
+    line += ft_strlen("ref: refs/heads/");
+    git_branch = ft_strdup(line);
+    free(tmp);
+    return (git_branch);
+  }
+  else 
+  {
+    free(line);
+    return (NULL);
+  }
+}
+
+char *get_branch (char *pwd)
+{
+  char *git_branch;
+  char *path_to_head;
+  char *tmp;
+
+  path_to_head = ft_strjoin(pwd, "/.git/HEAD", NULL);
+  if (access(path_to_head, F_OK | R_OK) == 0)
+  {
+    git_branch = exctract_branch(path_to_head);
+    free(path_to_head);
+    tmp = git_branch;
+    git_branch = ft_strtrim(git_branch, "\n");
+    free(tmp);
+    return (git_branch);
+  }
+  free(path_to_head);
+  return (git_branch);
+}
+
+/* int main (void) */
+/* { */
+/*   char *git_branch; */
+/*    */
+/*   git_branch = get_branch("/home/muffin/42/Minishell"); */
+/*   if (git_branch) */
+/*   { */
+/*     printf("%s\n", git_branch); */
+/*     free(git_branch); */
+/*   } */
+/*   return (0); */
+/* } */
+
+
 int main (void)
 {
   char *expanded_prompt;
@@ -335,15 +405,22 @@ int main (void)
 
   prompt = malloc(sizeof(t_prompt));
   prompt->ps1 = NULL;  
+/* get_ps1()*/
   prompt->user = "muffin";
+  /* prompt->user = get_user(); */
   prompt->uid = NULL;
+  /* prompt->uid = get_uid(); */
   prompt->hostname = "Arch";
+  /* prompt->hostname = get_hostname(); */
   prompt->pwd = "/home/muffin";
+  /* prompt->pwd = get_pwd(); */
+  prompt->git_branch = get_branch("/home/muffin/42/Minishell");
   prompt->total_len = 0;
   prompt->prompt = NULL;
-  expanded_prompt = get_prompt("[\\u@\\h Minishell \\W]", prompt);
+  expanded_prompt = get_prompt("[\\u@\\h Minishell \\W] \\g", prompt);
   printf("%s\n", expanded_prompt);
   free(expanded_prompt);
+  free(prompt->git_branch);
   free(prompt);
   return (0);
 }
