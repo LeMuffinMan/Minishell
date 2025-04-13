@@ -1,4 +1,5 @@
 #include "minishell.h"
+#include "get_next_line.h"
 #include "libft.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,37 +7,22 @@
 #include <unistd.h>
 #include <dirent.h>
 
-typedef struct s_prompt 
-{
-  char *ps1;  
-  char *user;
-  char *uid;
-  char *hostname;
-  char *pwd;
-  char *git_branch;
-  int total_len;
-  char *prompt;
-} t_prompt;
-
-
 int get_value_len(t_var **env, t_prompt *prompt, char c)
 {
+  (void)env;
   if (c == 'u')
     return (ft_strlen(prompt->user));
-    /* return (ft_strlen(get_value(env, "USER"))); */
   if (c == 'h')
     return (ft_strlen(prompt->hostname));
-    /* return (ft_strlen(get_value(env, "HOSTNAME"))); */
   if (c == 'W')
-    return (ft_strlen("/home/muffin"));
-    /* return (ft_strlen(get_value(env, "PWD"))); */
+    return (ft_strlen(prompt->pwd));
   if (c == 'g')
     return (ft_strlen(prompt->git_branch));
   else 
     return (0);
 }
 
-int get_prompt_len(char *s, int size, t_prompt *prompt)
+int build_prompt_len(char *s, int size, t_prompt *prompt)
 {
   int i;
   int count;
@@ -148,7 +134,6 @@ char *ft_getuid()
 {
   char *line;
   char *uid;
-  int fd;
   int i;
   int j;
 
@@ -187,12 +172,13 @@ int copy_end_prompt(t_prompt *prompt, int i, int j, int len)
 {
   if (i < len && j < prompt->total_len + 3)
       prompt->prompt[j++] = prompt->ps1[i];
-  prompt->prompt[j++] = ' ';
   if (prompt->uid && !ft_strncmp(prompt->uid, "0", 2))
     prompt->prompt[j++] = '#';
   else
     prompt->prompt[j++] = '$';
+  prompt->prompt[j++] = ' ';
   prompt->prompt[j] = '\0';
+  return (0);
 }
 
 int expand_prompt(t_prompt *prompt, int len)
@@ -221,14 +207,14 @@ int expand_prompt(t_prompt *prompt, int len)
   return (0);
 }
 
-int get_prompt(t_prompt *prompt)
+int build_prompt(t_prompt *prompt)
 {
     int len;
 
     if (!prompt->ps1)
         return (1);
     len = ft_strlen(prompt->ps1);
-    prompt->total_len = get_prompt_len(prompt->ps1, len, prompt);
+    prompt->total_len = build_prompt_len(prompt->ps1, len, prompt);
     prompt->prompt = malloc(sizeof(char) * (prompt->total_len + 4)); // +4 pour $, espace et \0
     if (!prompt->prompt)
         return (1);
@@ -281,7 +267,6 @@ char *get_hostname()
 char *exctract_branch(char *path_to_head)
 {
   int fd;
-  ssize_t bytes_read;
   char *line;
   char *git_branch;
   char *tmp;
@@ -356,7 +341,7 @@ char *get_branch(char *pwd)
   char *tmp;
 
   git_branch = NULL;
-  path_to_head = ft_strjoin(pwd, "/.git/HEAD", NULL);
+  path_to_head = ft_strjoin(pwd, "/.git/HEAD");
   if (access(path_to_head, F_OK | R_OK) == 0)
   {
     git_branch = exctract_branch(path_to_head);
@@ -384,12 +369,9 @@ char *get_user()
     return (NULL);
   while ((dir = readdir(d)) != NULL)
   {
-    path = ft_strjoin("/home/", dir->d_name, NULL);
     if (ft_strncmp(dir->d_name, ".", 2) == 0 || ft_strncmp(dir->d_name, "..", 3) == 0)
-    {
-      free(path);
       continue;
-    }
+    path = ft_strjoin("/home/", dir->d_name);
     if (access(path, F_OK | X_OK) == 0)
     {
       if (!username) 
@@ -404,7 +386,6 @@ char *get_user()
     free(path);
   }
   closedir(d);
-  if (username)
   return (username);
 }
 
@@ -430,31 +411,28 @@ int free_prompt(t_prompt *prompt)
   return (0);
 }
 
-int main (void)
+char *get_prompt (t_var **env)
 {
   t_prompt *prompt;
-  char *ps1_fake = "[\\u@\\h Minishell \\W] \\g";
-  char *pwd_fake = "/home/muffin";
+  char *ps1_fake = "[\\u@\\h Minishell \\W \\g]";
+  char *expanded_prompt;
 
   prompt = malloc(sizeof(t_prompt));
   prompt->ps1 = ft_strdup(ps1_fake);
 /*prompt->ps1 = get_value(env, "PS1");*/
-  prompt->user = NULL;
-  /* prompt->user = get_value(env, "USER"); */
   prompt->uid = ft_getuid();
   if (!ft_strncmp(prompt->uid, "0", 2))
-    prompt->user = "root";
+    prompt->user = ft_strdup("root");
+  prompt->user = ft_strdup(get_value(env, "USER"));
   if (!prompt->user)
     prompt->user = get_user(); //on fait un get_value, si il foire on fait un get_user
   prompt->hostname = get_hostname();
-  prompt->pwd = ft_strdup(pwd_fake);
-  /* prompt->pwd = get_value(env, "PWD"); */
-  prompt->git_branch = get_branch("/home/muffin/42/Minishell");
+  prompt->pwd = ft_strdup(get_value(env, "PWD"));
+  prompt->git_branch = get_branch(prompt->pwd);
   prompt->total_len = 0;
   prompt->prompt = NULL;
-  get_prompt(prompt);
-  if (prompt->prompt)
-    printf("%s\n", prompt->prompt);
+  build_prompt(prompt);
+  expanded_prompt = ft_strdup(prompt->prompt);
   free_prompt(prompt);
-  return (0);
+  return (expanded_prompt);
 }

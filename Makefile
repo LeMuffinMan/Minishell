@@ -59,7 +59,8 @@ SRC					=	main.c \
 						utils/builtins_utils.c \
 						utils/env_utils.c \
 						utils/init_utils.c \
-						utils/prints.c 
+						utils/prints.c \
+						get_prompt.c
 
 DEPS				=	$(SRC:%.c=$(OBJ_DIR)%.d)
 OBJ					=	$(SRC:%.c=$(OBJ_DIR)%.o)

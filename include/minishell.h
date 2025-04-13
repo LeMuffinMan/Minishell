@@ -60,6 +60,21 @@ typedef struct s_var
   struct s_var *next;
 } t_var;
 
+
+typedef struct s_prompt 
+{
+  char *ps1;  
+  char *user;
+  char *uid;
+  char *hostname;
+  char *pwd;
+  char *git_branch;
+  int total_len;
+  char *prompt;
+} t_prompt;
+
+
+
 // typedef struct s_gar 
 // {
 //   void *allocated_memory;
@@ -109,5 +124,10 @@ int	print_sorted_env(t_var **env);
 int	print_array(char **array);
 
 t_tree	*parse(char *line, char **envp);
+
+//get_prompt
+char *get_prompt (t_var **env);
+int free_prompt(t_prompt *prompt);
+
 
 #endif
