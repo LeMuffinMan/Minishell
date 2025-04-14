@@ -44,7 +44,7 @@ int get_value_len(t_var **env, t_prompt *prompt, char c)
     return (0);
 }
 
-int get_prompt_len(char *s, int size, t_prompt *prompt)
+int get_prompt_len(char *s, int size, t_prompt *prompt, t_var **env)
 {
   int i;
   int count;
@@ -55,8 +55,8 @@ int get_prompt_len(char *s, int size, t_prompt *prompt)
   {
     if (s[i] == '\\' && i < (size - 1))
     {
-      if (get_value_len(NULL, prompt, s[i+1]))
-        count += get_value_len(NULL, prompt, s[i+1]);
+      if (get_value_len(env, prompt, s[i+1]))
+        count += get_value_len(env, prompt, s[i+1]);
       else 
         count += 2;
       i += 2;
@@ -425,14 +425,14 @@ int expand_prompt(t_prompt *prompt, int len)
   return (0);
 }
 
-int build_prompt(t_prompt *prompt)
+int build_prompt(t_prompt *prompt, t_var **env)
 {
     int len;
 
     if (!prompt->ps1)
         return (1);
     len = ft_strlen(prompt->ps1);
-    prompt->total_len = get_prompt_len(prompt->ps1, len, prompt);
+    prompt->total_len = get_prompt_len(prompt->ps1, len, prompt, env);
     prompt->prompt = malloc(sizeof(char) * (prompt->total_len + 4 + 1)); 
     if (!prompt->prompt)
         return (1);
@@ -462,7 +462,7 @@ char *get_prompt (t_var **env)
   prompt->pwd = tilde_replace(prompt->pwd, env);
   prompt->total_len = 0;
   prompt->prompt = NULL;
-  build_prompt(prompt);
+  build_prompt(prompt, env);
   expanded_prompt = ft_strdup(prompt->prompt);
   free_prompt(prompt);
   return (expanded_prompt);

@@ -117,7 +117,7 @@ int	builtin_cd_without_arg(t_var **env)
 	}
 	else
 	{
-		if (change_directory(s))
+		if (!change_directory(s))
 			update_env(env);
 	}
 	return (0);
