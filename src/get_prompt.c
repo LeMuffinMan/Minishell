@@ -22,7 +22,7 @@ int get_value_len(t_var **env, t_prompt *prompt, char c)
     return (0);
 }
 
-int build_prompt_len(char *s, int size, t_prompt *prompt)
+int get_prompt_len(char *s, int size, t_prompt *prompt)
 {
   int i;
   int count;
@@ -168,12 +168,7 @@ int cpy_prompt_element(t_prompt *prompt, int *i, int *j, char *value)
     }
   }
   else
-  {
-    if (*j < prompt->total_len + 3)
-      prompt->prompt[(*j)++] = prompt->ps1[(*i)++];
-    if (*j < prompt->total_len + 3)
-      prompt->prompt[(*j)++] = prompt->ps1[(*i)++];
-  }
+    *i+=2;
   return (0);
 }
 
@@ -199,13 +194,13 @@ int expand_prompt(t_prompt *prompt, int len)
   j = 0;
   while (prompt->ps1[i] && j < prompt->total_len + 3)
   {
-    if (prompt->ps1[i] == '\\' && prompt->ps1[i + 1] && prompt->ps1[i + 1] == 'u' && prompt->user)
+    if (prompt->ps1[i] == '\\' && prompt->ps1[i + 1] && prompt->ps1[i + 1] == 'u')
       cpy_prompt_element(prompt, &i, &j, prompt->user);
-    else if (prompt->ps1[i] == '\\' && prompt->ps1[i + 1] && prompt->ps1[i + 1] == 'h' && prompt->hostname)
+    else if (prompt->ps1[i] == '\\' && prompt->ps1[i + 1] && prompt->ps1[i + 1] == 'h')
       cpy_prompt_element(prompt, &i, &j, prompt->hostname);
-    else if (prompt->ps1[i] == '\\' && prompt->ps1[i + 1] && prompt->ps1[i + 1] == 'W' && prompt->pwd)
+    else if (prompt->ps1[i] == '\\' && prompt->ps1[i + 1] && prompt->ps1[i + 1] == 'W')
       cpy_prompt_element(prompt, &i, &j, prompt->pwd);
-    else if (prompt->ps1[i] == '\\' && prompt->ps1[i + 1] && prompt->ps1[i + 1] == 'g' && prompt->git_branch)
+    else if (prompt->ps1[i] == '\\' && prompt->ps1[i + 1] && prompt->ps1[i + 1] == 'g')
       cpy_prompt_element(prompt, &i, &j, prompt->git_branch);
     else if (prompt->ps1[i] == '\\' && prompt->ps1[i + 1])
       cpy_prompt_element(prompt, &i, &j, NULL);
@@ -223,7 +218,7 @@ int build_prompt(t_prompt *prompt)
     if (!prompt->ps1)
         return (1);
     len = ft_strlen(prompt->ps1);
-    prompt->total_len = build_prompt_len(prompt->ps1, len, prompt);
+    prompt->total_len = get_prompt_len(prompt->ps1, len, prompt);
     prompt->prompt = malloc(sizeof(char) * (prompt->total_len + 4 + 1)); 
     if (!prompt->prompt)
         return (1);
