@@ -421,6 +421,31 @@ int free_prompt(t_prompt *prompt)
   return (0);
 }
 
+char *tilde_replace(char *s, t_var **env)
+{
+  int i;
+  int j;
+  char *new_path;
+
+  if (!ft_strncmp(s, get_value(env, "HOME"), ft_strlen(get_value(env, "HOME"))))
+  {
+    new_path = malloc(sizeof(char) * ft_strlen(s) - ft_strlen(get_value(env, "HOME")) + 2);
+    new_path[0] = '~';
+    i = ft_strlen(get_value(env, "HOME"));
+    j = 1;  
+    while (s[i])
+    {
+      new_path[j] = s[i];
+      i++;
+      j++;
+    }
+    new_path[j] = '\0';
+    free(s);
+    return (new_path);
+  }
+  return (s);
+}
+
 char *get_prompt (t_var **env)
 {
   t_prompt *prompt;
@@ -439,6 +464,7 @@ char *get_prompt (t_var **env)
   prompt->hostname = get_hostname();
   prompt->pwd = ft_strdup(get_value(env, "PWD"));
   prompt->git_branch = get_branch(prompt->pwd);
+  prompt->pwd = tilde_replace(prompt->pwd, env);
   prompt->total_len = 0;
   prompt->prompt = NULL;
   build_prompt(prompt);
