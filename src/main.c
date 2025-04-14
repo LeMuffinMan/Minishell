@@ -94,7 +94,7 @@ int main(int ac, char **av, char **env)
         //update prompt
         //
         prompt = NULL;
-        if (isatty(0))
+        if (isatty(0) && *env)
         {
             if (prompt)
                 free(prompt);
@@ -103,7 +103,7 @@ int main(int ac, char **av, char **env)
         if (!prompt)
             prompt = "[Minishell]$ ";
         line = readline(prompt);
-        if (isatty(0))
+        if (isatty(0) && env)
             free(prompt);
         prompt = NULL;
         if (line == NULL)

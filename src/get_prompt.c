@@ -7,6 +7,28 @@
 #include <unistd.h>
 #include <dirent.h>
 
+int free_prompt(t_prompt *prompt)
+{
+  if (!prompt)
+    return (1);
+  if (prompt->ps1)
+    free(prompt->ps1);  
+  if (prompt->user)
+    free(prompt->user);
+  if (prompt->uid)
+    free(prompt->uid);
+  if (prompt->hostname)
+    free(prompt->hostname);
+  if (prompt->pwd)
+    free(prompt->pwd);
+  if (prompt->git_branch)
+    free(prompt->git_branch);
+  if (prompt->prompt)
+    free(prompt->prompt);
+  free(prompt);
+  return (0);
+}
+
 int get_value_len(t_var **env, t_prompt *prompt, char c)
 {
   (void)env;
@@ -112,22 +134,214 @@ int extract_uid(char *line)
   return (res);
 }
 
+char *trim_hostname(char *s)
+{
+  char *trimed;
+  int i;
+  int j;
+  int len;
+
+  if (!s)
+    return (NULL);
+  i = 0;
+  while (s[i] && !ft_isalnum(s[i]))
+    i++;
+  j = ft_strlen(s);
+  while (j > 0 && !ft_isalnum(s[j]))
+    j--;
+  len = j - i;
+  trimed = malloc(sizeof(char) * len + 2);
+  j = 0;
+  while (j <= len)
+  {
+    trimed[j] = s[i];
+    j++;
+    i++;
+  }
+  trimed[j] = '\0';
+  return (trimed);
+}
+
+char *exctract_branch(char *path_to_head)
+{
+  char buffer[256];
+  int fd;
+  ssize_t bytes_read;
+  char *git_branch;
+  /* char *tmp; */
+
+  fd = open(path_to_head, O_RDONLY);
+  if (fd == -1) //retour d'erreur a refaire 
+      return NULL;
+  bytes_read = read(fd, buffer, sizeof(buffer) - 1);
+  close(fd);
+  if (bytes_read <= 0)
+      return NULL;
+  buffer[bytes_read] = '\0';
+  if (!ft_strncmp("ref: refs/heads/", buffer, ft_strlen("ref: refs/heads/")))
+  {
+    git_branch = ft_strdup(buffer + ft_strlen("ref: refs/heads/"));
+    return (git_branch);
+  }
+  else 
+    return (NULL);
+}
+
+char *trim_git_branch(char *s)
+{
+  int i;
+  int start;
+  int end;
+  char *trimmed;
+
+  if (!s)
+    return (NULL);
+  i = ft_strlen(s);
+  while (i >= 0 && s[i] != '/')
+    i--;
+  start = i + 1;
+  end = ft_strlen(s) - 1;
+  while (end >= 0 && !ft_isalnum(s[end]))
+    end--;
+  if (end < start)
+    return (ft_strdup(""));
+  trimmed = malloc(sizeof(char) * (end - start + 2));
+  if (!trimmed)
+    return (NULL);
+  ft_strlcpy(trimmed, s + start, end - start + 2);
+  return (trimmed);
+}
+
+char *tilde_replace(char *s, t_var **env)
+{
+  int i;
+  int j;
+  char *new_path;
+
+  if (!ft_strncmp(s, get_value(env, "HOME"), ft_strlen(get_value(env, "HOME"))))
+  {
+    new_path = malloc(sizeof(char) * ft_strlen(s) - ft_strlen(get_value(env, "HOME")) + 2);
+    new_path[0] = '~';
+    i = ft_strlen(get_value(env, "HOME"));
+    j = 1;  
+    while (s[i])
+    {
+      new_path[j] = s[i];
+      i++;
+      j++;
+    }
+    new_path[j] = '\0';
+    free(s);
+    return (new_path);
+  }
+  return (s);
+}
+
+char *get_branch(char *pwd)
+{
+  char *git_branch;
+  char *path_to_head;
+  char *tmp;
+
+  git_branch = NULL;
+  path_to_head = ft_strjoin(pwd, "/.git/HEAD");
+  if (access(path_to_head, F_OK | R_OK) == 0)
+  {
+    git_branch = exctract_branch(path_to_head);
+    if (git_branch)
+    {
+      tmp = git_branch;
+      git_branch = trim_git_branch(git_branch);
+      free(tmp);
+    }
+  }
+  free(path_to_head);
+  return (git_branch);
+}
+
+char *get_user()
+{
+  DIR *d;
+  struct dirent *dir;
+  char *username;
+  char *path;
+
+  username = NULL;
+  d = opendir("/home");
+  if (!d)
+    return (NULL);
+  while ((dir = readdir(d)) != NULL)
+  {
+    if (ft_strncmp(dir->d_name, ".", 2) == 0 || ft_strncmp(dir->d_name, "..", 3) == 0)
+      continue;
+    path = ft_strjoin("/home/", dir->d_name);
+    if (access(path, F_OK | X_OK) == 0)
+    {
+      if (!username) 
+        username = ft_strdup(dir->d_name);
+      else 
+      {
+        free(path);
+        closedir(d);
+        return (NULL);
+      }
+    }
+    free(path);
+  }
+  closedir(d);
+  return (username);
+}
+
+char *get_hostname()
+{
+  char *hostname;
+  char buffer[256];
+  int fd;
+  ssize_t bytes_read;
+
+  fd = open("/etc/hostname", O_RDONLY);
+  if (fd == -1) //retour d'erreur a refaire 
+      return NULL;
+  bytes_read = read(fd, buffer, sizeof(buffer) - 1);
+  close(fd);
+  if (bytes_read <= 0)
+      return NULL;
+  buffer[bytes_read] = '\0';
+  hostname = trim_hostname(buffer);
+  return (hostname);
+}
+
 char *get_uidline()
 {
   int fd;
-  char *line;
+  char buffer[4096];
+  ssize_t bytes_read;
+  char *uid_line = NULL;
+  char *line_start;
+  char *line_end;
 
   fd = open("/proc/self/status", O_RDONLY);
   if (fd == -1)
-      return (NULL);
-  line = get_next_line(fd);
-  while(line && ft_strncmp("Uid:", line, 4))
-  {
-    free(line);
-    line = get_next_line(fd);
-  }
+      return NULL;
+  bytes_read = read(fd, buffer, sizeof(buffer) - 1);
   close(fd);
-  return (line);
+  if (bytes_read <= 0)
+      return NULL;
+  buffer[bytes_read] = '\0';
+  line_start = buffer;
+  line_end = ft_strchr(line_start, '\n');
+  while (line_end)
+  {
+      *line_end = '\0';
+      if (ft_strncmp(line_start, "Uid:", 4) == 0)
+      {
+          uid_line = ft_strdup(line_start);
+          break;
+      }
+      line_start = line_end + 1;
+    line_end = ft_strchr(line_start, '\n');
+  }
+  return (uid_line);
 }
 
 char *ft_getuid()
@@ -227,224 +441,10 @@ int build_prompt(t_prompt *prompt)
     return (0);
 }
 
-char *trim_hostname(char *s)
-{
-  char *trimed;
-  int i;
-  int j;
-  int len;
-
-  i = 0;
-  while (s[i] && !ft_isalnum(s[i]))
-    i++;
-  j = ft_strlen(s);
-  while (j > 0 && !ft_isalnum(s[j]))
-    j--;
-  len = j - i;
-  trimed = malloc(sizeof(char) * len + 1);
-  j = 0;
-  while (j < len)
-  {
-    trimed[j] = s[i];
-    j++;
-    i++;
-  }
-  trimed[j] = '\0';
-  return (trimed);
-}
-
-char *get_hostname()
-{
-  char *line;
-  char *hostname;
-  int fd;
-
-  fd = open("/etc/hostname", O_RDONLY);
-  if (fd == -1) //retour d'erreur a refaire 
-      return NULL;
-  line = get_next_line(fd);
-  close(fd);
-  hostname = trim_hostname(line);
-  free(line);
-  return (hostname);
-}
-
-char *exctract_branch(char *path_to_head)
-{
-  int fd;
-  char *line;
-  char *git_branch;
-  char *tmp;
-
-  line = NULL;
-  fd = open(path_to_head, O_RDONLY);
-  if (fd == -1) //retour d'erreur a refaire 
-      return NULL;
-  line = get_next_line(fd);
-  close(fd);
-  if (!ft_strncmp("ref: refs/heads/", line, ft_strlen("ref: refs/heads/")))
-  {
-    tmp = line;
-    line += ft_strlen("ref: refs/heads/");
-    git_branch = ft_strdup(line);
-    free(tmp);
-    return (git_branch);
-  }
-  else if (!ft_strncmp("Umask:	0ref: refs/heads/", line, ft_strlen("Umask:	0ref: refs/heads/")))
-  {
-    tmp = line;
-    line += ft_strlen("ref: refs/heads/");
-    git_branch = ft_strdup(line);
-    free(tmp);
-    return (git_branch);
-  }
-  //fixer ou changer de GNL !
-  else if (!ft_strncmp("Gidref: refs/heads/", line, ft_strlen("Gidref: refs/heads/")))
-  {
-    tmp = line;
-    line += ft_strlen("Gidref: refs/heads/") - 1;
-    git_branch = ft_strdup(line);
-    free(tmp);
-    return (git_branch);
-  }
-  else 
-  {
-    free(line);
-    return (NULL);
-  }
-}
-
-char *trim_git_branch(char *s)
-{
-  int i;
-  int start;
-  int end;
-  char *trimmed;
-
-  if (!s)
-    return (NULL);
-  i = ft_strlen(s);
-  while (i > 0 && s[i] != '/')
-    i--;
-  start = i + 1;
-  end = ft_strlen(s) - 1;
-  while (end >= 0 && !ft_isalnum(s[end]))
-    end--;
-  if (end < start)
-    return (ft_strdup(""));
-  trimmed = malloc(sizeof(char) * (end - start + 2));
-  if (!trimmed)
-    return (NULL);
-  ft_strlcpy(trimmed, s + start, end - start + 2);
-  return (trimmed);
-}
-
-char *get_branch(char *pwd)
-{
-  char *git_branch;
-  char *path_to_head;
-  char *tmp;
-
-  git_branch = NULL;
-  path_to_head = ft_strjoin(pwd, "/.git/HEAD");
-  if (access(path_to_head, F_OK | R_OK) == 0)
-  {
-    git_branch = exctract_branch(path_to_head);
-    if (git_branch)
-    {
-      tmp = git_branch;
-      git_branch = trim_git_branch(git_branch);
-      free(tmp);
-    }
-  }
-  free(path_to_head);
-  return (git_branch);
-}
-
-char *get_user()
-{
-  DIR *d;
-  struct dirent *dir;
-  char *username;
-  char *path;
-
-  username = NULL;
-  d = opendir("/home");
-  if (!d)
-    return (NULL);
-  while ((dir = readdir(d)) != NULL)
-  {
-    if (ft_strncmp(dir->d_name, ".", 2) == 0 || ft_strncmp(dir->d_name, "..", 3) == 0)
-      continue;
-    path = ft_strjoin("/home/", dir->d_name);
-    if (access(path, F_OK | X_OK) == 0)
-    {
-      if (!username) 
-        username = ft_strdup(dir->d_name);
-      else 
-      {
-        free(path);
-        closedir(d);
-        return (NULL);
-      }
-    }
-    free(path);
-  }
-  closedir(d);
-  return (username);
-}
-
-int free_prompt(t_prompt *prompt)
-{
-  if (!prompt)
-    return (1);
-  if (prompt->ps1)
-    free(prompt->ps1);  
-  if (prompt->user)
-    free(prompt->user);
-  if (prompt->uid)
-    free(prompt->uid);
-  if (prompt->hostname)
-    free(prompt->hostname);
-  if (prompt->pwd)
-    free(prompt->pwd);
-  if (prompt->git_branch)
-    free(prompt->git_branch);
-  if (prompt->prompt)
-    free(prompt->prompt);
-  free(prompt);
-  return (0);
-}
-
-char *tilde_replace(char *s, t_var **env)
-{
-  int i;
-  int j;
-  char *new_path;
-
-  if (!ft_strncmp(s, get_value(env, "HOME"), ft_strlen(get_value(env, "HOME"))))
-  {
-    new_path = malloc(sizeof(char) * ft_strlen(s) - ft_strlen(get_value(env, "HOME")) + 2);
-    new_path[0] = '~';
-    i = ft_strlen(get_value(env, "HOME"));
-    j = 1;  
-    while (s[i])
-    {
-      new_path[j] = s[i];
-      i++;
-      j++;
-    }
-    new_path[j] = '\0';
-    free(s);
-    return (new_path);
-  }
-  return (s);
-}
-
 char *get_prompt (t_var **env)
 {
   t_prompt *prompt;
-  char *ps1_fake = "[\\u@\\h Minishell \\W \\g]";
+  char *ps1_fake = "[\\u@\\h \\W \\g]";
   char *expanded_prompt;
 
   prompt = malloc(sizeof(t_prompt));
