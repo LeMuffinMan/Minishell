@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 04:50:03 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/11 17:14:00 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/14 15:27:26 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,10 @@ static char	**cpy_tab(char **dest, char **src, int index)
 	{
 		dest[index] = ft_strdup(src[i]);
 		if (!dest[index])
+		{
+			free_tab(dest);
 			return (NULL);
+		}
 		index++;
 		i++;
 	}
@@ -34,7 +37,7 @@ static char	**cpy_tab(char **dest, char **src, int index)
 
 static bool	is_same_family(t_token *node)
 {
-	if ((node->token == CMD) || node->token == APPEND
+	if ((node->token == CMD) || (node->token == APPEND)
 		|| (node->token == BUILT_IN) || (node->token == HD)
 		|| (node->token == R_IN) || (node->token == TRUNC))
 	{
@@ -89,9 +92,10 @@ static void	change_node(t_token **node)
 	free_tab((*node)->content);
 	(*node)->content = new_content;
 	(*node)->next = next_node->next;
+	if ((*node)->next)
+		(*node)->next->prev = *node;
 	free_tab(next_node->content);
 	free(next_node);
-	next_node = NULL;
 }
 
 void	concat_args(t_token **head)
@@ -105,8 +109,7 @@ void	concat_args(t_token **head)
 	{
 		if (is_same_family(tmp))
 			change_node(&tmp);
-		tmp = tmp->next;
+		else
+			tmp = tmp->next;
 	}
-	if (tmp && is_same_family(tmp))
-		change_node(&tmp);
 }

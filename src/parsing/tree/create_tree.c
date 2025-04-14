@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 21:12:15 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/11 17:00:07 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/14 14:48:50 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,10 +85,10 @@ static t_token *find_best_priority(t_token *start, t_token *end)
     current = start;
     while (current != end->next)
     {
-		if (!current || !best) {
-            printf("Error: Null pointer encountered in find_best_priority\n");
-            return (NULL);
-        }
+		// if (!current || !best) {
+        //     printf("Error: Null pointer encountered in find_best_priority\n");
+        //     return (NULL);
+        // }
 		if (current->priority < best->priority)
 		{
 			printf("Current token: %s, Priority: %d\n", current->content[0], current->priority);
