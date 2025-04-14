@@ -10,16 +10,16 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef list_H
-# define list_H
+#ifndef LIST_H
+# define LIST_H
 
 # include "token.h"
 
 # define E_IO 5
 # define MEM_ALLOC 12
 
-enum e_type;
-typedef	enum e_type t_type;
+enum				e_type;
+typedef enum e_type	t_type;
 
 typedef struct s_token
 {

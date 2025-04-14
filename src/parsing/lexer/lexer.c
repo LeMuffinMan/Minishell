@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 00:19:05 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/10 20:51:46 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/14 19:38:13 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,11 +67,8 @@ static void	add_lexer_back(t_lexer **head, char *str)
 
 	new_node = add_new_node(str);
 	if (!new_node)
-	{
 		free_lexer(*head,
 			"Malloc failed in function 'add_lexer_back'", MEM_ALLOC);
-		return ;
-	}
 	if (!*head)
 	{
 		*head = new_node;
@@ -94,15 +91,19 @@ static int	alloc_lexer(char *str, char c, t_lexer **list)
 	char	*res;
 
 	i = 1;
-	while (str[i] && str[i] != c)
+	while (str[i])
+	{
+		if (str[i] == c && str[i - 1] == '\\')
+			i++;
+		else if (str[i] == c)
+			break ;
 		i++;
+	}
 	i++;
 	res = ft_strndup(str, i);
 	if (!res)
-	{
 		free_lexer(*list,
 			"Malloc failed in function 'alloc_lexer'", MEM_ALLOC);
-	}
 	add_lexer_back(list, res);
 	free(res);
 	return (i);
@@ -128,9 +129,7 @@ void	parse_line(char *str, t_lexer **list)
 				i++;
 			word = ft_strndup(&str[start], i - start);
 			if (!word)
-			{
 				free_lexer(*list, "Malloc failed in parse_line", MEM_ALLOC);
-			}
 			add_lexer_back(list, word);
 			free(word);
 		}

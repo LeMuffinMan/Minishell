@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 03:09:12 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/11 17:10:50 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/14 20:47:52 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "display.h"
 #include "tree.h"
 #include "libft.h"
+#include "quote.h"
 #include <unistd.h>
 
 int	main(int ac, char **av, char **envp)
@@ -29,7 +30,7 @@ int	main(int ac, char **av, char **envp)
 	token = NULL;
 	lexer = NULL;
 	parse_line(av[1], &lexer);
-	display_lexer(lexer);
+	// display_lexer(lexer);
 	while (lexer->next)
 	{
 		add_back(&token, lexer->arg);
@@ -40,9 +41,10 @@ int	main(int ac, char **av, char **envp)
 	assign_token(&token, envp);
 	display_list(token);
 	concat_args(&token);
+	parse_quote(&token);
 	display_list(token);
 	add_to_root(token, &root);
-	print_ast(root, 20);
+	display_ast(root);
 	free_tree(root);
 	free_parse(token, NULL, 0);
 	return (0);

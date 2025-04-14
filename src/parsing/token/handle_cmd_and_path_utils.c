@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 00:53:37 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/10 20:51:46 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/14 15:52:49 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ int	env_is_alive(char **envp)
 	return (0);
 }
 
-void	case_of_absolute_path(t_token **node)
+static void	case_of_absolute_path(t_token **node)
 {
 	char	*tmp;
 

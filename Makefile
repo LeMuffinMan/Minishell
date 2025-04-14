@@ -7,7 +7,7 @@ BOLD_CYAN			=	\e[1;36m
 STOP_COLOR			=	\e[0m
 
 -include $(DEPS) $(DEPS_BONUS)
-vpath %.c src/parsing/token:src/parsing/lexer:src/parsing/tree:src
+vpath %.c src/parsing/token:src/parsing/lexer:src/parsing/tree:src:src/parsing/handle_quote
 vpath %.h include:src/libft/include
 vpath %.a src/libft/obj
 
@@ -30,8 +30,10 @@ SRC					=	concat_args.c \
 						display_tree.c \
 						handle_cmd_and_path_utils.c \
 						handle_cmd_and_path.c \
+						quote.c \
 						tokenize_utils.c \
 						tokenize.c \
+						tree_utils.c \
 						lexer.c \
 						main.c
 
@@ -45,12 +47,14 @@ $(OBJ_DIR)%.o:%.c $(HEAD) $(LIBFT_HEAD) Makefile $(LIBFT_DIR)Makefile
 	$(CC) $(FLAG) -c $< -o $@
 	@echo "$(STOP_COLOR)"
 
-all: $(NAME)
+all: lib $(NAME)
 
-$(NAME): $(OBJ)
+lib:
 	@echo "$(BOLD_BLUE)Compilling Libft...$(STOP_COLOR)"
 	@make -C $(LIBFT_DIR)
 	@echo "$(BOLD_GREEN)SUCCESS !!!$(STOP_COLOR)"
+
+$(NAME): $(OBJ) $(LIB_LIBFT)
 	@echo "$(BOLD_BLUE)Creating executable $(NAME)...$(BOLD_PURPLE)"
 	$(CC) $(OBJ) $(PIPEX_FLAG) $(LIBFT_FLAG) -o $(NAME)
 	@echo "$(STOP_COLOR)$(BOLD_GREEN)SUCCESS !!!$(STOP_COLOR)"

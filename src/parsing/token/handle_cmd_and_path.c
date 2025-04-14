@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 23:46:28 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/10 20:51:46 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/14 15:53:38 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ char	*extract_path(char **envp)
 	return (res);
 }
 
-char	*verif_path(char **path, char *cmd, int *error)
+static char	*verif_path(char **path, char *cmd, int *error)
 {
 	int		i;
 	char	*tmp_cmd;

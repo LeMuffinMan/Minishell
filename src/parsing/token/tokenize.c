@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 21:44:17 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/10 20:51:46 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/14 15:54:36 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include "libft.h"
 #include "ft_printf.h"
 
-void	is_operand_or_quote(t_token **node)
+static void	is_operand_or_quote(t_token **node)
 {
 	int	len;
 
@@ -36,7 +36,7 @@ void	is_operand_or_quote(t_token **node)
 		(*node)->token = S_QUOTE;
 }
 
-void	is_redirection(t_token **node)
+static void	is_redirection(t_token **node)
 {
 	if (!ft_strcmp((*node)->content[0], ">>"))
 		(*node)->token = APPEND;
@@ -48,7 +48,7 @@ void	is_redirection(t_token **node)
 		(*node)->token = TRUNC;
 }
 
-void	is_command_whithout_env(t_token **node, char **envp)
+static void	is_command_whithout_env(t_token **node, char **envp)
 {
 	if (is_slash((*node)->content[0]) || !env_is_alive(envp))
 	{
@@ -63,7 +63,7 @@ void	is_command_whithout_env(t_token **node, char **envp)
 	}
 }
 
-void	is_command(t_token **node, char **envp)
+static void	is_command(t_token **node, char **envp)
 {
 	char	*tmp;
 	char	**path;

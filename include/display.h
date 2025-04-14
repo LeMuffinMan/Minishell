@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 02:33:29 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/11 00:27:20 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/14 20:47:11 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,14 +25,14 @@
 # include "lexer.h"
 # include "tree.h"
 
-struct s_token;
-typedef struct s_token t_token;
+struct					s_token;
+typedef struct s_token	t_token;
 
-struct s_lexer;
-typedef struct s_lexer t_lexer;
+struct					s_lexer;
+typedef struct s_lexer	t_lexer;
 
 void	display_list(t_token *head);
 void	display_lexer(t_lexer *head);
-void	print_ast(t_tree *node, int depth);
+void	display_ast(t_tree *root);
 
 #endif

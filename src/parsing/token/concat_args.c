@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 04:50:03 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/14 15:27:26 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/14 17:06:00 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static bool	is_same_family(t_token *node)
 			if ((node->next->error != 0) || (node->next->token == D_QUOTE)
 				|| (node->next->token == S_QUOTE))
 				return (true);
-		}	
+		}
 	}
 	return (false);
 }

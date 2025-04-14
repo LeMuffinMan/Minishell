@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 01:26:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/09 17:54:33 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/14 16:09:00 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@
 
 # include <stdbool.h>
 
-struct s_token;
-typedef	struct s_token t_token;
+struct					s_token;
+typedef struct s_token	t_token;
 
 typedef enum e_type
 {
@@ -48,7 +48,6 @@ void	concat_args(t_token **head);
 bool	parse_path_without_env(t_token *node);
 char	*extract_path(char **envp);
 bool	verif_access_exec(char *tmp_cmd, int *error);
-char	*verif_path(char **path, char *cmd, int *error);
 char	**split_the_path(char *path);
 char	*parse_cmd(char *arg, char **path, int *error);
 char	*verif_command(t_token **node, char *tmp, char **path, char **envp);

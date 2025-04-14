@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 23:04:24 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/11 02:05:04 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/14 21:04:39 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,15 +36,15 @@ void print_ast(t_tree *node, int indent)
 		print_spaces(indent);
 		if (node->left) printf("/");
 		if (node->right) printf(" \\\n");
-		// printf("\n");
+		printf("\n");
 		print_ast(node->left, indent - 5);
 		print_ast(node->right, indent + 5);
 	}
 }
 
-void print_tree(t_tree *root)
+void display_ast(t_tree *root)
 {
-    print_ast(root, 5);  // 20 est l'indent de départ
+    print_ast(root, 20);  // 20 est l'indent de départ
 }
 
 
