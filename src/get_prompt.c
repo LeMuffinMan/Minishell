@@ -23,6 +23,8 @@ int free_prompt(t_prompt *prompt)
     free(prompt->pwd);
   if (prompt->git_branch)
     free(prompt->git_branch);
+  if (prompt->user_type)
+    free(prompt->user_type);
   if (prompt->prompt)
     free(prompt->prompt);
   free(prompt);
@@ -36,10 +38,14 @@ int get_value_len(t_var **env, t_prompt *prompt, char c)
     return (ft_strlen(prompt->user));
   if (c == 'h' && prompt->hostname)
     return (ft_strlen(prompt->hostname));
+  if (c == 'H' && prompt->hostname_long)
+    return (ft_strlen(prompt->hostname_long));
   if (c == 'W' && prompt->pwd)
     return (ft_strlen(prompt->pwd));
   if (c == 'g' && prompt->git_branch)
     return (ft_strlen(prompt->git_branch));
+  if (c == '$' && prompt->uid)
+    return (1);
   else 
     return (0);
 }
@@ -134,7 +140,7 @@ int extract_uid(char *line)
   return (res);
 }
 
-char *trim_hostname(char *s)
+char *trim_hostname(char *s, int mode)
 {
   char *trimed;
   int i;
@@ -147,10 +153,20 @@ char *trim_hostname(char *s)
   i = 0;
   while (s[i] && !ft_isalnum(s[i]))
     i++;
-  j = 0; //ici on change pour /H
-  while (s[j] && s[j] != '.')
-    j++;
-  len = j - 1 - i;
+  if (mode)
+  {
+    j = ft_strlen(s) - 1;
+    while (j > 0 && s[j] && !ft_isalnum(s[j]))
+      j--;
+    len = j - i;
+  }
+  else
+  {
+    j = 0; //ici on change pour /H
+    while (s[j] && s[j] != '.')
+      j++;
+    len = j - 1 - i;
+  }
   trimed = malloc(sizeof(char) * len + 2);
   j = 0;
   while (j <= len)
@@ -293,7 +309,7 @@ char *get_user()
   return (username);
 }
 
-char *get_hostname()
+char *get_hostname(int mode)
 {
   char *hostname;
   char buffer[256];
@@ -308,7 +324,7 @@ char *get_hostname()
   if (bytes_read <= 0)
       return NULL;
   buffer[bytes_read] = '\0';
-  hostname = trim_hostname(buffer);
+  hostname = trim_hostname(buffer, mode);
   return (hostname);
 }
 
@@ -372,6 +388,7 @@ int cpy_prompt_element(t_prompt *prompt, int *i, int *j, char *value)
 {
   int len;
 
+  /* printf("[%s]\n", value); */
   if (value)
   {
     len = ft_strlen(value);
@@ -391,10 +408,8 @@ int copy_end_prompt(t_prompt *prompt, int i, int j, int len)
 {
   if (i < len && j < prompt->total_len + 3)
       prompt->prompt[j++] = prompt->ps1[i];
-  if (prompt->uid && !ft_strncmp(prompt->uid, "0", 2))
-    prompt->prompt[j++] = '#';
-  else
-    prompt->prompt[j++] = '$';
+  /* if (prompt->user_type) */
+  /*   prompt->prompt[j++] = prompt->user_type[0]; */
   prompt->prompt[j++] = ' ';
   prompt->prompt[j] = '\0';
   return (0);
@@ -413,10 +428,16 @@ int expand_prompt(t_prompt *prompt, int len)
       cpy_prompt_element(prompt, &i, &j, prompt->user);
     else if (prompt->ps1[i] == '\\' && prompt->ps1[i + 1] && prompt->ps1[i + 1] == 'h')
       cpy_prompt_element(prompt, &i, &j, prompt->hostname);
+    else if (prompt->ps1[i] == '\\' && prompt->ps1[i + 1] && prompt->ps1[i + 1] == 'H')
+      cpy_prompt_element(prompt, &i, &j, prompt->hostname_long);
     else if (prompt->ps1[i] == '\\' && prompt->ps1[i + 1] && prompt->ps1[i + 1] == 'W')
       cpy_prompt_element(prompt, &i, &j, prompt->pwd);
     else if (prompt->ps1[i] == '\\' && prompt->ps1[i + 1] && prompt->ps1[i + 1] == 'g')
       cpy_prompt_element(prompt, &i, &j, prompt->git_branch);
+    else if (prompt->ps1[i] == '\\' && prompt->ps1[i + 1] && prompt->ps1[i + 1] == '$')
+      cpy_prompt_element(prompt, &i, &j, prompt->user_type);
+    else if (prompt->ps1[i] == '\\' && prompt->ps1[i + 1] && prompt->ps1[i + 1] == 'n')
+      cpy_prompt_element(prompt, &i, &j, "\n");
     else if (prompt->ps1[i] == '\\' && prompt->ps1[i + 1])
       cpy_prompt_element(prompt, &i, &j, NULL);
     else if (j < prompt->total_len + 3)
@@ -442,10 +463,16 @@ int build_prompt(t_prompt *prompt, t_var **env)
     return (0);
 }
 
+//interpreter comme bash : 
+// double backslash pour que ce soit recu comme ca
+// permettre les quote pour mettre des espaces 
+//ajouter le \w 
+////\l : pour afficher bash / minishell
+//\s :  the name of the shell, the basename of $0 (the portion following the final slash)
 char *get_prompt (t_var **env)
 {
   t_prompt *prompt;
-  char *ps1_fake = "[\\u@\\h \\W \\g]";
+  char *ps1_fake = "[\\u@\\h \\H \\W \\g] \\$";
   char *expanded_prompt;
 
   prompt = malloc(sizeof(t_prompt));
@@ -456,12 +483,17 @@ char *get_prompt (t_var **env)
   /* printf("%s\n", get_value(env, "PS1")); */
 /*prompt->ps1 = get_value(env, "PS1");*/
   prompt->uid = ft_getuid();
+  if (prompt->uid == 0)
+    prompt->user_type = ft_strdup("#");
+  else
+    prompt->user_type = ft_strdup("$");
   if (!ft_strncmp(prompt->uid, "0", 2))
     prompt->user = ft_strdup("root");
   prompt->user = ft_strdup(get_value(env, "USER"));
   if (!prompt->user)
     prompt->user = get_user(); //on fait un get_value, si il foire on fait un get_user
-  prompt->hostname = get_hostname();
+  prompt->hostname = get_hostname(0);
+  prompt->hostname_long = get_hostname(1);
   prompt->pwd = ft_strdup(get_value(env, "PWD"));
   prompt->git_branch = get_branch(prompt->pwd);
   prompt->pwd = tilde_replace(prompt->pwd, env);

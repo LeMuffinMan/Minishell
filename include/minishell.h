@@ -67,8 +67,10 @@ typedef struct s_prompt
   char *user;
   char *uid;
   char *hostname;
+  char *hostname_long;
   char *pwd;
   char *git_branch;
+  char *user_type;
   int total_len;
   char *prompt;
 } t_prompt;
