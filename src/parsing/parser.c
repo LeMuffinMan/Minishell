@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 03:09:12 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/14 20:47:52 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/15 18:18:20 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@
 #include "libft.h"
 #include "quote.h"
 #include <unistd.h>
+#include <readline/readline.h>
+#include <stdio.h>
 
 t_tree	*parse(char *line, char **envp)
 {
@@ -45,6 +47,6 @@ t_tree	*parse(char *line, char **envp)
 	add_to_root(token, &root);
 	/* print_ast(root, 20); */
 	/* free_tree(root); */
-	free_parse(token, NULL, 0);
+	// free_parse(token, NULL, 0);
 	return (root);
 }

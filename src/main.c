@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:21:52 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/11 17:35:23 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/04/15 18:17:15 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,11 +86,11 @@ int main(int ac, char **av, char **env)
 {
     char    *line;
     char    *prompt;
-    char    **arg;
+    // char    **arg;
     int        error_code;
     t_var    *new_env;
     t_tree *ast;
-    char **translated_env;
+    // char **translated_env;
 
     /* if (isatty(1)) */
     /* { */
@@ -124,26 +124,27 @@ int main(int ac, char **av, char **env)
         if (!prompt)
             prompt = "[Minishell]$ ";
         line = readline(prompt);
+        printf("%s\n", line);
         if (isatty(0) && env)
             free(prompt);
         prompt = NULL;
         if (line == NULL)
         {
-            free(arg);
+            // free(arg);
             free_list(&new_env);
             // a tester !
             exit(error_code);
         }
-        arg = ft_split(line, ' ');
-        translated_env = lst_to_array(&new_env);
+        // arg = ft_split(line, ' ');
+        // translated_env = lst_to_array(&new_env);
         /* print_array(translated_env); */
-        ast = parse(line, translated_env);
+        ast = parse(line, env);
 		display_ast(ast);
-        error_code = exec(arg, &new_env /* , ast */);
+        // error_code = exec(arg, &new_env /* , ast */);
         free(line);
         line = NULL;
-        free_array(arg);
-        arg = NULL;
+        // free_array(arg);
+        // arg = NULL;
         /* free_array(translated_env); */
     }
     free_list(&new_env);
