@@ -34,7 +34,7 @@ int	builtin_exit(char **arg, t_var **env)
 	{
 		free_list(env);
 		free_array(arg);
-		// exit avec le dernier code d'erreur  ?
+		ft_putstr_fd("exit\n", 1); // il faut imprimer exit dans d'autres cas ?
 		exit(0);
 	}
 	if (ft_strlen(arg[1]) > 18)

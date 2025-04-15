@@ -130,22 +130,29 @@ int	builtin_export(t_var **env, char **arg)
 		/* } */
 	}
 	else if (!ft_strncmp("_=", arg[1], 3))
-		return (1);
+		return (0);
 	else
 	{
 		key_value = ft_split(arg[1], '=');
 		node = is_known_key(env, key_value[0]);
-		free_array(key_value);
 		// Si on a deja la cle dans les variables non visibles,
 			/* on la rend visible */
 		if (node)
 		{
+			if (node->value)
+				free(node->value);
+			if (key_value && key_value[1])
+				node->value = ft_strdup(key_value[1]);
+			else 
+				node->value = ft_strdup(""); // pas suuuur
+			//pas toujours !
 			node->exported = 1;
 			node->env = 1;
 			return (0);
 		}
 		// sinon on l'ajoute et on la rend visible
 		add_back_var(env, arg[1], 3); // changer le systene de mode ?
+		free_array(key_value);
 	}
 	return (0);
 }

@@ -92,7 +92,7 @@ int	update_last_cmd_var(t_var **env, char *last_cmd)
 	tmp = *env;
 	while (tmp)
 	{
-		if (!ft_strncmp("_", tmp->key, ft_strlen(tmp->key)))
+		if (!ft_strncmp("_", tmp->key, 2))
 			break ;
 		tmp = tmp->next;
 	}
@@ -100,6 +100,7 @@ int	update_last_cmd_var(t_var **env, char *last_cmd)
 		add_back_var(env, last_cmd, 1);
 	else
 	{
+		printf("update\n");
 		free(tmp->value);
 		tmp->value = ft_strdup(last_cmd);
 	}

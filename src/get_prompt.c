@@ -141,15 +141,16 @@ char *trim_hostname(char *s)
   int j;
   int len;
 
+  //faire un confition pour trim au 1er . si petit h 
   if (!s)
     return (NULL);
   i = 0;
   while (s[i] && !ft_isalnum(s[i]))
     i++;
-  j = ft_strlen(s);
-  while (j > 0 && !ft_isalnum(s[j]))
-    j--;
-  len = j - i;
+  j = 0; //ici on change pour /H
+  while (s[j] && s[j] != '.')
+    j++;
+  len = j - 1 - i;
   trimed = malloc(sizeof(char) * len + 2);
   j = 0;
   while (j <= len)
@@ -448,7 +449,11 @@ char *get_prompt (t_var **env)
   char *expanded_prompt;
 
   prompt = malloc(sizeof(t_prompt));
-  prompt->ps1 = ft_strdup(ps1_fake);
+  if (get_value(env, "PS1"))
+    prompt->ps1 = ft_strdup(get_value(env, "PS1"));
+  else
+    prompt->ps1 = ft_strdup(ps1_fake);
+  /* printf("%s\n", get_value(env, "PS1")); */
 /*prompt->ps1 = get_value(env, "PS1");*/
   prompt->uid = ft_getuid();
   if (!ft_strncmp(prompt->uid, "0", 2))

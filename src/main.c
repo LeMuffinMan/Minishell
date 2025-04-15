@@ -62,6 +62,26 @@ char **lst_to_array(t_var **env)
     return array;
 }
 
+int print_env(t_var **env)
+{
+    t_var *tmp;
+
+    tmp = *env;
+    while (tmp)
+    {
+        if (tmp->key)
+            ft_putstr_fd(tmp->key, 1);
+        if (tmp->value) //Si on fait VAR= on ft_strdup("")
+        {
+            ft_putstr_fd("=", 1);
+            ft_putstr_fd(tmp->value, 1);
+        }
+        ft_putstr_fd("\n", 1);
+        tmp = tmp->next;
+    }
+    return (0);
+}
+
 int main(int ac, char **av, char **env)
 {
     char    *line;
@@ -87,6 +107,7 @@ int main(int ac, char **av, char **env)
     /* utiliser getenv ?
         * Si on n'a pas d'env uniquement ?*/
     init_env(&new_env, env, av);
+    print_env(&new_env);
     //execute_minishellrc
     while (1)
     {
