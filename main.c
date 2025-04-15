@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 03:09:12 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/14 20:47:52 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/15 18:09:39 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,20 +16,26 @@
 #include "libft.h"
 #include "quote.h"
 #include <unistd.h>
+#include <readline/readline.h>
+#include <stdio.h>
 
 int	main(int ac, char **av, char **envp)
 {
 	t_token	*token;
 	t_lexer	*lexer;
 	t_tree	*root;
+	char *line;
 	int		i;
 
+	(void)av;
+	(void)ac;
 	i = 0;
-	if (ac != 2)
-		ft_error("Usage: ./parsing arg\n", E_IO);
+	// if (ac != 2)
+	// 	ft_error("Usage: ./parsing arg\n", E_IO);
 	token = NULL;
 	lexer = NULL;
-	parse_line(av[1], &lexer);
+	line = readline("minishell");	
+	parse_line(line, &lexer);
 	// display_lexer(lexer);
 	while (lexer->next)
 	{
