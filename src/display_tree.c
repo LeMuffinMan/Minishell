@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 23:04:24 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/15 17:33:15 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/15 18:25:23 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,8 @@ void print_ast(t_tree *node, int indent)
 	if (!node)
 		return;
 	print_spaces(indent);
-	if (node->content && node->content->content && node->content->content[0])
-		printf(" %s", node->content->content[0]);
+	if (node->token && node->token->content && node->token->content[0])
+		printf(" %s", node->token->content[0]);
 	else
 		printf("(null)\n");
 	if (node->left || node->right)

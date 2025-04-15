@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 21:07:56 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/14 16:09:48 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/15 18:24:04 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ typedef struct s_tree
 {
 	struct s_tree	*left;
 	struct s_tree	*right;
-	t_token			*content;
+	t_token			*token;
 	int				priority;
 }	t_tree;
 
