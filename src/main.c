@@ -90,7 +90,7 @@ int main(int ac, char **av, char **env)
     int        error_code;
     t_var    *new_env;
     t_tree *ast;
-    /* char **translated_env; */
+    char **translated_env;
 
     /* if (isatty(1)) */
     /* { */
@@ -107,11 +107,11 @@ int main(int ac, char **av, char **env)
     /* utiliser getenv ?
         * Si on n'a pas d'env uniquement ?*/
     init_env(&new_env, env, av);
-    print_env(&new_env);
+    /* print_env(&new_env); */
     //execute_minishellrc
     while (1)
     {
-        //update env variables
+        //update env variables !!! si on a un && ou un || on DOIT update l'env entre les deux !!!
         //update prompt
         //
         prompt = NULL;
@@ -135,10 +135,10 @@ int main(int ac, char **av, char **env)
             exit(error_code);
         }
         arg = ft_split(line, ' ');
-        /* translated_env = lst_to_array(&new_env); */
+        translated_env = lst_to_array(&new_env);
         /* print_array(translated_env); */
-    /*     ast = parse(line, translated_env); */
-				/* print_ast(ast, 20); */
+        ast = parse(line, translated_env);
+		display_ast(ast);
         error_code = exec(arg, &new_env /* , ast */);
         free(line);
         line = NULL;

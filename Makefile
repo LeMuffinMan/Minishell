@@ -19,8 +19,7 @@ BOLD_CYAN			=	\e[1;36m
 STOP_COLOR			=	\e[0m
 
 -include $(DEPS) $(DEPS_BONUS)
-vpath %.c src/parsing/token:src/parsing/lexer:src/parsing/tree:src/builtins:src/utils:src/parsing:src/parsing/handle_quote
-:src
+vpath %.c src/parsing/token:src/parsing/lexer:src/parsing/tree:src/builtins:src/utils:src/parsing:src/parsing/handle_quote:src
 vpath %.h include:src/libft/include
 vpath %.a src/libft/obj
 

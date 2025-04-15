@@ -29,7 +29,7 @@ t_tree	*parse(char *line, char **envp)
 	/* 	ft_error("Usage: ./parsing arg\n", E_IO); */
 	token = NULL;
 	lexer = NULL;
-	parse_line(av[1], &lexer);
+	parse_line(line, &lexer);
 	// display_lexer(lexer);
 	while (lexer->next)
 	{
