@@ -39,7 +39,7 @@ void	ft_free(char **s)
 	int	i;
 
 	i = 0;
-	while (s[i] != 0)
+	while (s && s[i])
 	{
 		free(s[i]);
 		s[i] = NULL;

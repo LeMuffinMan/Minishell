@@ -6,7 +6,7 @@
 #    By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/04/01 17:44:57 by oelleaum         ###   ########lyon.fr    #
+#    Updated: 2025/04/11 17:23:17 by oelleaum         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,13 +19,14 @@ BOLD_CYAN			=	\e[1;36m
 STOP_COLOR			=	\e[0m
 
 -include $(DEPS) $(DEPS_BONUS)
-vpath %.c src/parsing/token:src/parsing/lexer:src/parsing/tree:src:src/parsing/handle_quote
+vpath %.c src/parsing/token:src/parsing/lexer:src/parsing/tree:src/builtins:src/utils:src/parsing:src/parsing/handle_quote
+:src
 vpath %.h include:src/libft/include
 vpath %.a src/libft/obj
 
 CC					=	cc
-FLAG				=	-Wall -Wextra -Werror -g -MMD -MP -I$(LIBFT_HEAD_DIR) -I$(HEAD_DIR)
-NAME				=	parsing
+FLAG				=	-Wall -Wextra -Werror -g3 -MMD -MP -I$(LIBFT_HEAD_DIR) -I$(HEAD_DIR)
+NAME				=	minishell
 HEAD				=	token.h list.h display.h lexer.h
 HEAD_DIR			=	include/
 
@@ -35,7 +36,9 @@ LIB_LIBFT			=	$(LIBFT_DIR)obj/libft.a
 LIBFT_FLAG			=	-L$(LIBFT_DIR)src/ $(LIB_LIBFT)
 LIBFT_HEAD			=	libft.h get_next_line.h ft_printf.h
 
-SRC					=	concat_args.c \
+SRC					=	main.c \
+						parser.c \
+						concat_args.c \
 						create_tokenize_list.c \
 						create_tree.c \
 						display_list.c \
@@ -47,14 +50,27 @@ SRC					=	concat_args.c \
 						tokenize.c \
 						tree_utils.c \
 						lexer.c \
-						main.c
+						exec.c \
+    				init.c \
+    				builtins/echo.c \
+    				builtins/cd.c \
+    				builtins/pwd.c \
+    				builtins/unset.c \
+    				builtins/export.c \
+    				builtins/env.c \
+    				builtins/exit.c \
+						utils/builtins_utils.c \
+						utils/env_utils.c \
+						utils/init_utils.c \
+						utils/prints.c \
+						get_prompt.c
 
 DEPS				=	$(SRC:%.c=$(OBJ_DIR)%.d)
 OBJ					=	$(SRC:%.c=$(OBJ_DIR)%.o)
 OBJ_DIR				=	.objs/
 
 $(OBJ_DIR)%.o:%.c $(HEAD) $(LIBFT_HEAD) Makefile $(LIBFT_DIR)Makefile
-	@mkdir -p $(OBJ_DIR)
+	@mkdir -p $(@D) 
 	@echo "$(BOLD_PURPLE)"
 	$(CC) $(FLAG) -c $< -o $@
 	@echo "$(STOP_COLOR)"
@@ -68,7 +84,7 @@ lib:
 
 $(NAME): $(OBJ) $(LIB_LIBFT)
 	@echo "$(BOLD_BLUE)Creating executable $(NAME)...$(BOLD_PURPLE)"
-	$(CC) $(OBJ) $(PIPEX_FLAG) $(LIBFT_FLAG) -o $(NAME)
+	$(CC) $(OBJ) $(PIPEX_FLAG) $(LIBFT_FLAG) -l readline -o $(NAME)
 	@echo "$(STOP_COLOR)$(BOLD_GREEN)SUCCESS !!!$(STOP_COLOR)"
 
 clean:

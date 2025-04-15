@@ -17,16 +17,16 @@
 #include "quote.h"
 #include <unistd.h>
 
-int	main(int ac, char **av, char **envp)
+t_tree	*parse(char *line, char **envp)
 {
 	t_token	*token;
 	t_lexer	*lexer;
 	t_tree	*root;
-	int		i;
+	/* int		i; */
 
-	i = 0;
-	if (ac != 2)
-		ft_error("Usage: ./parsing arg\n", E_IO);
+	/* i = 0; */
+	/* if (ac != 2) */
+	/* 	ft_error("Usage: ./parsing arg\n", E_IO); */
 	token = NULL;
 	lexer = NULL;
 	parse_line(av[1], &lexer);
@@ -39,13 +39,12 @@ int	main(int ac, char **av, char **envp)
 	add_back(&token, lexer->arg);
 	free_lexer(lexer, NULL, 0);
 	assign_token(&token, envp);
-	display_list(token);
+	/* display_list(token); */
 	concat_args(&token);
-	parse_quote(&token);
-	display_list(token);
+	/* display_list(token); */
 	add_to_root(token, &root);
-	display_ast(root);
-	free_tree(root);
+	/* print_ast(root, 20); */
+	/* free_tree(root); */
 	free_parse(token, NULL, 0);
-	return (0);
+	return (root);
 }
