@@ -29,7 +29,7 @@ static t_tree	*add_new_node(t_token *token, t_tree *left, t_tree *right)
 		new_node->left = left;
 	if (right)
 		new_node->right = right;
-	new_node->content = token;
+	new_node->token = token;
 	new_node->priority = 10;
 	return (new_node);
 }

@@ -49,7 +49,6 @@ SRC					=	main.c \
 						tokenize.c \
 						tree_utils.c \
 						lexer.c \
-						exec.c \
     				init.c \
     				builtins/echo.c \
     				builtins/cd.c \
@@ -63,6 +62,7 @@ SRC					=	main.c \
 						utils/init_utils.c \
 						utils/prints.c \
 						get_prompt.c
+						# exec.c \
 
 DEPS				=	$(SRC:%.c=$(OBJ_DIR)%.d)
 OBJ					=	$(SRC:%.c=$(OBJ_DIR)%.o)

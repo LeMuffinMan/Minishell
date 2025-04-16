@@ -27,7 +27,64 @@
 // enfants pour les cmds ?
 // 4 Wait
 // 5 Mettre a jour l'environnement
-int	exec(char **arg, t_var **env)
+//
+
+
+int exec_ast(t_ast *ast, t_var *env)
+{
+	int exit_code;
+	int fd[2];
+
+	if (ast->token->token == O_AND)
+	{
+		exit_code = exec_ast(ast->left);
+		if (exit_code == 0)
+			return (exec_ast(ast->right));
+	}
+	else if (ast->token->token == O_OR) 
+	{
+		exit_code = exec_ast(ast->left);
+		if (exit_code != 0)
+			return (exec_ast(ast->right));
+	}
+	if (ast->token->token == PIPE)
+	{
+		fd = get_fds_for_pipe(); 
+		exec_ast(ast->left);
+		return (exec_ast(ast->right));
+	}
+	if (ast->token->token == R_IN)
+	{
+		fd[0] = get_fd_to_dup(ast->right);
+		open_and_dup(ast);
+		return (exec_ast(ast->left));
+	}
+	if (ast->token->token == APPEND | ast->token->token == TRUNC)
+	{
+		fd[1] = get_fd_to_dup(ast->left);
+		open_and_dup(ast);
+		return (exec_ast(ast->left));
+	}
+	//SI dans un pipe -> dans un child
+	//SINON -> le daron 
+	//SAUF pour echo 
+	if (ast->token->token == BUILT_IN)
+	{
+		//close des trucs ici ?
+		return (builtins(ast->token->content, env));
+	}
+	//TouJOuRS dans un child
+	if (ast->token->token == CMD)
+	{
+		//fork
+		//execve
+		//close 
+		return (wait_children());
+	}
+	return (0);
+}
+
+int	builtins(char **arg, t_var **env)
 {
 	if (!*arg)
 		return (0);

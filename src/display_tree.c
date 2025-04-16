@@ -45,6 +45,7 @@ void print_ast(t_tree *node, int indent)
 void display_ast(t_tree *root)
 {
     print_ast(root, 20);  // 20 est l'indent de départ
+  	printf("\n");
 }
 
 
