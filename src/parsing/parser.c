@@ -16,8 +16,8 @@
 #include "libft.h"
 #include "quote.h"
 #include <unistd.h>
-#include <readline/readline.h>
 #include <stdio.h>
+#include <readline/readline.h>
 
 t_tree	*parse(char *line, char **envp)
 {
