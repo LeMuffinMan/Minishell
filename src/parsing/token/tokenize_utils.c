@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 19:51:51 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/10 20:51:46 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/15 23:54:20 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,24 +36,18 @@ char	*verif_command(t_token **node, char *tmp, char **path, char **envp)
 
 void	is_built_in(t_token **node)
 {
-	if (ft_strncmp((*node)->content[0], "echo", 4) == 0
-		&& (*node)->content[0][4] == ' ')
+	if (ft_strncmp((*node)->content[0], "echo", 5) == 0)
 		(*node)->token = BUILT_IN;
-	else if (ft_strncmp((*node)->content[0], "cd", 2) == 0
-		&& (*node)->content[0][2] == ' ')
+	else if (ft_strncmp((*node)->content[0], "cd", 3) == 0)
 		(*node)->token = BUILT_IN;
-	else if (ft_strncmp((*node)->content[0], "pwd", 3) == 0)
+	else if (ft_strncmp((*node)->content[0], "pwd", 4) == 0)
 		(*node)->token = BUILT_IN;
-	else if (ft_strncmp((*node)->content[0], "export", 6) == 0
-		&& (*node)->content[0][6] == ' ')
+	else if (ft_strncmp((*node)->content[0], "export", 7) == 0)
 		(*node)->token = BUILT_IN;
-	else if (ft_strncmp((*node)->content[0], "unset", 5) == 0
-		&& (*node)->content[0][5] == ' ')
+	else if (ft_strncmp((*node)->content[0], "unset", 6) == 0)
 		(*node)->token = BUILT_IN;
-	else if (ft_strncmp((*node)->content[0], "env", 3) == 0
-		&& (*node)->content[0][3] == ' ')
+	else if (ft_strncmp((*node)->content[0], "env", 4) == 0)
 		(*node)->token = BUILT_IN;
-	else if (ft_strncmp((*node)->content[0], "exit", 4) == 0
-		&& (*node)->content[0][4] == ' ')
+	else if (ft_strncmp((*node)->content[0], "exit", 5) == 0)
 		(*node)->token = BUILT_IN;
 }

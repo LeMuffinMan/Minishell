@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 00:19:05 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/14 19:38:13 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/16 18:56:12 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,12 +120,12 @@ void	parse_line(char *str, t_lexer **list)
 	{
 		if (str[i] == ' ')
 			i++;
-		else if (str[i] == '"' || str[i] == '\'')
+		else if (str[i] == '|' || str[i] == '&')
 			i += alloc_lexer(&str[i], str[i], list);
 		else
 		{
 			start = i;
-			while (str[i] && str[i] != ' ' && str[i] != '"' && str[i] != '\'')
+			while (str[i] && str[i] != ' ' && str[i] != '&' && str[i] != '|')
 				i++;
 			word = ft_strndup(&str[start], i - start);
 			if (!word)

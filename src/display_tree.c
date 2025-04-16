@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 23:04:24 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/15 18:25:23 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/15 23:20:59 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ void print_ast(t_tree *node, int indent)
 void display_ast(t_tree *root)
 {
     print_ast(root, 20);  // 20 est l'indent de départ
+	printf("\n");
 }
 
 

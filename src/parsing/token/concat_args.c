@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 04:50:03 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/14 17:06:00 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/16 20:47:12 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,11 +56,9 @@ static char	**join_node_content(t_token *node, char **old, char **new)
 	char	**res;
 	int		len_old;
 	int		len_new;
-	/* int		i; */
 
 	len_old = ft_tab_len(old);
 	len_new = ft_tab_len(new);
-	/* i = 0; */
 	res = malloc(sizeof(char *) * (len_old + len_new + 1));
 	if (!res)
 		free_parse(node,
@@ -78,13 +76,11 @@ static char	**join_node_content(t_token *node, char **old, char **new)
 static void	change_node(t_token **node)
 {
 	t_token	*next_node;
-	/* int		i; */
 	char	**new_content;
 
 	next_node = (*node)->next;
 	if (!next_node)
 		return ;
-	/* i = 0; */
 	new_content = join_node_content(*node,
 			(*node)->content, next_node->content);
 	if (!new_content)

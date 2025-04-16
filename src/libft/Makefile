@@ -13,7 +13,7 @@ HEAD			=	libft.h
 
 -include $(DEPS)
 vpath %.h include
-vpath %.c src
+vpath %.c src:src/get_next_line:src/ft_printf
 
 SRCMANDATORY	=	free_tab.c \
 					ft_atoi.c \
