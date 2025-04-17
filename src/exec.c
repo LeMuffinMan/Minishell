@@ -64,9 +64,9 @@ int get_read_end(t_tree **ast)
 {
 	t_tree *tmp;
 
-	tmp = (*ast)->left;
-	while (tmp->right)
-		tmp = tmp->right;
+	tmp = (*ast)->right;
+	while (tmp->left)
+		tmp = tmp->left;
 	return (tmp->token->fd[0]);
 }
 
@@ -74,57 +74,36 @@ int get_write_end(t_tree **ast)
 {
 	t_tree *tmp;
 
-	tmp = (*ast)->right;
-	while (tmp->left)
-		tmp = tmp->left;
+	tmp = (*ast)->left;
+	while (tmp->right)
+		tmp = tmp->right;
 	return (tmp->token->fd[1]);
 }
 
-/* int get_fds_for_pipe(t_tree *ast) */
-/* { */
-/* 	t_tree *tmp; */
-/* 	int fd[2]; */
-/**/
-/* 	//on cherche a gauche le node le plus a droite */
-/* 	tmp = ast->left; */
-/* 	while (tmp->right) */
-/* 		tmp = tmp->right; */
-/* 	fd[1] = tmp->token->fd[1]; */
-/* 	// stocker les fd utilises dans une liste ? ou juste fermer s'ils sont differents de -1 a la fin de l'exec ? */
-/* 	//on cherche a droite le node le plus a gauche */
-/* 	tmp = ast->right; */
-/* 	while (tmp->left) */
-/* 		tmp = tmp->left; */
-/* 	fd[0] = tmp->token->fd[0]; */
-/* 	return (&fd); */
-/* } */
-
-int add_pipe(int read_end, int write_end, t_pipe **pipes)
+int add_pipe(t_tree **ast, t_pipe **pipes)
 {
-	t_pipe *node;
-	t_pipe *tmp;
 	int fd[2];
+	/* t_tree *tmp; */
 
-	fd[0] = read_end;
-	fd[1] = write_end;
-	if (pipe(fd) != 0)
-		return (1); //des codes d'erreurs specifiques ?
-	node = malloc(sizeof(t_pipe));
-	if (!node)
-		return (1);
-	node->next = NULL;
-	node->read_end = fd[0];
-	node->write_end = fd[1];
-	if (!*pipes)
-		*pipes = node;
-	else
+	(void)pipes;
+	if (pipe(fd) == -1)
 	{
-		tmp = *pipes;
-		while(tmp->next)
-			tmp = tmp->next;
-		tmp->next = node;		
+		//error de pipe
 	}
-	return(0);
+	(*ast)->left->token->fd[1] = fd[1];
+	printf("fd[1] = %d | node->fd[1] = %d\n", fd[1], (*ast)->left->token->fd[1]);
+	if ((*ast)->right->token->token != PIPE)
+	{
+		(*ast)->right->token->fd[0] = fd[0];
+		printf("fd[0] = %d | node->fd[0] = %d\n", fd[0], (*ast)->right->token->fd[0]);
+	}
+	else 
+	{
+		/* (*ast)->right->left->token->fd[0] = fd[0]; */
+		/* printf("fd[0] = %d | node->fd[0] = %d\n", fd[0], (*ast)->right->left->token->fd[0]); */
+	}
+	//asumming write node is always 1st left && read node is either 1st right or 2nd right+left
+	return (0);
 }
 
 int free_pipes(t_pipe **pipes)
@@ -157,15 +136,30 @@ int free_lists_and_exit(t_var **env, t_tree **ast, t_pipe **pipes)
 int exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes)
 {
 	t_tree *tmp;
-	//add_pipe recoit les deux fd a piper, les pipes, et ajoute un node a la liste des pipes
-	if (add_pipe(get_read_end(ast), get_write_end(ast), pipes))
+	int exit_code;
+
+	exit_code = 0;
+	//add_pipe recoit les deux fd a piper, les set_pipe, et ajoute un node a la liste des pipes
+	if (add_pipe(ast, pipes))
 		return (free_lists_and_exit(env, ast, pipes));
 	//ici on est ok pour lancer la commande a gauche
 	tmp = (*ast)->left;
+	/* if (dup2(tmp->token->fd[1], STDOUT_FILENO) == -1) */
+	/* { */
+	/* 	//gerer l'erreur */
+	/* } */
+	/* printf("tmp->token->fd[1] = %d\n", tmp->token->fd[1]); */
 	exec_ast(&tmp, env, pipes);
+	close()
 	//on rapporte l'exit code de la commande droite
 	tmp = (*ast)->right;
-	return (exec_ast(&tmp, env, pipes));
+	/* if (dup2(tmp->token->fd[0], STDIN_FILENO) == -1) */
+	/* { */
+	/* 	//gerer l'erreur */
+	/* } */
+	/* printf("tmp->token->fd[0] = %d\n", tmp->token->fd[0]); */
+	exit_code = exec_ast(&tmp, env, pipes);
+	return (exit_code);
 }
 
 int exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes)
@@ -173,13 +167,31 @@ int exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes)
 	pid_t pid;
 	char **translated_env;
 	//un built in avec aucun pipe branche : le parent execute
-	/* if ((*ast)->token->token == BUILT_IN && (*ast)->token->fd[1] < 0 && (*ast)->token->fd[0] < 0) */
-	/* { */
-	/* 	printf("exec builtin : %s\n", (*ast)->token->content[0]); */
-	/* 	return (builtins((*ast)->token->content, env)); */
-	/* } */
-	/* else */
-	/* { */
+	if ((*ast)->token->token == BUILT_IN && ((*ast)->token->fd[1] > 2 || (*ast)->token->fd[0] > 2))
+	{
+		printf("builtin piped about to execute : %s fd[0] = %d | fd[1] = %d\n", (*ast)->token->content[0], (*ast)->token->fd[0], (*ast)->token->fd[1]);
+		if((*ast)->token->fd[0] > 2)
+		{
+			if (dup2((*ast)->token->fd[0], STDIN_FILENO) == -1)
+			{
+				//gerer l'erreur
+			}
+			close((*ast)->token->fd[0]);
+		}
+		if((*ast)->token->fd[1] > 2)
+		{
+			if (dup2((*ast)->token->fd[1], STDOUT_FILENO) == -1)
+			{
+				//gerer l'erreur
+			}
+			close((*ast)->token->fd[1]);
+		}
+		printf("exec builtin : %s\n", (*ast)->token->content[0]);
+		return (builtins((*ast)->token->content, env));
+	}
+	else
+	{
+		printf("ici ? \n");
 		//au moins un pipe bracnhe : le child execute
 		pid = fork();
 		if (pid < 0)
@@ -188,17 +200,37 @@ int exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes)
 			return (builtins((*ast)->token->content, env));
 		else if (pid == 0 && (*ast)->token->token == CMD)
 		{
+			if((*ast)->token->fd[0] > 2)
+			{
+				if (dup2((*ast)->token->fd[0], STDIN_FILENO) == -1)
+				{
+					//gerer l'erreur
+				}
+				close((*ast)->token->fd[0]);
+			}
+			if((*ast)->token->fd[1] > 2)
+			{
+				if (dup2((*ast)->token->fd[1], STDOUT_FILENO) == -1)
+				{
+					//gerer l'erreur
+				}
+				close((*ast)->token->fd[1]);
+			}
 			translated_env = lst_to_array(env);
 			printf("exec cmd : %s\n", (*ast)->token->content[0]);
 			execve((*ast)->token->content[0], (*ast)->token->content, translated_env);
 		}
 		else 
 		{
+			if ((*ast)->token->fd[0] > 2)
+				close((*ast)->token->fd[0]);
+			if ((*ast)->token->fd[1] > 2)
+				close((*ast)->token->fd[1]);
 			//close des trucs ?
 			return (wait_children(pid));
 		}
 		return (1); // on ne devrait JAMAIS tomber sur ce return 
-	/* } */
+	}
 }
 
 /* int redirect_stdio(t_tree **ast, t_var **env, t_pipe **pipes) */
@@ -221,16 +253,22 @@ int boolean_operators(t_tree **ast, t_var **env, t_pipe **pipes)
 {
 	int exit_code;
 	t_tree *tmp;
+
+	exit_code = 0;
+	(void)tmp;
+	(void)pipes;
+	(void)env;
 	/* if (find_expands(ast->left)) */
 	/* 	expand_variables(ast->left); */
 	tmp = (*ast)->left;
-	exit_code = exec_ast(ast, env, pipes);
+	exit_code = exec_ast(&tmp, env, pipes);
 	if ((exit_code == 0 && (*ast)->token->token == O_AND) || (exit_code != 0 && (*ast)->token->token == O_OR))
 	{
 		/* if (find_expands(ast->right)) */
 		/* 	expand_variables(ast->right); */
 		tmp = (*ast)->right;
-		return (exec_ast(ast, env, pipes));
+		return (exec_ast(&tmp, env, pipes));
+		return (1);
 	}
 	else
 		return (exit_code);

@@ -46,7 +46,7 @@ t_tree	*parse(char *line, char **envp)
 	/* display_list(token); */
 	add_to_root(token, &root);
 	display_list(token);
-	/* print_ast(root, 20); */
+	display_ast(root);
 	/* free_tree(root); */
 	// free_parse(token, NULL, 0);
 	return (root);

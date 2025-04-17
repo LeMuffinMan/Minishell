@@ -122,7 +122,7 @@ int main(int ac, char **av, char **env)
     error_code = 1;
     new_env = NULL;
     ast = NULL;
-    (void)ast;
+    pipes = NULL;
     /* utiliser getenv ?
         * Si on n'a pas d'env uniquement ?*/
     init_env(&new_env, env, av);
@@ -143,7 +143,7 @@ int main(int ac, char **av, char **env)
         if (!prompt)
             prompt = "[Minishell]$ ";
         line = readline(prompt);
-        printf("%s\n", line);
+        /* printf("%s\n", line); */
         if (line == NULL)
         {
             // free(arg);

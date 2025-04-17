@@ -83,8 +83,8 @@ void	replace_tab(t_token **node, char *str)
 	char	*tmp;
 
 
-	#include <stdio.h>
-	printf("%s\n", str);
+	/* #include <stdio.h> */
+	/* printf("%s\n", str); */
 	if (!str)
 		case_of_absolute_path(node);
 	else
