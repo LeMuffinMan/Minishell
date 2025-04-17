@@ -63,8 +63,7 @@ typedef struct s_var
 
 typedef struct s_pipe
 {
-	int read_end;
-	int write_end;
+  int fd[2];
 	struct s_pipe *next;
 } t_pipe;
 

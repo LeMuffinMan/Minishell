@@ -102,6 +102,13 @@ int add_pipe(t_tree **ast, t_pipe **pipes)
 		/* (*ast)->right->left->token->fd[0] = fd[0]; */
 		/* printf("fd[0] = %d | node->fd[0] = %d\n", fd[0], (*ast)->right->left->token->fd[0]); */
 	}
+	t_pipe *pipe;
+
+	pipe = malloc(sizeof(t_pipe));
+	*pipes = pipe;
+	pipe->next = NULL;
+	pipe->fd[1] = fd[1];
+	pipe->fd[0] = fd[0];
 	//asumming write node is always 1st left && read node is either 1st right or 2nd right+left
 	return (0);
 }
@@ -150,7 +157,6 @@ int exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes)
 	/* } */
 	/* printf("tmp->token->fd[1] = %d\n", tmp->token->fd[1]); */
 	exec_ast(&tmp, env, pipes);
-	close()
 	//on rapporte l'exit code de la commande droite
 	tmp = (*ast)->right;
 	/* if (dup2(tmp->token->fd[0], STDIN_FILENO) == -1) */
@@ -167,7 +173,7 @@ int exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes)
 	pid_t pid;
 	char **translated_env;
 	//un built in avec aucun pipe branche : le parent execute
-	if ((*ast)->token->token == BUILT_IN && ((*ast)->token->fd[1] > 2 || (*ast)->token->fd[0] > 2))
+	if ((*ast)->token->token == BUILT_IN && ((*ast)->token->fd[1] == -1 && (*ast)->token->fd[0] == -1))
 	{
 		printf("builtin piped about to execute : %s fd[0] = %d | fd[1] = %d\n", (*ast)->token->content[0], (*ast)->token->fd[0], (*ast)->token->fd[1]);
 		if((*ast)->token->fd[0] > 2)
@@ -191,7 +197,6 @@ int exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes)
 	}
 	else
 	{
-		printf("ici ? \n");
 		//au moins un pipe bracnhe : le child execute
 		pid = fork();
 		if (pid < 0)
@@ -207,6 +212,7 @@ int exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes)
 					//gerer l'erreur
 				}
 				close((*ast)->token->fd[0]);
+				close((*pipes)->fd[0]);
 			}
 			if((*ast)->token->fd[1] > 2)
 			{
@@ -215,6 +221,7 @@ int exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes)
 					//gerer l'erreur
 				}
 				close((*ast)->token->fd[1]);
+				close((*pipes)->fd[1]);
 			}
 			translated_env = lst_to_array(env);
 			printf("exec cmd : %s\n", (*ast)->token->content[0]);
