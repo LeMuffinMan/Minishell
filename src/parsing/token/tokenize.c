@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 21:44:17 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/14 15:54:36 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/16 20:46:25 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,10 @@ static void	is_redirection(t_token **node)
 
 static void	is_command_whithout_env(t_token **node, char **envp)
 {
-	if (is_slash((*node)->content[0]) || !env_is_alive(envp))
+	is_built_in(node);
+	if ((*node)->token == BUILT_IN)
+		(*node)->error = SUCCESS;
+	else if (is_slash((*node)->content[0]) || !env_is_alive(envp))
 	{
 		if (!parse_path_without_env(*node))
 			return ;
@@ -72,9 +75,6 @@ static void	is_command(t_token **node, char **envp)
 	tmp = NULL;
 	path = NULL;
 	cmd_w_path = NULL;
-	is_built_in(node);
-	if ((*node)->token == BUILT_IN)
-		(*node)->error = SUCCESS;
 	if ((int)(*node)->token < 0)
 		cmd_w_path = verif_command(node, tmp, path, envp);
 	if ((*node)->error == SUCCESS)

@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:21:52 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/15 18:22:42 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/16 01:28:57 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,6 @@ int main(int ac, char **av, char **env)
         if (!prompt)
             prompt = "[Minishell]$ ";
         line = readline(prompt);
-        printf("%s\n", line);
         if (isatty(0) && env)
             free(prompt);
         prompt = NULL;

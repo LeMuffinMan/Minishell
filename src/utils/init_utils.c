@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 17:04:05 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/11 17:45:19 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/04/16 01:53:37 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,8 @@ void	add_back_var(t_var **lst, char *s, int mode)
 			ptr = ptr->next;
 		ptr->next = new;
 		new->next = NULL;
+		/* Value non init avant */
+		new->value = NULL;
 		key_value = ft_split(s, '=');
 		new->key = ft_strdup(key_value[0]);
 		if (key_value[1])

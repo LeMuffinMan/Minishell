@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 03:09:12 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/15 18:22:55 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/16 20:47:47 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,15 +24,11 @@ t_tree	*parse(char *line, char **envp)
 	t_token	*token;
 	t_lexer	*lexer;
 	t_tree	*root;
-	/* int		i; */
 
-	/* i = 0; */
-	/* if (ac != 2) */
-	/* 	ft_error("Usage: ./parsing arg\n", E_IO); */
 	token = NULL;
 	lexer = NULL;
 	parse_line(line, &lexer);
-	// display_lexer(lexer);
+	display_lexer(lexer);
 	while (lexer->next)
 	{
 		add_back(&token, lexer->arg);
@@ -41,7 +37,7 @@ t_tree	*parse(char *line, char **envp)
 	add_back(&token, lexer->arg);
 	free_lexer(lexer, NULL, 0);
 	assign_token(&token, envp);
-	/* display_list(token); */
+	display_list(token);
 	concat_args(&token);
 	/* display_list(token); */
 	add_to_root(token, &root);
