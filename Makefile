@@ -6,7 +6,7 @@
 #    By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/04/11 17:23:17 by oelleaum         ###   ########lyon.fr    #
+#    Updated: 2025/04/17 15:05:12 by oelleaum         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -61,8 +61,8 @@ SRC					=	main.c \
 						utils/env_utils.c \
 						utils/init_utils.c \
 						utils/prints.c \
+						exec.c \
 						get_prompt.c
-						# exec.c \
 
 DEPS				=	$(SRC:%.c=$(OBJ_DIR)%.d)
 OBJ					=	$(SRC:%.c=$(OBJ_DIR)%.o)

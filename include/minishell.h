@@ -6,7 +6,7 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:38:25 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/11 17:52:05 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/04/17 15:18:31 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define MINISHELL_H
 
 #include "tree.h"
+#include <sys/wait.h>
 
 // typedef enum e_token
 // {
@@ -60,6 +61,19 @@ typedef struct s_var
   struct s_var *next;
 } t_var;
 
+typedef struct s_pipe
+{
+	int read_end;
+	int write_end;
+	struct s_pipe *next;
+} t_pipe;
+
+typedef struct s_pid
+{
+	pid_t pid;
+	struct s_pids *next;
+} t_pid;
+
 
 typedef struct s_prompt 
 {
@@ -84,7 +98,7 @@ typedef struct s_prompt
 //   struct s_gar *next;
 // } t_gar;
 
-int exec (char **arg, t_var **env);
+int exec_ast (t_tree **ast, t_var **env, t_pipe **pipes);
 void	add_back_var(t_var **lst, char *s, int mode);
 void	add_first_node(t_var **lst, t_var *new, char *s, int mode);
 void	free_list(t_var **l);
@@ -125,7 +139,10 @@ int	update_env(t_var **env);
 int	print_sorted_env(t_var **env);
 int	print_array(char **array);
 
+//utils.c 
+char **lst_to_array(t_var **env);
 t_tree	*parse(char *line, char **envp);
+
 
 //get_prompt
 char *get_prompt (t_var **env);

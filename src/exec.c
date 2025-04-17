@@ -6,27 +6,35 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:49:28 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/11 17:18:17 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/04/17 15:22:34 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include "minishell.h"
+#include "list.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-typedef struct s_pipes
-{
-	int fd[2];
-	s_pipes *next;
-} t_pipes;
 
-typedef struct s_pids
+int	wait_children(pid_t pid)
 {
-	t_pid pid;
-	s_pids *next;
-} t_pids;
+	int		status;
+	int		exit_code;
+
+	exit_code = EXIT_SUCCESS;
+	waitpid(pid, &status, 0);
+	if (WIFEXITED(status))
+		exit_code = WEXITSTATUS(status);
+	else if (WIFSIGNALED(status))
+		exit_code = 128 + WTERMSIG(status);
+	if (exit_code == EXIT_SUCCESS && WIFEXITED(status))
+		exit_code = WEXITSTATUS(status);
+	else if (exit_code == EXIT_SUCCESS && WIFSIGNALED(status))
+		exit_code = 128 + WTERMSIG(status);
+	return (exit_code);
+}
 
 int	builtins(char **arg, t_var **env)
 {
@@ -50,37 +58,62 @@ int	builtins(char **arg, t_var **env)
 		return (1);
 }
 
-int get_fds_for_pipe(t_ast *ast)
+//stocker les fd dans une liste pour pouvoir les fermer proprement ? 
+int get_read_end(t_tree **ast)
 {
-	t_ast *tmp;
-	int fd[2];
+	t_tree *tmp;
 
-	//on cherche a gauche le node le plus a droite
-	tmp = ast->left;
+	tmp = (*ast)->left;
 	while (tmp->right)
 		tmp = tmp->right;
-	fd[1] = tmp->token->fd[1];
-	// stocker les fd utilises dans une liste ? ou juste fermer s'ils sont differents de -1 a la fin de l'exec ?
-	//on cherche a droite le node le plus a gauche
-	tmp = ast->right;
-	while (tmp->left)
-		tmp = tmp->left;
-	fd[0] = tmp->token->fd[0];
-	return (fd);
+	return (tmp->token->fd[0]);
 }
 
-int add_pipe(int fd[2], t_pipe **pipes)
+int get_write_end(t_tree **ast)
 {
-	t_pipes *node;
-	t_pipes *tmp;
+	t_tree *tmp;
 
+	tmp = (*ast)->right;
+	while (tmp->left)
+		tmp = tmp->left;
+	return (tmp->token->fd[1]);
+}
+
+/* int get_fds_for_pipe(t_tree *ast) */
+/* { */
+/* 	t_tree *tmp; */
+/* 	int fd[2]; */
+/**/
+/* 	//on cherche a gauche le node le plus a droite */
+/* 	tmp = ast->left; */
+/* 	while (tmp->right) */
+/* 		tmp = tmp->right; */
+/* 	fd[1] = tmp->token->fd[1]; */
+/* 	// stocker les fd utilises dans une liste ? ou juste fermer s'ils sont differents de -1 a la fin de l'exec ? */
+/* 	//on cherche a droite le node le plus a gauche */
+/* 	tmp = ast->right; */
+/* 	while (tmp->left) */
+/* 		tmp = tmp->left; */
+/* 	fd[0] = tmp->token->fd[0]; */
+/* 	return (&fd); */
+/* } */
+
+int add_pipe(int read_end, int write_end, t_pipe **pipes)
+{
+	t_pipe *node;
+	t_pipe *tmp;
+	int fd[2];
+
+	fd[0] = read_end;
+	fd[1] = write_end;
 	if (pipe(fd) != 0)
 		return (1); //des codes d'erreurs specifiques ?
 	node = malloc(sizeof(t_pipe));
 	if (!node)
-		return (1)
+		return (1);
 	node->next = NULL;
-	node->fd = fd;
+	node->read_end = fd[0];
+	node->write_end = fd[1];
 	if (!*pipes)
 		*pipes = node;
 	else
@@ -93,10 +126,10 @@ int add_pipe(int fd[2], t_pipe **pipes)
 	return(0);
 }
 
-int free_pipes(t_pipes **pipes)
+int free_pipes(t_pipe **pipes)
 {
-	t_pipes *tmp;
-	t_pipes *last;
+	t_pipe *tmp;
+	t_pipe *last;
 
 	tmp = *pipes;
 	while (tmp)
@@ -109,129 +142,180 @@ int free_pipes(t_pipes **pipes)
 	return (0);
 }
 
-int free_lists_and_exit(t_var **env, t_ast **ast, t_pipes **pipes)
+int free_lists_and_exit(t_var **env, t_tree **ast, t_pipe **pipes)
 {
+	(void)env;
+	(void)pipes;
+	(void)ast;
 	//free_env
 	//free_ast
 	//free_pipes
 	return (1);
 }
 
-int exec_pipe(t_ast **ast, t_var **env, t_pipes **pipes)
+int exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes)
 {
+	t_tree *tmp;
 	//add_pipe recoit les deux fd a piper, les pipes, et ajoute un node a la liste des pipes
-	if (add_pipe(get_fds_for_pipe(ast), pipes))
+	if (add_pipe(get_read_end(ast), get_write_end(ast), pipes))
 		return (free_lists_and_exit(env, ast, pipes));
 	//ici on est ok pour lancer la commande a gauche
-	exec_ast(ast->left, env);
+	tmp = (*ast)->left;
+	exec_ast(&tmp, env, pipes);
 	//on rapporte l'exit code de la commande droite
-	return (exec_ast(ast->right, env));
+	tmp = (*ast)->right;
+	return (exec_ast(&tmp, env, pipes));
 }
 
-int exec_cmd(t_ast **ast, t_var **env, t_pipes **pipes)
+int exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes)
 {
-	t_pid pid;
+	pid_t pid;
 	char **translated_env;
 	//un built in avec aucun pipe branche : le parent execute
-	if (ast->token->token == BUILT_IN && ast->token->fd[1] < 0 && ast->token->fd[0] < 0)
-		return (builtins(ast->token->content, env));
-	//au moins un pipe bracnhe : le child execute
+	if ((*ast)->token->token == BUILT_IN && (*ast)->token->fd[1] < 0 && (*ast)->token->fd[0] < 0)
+	{
+		printf("exec builtin : %s\n", (*ast)->token->content[0]);
+		return (builtins((*ast)->token->content, env));
+	}
 	else
 	{
+		//au moins un pipe bracnhe : le child execute
 		pid = fork();
 		if (pid < 0)
 			return (free_lists_and_exit(env, ast, pipes));
-		if (pid == 0 && ast->token->token == BUILT_IN)
-			return (builtins(ast->token->content, env));
-		else if (pid == 0 && ast->token->token == CMD)
+		if (pid == 0 && (*ast)->token->token == BUILT_IN)
+			return (builtins((*ast)->token->content, env));
+		else if (pid == 0 && (*ast)->token->token == CMD)
 		{
 			translated_env = lst_to_array(env);
-			execve(ast->token->content[0], ast->token->content, translated_env);
+			printf("exec cmd : %s\n", (*ast)->token->content[0]);
+			execve((*ast)->token->content[0], (*ast)->token->content, translated_env);
 		}
 		else 
 		{
 			//close des trucs ?
-			return (wait_children());
+			return (wait_children(pid));
 		}
+		return (1); // on ne devrait JAMAIS tomber sur ce return 
 	}
 }
 
-int redirect_stdio(t_ast **ast, t_var **env, t_pipes **pipes)
-{
-	if (ast->token->token == APPEND || ast->token->token == TRUNC)
-	{
-		fd[1] = get_fd_to_dup(ast->left, env);
-		open_and_dup(ast);
-		return (exec_ast(ast->left, env));
-	}
-	if (ast->token->token == R_IN)
-	{
-		fd[0] = get_fd_to_dup(ast->right, env);
-		open_and_dup(ast);
-		return (exec_ast(ast->left, env));
-	}
-}
+/* int redirect_stdio(t_tree **ast, t_var **env, t_pipe **pipes) */
+/* { */
+/* 	if ((*ast)->token->token == APPEND || (*ast)->token->token == TRUNC) */
+/* 	{ */
+/* 		fd[1] = get_fd_to_dup(*ast)->left, env); */
+/* 		open_and_dup(ast); */
+/* 		return (exec_ast(*ast)->left, env)); */
+/* 	} */
+/* 	if ((*ast)->token->token == R_IN) */
+/* 	{ */
+/* 		fd[0] = get_fd_to_dup(*ast)->right, env); */
+/* 		open_and_dup(ast); */
+/* 		return (exec_ast(*ast)->left, env)); */
+/* 	} */
+/* } */
 
-int boolean_operators(t_ast **ast, t_var **env, t_pipes **pipes)
+int boolean_operators(t_tree **ast, t_var **env, t_pipe **pipes)
 {
-	if (find_expands(ast->left))
-		expand_variables(ast->left);
-	exit_code = exec_ast(ast->left, env);
-	if (exit_code == 0 && ast->token->token == O_AND || exit_code != 0 && ast->token->token == O_OR)
+	int exit_code;
+	t_tree *tmp;
+	/* if (find_expands(ast->left)) */
+	/* 	expand_variables(ast->left); */
+	tmp = (*ast)->left;
+	exit_code = exec_ast(ast, env, pipes);
+	if ((exit_code == 0 && (*ast)->token->token == O_AND) || (exit_code != 0 && (*ast)->token->token == O_OR))
 	{
-		if (find_expands(ast->right))
-			expand_variables(ast->right);
-		return (exec_ast(ast->right, env));
+		/* if (find_expands(ast->right)) */
+		/* 	expand_variables(ast->right); */
+		tmp = (*ast)->right;
+		return (exec_ast(ast, env, pipes));
 	}
 	else
 		return (exit_code);
 
 }
 
-int find_expands(t_ast *ast)
+/* int find_expands(t_tree *ast) */
+/* { */
+/* 	// */
+/* 	return (0); */
+/* } */
+/**/
+/* int expand_variables(t_tree **ast) */
+/* { */
+/* 	// */
+/* 	return (0); */
+/* } */
+
+char *enum_to_string(t_type enumValue)
 {
-	//
-	return (0);
+	char *s;
+
+  if (enumValue == CMD)
+      s = ft_strdup("CMD");
+  else if (enumValue == BUILT_IN)
+      s = ft_strdup("BUILT_IN");
+  else if (enumValue == APPEND)
+      s = ft_strdup("APPEND");
+  else if (enumValue == D_QUOTE)
+      s = ft_strdup("D_QUOTE");
+  else if (enumValue == HD)
+      s = ft_strdup("HD");
+  else if (enumValue == LIM)
+      s = ft_strdup("LIM");
+  else if (enumValue == O_AND)
+      s = ft_strdup("O_AND");
+  else if (enumValue == O_OR)
+      s = ft_strdup("O_OR");
+  else if (enumValue == PIPE)
+      s = ft_strdup("PIPE");
+  else if (enumValue == R_IN)
+      s = ft_strdup("R_IN");
+  else if (enumValue == S_QUOTE)
+      s = ft_strdup("S_QUOTE");
+  else if (enumValue == TRUNC)
+      s = ft_strdup("TRUNC");
+  else if (enumValue == WILDCARD)
+      s = ft_strdup("WILDCARD");
+  else
+      s = ft_strdup("UNKNOWN");
+  return (s);
 }
 
-int expand_variables(t_ast **ast)
+int exec_ast(t_tree **ast, t_var **env, t_pipe **pipes)
 {
-	//
-	return (0);
-}
-
-int exec_ast(t_ast **ast, t_var **env, t_pipes **pipes)
-{
-	int exit_code;
-
 	//1 boolean_operators
-	if (ast->token->token == O_AND || ast->token->token == O_OR)
+	if ((*ast)->token->token == O_AND || (*ast)->token->token == O_OR)
 		return (boolean_operators(ast, env, pipes));
 	//3 Redirections : on open dup close au fur et a mesure en descendant
-	if (ast->token->token == R_IN || ast->token->token == APPEND || ast->token->token == TRUNC)
-		return (redirect_stdio(ast, env, pipes));
+	/* if ((*ast)->token->token == R_IN || (*ast)->token->token == APPEND || (*ast)->token->token == TRUNC) */
+	/* 	return (redirect_stdio(ast, env, pipes)); */
 	//4 on pipe les nodes et on les lances 
-	if (ast->token->token == PIPE)
+	if ((*ast)->token->token == PIPE)
 		return (exec_pipe(ast, env, pipes));
+ 	char *s = enum_to_string((*ast)->token->token);
+	printf("token = %s\n", s);
+	free(s);
 	//5 on execute la commande :
-	if (ast->token->token == BUILT_IN || ast->token->token == CMD)
+	if ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD)
 		return (exec_cmd(ast, env, pipes));
 	return (0);
 }
 
 //exec_ast.c
-/* int exec_ast(t_ast **ast, t_var **env, t_pipes **pipes); */
-/* int boolean_operators(t_ast **ast, t_var **env, t_pipes **pipes); */
-/* int redirect_stdio(t_ast **ast, t_var **env, t_pipes **pipes); */
-/* int exec_cmd(t_ast **ast, t_var **env, t_pipes **pipes); */
+/* int exec_ast(t_tree **ast, t_var **env, t_pipe **pipes); */
+/* int boolean_operators(t_tree **ast, t_var **env, t_pipe **pipes); */
+/* int redirect_stdio(t_tree **ast, t_var **env, t_pipe **pipes); */
+/* int exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes); */
 
 //pipe_utils.c
-/* int get_fds_for_pipe(t_ast *ast); */
+/* int get_fds_for_pipe(t_tree *ast); */
 /* int add_pipe(int fd[2], t_pipe **pipes); */
-/* int free_pipes(t_pipes **pipes); */
+/* int free_pipes(t_pipe **pipes); */
 
 //exec_utils.c
-/* int expand_variables(t_ast **ast); */
-/* int find_expands(t_ast *ast) */
-/* int free_lists_and_exit(t_var **env, t_ast **ast, t_pipes **pipes) */
+/* int expand_variables(t_tree **ast); */
+/* int find_expands(t_tree *ast) */
+/* int free_lists_and_exit(t_var **env, t_tree **ast, t_pipe **pipes) */
 

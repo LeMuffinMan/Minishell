@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:21:52 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/15 18:22:42 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/17 15:04:55 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,20 +82,21 @@ int print_env(t_var **env)
     return (0);
 }
 
-int exec_here_docs(t_ast **ast)
+int exec_here_docs(t_tree *ast)
 {
+    (void)ast;
 	//
 	return (0);
 }
 
-int find_here_docs(t_ast **ast)
+int find_here_docs(t_tree **ast)
 {
-	if (ast->token->token == HD)
+	if ((*ast)->token->token == HD)
 		return (1);
-	else if (ast->left)
-		return (get_here_docs(ast->left));
-	else if (ast->right)
-		return (get_here_docs(ast->right));
+	else if ((*ast)->left)
+		return (exec_here_docs((*ast)->left));
+	else if ((*ast)->right)
+		return (exec_here_docs((*ast)->right));
 	return (0);
 }
 
@@ -107,6 +108,7 @@ int main(int ac, char **av, char **env)
     int        error_code;
     t_var    *new_env;
     t_tree *ast;
+    t_pipes *pipes;
     char **translated_env;
 
     /* if (isatty(1)) */
@@ -151,14 +153,14 @@ int main(int ac, char **av, char **env)
         if (isatty(0) && env)
             free(prompt);
         prompt = NULL;
-	    if (find_here_docs(ast))
-		    exec_here_docs(ast);
         // arg = ft_split(line, ' ');
         translated_env = lst_to_array(&new_env);
         /* print_array(translated_env); */
         ast = parse(line, translated_env);
-		display_ast(ast);
-        // error_code = exec(arg, &new_env /* , ast */);
+	    if (find_here_docs(&ast))
+		    exec_here_docs(ast);
+		/* display_ast(ast); */
+        error_code = exec_ast(&ast, &new_env, &pipes);
         free(line);
         line = NULL;
         // free_array(arg);
