@@ -82,6 +82,23 @@ int print_env(t_var **env)
     return (0);
 }
 
+int exec_here_docs(t_ast **ast)
+{
+	//
+	return (0);
+}
+
+int find_here_docs(t_ast **ast)
+{
+	if (ast->token->token == HD)
+		return (1);
+	else if (ast->left)
+		return (get_here_docs(ast->left));
+	else if (ast->right)
+		return (get_here_docs(ast->right));
+	return (0);
+}
+
 int main(int ac, char **av, char **env)
 {
     char    *line;
@@ -125,16 +142,17 @@ int main(int ac, char **av, char **env)
             prompt = "[Minishell]$ ";
         line = readline(prompt);
         printf("%s\n", line);
-        if (isatty(0) && env)
-            free(prompt);
-        prompt = NULL;
         if (line == NULL)
         {
             // free(arg);
             free_list(&new_env);
-            // a tester !
             exit(error_code);
         }
+        if (isatty(0) && env)
+            free(prompt);
+        prompt = NULL;
+	    if (find_here_docs(ast))
+		    exec_here_docs(ast);
         // arg = ft_split(line, ' ');
         translated_env = lst_to_array(&new_env);
         /* print_array(translated_env); */

@@ -93,6 +93,22 @@ int add_pipe(int fd[2], t_pipe **pipes)
 	return(0);
 }
 
+int free_pipes(t_pipes **pipes)
+{
+	t_pipes *tmp;
+	t_pipes *last;
+
+	tmp = *pipes;
+	while (tmp)
+	{
+		//close
+		last = tmp;
+		tmp = tmp->next;
+		free(last);
+	}
+	return (0);
+}
+
 int free_lists_and_exit(t_var **env, t_ast **ast, t_pipes **pipes)
 {
 	//free_env
@@ -112,11 +128,12 @@ int exec_pipe(t_ast **ast, t_var **env, t_pipes **pipes)
 	return (exec_ast(ast->right, env));
 }
 
-int exec_builtins(t_ast **ast, t_var **env, t_pipes **pipes)
+int exec_cmd(t_ast **ast, t_var **env, t_pipes **pipes)
 {
 	t_pid pid;
-	//aucun pipe branche : le parent execute
-	if (ast->token->fd[1] < 0 && ast->token->fd[0] < 0)
+	char **translated_env;
+	//un built in avec aucun pipe branche : le parent execute
+	if (ast->token->token == BUILT_IN && ast->token->fd[1] < 0 && ast->token->fd[0] < 0)
 		return (builtins(ast->token->content, env));
 	//au moins un pipe bracnhe : le child execute
 	else
@@ -124,32 +141,18 @@ int exec_builtins(t_ast **ast, t_var **env, t_pipes **pipes)
 		pid = fork();
 		if (pid < 0)
 			return (free_lists_and_exit(env, ast, pipes));
-		if (pid == 0)
+		if (pid == 0 && ast->token->token == BUILT_IN)
 			return (builtins(ast->token->content, env));
+		else if (pid == 0 && ast->token->token == CMD)
+		{
+			translated_env = lst_to_array(env);
+			execve(ast->token->content[0], ast->token->content, translated_env);
+		}
 		else 
 		{
 			//close des trucs ?
 			return (wait_children());
 		}
-	}
-}
-
-int exec_cmd(t_ast **ast, t_var **env, t_pipes **pipes)
-{
-	t_pid pid;
-
-	pid = fork();
-	if (pid < 0)
-		return (free_lists_and_exit(env, ast, pipes));
-	if (pid == 0)
-	{
-		translated_env = lst_to_array(env);
-		execve(ast->token->content[0], ast->token->content, translated_env);
-	}
-	else 
-	{
-		//close des trucs ?
-		return (wait_children());
 	}
 }
 
@@ -169,45 +172,23 @@ int redirect_stdio(t_ast **ast, t_var **env, t_pipes **pipes)
 	}
 }
 
-int exec_and(t_ast **ast, t_var **env, t_pipes **pipes)
+int boolean_operators(t_ast **ast, t_var **env, t_pipes **pipes)
 {
+	if (find_expands(ast->left))
+		expand_variables(ast->left);
 	exit_code = exec_ast(ast->left, env);
-	if (exit_code == 0)
+	if (exit_code == 0 && ast->token->token == O_AND || exit_code != 0 && ast->token->token == O_OR)
+	{
+		if (find_expands(ast->right))
+			expand_variables(ast->right);
 		return (exec_ast(ast->right, env));
-}
+	}
+	else
+		return (exit_code);
 
-int exec_or(t_ast **ast, t_var **env, t_pipes **pipes)
-{
-	exit_code = exec_ast(ast->left, env);
-	if (exit_code != 0)
-		return (exec_ast(ast->right, env));
 }
-
-int find_here_docs(t_ast **ast)
-{
-	if (ast->token->token == HD)
-		return (1);
-	else if (ast->left)
-		return (get_here_docs(ast->left));
-	else if (ast->right)
-		return (get_here_docs(ast->right));
-	return (0);
-}
-
-int find_here_docs(t_ast *ast)
-{
-	//
-	return (0);
-}
-
 
 int find_expands(t_ast *ast)
-{
-	//
-	return (0);
-}
-
-int exec_here_docs(t_ast **ast)
 {
 	//
 	return (0);
@@ -219,33 +200,113 @@ int expand_variables(t_ast **ast)
 	return (0);
 }
 
+/* int is_a_variable(char *s) */
+/* { */
+/* 	int i; */
+/**/
+/* 	i = 1; */
+/* 	while (s[i]) */
+/* 	{ */
+/* 		if (s[i] == '=') */
+/* 			count++; */
+/* 		i++; */
+/* 	} */
+/* 	if (count != 1 && i >= 2 && is_alnum(s)) */
+/* 		return (1); */
+/* 	return (0); */
+/* } */
+/**/
+/* int exec_variable(char *var, t_var **env) */
+/* { */
+/* 	char **key_value; */
+/* 	t_var *node; */
+/**/
+/* 	key_value = ft_split(var, '='); */
+/* 	node = get_key_node(key_value[0]); */
+/* 	if (!node) */
+/* 		add_back_var(env, var, 0); */
+/* 	else */
+/* 	{ */
+/* 		free(node->value); */
+/* 		if (!ft_strncmp(var, "_=", 3)) */
+/* 			node->value = ft_strdup(""); */
+/* 		else */
+/* 			node->value = ft_strdup(key_value[1]); */
+/* 	} */
+/* } */
+/**/
+/* int is_an_alias(t_ast **ast) */
+/* { */
+/* 	t_ast *tmp; */
+/**/
+/* 	tmp = *ast; */
+/* 	if (!ft_strncmp(tmp->token->content[0], "alias ", 7) && tmp->right) */
+/* 	{ */
+/* 		if (tmp->right->token->content[0][ft_strlen(tmp->right->token->content[0]) - 1]) == '=' && tmp->right->right && tmp->right->right->token->token == D_QUOTES) */
+/* 			return (1); */
+/* 		if (is_a_variable(tmp->right->token->content[0])) */
+/* 			return (1); */
+/* 	} */
+/* 	return (0); */
+/* } */
+/**/
+/* int exec_alias(t_ast **ast, char *var, t_var **env) */
+/* { */
+/* 	char **key_value; */
+/* 	t_var *node; */
+/**/
+/* 	tmp = *ast; */
+/* 	if (is_a_variable) */
+/* 	key_value = ft_split(var, '='); */
+/* 	node = get_key_node(key_value[0]); */
+/* 	if (!node) */
+/* 		add_back_var(env, var, 0); */
+/* 	else */
+/* 	{ */
+/* 		free(node->value); */
+/* 		if (!ft_strncmp(var, "_=", 3)) */
+/* 			node->value = ft_strdup(""); */
+/* 		else */
+/* 			node->value = ft_strdup(key_value[1]); */
+/* 	} */
+/* } */
+/**/
 int exec_ast(t_ast **ast, t_var **env, t_pipes **pipes)
 {
 	int exit_code;
 
-	//1 ouvrir TOUS les here_docs et les remplir avec leur lim
-	if (find_here_docs(ast))
-		exec_here_docs(ast);
-	//2 Quelle(s) sequence(s) ?
-	if (ast->token->token == O_AND)
-		return (exec_and(ast, env, pipes));
-	else if (ast->token->token == O_OR) 
-		return (exec_or(ast, env, pipes));
-	//3 Expands ?
-	if (find_expands(ast))
-		expand_variables(ast);
-	//4 Redirections : on open dup close au fur et a mesure en descendant
+	//1 boolean_operators
+	if (ast->token->token == O_AND || ast->token->token == O_OR)
+		return (boolean_operators(ast, env, pipes));
+	//3 Redirections : on open dup close au fur et a mesure en descendant
 	if (ast->token->token == R_IN || ast->token->token == APPEND || ast->token->token == TRUNC)
 		return (redirect_stdio(ast, env, pipes));
-	//5 on pipe les nodes et on les lances 
+	//4 on pipe les nodes et on les lances 
 	if (ast->token->token == PIPE)
 		return (exec_pipe(ast, env, pipes));
-	//6 CMD :
-	if (ast->token->token == BUILT_IN)
-		return (exec_builtins(ast, env, pipes));
-	if (ast->token->token == CMD)
+	//5 on execute la commande :
+	if (ast->token->token == BUILT_IN || ast->token->token == CMD)
 		return (exec_cmd(ast, env, pipes));
+	/* if (ast->token->error = 127 && is_a_variable(ast->token->content[0])) */
+	/* 	return (exec_variable(ast->token->content[0], env)); */
+	/* if (ast->token->error = 127 && is_an_alias(ast)) */
+	/* 	return (exec_alias(ast->token->content[0], env)); */
 	return (0);
 }
 
+//exec_ast.c
+/* int exec_ast(t_ast **ast, t_var **env, t_pipes **pipes); */
+/* int boolean_operators(t_ast **ast, t_var **env, t_pipes **pipes); */
+/* int redirect_stdio(t_ast **ast, t_var **env, t_pipes **pipes); */
+/* int exec_cmd(t_ast **ast, t_var **env, t_pipes **pipes); */
+
+//pipe_utils.c
+/* int get_fds_for_pipe(t_ast *ast); */
+/* int add_pipe(int fd[2], t_pipe **pipes); */
+/* int free_pipes(t_pipes **pipes); */
+
+//exec_utils.c
+/* int expand_variables(t_ast **ast); */
+/* int find_expands(t_ast *ast) */
+/* int free_lists_and_exit(t_var **env, t_ast **ast, t_pipes **pipes) */
 
