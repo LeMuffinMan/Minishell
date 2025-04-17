@@ -200,77 +200,6 @@ int expand_variables(t_ast **ast)
 	return (0);
 }
 
-int is_a_variable(char *s)
-{
-	int i;
-
-	i = 1;
-	while (s[i])
-	{
-		if (s[i] == '=')
-			count++;
-		i++;
-	}
-	if (count != 1 && i >= 2 && is_alnum(s))
-		return (1);
-	return (0);
-}
-
-int exec_variable(char *var, t_var **env)
-{
-	char **key_value;
-	t_var *node;
-
-	key_value = ft_split(var, '=');
-	node = get_key_node(key_value[0]);
-	if (!node)
-		add_back_var(env, var, 0);
-	else
-	{
-		free(node->value);
-		if (!ft_strncmp(var, "_=", 3))
-			node->value = ft_strdup("");
-		else
-			node->value = ft_strdup(key_value[1]);
-	}
-}
-
-int is_an_alias(t_ast **ast)
-{
-	t_ast *tmp;
-
-	tmp = *ast;
-	if (!ft_strncmp(tmp->token->content[0], "alias ", 7) && tmp->right)
-	{
-		if (tmp->right->token->content[0][ft_strlen(tmp->right->token->content[0]) - 1]) == '=' && tmp->right->right && tmp->right->right->token->token == D_QUOTES)
-			return (1);
-		if (is_a_variable(tmp->right->token->content[0]))
-			return (1);
-	}
-	return (0);
-}
-
-int exec_alias(t_ast **ast, char *var, t_var **env)
-{
-	char **key_value;
-	t_var *node;
-
-	tmp = *ast;
-	if (is_a_variable)
-	key_value = ft_split(var, '=');
-	node = get_key_node(key_value[0]);
-	if (!node)
-		add_back_var(env, var, 0);
-	else
-	{
-		free(node->value);
-		if (!ft_strncmp(var, "_=", 3))
-			node->value = ft_strdup("");
-		else
-			node->value = ft_strdup(key_value[1]);
-	}
-}
-
 int exec_ast(t_ast **ast, t_var **env, t_pipes **pipes)
 {
 	int exit_code;
@@ -287,11 +216,6 @@ int exec_ast(t_ast **ast, t_var **env, t_pipes **pipes)
 	//5 on execute la commande :
 	if (ast->token->token == BUILT_IN || ast->token->token == CMD)
 		return (exec_cmd(ast, env, pipes));
-	//a voir avec les quotes
-	if (ast->token->error = 127 && is_a_variable(ast->token->content[0]))
-		return (exec_variable(ast->token->content[0], env));
-	if (ast->token->error = 127 && is_an_alias(ast))
-		return (exec_alias(ast->token->content[0], env));
 	return (0);
 }
 
