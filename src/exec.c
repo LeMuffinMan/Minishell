@@ -38,6 +38,7 @@ int	wait_children(pid_t pid)
 
 int	builtins(char **arg, t_var **env)
 {
+	/* printf("exec builtin %s\n", arg[0]); */
 	if (!*arg)
 		return (1);
 	else if (!ft_strncmp(arg[0], "echo", 5))
@@ -172,13 +173,13 @@ int exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes)
 	pid_t pid;
 	char **translated_env;
 	//un built in avec aucun pipe branche : le parent execute
-	if ((*ast)->token->token == BUILT_IN && (*ast)->token->fd[1] < 0 && (*ast)->token->fd[0] < 0)
-	{
-		printf("exec builtin : %s\n", (*ast)->token->content[0]);
-		return (builtins((*ast)->token->content, env));
-	}
-	else
-	{
+	/* if ((*ast)->token->token == BUILT_IN && (*ast)->token->fd[1] < 0 && (*ast)->token->fd[0] < 0) */
+	/* { */
+	/* 	printf("exec builtin : %s\n", (*ast)->token->content[0]); */
+	/* 	return (builtins((*ast)->token->content, env)); */
+	/* } */
+	/* else */
+	/* { */
 		//au moins un pipe bracnhe : le child execute
 		pid = fork();
 		if (pid < 0)
@@ -197,7 +198,7 @@ int exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes)
 			return (wait_children(pid));
 		}
 		return (1); // on ne devrait JAMAIS tomber sur ce return 
-	}
+	/* } */
 }
 
 /* int redirect_stdio(t_tree **ast, t_var **env, t_pipe **pipes) */
@@ -294,9 +295,9 @@ int exec_ast(t_tree **ast, t_var **env, t_pipe **pipes)
 	//4 on pipe les nodes et on les lances 
 	if ((*ast)->token->token == PIPE)
 		return (exec_pipe(ast, env, pipes));
- 	char *s = enum_to_string((*ast)->token->token);
-	printf("token = %s\n", s);
-	free(s);
+ 	/* char *s = enum_to_string((*ast)->token->token); */
+	/* printf("token = %s\n", s); */
+	/* free(s); */
 	//5 on execute la commande :
 	if ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD)
 		return (exec_cmd(ast, env, pipes));

@@ -127,6 +127,8 @@ int	builtin_cd(char **arg, t_var **env)
 {
 	char	*path;
 
+	/* printf("hello !\n"); */
+	/* printf("%s | %s\n", arg[0], arg[1]); */
 	/* print_var(env); */
 	path = NULL;
 	if (array_size(arg) > 2)

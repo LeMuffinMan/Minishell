@@ -108,7 +108,7 @@ int main(int ac, char **av, char **env)
     int        error_code;
     t_var    *new_env;
     t_tree *ast;
-    t_pipes *pipes;
+    t_pipe *pipes;
     char **translated_env;
 
     /* if (isatty(1)) */

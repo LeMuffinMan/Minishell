@@ -36,7 +36,6 @@ LIBFT_FLAG			=	-L$(LIBFT_DIR)src/ $(LIB_LIBFT)
 LIBFT_HEAD			=	libft.h get_next_line.h ft_printf.h
 
 SRC					=	main.c \
-						parser.c \
 						concat_args.c \
 						create_tokenize_list.c \
 						create_tree.c \
@@ -49,7 +48,7 @@ SRC					=	main.c \
 						tokenize.c \
 						tree_utils.c \
 						lexer.c \
-    				init.c \
+						init.c \
     				builtins/echo.c \
     				builtins/cd.c \
     				builtins/pwd.c \
@@ -62,6 +61,7 @@ SRC					=	main.c \
 						utils/init_utils.c \
 						utils/prints.c \
 						exec.c \
+						parser.c \
 						get_prompt.c
 
 DEPS				=	$(SRC:%.c=$(OBJ_DIR)%.d)
