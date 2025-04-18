@@ -18,13 +18,18 @@
 #include <unistd.h>
 
 
-int	wait_children(pid_t pid)
+int	wait_children(t_pids **pids)
 {
+	t_pids *tmp;
 	int		status;
 	int		exit_code;
 
 	exit_code = EXIT_SUCCESS;
-	waitpid(pid, &status, 0);
+	while(pids->next)
+	{
+		waitpid(pids->pid, &status, 0);
+		pids = pids->next;
+	}
 	if (WIFEXITED(status))
 		exit_code = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status))
@@ -59,76 +64,6 @@ int	builtins(char **arg, t_var **env)
 		return (1);
 }
 
-//stocker les fd dans une liste pour pouvoir les fermer proprement ? 
-int get_read_end(t_tree **ast)
-{
-	t_tree *tmp;
-
-	tmp = (*ast)->right;
-	while (tmp->left)
-		tmp = tmp->left;
-	return (tmp->token->fd[0]);
-}
-
-int get_write_end(t_tree **ast)
-{
-	t_tree *tmp;
-
-	tmp = (*ast)->left;
-	while (tmp->right)
-		tmp = tmp->right;
-	return (tmp->token->fd[1]);
-}
-
-int add_pipe(t_tree **ast, t_pipe **pipes)
-{
-	int fd[2];
-	/* t_tree *tmp; */
-
-	(void)pipes;
-	if (pipe(fd) == -1)
-	{
-		//error de pipe
-	}
-	(*ast)->left->token->fd[1] = fd[1];
-	printf("fd[1] = %d | node->fd[1] = %d\n", fd[1], (*ast)->left->token->fd[1]);
-	if ((*ast)->right->token->token != PIPE)
-	{
-		(*ast)->right->token->fd[0] = fd[0];
-		printf("fd[0] = %d | node->fd[0] = %d\n", fd[0], (*ast)->right->token->fd[0]);
-	}
-	else 
-	{
-		/* (*ast)->right->left->token->fd[0] = fd[0]; */
-		/* printf("fd[0] = %d | node->fd[0] = %d\n", fd[0], (*ast)->right->left->token->fd[0]); */
-	}
-	t_pipe *pipe;
-
-	pipe = malloc(sizeof(t_pipe));
-	*pipes = pipe;
-	pipe->next = NULL;
-	pipe->fd[1] = fd[1];
-	pipe->fd[0] = fd[0];
-	//asumming write node is always 1st left && read node is either 1st right or 2nd right+left
-	return (0);
-}
-
-int free_pipes(t_pipe **pipes)
-{
-	t_pipe *tmp;
-	t_pipe *last;
-
-	tmp = *pipes;
-	while (tmp)
-	{
-		//close
-		last = tmp;
-		tmp = tmp->next;
-		free(last);
-	}
-	return (0);
-}
-
 int free_lists_and_exit(t_var **env, t_tree **ast, t_pipe **pipes)
 {
 	(void)env;
@@ -137,106 +72,210 @@ int free_lists_and_exit(t_var **env, t_tree **ast, t_pipe **pipes)
 	//free_env
 	//free_ast
 	//free_pipes
-	return (1);
+	return (0);
 }
 
-int exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes)
+int get_pipe(int fd[2], t_pipe **pipes)
 {
-	t_tree *tmp;
-	int exit_code;
+	t_pipe *new_pipe;
+	t_pipe *last;
 
-	exit_code = 0;
-	//add_pipe recoit les deux fd a piper, les set_pipe, et ajoute un node a la liste des pipes
-	if (add_pipe(ast, pipes))
-		return (free_lists_and_exit(env, ast, pipes));
-	//ici on est ok pour lancer la commande a gauche
-	tmp = (*ast)->left;
-	/* if (dup2(tmp->token->fd[1], STDOUT_FILENO) == -1) */
-	/* { */
-	/* 	//gerer l'erreur */
-	/* } */
-	/* printf("tmp->token->fd[1] = %d\n", tmp->token->fd[1]); */
-	exec_ast(&tmp, env, pipes);
-	//on rapporte l'exit code de la commande droite
-	tmp = (*ast)->right;
-	/* if (dup2(tmp->token->fd[0], STDIN_FILENO) == -1) */
-	/* { */
-	/* 	//gerer l'erreur */
-	/* } */
-	/* printf("tmp->token->fd[0] = %d\n", tmp->token->fd[0]); */
-	exit_code = exec_ast(&tmp, env, pipes);
-	return (exit_code);
-}
-
-int exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes)
-{
-	pid_t pid;
-	char **translated_env;
-	//un built in avec aucun pipe branche : le parent execute
-	if ((*ast)->token->token == BUILT_IN && ((*ast)->token->fd[1] == -1 && (*ast)->token->fd[0] == -1))
+	new_pipe = malloc(sizeof(t_pipe));
+	if(!new_pipe)
 	{
-		printf("builtin piped about to execute : %s fd[0] = %d | fd[1] = %d\n", (*ast)->token->content[0], (*ast)->token->fd[0], (*ast)->token->fd[1]);
-		if((*ast)->token->fd[0] > 2)
-		{
-			if (dup2((*ast)->token->fd[0], STDIN_FILENO) == -1)
-			{
-				//gerer l'erreur
-			}
-			close((*ast)->token->fd[0]);
-		}
-		if((*ast)->token->fd[1] > 2)
-		{
-			if (dup2((*ast)->token->fd[1], STDOUT_FILENO) == -1)
-			{
-				//gerer l'erreur
-			}
-			close((*ast)->token->fd[1]);
-		}
-		printf("exec builtin : %s\n", (*ast)->token->content[0]);
-		return (builtins((*ast)->token->content, env));
+		//malloc error
+	}
+	if (!*pipes)
+		*pipes = new_pipe;
+	else 
+	{
+    last = *pipes;
+    while (last->next)
+        last = last->next;
+    last->next = new_pipe;
+	}
+	new_pipe->next = NULL;
+	if (pipe(new_pipe->fd) == -1)
+	{
+		//error de pipe
+	}
+	return (0);
+}
+
+int setup_pipeline(t_tree **ast, t_var **env, t_pipes **pipes)
+{
+	t_pipe *new_pipe;
+
+	if (get_pipe(pipes))
+	{
+		//le pipe a foire !
+	}
+	new_pipe = *pipes;
+	while(new_pipe->next)
+		new_pipe = new_pipe->next;
+	// on branche a gauche
+	(*ast)->left->token->fd[1] = new_pipe->fd[1];
+	printf("new_pipe->fd[1] = %d | node->fd[1] = %d\n", new_pipe->fd[1], (*ast)->left->token->fd[1]);
+	//selon si on est a la fin du pipeline ou non, on branch a droite ou on fait la jonction
+	if ((*ast)->right->token->token == PIPE))
+	{
+		setup_pipeline((*ast)->right, env, pipes);
+		(*ast)->right->left->token->fd[0] = new_pipe->fd[0];
+	}
+	(*ast)->left->token->fd[0] = new_pipe->fd[0];
+	return (0);
+}
+
+int start_pipeline(t_var **env, t_tree **ast, t_pipe **pipes, t_pid **pids)
+{
+	if (ast->right && ast->right->token->token == PIPE)
+	{
+		exec_cmd(ast->left, pids);
+		exec_cmd(ast->right->left, pids);
+		return (start_pipeline(env, ast->right, pipes, pids));
 	}
 	else
 	{
-		//au moins un pipe bracnhe : le child execute
-		pid = fork();
-		if (pid < 0)
-			return (free_lists_and_exit(env, ast, pipes));
-		if (pid == 0 && (*ast)->token->token == BUILT_IN)
-			return (builtins((*ast)->token->content, env));
-		else if (pid == 0 && (*ast)->token->token == CMD)
+		exec_cmd(ast->right, pids);
+		return (wait_children(pids));
+	}
+}
+
+typedef struct s_pids
+{
+	pid_t pid;
+	struct s_pids *next;
+} t_pids;
+
+int exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes)
+{
+	t_pids *pids;
+
+	pids = NULL;
+	if (setup_pipeline(ast, env, pipes))
+		return (free_lists_and_exit(env, ast, pipes));
+	if (start_pipeline(ast, env, pipes, &pids));
+		return (free_lists_and_exit(env, ast, pipes));
+	return(wait_children(&pids));
+}
+
+int close_all_pipes(t_pipe **pipes)
+{
+  t_pipe *tmp;
+
+  tmp = *pipes;
+  while (tmp)
+  {
+    if (tmp->fd[0] > 2)
+        close(tmp->fd[0]); //proteger
+    if (tmp->fd[1] > 2)
+        close(tmp->fd[1]);
+    tmp = tmp->next;
+  }
+  return (0);
+}
+
+int dup_close_pipe(t_tree **ast, t_pipes **pipes)
+{
+	t_pipes *tmp;
+	//si on est dans le pipeline
+	if ((*ast)->token->fd[0] > 2 && (*ast)->token->fd[1] > 2)
+	{
+		dup2((*ast)->token->fd[0], STDIN_FILENO);
+		close((*ast)->token->fd[0]);
+		dup2((*ast)->token->fd[1], STDIN_FILENO);
+		close((*ast)->token->fd[1]);
+		tmp = *pipes->next;
+		free(pipes);
+		pipes = tmp;
+	}
+	// si on est a la fin du pipeline
+	if ((*ast)->token->fd[0] > 2 && (*ast)->token->fd[1] < 0)
+	{
+		dup2((*ast)->token->fd[0], STDIN_FILENO);
+		close((*ast)->token->fd[0]);
+		close(pipes->fd[1]);
+		free(pipes);
+	}
+	// si on est au debut d'un pipeline
+	if ((*ast)->token->fd[1] > 2 && (*ast)->token->fd[0] < 0)
+	{
+		dup2((*ast)->token->fd[1], STDOUT_FILENO);
+		close((*ast)->token->fd[1]);
+		close(pipes->fd[0]);
+		tmp = *pipes->next;
+		free(pipes);
+		*pipes = tmp;
+	}
+	return (0);
+}
+
+
+int add_pid(pid_t pid, t_pids **pids)
+{
+	t_pids *new_pid;
+	t_pids *last;
+
+	new_pid = malloc(sizeof(t_pids));
+	if (!new_pid)
+	{
+		//malloc error
+	}
+	if (!*pids)
+		*pids = new_pid;
+	else 
+	{
+    last = *pipes;
+    while (last->next)
+        last = last->next;
+    last->next = new_pid;
+	}
+	new_pid->next = NULL;
+	new_pid->pid = pid;
+	return (0);
+}
+
+int exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes, t_pid **pids)
+{
+	char **translated_env;
+	pid_t pid;
+	t_pipe *tmp;
+
+	//le parent execute que si c'est un builtin sans pipe
+	if ((*ast)->token->token == BUILT_IN && ((*ast)->token->fd[1] == -1 && (*ast)->token->fd[0] == -1))
+		return (builtins((*ast)->token->content, env));
+	//dans tous les autres cas c'est un child
+	pid = fork();
+	if (pid < 0)
+		return (free_lists_and_exit(env, ast, pipes));
+	add_pid(pid, pids);
+	if (pid == 0)
+	{
+		//on dup et close ce qu'il faut pour ce child
+		dup_close_pipe(pipes);
+		//on ferme et on free ? toute la liste des pipes qui suivent
+		if (pipes->next);
+			close_all_pipes(pipes->next);
+		//si next est null, on a free dans dup_close
+		printf("env should write in fd 4 : %d\n", (*ast)->token->fd[1]);
+ 		if ((*ast)->token->token == BUILT_IN)
+			exit(builtins((*ast)->token->content, env));
+		else
 		{
-			if((*ast)->token->fd[0] > 2)
-			{
-				if (dup2((*ast)->token->fd[0], STDIN_FILENO) == -1)
-				{
-					//gerer l'erreur
-				}
-				close((*ast)->token->fd[0]);
-				close((*pipes)->fd[0]);
-			}
-			if((*ast)->token->fd[1] > 2)
-			{
-				if (dup2((*ast)->token->fd[1], STDOUT_FILENO) == -1)
-				{
-					//gerer l'erreur
-				}
-				close((*ast)->token->fd[1]);
-				close((*pipes)->fd[1]);
-			}
 			translated_env = lst_to_array(env);
 			printf("exec cmd : %s\n", (*ast)->token->content[0]);
 			execve((*ast)->token->content[0], (*ast)->token->content, translated_env);
 		}
-		else 
-		{
-			if ((*ast)->token->fd[0] > 2)
-				close((*ast)->token->fd[0]);
-			if ((*ast)->token->fd[1] > 2)
-				close((*ast)->token->fd[1]);
-			//close des trucs ?
-			return (wait_children(pid));
-		}
-		return (1); // on ne devrait JAMAIS tomber sur ce return 
+	}
+	else
+	{
+		//on ferme et free le morceau de pipe qu'on vient d'envoyer
+		close((*pipes)->fd[0]);
+		close((*pipes)->fd[1]);
+		tmp = (*pipes)->next;
+		free(pipes);
+		pipes = tmp;
+		return(0);
 	}
 }
 
