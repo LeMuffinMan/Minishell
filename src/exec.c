@@ -102,6 +102,109 @@ int get_pipe(int fd[2], t_pipe **pipes)
 	return (0);
 }
 
+//1 : on setup toutes les redirs : comme ca quand on setup la pipeline on peut juste verifier si le fd est deja attribue
+int setup_files_redirections(t_tree **ast, t_var **env, t_pipes **pipes)
+{
+	t_tree *left;
+	t_tree *right;
+	int fd;
+	t_tree *last_redirection;
+
+	left = (*ast)->left;
+	right = (*ast)->right;
+	//Si on est sur une redir, on la fait puis on passe au maillon qui suit
+	if ((*ast)->token->token == R_IN)
+	{
+		//il faut aussi chercher la bonne R_IN avant d'ouvrir
+		fd = open((*ast)->token->content[0], O_RDONLY);
+		//a proteger
+		(*ast)->token->fd[0] = fd;
+
+	}
+	if ((*ast)->token->token == APPEND || (*ast)->token->token == TRUNC)
+	{
+		//si on a un enchainement de redirections out : on cherche la derniere 
+		last_redirection = get_last_redirection(ast);
+		if (last_redirection->token->token == APPEND)
+		{
+			fd = open(last_redirection->token->content[0], O_WRONLY | O_CREAT | O_APPEND, 0644)));
+			//a proteger
+			//assuming we always have a cmd at left of a redirection
+			(*ast)->left->token->fd[1] = fd;
+		}
+		if (last_redirection->token->token == TRUNC)
+		{
+			fd = open(last_redirection->token->content[0], O_WRONLY | O_CREAT | O_TRUNC, 0644)));
+			//a proteger
+			//assuming we always have a cmd at left of a redirection
+			(*ast)->left->token->fd[1] = fd;
+		}
+	}
+	//la recursive se replie quand left et right sont nulls
+	if (left)
+			setup_files_redirections(left, env, pipes);
+	if (right)
+			setup_files_redirections(right, env, pipes);
+	//dans tous les autres cas, on repli la recursive
+	return (0);
+}
+
+/* int plug_left_cmd_write_end(t_tree **ast, t_var **env, t_pipe **pipes) */
+/* { */
+/* 	t_tree * */
+/* 	if ((*ast)->left->token->token != CMD && (*ast)->left->token->token != BUILT_IN) */
+/* 		plug_left_cmd_write_end */
+/* } */
+
+//fct a lancer a droite au depart : elle va chercher la 1ere cmd trouvee en allant tj a gauche
+//retourne un fd dispo pour etre branche pour la lecture OU -1 si le fd de lecture est deja utilise
+int get_fd(t_tree **ast, t_var **env, t_pipe **pipes)
+{
+	if ((*ast)->token->token != CMD && (*ast)->token->token != BUILT_IN)
+		get_reading_fd((*ast)->left);
+	if ((*ast)->token->fd[0] == -1)
+		return ((*ast)->token->fd[0]);
+	else
+		return (-1);
+}
+
+int get_writing_fd(t_tree **ast, tvar **env, t_pipe **pipes)
+{
+	if ((*ast)->token->token != CMD && (*ast)->token->token != BUILT_IN)
+		get_writing_fd((*ast)->left);
+	if ((*ast)->token->fd[1] == -1)
+		return ((*ast)->token->fd[1]);
+	else
+		return (-1);
+}
+
+int setup_pipeline(t_tree **ast, t_var **env, t_pipes **pipes)
+{
+	t_pipe *new_pipe;
+	t_tree *left;
+	t_tree *right;
+	int fd;
+
+	left = (*ast)->left;
+	right = (*ast)->right;
+	if (get_pipe(pipes))
+	{
+		//le pipe a foire !
+	}
+	new_pipe = *pipes;
+	while(new_pipe->next)
+		new_pipe = new_pipe->next;
+	if ((*ast)->right && (*ast)->right->token->token == PIPE))
+	{
+		fd = get_writing_fd(left, env, pipes);	
+		if (fd > 2)
+			fd = new_pipe[1];
+	}
+	//brancher la lecture
+	return (plug_right_cmd_read_end(right, env, pipes));
+}
+
+//au setup de la pipeline : on attribue les fd SEULEMENT si ils sont a -1 !
 int setup_pipeline(t_tree **ast, t_var **env, t_pipes **pipes)
 {
 	t_pipe *new_pipe;
@@ -131,11 +234,12 @@ int start_pipeline(t_var **env, t_tree **ast, t_pipe **pipes, t_pid **pids)
 	if (ast->right && ast->right->token->token == PIPE)
 	{
 		exec_cmd(ast->left, pids);
-		exec_cmd(ast->right->left, pids);
+		/* exec_cmd(ast->right->left, pids); */
 		return (start_pipeline(env, ast->right, pipes, pids));
 	}
 	else
 	{
+		exec_cmd(ast->left, pids);
 		exec_cmd(ast->right, pids);
 		return (wait_children(pids));
 	}
