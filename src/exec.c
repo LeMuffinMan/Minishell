@@ -251,6 +251,46 @@ typedef struct s_pids
 	struct s_pids *next;
 } t_pids;
 
+
+int exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes)
+{
+	t_pid left;
+	t_pid right;
+	int pipefd[2];
+
+	if (pipe(fd) == -1)
+	{
+		//error
+	}
+	if ((*ast)->token->token == PIPE)
+	{
+		left = fork();
+		if (!left)
+		{
+			//error
+		}
+		if (left == 0)
+		{
+			close(pipefd[0]);
+			dup2(pipefd[1], STDOUT_FILENO);
+			close(pipefd[1]);
+			exec_ast((*ast)->left);
+		}
+		right = fork();
+		if (!right)
+		{
+			//error
+		}
+		if (right == 0)
+		{
+			close(pipefd[1]);
+			dup2(pipefd[0], STDOUT_FILENO);
+			close(pipefd[0]);
+			exec_ast((*ast)->right);
+		}
+	}
+}
+
 int exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes)
 {
 	t_pids *pids;
