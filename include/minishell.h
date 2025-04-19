@@ -63,8 +63,9 @@ typedef struct s_var
 
 typedef struct s_pipe
 {
-  int fd[2];
+	int fd[2];
 	struct s_pipe *next;
+	struct s_pipe *prev;
 } t_pipe;
 
 typedef struct s_pid
@@ -73,6 +74,11 @@ typedef struct s_pid
 	struct s_pids *next;
 } t_pid;
 
+typedef struct s_pids
+{
+	pid_t pid;
+	struct s_pids *next;
+} t_pids;
 
 typedef struct s_prompt 
 {
@@ -97,7 +103,7 @@ typedef struct s_prompt
 //   struct s_gar *next;
 // } t_gar;
 
-int exec_ast (t_tree **ast, t_var **env, t_pipe **pipes);
+int exec_ast (t_tree **ast, t_var **env, t_pipe **pipes, t_pids **pids);
 void	add_back_var(t_var **lst, char *s, int mode);
 void	add_first_node(t_var **lst, t_var *new, char *s, int mode);
 void	free_list(t_var **l);

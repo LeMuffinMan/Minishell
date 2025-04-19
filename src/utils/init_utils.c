@@ -95,7 +95,7 @@ void	add_back_var(t_var **lst, char *s, int mode)
 		new->next = NULL;
 		key_value = ft_split(s, '=');
 		new->key = ft_strdup(key_value[0]);
-		if (key_value[1])
+		if (key_value && key_value[1])
 			new->value = ft_strdup(key_value[1]);
 		free_array(key_value);
 		set_node(new, mode);

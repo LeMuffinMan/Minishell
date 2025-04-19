@@ -109,6 +109,7 @@ int main(int ac, char **av, char **env)
     t_var    *new_env;
     t_tree *ast;
     t_pipe *pipes;
+    t_pids *pids;
     char **translated_env;
 
     /* if (isatty(1)) */
@@ -123,6 +124,7 @@ int main(int ac, char **av, char **env)
     new_env = NULL;
     ast = NULL;
     pipes = NULL;
+    pids = NULL;
     /* utiliser getenv ?
         * Si on n'a pas d'env uniquement ?*/
     init_env(&new_env, env, av);
@@ -160,7 +162,7 @@ int main(int ac, char **av, char **env)
 	    if (find_here_docs(&ast))
 		    exec_here_docs(ast);
 		/* display_ast(ast); */
-        error_code = exec_ast(&ast, &new_env, &pipes);
+        error_code = exec_ast(&ast, &new_env, &pipes, &pids);
         free(line);
         line = NULL;
         // free_array(arg);
