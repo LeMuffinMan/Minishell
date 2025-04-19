@@ -46,7 +46,7 @@ int	wait_children(pid_t last_child, t_pids **pids)
 	return (exit_code);
 }
 
-int	builtins(char **arg, t_var **env)
+int	builtins(char **arg, t_var **env, t_tree **ast, t_pipe **pipes)
 {
 	/* printf("exec builtin %s\n", arg[0]); */
 	if (!*arg)
@@ -64,7 +64,7 @@ int	builtins(char **arg, t_var **env)
 	else if (!ft_strncmp(arg[0], "env", 4))
 		return (builtin_env(env));
 	else if (!ft_strncmp(arg[0], "exit", 5))
-		return (builtin_exit(arg, env));
+		return (builtin_exit(arg, env, ast, pipes));
 	else
 		return (1);
 }
@@ -143,7 +143,7 @@ int print_pipes(t_pipe **pipes)
 	tmp = *pipes;
 	while (tmp)
 	{
-		dprintf(2, "pipe #%d : fd[0] = %d | fd[1] = %d\n", i, (*pipes)->fd[0], (*pipes)->fd[1]);
+		/* dprintf(2, "pipe #%d : fd[0] = %d | fd[1] = %d\n", i, (*pipes)->fd[0], (*pipes)->fd[1]); */
 		tmp = tmp->next;
 		i++;
 	}
@@ -215,7 +215,7 @@ int exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, t_pids **pids)
 	right_branch = (*ast)->right;
 	left_branch = (*ast)->left;
 	//add_pipe : pipe le fd fourni ET l'ajoute a la liste
-	add_pipe(pipefd, pipes), dprintf(2, "pipes = %p | fd[0] = %d / fd[1] = %d\n", pipes, (*pipes)->fd[0], (*pipes)->fd[1]); //on ajoute un pipe au sommet
+	add_pipe(pipefd, pipes); //on ajoute un pipe au sommet
 	//dans tous les cas on lance a gauche
 	left = fork();	
 	if (!left)
@@ -229,7 +229,7 @@ int exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, t_pids **pids)
 		//Dans tous les cas, on veut ecrire dans le pipe ici
 		dup2((*pipes)->fd[1], STDOUT_FILENO);
 		close((*pipes)->fd[1]);
-		dprintf(2, "write_fd duped : %d\n", pipefd[1]);
+		/* dprintf(2, "write_fd duped : %d\n", pipefd[1]); */
 		close(pipefd[1]);
 		//Si pipes->next est NULL : c'est qu'on est le premier pipe : donc pas besoin de dup la lecture 
 		if (!(*pipes)->next)
@@ -237,7 +237,7 @@ int exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, t_pids **pids)
 			/* tmp = (*pipes)->next; */
 			/* (*pipes)->next = NULL; */
 			dup2(pipefd[0], STDIN_FILENO);
-			dprintf(2, "pipes->fd[0] duped : %d\n", pipefd[0]);
+			/* dprintf(2, "pipes->fd[0] duped : %d\n", pipefd[0]); */
 			close(pipefd[0]);
 			/* free(tmp); */
 		}
@@ -286,15 +286,17 @@ int exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, t_pids **pids)
 		//la cmd droite doit ecrire dans la STDOUT donc on close l'entree du pipe
 		close(pipefd[1]);
 		dup2(pipefd[0], STDIN_FILENO);
-		dprintf(2, "read_fd duped : %d\n", pipefd[0]);
+		/* dprintf(2, "read_fd duped : %d\n", pipefd[0]); */
 		close(pipefd[0]);
 		return (exec_ast(&right_branch, env, pipes, pids));
 	}
 	else
 	{
+		print_pipes(pipes);
+		/* close((*pipes)->next->fd[0]); */
 		close((*pipes)->fd[0]);
 		close((*pipes)->fd[1]);
-		print_pipes(pipes);
+		/* print_pipes(pipes); */
 		return(wait_children(right, pids));
 	}
 	//ON NE DEVRAIT JAMAIS ARRIVER ICI !
@@ -308,12 +310,12 @@ int exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes)
 
 	/* dprintf(2, "exec_cmd begins : cmd = %s\n", (*ast)->token->content[0]); */
 	//le parent execute que si c'est un builtin sans pipe : !*pipes == si la liste est vide
-	if ((*ast)->token->token == BUILT_IN && !pipes)
-		return (builtins((*ast)->token->content, env));
+	if ((*ast)->token->token == BUILT_IN && !*pipes)
+		return (builtins((*ast)->token->content, env, ast, pipes));
 	//dans tous les autres cas c'est un child
 	//cas d'un built in a executer dans un child : l'appel de cette fct vient deja d'un fork d'un pipe
 	if ((*ast)->token->token == BUILT_IN)
-		exit(builtins((*ast)->token->content, env));
+		exit(builtins((*ast)->token->content, env, ast, pipes));
 	//Ici, on ne peut QUE avoir des CMD 
 	if (!pipes) //cas d'une cmd a executer alors qu'il ne vient pas d'un pipe : il faut fork
 	{
@@ -326,7 +328,7 @@ int exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes)
 		if (pid == 0)
 		{
 			strings_env = lst_to_array(env);
-			printf("NO PIPE : exec cmd : %s | fd[0] : %d / fd[1] = %d\n", (*ast)->token->content[0], STDIN_FILENO, STDOUT_FILENO);
+			/* printf("NO PIPE : exec cmd : %s | fd[0] : %d / fd[1] = %d\n", (*ast)->token->content[0], STDIN_FILENO, STDOUT_FILENO); */
 			execve((*ast)->token->content[0], (*ast)->token->content, strings_env);
 			// si on passe ici, c'est que l'execve a echouer
 			free_array(strings_env);
@@ -335,13 +337,14 @@ int exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes)
 		else // on wait juste vu qu'on n'a pas de pipe ?
 		{
 			free_pipes(pipes);
+			pipes = NULL;
 			return (wait_children(pid, NULL));
 		}
 	}
 	else  //Si on a une cmd dans un pipe : on a deja fork
 	{
 		strings_env = lst_to_array(env);
-		dprintf(2, "PIPED : exec cmd : %s | fd[0] = %d / fd[1] = %d\n", (*ast)->token->content[0], STDIN_FILENO, STDOUT_FILENO);
+		/* dprintf(2, "PIPED : exec cmd : %s | fd[0] = %d / fd[1] = %d\n", (*ast)->token->content[0], STDIN_FILENO, STDOUT_FILENO); */
 		execve((*ast)->token->content[0], (*ast)->token->content, strings_env);
 		// si on passe ici, c'est que l'execve a echouer
 		free_array(strings_env);

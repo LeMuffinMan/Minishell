@@ -120,7 +120,7 @@ int	builtin_echo(char **arg);
 //builtins/env
 int builtin_env(t_var **env);
 //builtins/exit
-int	builtin_exit(char **arg, t_var **env);
+int	builtin_exit(char **arg, t_var **env, t_tree **ast, t_pipe **pipes);
 //builtins/pwd
 int	builtin_pwd(void);
 //builtins/unset
@@ -147,6 +147,8 @@ int	print_array(char **array);
 //utils.c 
 char **lst_to_array(t_var **env);
 t_tree	*parse(char *line, char **envp);
+
+int free_pipes(t_pipe **pipes);
 
 
 //get_prompt

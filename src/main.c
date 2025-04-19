@@ -110,7 +110,7 @@ int main(int ac, char **av, char **env)
     t_tree *ast;
     t_pipe *pipes;
     t_pids *pids;
-    char **translated_env;
+    char **strings_env;
 
     /* if (isatty(1)) */
     /* { */
@@ -148,7 +148,7 @@ int main(int ac, char **av, char **env)
         /* printf("%s\n", line); */
         if (line == NULL)
         {
-            // free(arg);
+            free(prompt);
             free_list(&new_env);
             exit(error_code);
         }
@@ -156,9 +156,10 @@ int main(int ac, char **av, char **env)
             free(prompt);
         prompt = NULL;
         // arg = ft_split(line, ' ');
-        translated_env = lst_to_array(&new_env);
-        /* print_array(translated_env); */
-        ast = parse(line, translated_env);
+        strings_env = lst_to_array(&new_env);
+        /* print_array(strings_env); */
+        ast = parse(line, strings_env);
+        free_array(strings_env);
 	    if (find_here_docs(&ast))
 		    exec_here_docs(ast);
 		/* display_ast(ast); */
@@ -167,7 +168,7 @@ int main(int ac, char **av, char **env)
         line = NULL;
         // free_array(arg);
         // arg = NULL;
-        free_array(translated_env);
+        /* free_array(strings_env); */
     }
     free_list(&new_env);
     exit(error_code);

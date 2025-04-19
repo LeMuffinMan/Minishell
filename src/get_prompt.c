@@ -19,6 +19,8 @@ int free_prompt(t_prompt *prompt)
     free(prompt->uid);
   if (prompt->hostname)
     free(prompt->hostname);
+  if (prompt->hostname_long)
+    free(prompt->hostname_long);
   if (prompt->pwd)
     free(prompt->pwd);
   if (prompt->git_branch)
@@ -463,12 +465,6 @@ int build_prompt(t_prompt *prompt, t_var **env)
     return (0);
 }
 
-//interpreter comme bash : 
-// double backslash pour que ce soit recu comme ca
-// permettre les quote pour mettre des espaces 
-//ajouter le \w 
-////\l : pour afficher bash / minishell
-//\s :  the name of the shell, the basename of $0 (the portion following the final slash)
 char *get_prompt (t_var **env)
 {
   t_prompt *prompt;
@@ -504,3 +500,10 @@ char *get_prompt (t_var **env)
   free_prompt(prompt);
   return (expanded_prompt);
 }
+
+//interpreter comme bash : 
+// double backslash pour que ce soit recu comme ca
+// permettre les quote pour mettre des espaces 
+//ajouter le \w 
+////\l : pour afficher bash / minishell
+//\s :  the name of the shell, the basename of $0 (the portion following the final slash)

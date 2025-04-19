@@ -22,7 +22,8 @@ int	is_only_numeric_argument(char *s)
 }
 
 // a voir
-int	builtin_exit(char **arg, t_var **env)
+// des fuites et des exits a des moments ou ils doivent pas 
+int	builtin_exit(char **arg, t_var **env, t_tree **ast, t_pipe **pipes)
 {
 	int		n;
 	char	*s;
@@ -34,6 +35,8 @@ int	builtin_exit(char **arg, t_var **env)
 	{
 		free_list(env);
 		free_array(arg);
+		free_tree(*ast);
+		free_pipes(pipes);
 		ft_putstr_fd("exit\n", 1); // il faut imprimer exit dans d'autres cas ?
 		exit(0);
 	}
@@ -41,7 +44,7 @@ int	builtin_exit(char **arg, t_var **env)
 	{
 		s = ft_strjoin("minishell: exit: ", arg[1]);
 		tmp = s;
-		s = ft_strjoin(s, ": numeric argument required");
+		s = ft_strjoin(s, ": numeric argument required\n");
 		free(tmp);
 		ft_putstr_fd(s, 2);
 		free(s);
@@ -63,6 +66,8 @@ int	builtin_exit(char **arg, t_var **env)
 		free(s);
 		free_list(env);
 		free_array(arg);
+		free_tree(*ast);
+		free_pipes(pipes);
 		exit(2);
 	}
 	n = ft_atoi(arg[1]);
@@ -70,6 +75,8 @@ int	builtin_exit(char **arg, t_var **env)
 		n = n % 256;
 	free_list(env);
 	free_array(arg);
+	free_tree(*ast);
+	free_pipes(pipes);
 	exit(n);
 	return (0);
 }
