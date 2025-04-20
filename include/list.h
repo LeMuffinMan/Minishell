@@ -27,7 +27,7 @@ typedef struct s_token
 	struct s_token	*next;
 	struct s_token	*prev;
 	char			**content;
-	int 			fd[2];
+	int 				fd[2];
 	enum e_type		token;
 	int				priority;
 }	t_token;

@@ -16,8 +16,8 @@
 #include "libft.h"
 #include "quote.h"
 #include <unistd.h>
-#include <readline/readline.h>
 #include <stdio.h>
+#include <readline/readline.h>
 
 t_tree	*parse(char *line, char **envp)
 {
@@ -42,8 +42,8 @@ t_tree	*parse(char *line, char **envp)
 	/* display_list(token); */
 	add_to_root(token, &root);
 	display_list(token);
-	/* print_ast(root, 20); */
+	display_ast(root);
 	/* free_tree(root); */
-	// free_parse(token, NULL, 0);
+	/* free_parse(token, NULL, 0); */
 	return (root);
 }

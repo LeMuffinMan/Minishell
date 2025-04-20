@@ -6,11 +6,12 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 17:02:11 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/11 17:36:04 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/04/20 16:06:46 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "structs.h"
+#include "utils.h"
 #include "libft.h"
 #include <stdlib.h>
 #include <limits.h>

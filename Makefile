@@ -6,7 +6,7 @@
 #    By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/04/11 17:23:17 by oelleaum         ###   ########lyon.fr    #
+#    Updated: 2025/04/20 18:00:39 by oelleaum         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,7 @@ BOLD_CYAN			=	\e[1;36m
 STOP_COLOR			=	\e[0m
 
 -include $(DEPS) $(DEPS_BONUS)
-vpath %.c src/parsing/token:src/parsing/lexer:src/parsing/tree:src/builtins:src/utils:src/parsing:src/parsing/handle_quote:src
+vpath %.c src/parsing/token:src/parsing/lexer:src/parsing/tree:src/builtins:src/utils:src/parsing:src/parsing/handle_quote:src/exec:src:src/ultrabonus
 vpath %.h include:src/libft/include
 vpath %.a src/libft/obj
 
@@ -36,7 +36,6 @@ LIBFT_FLAG			=	-L$(LIBFT_DIR)src/ $(LIB_LIBFT)
 LIBFT_HEAD			=	libft.h get_next_line.h ft_printf.h
 
 SRC					=	main.c \
-						parser.c \
 						concat_args.c \
 						create_tokenize_list.c \
 						create_tree.c \
@@ -49,20 +48,28 @@ SRC					=	main.c \
 						tokenize.c \
 						tree_utils.c \
 						lexer.c \
-						exec.c \
-    				init.c \
-    				builtins/echo.c \
-    				builtins/cd.c \
-    				builtins/pwd.c \
-    				builtins/unset.c \
-    				builtins/export.c \
-    				builtins/env.c \
-    				builtins/exit.c \
+						parser.c \
+						init.c \
+    				exec/builtins/echo.c \
+    				exec/builtins/cd.c \
+    				exec/builtins/pwd.c \
+    				exec/builtins/unset.c \
+    				exec/builtins/export.c \
+    				exec/builtins/env.c \
+    				exec/builtins/exit.c \
 						utils/builtins_utils.c \
 						utils/env_utils.c \
 						utils/init_utils.c \
 						utils/prints.c \
-						get_prompt.c
+						exec/exec.c \
+						exec/pipe.c \
+						utils/misc.c \
+						ultrabonus/get_prompt.c \
+						ultrabonus/get_prompt_free.c \
+						ultrabonus/git_branch_utils.c \
+						ultrabonus/prompt_gets_fcts.c \
+						ultrabonus/prompt_gets_fcts_utils.c  
+
 
 DEPS				=	$(SRC:%.c=$(OBJ_DIR)%.d)
 OBJ					=	$(SRC:%.c=$(OBJ_DIR)%.o)

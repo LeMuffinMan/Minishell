@@ -6,12 +6,13 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 17:04:05 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/16 01:53:37 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/20 17:29:07 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "exec.h"
 #include "libft.h"
+#include "structs.h"
 #include <stdlib.h>
 
 void	free_list(t_var **l)
@@ -72,6 +73,7 @@ void	add_first_node(t_var **lst, t_var *new, char *s, int mode)
 }
 
 // 0 = aucun des deux / 1 = env / 2 = export / 3 = env + export
+// revoir le retour d'erreur
 void	add_back_var(t_var **lst, char *s, int mode)
 {
 	t_var	*ptr;
@@ -81,7 +83,6 @@ void	add_back_var(t_var **lst, char *s, int mode)
 	new = malloc(sizeof(t_var));
 	if (new == NULL)
 	{
-		/* free_list(lst); */
 		exit(139);
 	}
 	if (*lst == NULL)
@@ -97,7 +98,7 @@ void	add_back_var(t_var **lst, char *s, int mode)
 		new->value = NULL;
 		key_value = ft_split(s, '=');
 		new->key = ft_strdup(key_value[0]);
-		if (key_value[1])
+		if (key_value && key_value[1])
 			new->value = ft_strdup(key_value[1]);
 		free_array(key_value);
 		set_node(new, mode);

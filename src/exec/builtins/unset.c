@@ -1,13 +1,25 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   unset.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/20 17:33:13 by oelleaum          #+#    #+#             */
+/*   Updated: 2025/04/20 17:33:31 by oelleaum         ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
 
-
+#include "exec.h"
 #include "libft.h"
 #include "minishell.h"
+#include "structs.h"
 #include <stdlib.h>
 
-int env_size(t_var *env)
+int	env_size(t_var *env)
 {
-	int i;
-	t_var *tmp;
+	int		i;
+	t_var	*tmp;
 
 	i = 0;
 	tmp = env;
@@ -63,7 +75,7 @@ int	builtin_unset(t_var **env, char **arg)
 /* the names refer to shell functions,
 	and the function definition is removed. If */
 /* the -n option is supplied, and name is a variable with the nameref attribute,
-	*/
+ */
 /* name will be unset rather than the variable it references.
 	-n has no effect if */
 /* the -f option is supplied. If no options are supplied,
@@ -72,6 +84,8 @@ int	builtin_unset(t_var **env, char **arg)
 	if */
 /* any,
 	is unset. Readonly variables and functions may not be unset. Some shell */
-/* variables lose their special behavior if they are unset; such behavior is noted in */
-/* the description of the individual variables. The return status is zero unless a */
+/* variables lose their special behavior if they are unset; such behavior
+ * is noted in */
+/* the description of the individual variables. The return status is zero
+ * unless a */
 /* name is readonly or may not be unset. */

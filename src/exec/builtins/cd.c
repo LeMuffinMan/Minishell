@@ -6,12 +6,13 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 17:36:27 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/11 17:36:28 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/04/20 17:32:57 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "exec.h"
 #include "libft.h"
-#include "minishell.h"
+#include "structs.h"
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -48,9 +49,10 @@
 // Quand on fait cd :
 // Si la variable n'existe pas : on annule la mise a jour
 // si elle existe, on la met a jour, et on update / cree OLD_PWD
-// Si PWD est declaree en locale mais pas exportee : on cree OLDPWD a partir de la varialbe localem mais on ne l'exporte pas PWD
+// Si PWD est declaree en locale mais pas exportee : on cree OLDPWD a partir
+// de la varialbe localem mais on ne l'exporte pas PWD
 // Dans tous les cas,
-	/* un echo $PWD doit afficher le path actuel meme si pas exportee */
+/* un echo $PWD doit afficher le path actuel meme si pas exportee */
 
 // ajouter l'acces a des dossiers non permis ?
 // cd dans un fichier ?
@@ -73,7 +75,8 @@
 /* Change the current working directory to directory.
  * If directory is not supplied, the value of the HOME shell variable is used.
  * If the shell variable CDPATH exists,
-	it is used as a search path: each directory name in CDPATH is searched for */
+	it is used as a search path: each directory name in CDPATH is
+	searched for */
 /* directory, with alternative directory names in CDPATH separated by a colon */
 /* (‘:’).
  * If directory begins with a slash, CDPATH is not used. */
@@ -105,11 +108,12 @@ int	change_directory(char *path)
 	}
 }
 
+// revoir le get_value home ?
 int	builtin_cd_without_arg(t_var **env)
 {
 	char	*s;
 
-	s = get_value(env, "HOME"); // a revoir ?
+	s = get_value(env, "HOME");
 	if (!s)
 	{
 		ft_putstr_fd("minishell: cd: HOME not set\n", 1);
@@ -123,11 +127,13 @@ int	builtin_cd_without_arg(t_var **env)
 	return (0);
 }
 
+/* printf("hello !\n"); */
+/* printf("%s | %s\n", arg[0], arg[1]); */
+/* print_var(env); */
 int	builtin_cd(char **arg, t_var **env)
 {
 	char	*path;
 
-	/* print_var(env); */
 	path = NULL;
 	if (array_size(arg) > 2)
 	{

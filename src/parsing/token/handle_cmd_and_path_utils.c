@@ -62,10 +62,29 @@ static void	case_of_absolute_path(t_token **node)
 	free(tmp);
 }
 
+int print_tab(char **s)
+{
+	int i;
+
+	/* #include <stdio.h> */
+	/* printf("%s\n", s[0]); */
+	i = 0;
+	while (s[i])
+	{
+		/* #include <stdio.h> */
+		/* printf("%s\n", s[i]); */
+		i++;
+	}
+	return (0);
+}
+
 void	replace_tab(t_token **node, char *str)
 {
 	char	*tmp;
 
+
+	/* #include <stdio.h> */
+	/* printf("%s\n", str); */
 	if (!str)
 		case_of_absolute_path(node);
 	else
@@ -75,6 +94,7 @@ void	replace_tab(t_token **node, char *str)
 			free_parse(*node, "Malloc failed in 'replace_tab'", MEM_ALLOC);
 		free_tab((*node)->content);
 		(*node)->content = ft_split(str, ' ');
+		print_tab((*node)->content);
 		if (!(*node)->content || !(*node)->content[0])
 		{
 			free(tmp);

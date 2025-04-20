@@ -46,6 +46,8 @@ static t_token	*add_new_node(char *str)
 	new_node->token = -1;
 	new_node->error = SUCCESS;
 	new_node->content = alloc_tab(str);
+	new_node->fd[0] = -1;
+	new_node->fd[1] = -1;
 	if (!new_node->content)
 	{
 		free(new_node);

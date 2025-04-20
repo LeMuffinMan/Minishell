@@ -6,13 +6,15 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 17:12:20 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/11 17:46:23 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/04/20 17:31:03 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "exec.h"
 #include "libft.h"
+#include "structs.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 int	print_array(char **array)
 {
@@ -34,7 +36,7 @@ int	print_sorted_env(t_var **env)
 {
 	t_var	*tmp;
 	char	*s;
-	char *temp;
+	char	*temp;
 
 	tmp = *env;
 	s = ft_strdup("declare -x ");
@@ -61,7 +63,6 @@ int	print_sorted_env(t_var **env)
 	return (0);
 }
 
-#include <stdio.h> // a virer et utilisetr ft_putstr_fd
 int	print_var(t_var **env)
 {
 	t_var	*tmp;
@@ -76,4 +77,24 @@ int	print_var(t_var **env)
 		tmp = tmp->next;
 	}
 	return (0);
+}
+
+int print_env(t_var **env)
+{
+    t_var *tmp;
+
+    tmp = *env;
+    while (tmp)
+    {
+        if (tmp->key)
+            ft_putstr_fd(tmp->key, 1);
+        if (tmp->value) //Si on fait VAR= on ft_strdup("")
+        {
+            ft_putstr_fd("=", 1);
+            ft_putstr_fd(tmp->value, 1);
+        }
+        ft_putstr_fd("\n", 1);
+        tmp = tmp->next;
+    }
+    return (0);
 }
