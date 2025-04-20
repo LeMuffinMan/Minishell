@@ -6,16 +6,16 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 17:15:02 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/20 16:09:54 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/04/20 17:28:49 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "structs.h"
 #include "exec.h"
 #include "libft.h"
+#include "structs.h"
 #include <limits.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 t_var	*get_key_node(t_var **env, char *key)
@@ -34,6 +34,7 @@ t_var	*get_key_node(t_var **env, char *key)
 	return (tmp);
 }
 
+//  return (1) ou errno ?
 int	update_env(t_var **env)
 {
 	t_var	*old_pwd;
@@ -53,7 +54,6 @@ int	update_env(t_var **env)
 	else
 	{
 		perror("pwd");
-		//  1 ou errno ?
 		return (1);
 	}
 	return (0);
@@ -84,12 +84,13 @@ char	*get_value(t_var **env, char *key)
 //
 // Attention :
 // echo $_ renvoie le dernier argument : echo; echo $_ : echo
-	// echo hello; echo $_ : hello
+// echo hello; echo $_ : hello
+// !tmp nedevrait pas etre possible
+// lastcmd doit contenir le PATH !
 int	update_last_cmd_var(t_var **env, char *last_cmd)
 {
 	t_var	*tmp;
 
-	// la variable doit contenir le PATH !
 	tmp = *env;
 	while (tmp)
 	{
@@ -97,7 +98,7 @@ int	update_last_cmd_var(t_var **env, char *last_cmd)
 			break ;
 		tmp = tmp->next;
 	}
-	if (!tmp) // ca ne devrait pas pouvoir etre possible
+	if (!tmp)
 		add_back_var(env, last_cmd, 1);
 	else
 	{

@@ -1,8 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   export.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/20 17:34:18 by oelleaum          #+#    #+#             */
+/*   Updated: 2025/04/20 17:35:52 by oelleaum         ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
 
-
-#include "structs.h"
 #include "exec.h"
 #include "libft.h"
+#include "structs.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -20,16 +30,22 @@
 // export affiche toutes les variables exportees
 //_ est pas une variable mais listee comme un charactere special
 // la commande set renvoie : _=env
-// Faire un booleen dans env pour marquer les variables exportees et les autres ?
+// Faire un booleen dans env pour marquer
+// les variables exportees et les autres ?
 // differencier env grep _= / echo $_
 //
 // Doc bash :
-// At shell startup set to the pathname used to invoke the shell or shell script being executed as passed in the environment or argument list
+// At shell startup set to the pathname used to invoke the shell or shell
+// script being executed as passed in the environment or argument list
 //
-	/* + Expands to the last argument to the previous simple command executed in the foreground after expansion. */
-// Also set to the full pathname used to invoke each command executed and placd in the environment exported to that command
+/*
+	+ Expands to the last argument to the previous simple command executed
+	in the foreground after expansion. */
+// Also set to the full pathname used to invoke each command executed
+// and placd in the environment exported to that command
 // When checking mailm this parameter holds the name of the mail file
-// Si je fais VAR=var puis export : elle n'apparait pas MAIS echo $VAR fonctionne !
+// Si je fais VAR=var puis export :
+// elle n'apparait pas MAIS echo $VAR fonctionne !
 // Si je fais ENSUITE export VAR : elle apparait dans l'export
 //
 // INTERDIRE l'export de _ !!
@@ -51,7 +67,7 @@
 // Avec un arg :
 //- Si on a un VAR=var
 //   - si la Variable existe mais n'est pas exportee, on set son bool export
-	/* / env sur 1 ET on modifie sa valeur */
+/* / env sur 1 ET on modifie sa valeur */
 //   - si la variable n'existe pas on l'export direct
 //   - si la variable est deja exportee, on modifie sa valeur
 //
@@ -70,12 +86,12 @@
 // Pareil pour chaque arg
 //
 
-int free_array(char **array)
+int	free_array(char **array)
 {
-	int i;
-	
+	int	i;
+
 	i = 0;
-	while(array[i])
+	while (array[i])
 	{
 		free(array[i]);
 		i++;
@@ -109,6 +125,20 @@ int	compare_keys(char *key1, char *key2)
 	return (ft_strncmp(key1, key2, ft_strlen(longest_key)));
 }
 
+// a reparer
+/* sort_list(&copy); */
+/* if (copy) */
+/* { */
+/* print_sorted_env(&copy); */
+/* 	free_list(&copy); */
+/* } */
+
+// Si on a deja la cle dans les variables non visibles,
+/* on la rend visible */
+// pas suuuur (le strdup"")
+// pas toujours exportee en 1 pour les deux !
+// sinon on l'ajoute et on la rend visible
+//  // changer le systene de mode ?
 int	builtin_export(t_var **env, char **arg)
 {
 	t_var	*node;
@@ -122,13 +152,6 @@ int	builtin_export(t_var **env, char **arg)
 	{
 		copy = copy_list(env);
 		print_sorted_env(&copy);
-		//a reparer
-		/* sort_list(&copy); */
-		/* if (copy) */
-		/* { */
-		/* print_sorted_env(&copy); */
-		/* 	free_list(&copy); */
-		/* } */
 	}
 	else if (!ft_strncmp("_=", arg[1], 3))
 		return (0);
@@ -136,23 +159,19 @@ int	builtin_export(t_var **env, char **arg)
 	{
 		key_value = ft_split(arg[1], '=');
 		node = is_known_key(env, key_value[0]);
-		// Si on a deja la cle dans les variables non visibles,
-			/* on la rend visible */
 		if (node)
 		{
 			if (node->value)
 				free(node->value);
 			if (key_value && key_value[1])
 				node->value = ft_strdup(key_value[1]);
-			else 
-				node->value = ft_strdup(""); // pas suuuur
-			//pas toujours !
+			else
+				node->value = ft_strdup("");
 			node->exported = 1;
 			node->env = 1;
 			return (0);
 		}
-		// sinon on l'ajoute et on la rend visible
-		add_back_var(env, arg[1], 3); // changer le systene de mode ?
+		add_back_var(env, arg[1], 3);
 		free_array(key_value);
 	}
 	return (0);

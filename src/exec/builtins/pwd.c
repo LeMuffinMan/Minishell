@@ -1,4 +1,14 @@
-
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pwd.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/20 17:33:43 by oelleaum          #+#    #+#             */
+/*   Updated: 2025/04/20 17:34:03 by oelleaum         ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "libft.h"
 #include "minishell.h"
@@ -10,6 +20,7 @@
 // des cas nuls ?
 // tester en unsetant PWD ...
 // tester un unset avec un env vide
+		//  1 ou errno ?
 int	builtin_pwd(void)
 {
 	char	buf[PATH_MAX];
@@ -26,7 +37,6 @@ int	builtin_pwd(void)
 	else
 	{
 		perror("pwd");
-		//  1 ou errno ?
 		return (1);
 	}
 	return (0);
@@ -36,6 +46,8 @@ int	builtin_pwd(void)
 	-P option */
 /* is supplied, the pathname printed will not contain symbolic links. If the
 	-L */
-/* option is supplied, the pathname printed may contain symbolic links. The */
-/* return status is zero unless an error is encountered while determining the name */
+/* option is supplied, the pathname printed may contain symbolic links.
+ * The */
+/* return status is zero unless an error is encountered while
+ * determining the name */
 /* of the current directory or an invalid option is supplied. */

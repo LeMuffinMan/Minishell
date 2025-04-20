@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:21:52 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/20 16:02:26 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/04/20 18:00:13 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,87 +19,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "display.h"
-
-char **lst_to_array(t_var **env)
-{
-    t_var *tmp;
-    char **array;
-    int i;
-    int count = 0;
-    char *s;
-    char *temp;
-
-    tmp = *env;
-    while (tmp && ++count)
-        tmp = tmp->next;
-    array = malloc(sizeof(char *) * (count + 1));
-    if (!array)
-        return NULL;
-    tmp = *env;
-    i = 0;
-    while (tmp)
-    {
-        if (tmp->value)
-        {
-            s = ft_strjoin(tmp->key, "=");
-            temp = s;
-            array[i] = ft_strjoin(s, tmp->value);
-            free(temp);
-        }
-        else
-            array[i] = ft_strdup(tmp->key);
-        
-        if (!array[i])
-        {
-            while (i-- > 0)
-                free(array[i]);
-            free(array);
-            return NULL;
-        }
-        i++;
-        tmp = tmp->next;
-    }
-    array[i] = NULL;
-    return array;
-}
-
-int print_env(t_var **env)
-{
-    t_var *tmp;
-
-    tmp = *env;
-    while (tmp)
-    {
-        if (tmp->key)
-            ft_putstr_fd(tmp->key, 1);
-        if (tmp->value) //Si on fait VAR= on ft_strdup("")
-        {
-            ft_putstr_fd("=", 1);
-            ft_putstr_fd(tmp->value, 1);
-        }
-        ft_putstr_fd("\n", 1);
-        tmp = tmp->next;
-    }
-    return (0);
-}
-
-int exec_here_docs(t_tree *ast)
-{
-    (void)ast;
-	//
-	return (0);
-}
-
-int find_here_docs(t_tree **ast)
-{
-	if ((*ast)->token->token == HD)
-		return (1);
-	else if ((*ast)->left)
-		return (exec_here_docs((*ast)->left));
-	else if ((*ast)->right)
-		return (exec_here_docs((*ast)->right));
-	return (0);
-}
 
 int main(int ac, char **av, char **env)
 {
@@ -130,12 +49,11 @@ int main(int ac, char **av, char **env)
         * Si on n'a pas d'env uniquement ?*/
     init_env(&new_env, env, av);
     /* print_env(&new_env); */
-    //execute_minishellrc
+    //execute_minishellrc avant ou apres ?
     while (1)
     {
         //update env variables !!! si on a un && ou un || on DOIT update l'env entre les deux !!!
         //update prompt
-        //
         prompt = NULL;
         if (isatty(0) && *env)
         {
@@ -156,20 +74,16 @@ int main(int ac, char **av, char **env)
         if (isatty(0) && env)
             free(prompt);
         prompt = NULL;
-        // arg = ft_split(line, ' ');
         strings_env = lst_to_array(&new_env);
         /* print_array(strings_env); */
         ast = parse(line, strings_env);
         free_array(strings_env);
-	    if (find_here_docs(&ast))
-		    exec_here_docs(ast);
+	    /* if (find_here_docs(&ast)) */
+		   /*  exec_here_docs(ast); */
 		/* display_ast(ast); */
         error_code = exec_ast(&ast, &new_env, &pipes, &pids);
         free(line);
         line = NULL;
-        // free_array(arg);
-        // arg = NULL;
-        /* free_array(strings_env); */
     }
     free_list(&new_env);
     exit(error_code);

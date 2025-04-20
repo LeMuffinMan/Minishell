@@ -6,13 +6,13 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 17:04:05 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/20 16:10:10 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/04/20 17:29:07 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "structs.h"
 #include "exec.h"
 #include "libft.h"
+#include "structs.h"
 #include <stdlib.h>
 
 void	free_list(t_var **l)
@@ -73,6 +73,7 @@ void	add_first_node(t_var **lst, t_var *new, char *s, int mode)
 }
 
 // 0 = aucun des deux / 1 = env / 2 = export / 3 = env + export
+// revoir le retour d'erreur
 void	add_back_var(t_var **lst, char *s, int mode)
 {
 	t_var	*ptr;
@@ -82,7 +83,6 @@ void	add_back_var(t_var **lst, char *s, int mode)
 	new = malloc(sizeof(t_var));
 	if (new == NULL)
 	{
-		/* free_list(lst); */
 		exit(139);
 	}
 	if (*lst == NULL)

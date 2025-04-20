@@ -6,7 +6,7 @@
 #    By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/04/20 16:50:35 by oelleaum         ###   ########lyon.fr    #
+#    Updated: 2025/04/20 18:00:39 by oelleaum         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -63,6 +63,7 @@ SRC					=	main.c \
 						utils/prints.c \
 						exec/exec.c \
 						exec/pipe.c \
+						utils/misc.c \
 						ultrabonus/get_prompt.c \
 						ultrabonus/get_prompt_free.c \
 						ultrabonus/git_branch_utils.c \

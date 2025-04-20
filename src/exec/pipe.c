@@ -6,17 +6,18 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 14:33:31 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/20 16:51:08 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/04/20 17:37:38 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "structs.h"
 #include "libft.h"
+#include "structs.h"
 #include <unistd.h>
 
+	// ici on free la liste des pids
 int	wait_children(pid_t last_child, t_pids **pids)
 {
-	t_pids *tmp;
+	t_pids	*tmp;
 	int		status;
 	int		exit_code;
 
@@ -25,13 +26,12 @@ int	wait_children(pid_t last_child, t_pids **pids)
 		tmp = *pids;
 	else
 		tmp = NULL;
-	while(tmp && tmp->next)
+	while (tmp && tmp->next)
 	{
 		waitpid(tmp->pid, &status, 0);
 		tmp = tmp->next;
 	}
 	waitpid(last_child, &status, 0);
-	//ici on free la liste des pids
 	if (WIFEXITED(status))
 		exit_code = WEXITSTATUS(status);
 	else if (WIFSIGNALED(status))
@@ -43,16 +43,16 @@ int	wait_children(pid_t last_child, t_pids **pids)
 	return (exit_code);
 }
 
-int add_pid(pid_t new_pid, t_pids **pids)
+int	add_pid(pid_t new_pid, t_pids **pids)
 {
-	t_pids *new_node; 
-	t_pids *last;
+	t_pids	*new_node;
+	t_pids	*last;
 
 	last = NULL;
 	new_node = malloc(sizeof(t_pids));
 	if (!new_node)
 	{
-		//malloc error
+		// malloc error
 	}
 	if (!*pids)
 		*pids = new_node;
@@ -68,18 +68,18 @@ int add_pid(pid_t new_pid, t_pids **pids)
 	return (0);
 }
 
-int add_pipe(int fd[2], t_pipe **pipes)
+int	add_pipe(int fd[2], t_pipe **pipes)
 {
-	t_pipe *new_pipe;
+	t_pipe	*new_pipe;
 
 	if (pipe(fd) == -1)
 	{
-		//error
+		// error
 	}
 	new_pipe = malloc(sizeof(t_pipe));
 	if (!new_pipe)
 	{
-		//error
+		// error
 	}
 	new_pipe->next = *pipes;
 	new_pipe->prev = NULL;
@@ -87,15 +87,15 @@ int add_pipe(int fd[2], t_pipe **pipes)
 	new_pipe->fd[1] = fd[1];
 	if (*pipes)
 		(*pipes)->prev = new_pipe;
-	*pipes = new_pipe; 
+	*pipes = new_pipe;
 	return (0);
 }
 
-int free_pids(t_pids **pids)
+int	free_pids(t_pids **pids)
 {
-	t_pids *tmp;
+	t_pids	*tmp;
 
-	while(*pids && (*pids)->next)
+	while (*pids && (*pids)->next)
 	{
 		tmp = *pids;
 		*pids = (*pids)->next;
@@ -104,9 +104,9 @@ int free_pids(t_pids **pids)
 	return (0);
 }
 
-int free_pipes(t_pipe **pipes)
+int	free_pipes(t_pipe **pipes)
 {
-	t_pipe *tmp;
+	t_pipe	*tmp;
 
 	tmp = *pipes;
 	while (*pipes && (*pipes)->next)
@@ -119,5 +119,3 @@ int free_pipes(t_pipe **pipes)
 	pipes = NULL;
 	return (0);
 }
-
-

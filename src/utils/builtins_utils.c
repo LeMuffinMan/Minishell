@@ -1,7 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtins_utils.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/20 17:27:22 by oelleaum          #+#    #+#             */
+/*   Updated: 2025/04/20 17:27:51 by oelleaum         ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
 
+#include "exec.h"
 #include "libft.h"
 #include "structs.h"
-#include "exec.h"
 #include <stdlib.h>
 
 int	swap_nodes(t_var *n1, t_var *n2)
@@ -52,6 +63,7 @@ int	sort_list(t_var **l)
 	return (0);
 }
 
+// proteger mieux l'erreur de malloc
 t_var	*copy_list(t_var **env)
 {
 	t_var	*tmp;
@@ -66,7 +78,7 @@ t_var	*copy_list(t_var **env)
 	{
 		new_node = malloc(sizeof(t_var));
 		if (!new_node)
-			exit(1); // a mieux protegetr
+			exit(1);
 		new_node->key = ft_strdup(tmp->key);
 		new_node->value = ft_strdup(tmp->value);
 		new_node->next = NULL;

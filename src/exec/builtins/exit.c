@@ -1,6 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exit.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/20 17:36:33 by oelleaum          #+#    #+#             */
+/*   Updated: 2025/04/20 17:36:33 by oelleaum         ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
 
-#include "libft.h"
 #include "exec.h"
+#include "libft.h"
 #include "structs.h"
 #include "tree.h"
 #include <stdio.h>
@@ -24,12 +35,13 @@ int	is_only_numeric_argument(char *s)
 }
 
 // a voir
-// des fuites et des exits a des moments ou ils doivent pas 
+// des fuites et des exits a des moments ou ils doivent pas
+// a tester : is only numeric arg
 int	builtin_exit(char **arg, t_var **env, t_tree **ast, t_pipe **pipes)
 {
 	int		n;
 	char	*s;
-	char *tmp;
+	char	*tmp;
 
 	(void)env;
 	s = NULL;
@@ -39,7 +51,7 @@ int	builtin_exit(char **arg, t_var **env, t_tree **ast, t_pipe **pipes)
 		free_array(arg);
 		free_tree(*ast);
 		free_pipes(pipes);
-		ft_putstr_fd("exit\n", 1); // il faut imprimer exit dans d'autres cas ?
+		ft_putstr_fd("exit\n", 1);
 		exit(0);
 	}
 	if (ft_strlen(arg[1]) > 18)
@@ -57,7 +69,6 @@ int	builtin_exit(char **arg, t_var **env, t_tree **ast, t_pipe **pipes)
 		ft_putstr_fd("minishell: exit: too many arguments\n", 2);
 		return (1);
 	}
-	// a tester
 	if (!is_only_numeric_argument(arg[1]))
 	{
 		s = ft_strjoin("minishell: exit: ", arg[1]);
