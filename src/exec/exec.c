@@ -127,6 +127,7 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, t_pids **pids)
 
 int	exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes)
 {
+
 	char	**strings_env;
 	pid_t	pid;
 

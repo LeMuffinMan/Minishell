@@ -40,6 +40,6 @@ t_tree	*parse(char *line, char **envp)
 	display_list(token);
 	concat_args(&token);
 	add_to_root(token, &root);
-	display_list(token);
+	/* display_list(token); */
 	return (root);
 }
