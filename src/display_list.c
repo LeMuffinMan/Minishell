@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 19:15:40 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/14 16:32:43 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/20 17:26:15 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,9 +53,9 @@ void	display_list(t_token *head)
 {
 	t_token				*tmp;
 	int					i;
-	static const char	*tab[13] = {"Append", "Built_in", "CMD", "Double quote",
-		"Here_doc", "Limiter", "And", "Or", "Pipe", "Redirection infile",
-		"Simple quote", "Truncate", "Wildcard"};
+	static const char	*tab[14] = {"Append", "Built_in", "CMD",
+		"Infile", "Double quote", "Here_doc", "Limiter", "And", "Or", "Pipe",
+		"Redirection infile", "Simple quote", "Truncate", "Wildcard"};
 
 	i = 1;
 	tmp = head;

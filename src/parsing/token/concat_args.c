@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 04:50:03 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/16 20:47:12 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/20 18:26:39 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,13 +37,23 @@ static char	**cpy_tab(char **dest, char **src, int index)
 
 static bool	is_same_family(t_token *node)
 {
-	if ((node->token == CMD) || (node->token == APPEND)
-		|| (node->token == BUILT_IN) || (node->token == HD)
+	if ((node->token == APPEND)
+		|| (node->token == HD)
 		|| (node->token == R_IN) || (node->token == TRUNC))
 	{
 		if (node->next)
 		{
 			if ((node->next->error != 0) || (node->next->token == D_QUOTE)
+				|| (node->next->token == S_QUOTE))
+				return (true);
+		}
+	}
+	else if ((node->token == BUILT_IN) || (node->token == CMD))
+	{
+		if (node->next)
+		{
+			if ((node->next->error != 0) || (node->next->token == CMD)
+				|| (node->next->token == D_QUOTE)
 				|| (node->next->token == S_QUOTE))
 				return (true);
 		}
@@ -98,9 +108,9 @@ void	concat_args(t_token **head)
 {
 	t_token	*tmp;
 
-	tmp = *head;
-	if (!tmp)
+	if (!*head)
 		return ;
+	tmp = *head;
 	while (tmp)
 	{
 		if (is_same_family(tmp))
