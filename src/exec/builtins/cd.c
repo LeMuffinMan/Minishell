@@ -6,12 +6,13 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 17:36:27 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/11 17:36:28 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/04/20 16:07:09 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-#include "minishell.h"
+#include "structs.h"
+#include "exec.h"
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>

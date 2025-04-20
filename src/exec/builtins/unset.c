@@ -1,5 +1,7 @@
 
 
+#include "structs.h"
+#include "exec.h"
 #include "libft.h"
 #include "minishell.h"
 #include <stdlib.h>

@@ -1,6 +1,7 @@
 
 #include "libft.h"
-#include "minishell.h"
+#include "structs.h"
+#include "exec.h"
 #include <stdlib.h>
 
 int	swap_nodes(t_var *n1, t_var *n2)

@@ -1,6 +1,6 @@
 
 #include "libft.h"
-#include "minishell.h"
+#include "structs.h"
 #include <stdlib.h>
 #include <unistd.h>
 

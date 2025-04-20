@@ -6,13 +6,14 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:21:52 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/17 15:04:55 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/04/20 16:02:26 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
+#include "get_prompt.h"
 #include "tree.h"
-#include "minishell.h"
+#include "exec.h"
 #include <stdio.h>
 #include <readline/readline.h> // compiler avec -l readline
 #include <stdlib.h>

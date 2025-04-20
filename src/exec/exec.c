@@ -6,44 +6,39 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:49:28 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/17 15:22:34 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/04/20 16:52:37 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-#include "minishell.h"
+#include "exec.h"
+#include "pipe.h"
 #include "list.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <fcntl.h>
 
-int	wait_children(pid_t last_child, t_pids **pids)
+int	builtins(char **arg, t_var **env, t_tree **ast, t_pipe **pipes)
 {
-	t_pids *tmp;
-	int		status;
-	int		exit_code;
-
-	exit_code = EXIT_SUCCESS;
-	if (pids)
-		tmp = *pids;
+	if (!*arg)
+		return (1);
+	else if (!ft_strncmp(arg[0], "echo", 5))
+		return (builtin_echo(arg));
+	else if (!ft_strncmp(arg[0], "cd", 3))
+		return (builtin_cd(arg, env));
+	else if (!ft_strncmp(arg[0], "pwd", 4))
+		return (builtin_pwd());
+	else if (!ft_strncmp(arg[0], "export", 7))
+		return (builtin_export(env, arg));
+	else if (!ft_strncmp(arg[0], "unset", 6))
+		return (builtin_unset(env, arg));
+	else if (!ft_strncmp(arg[0], "env", 4))
+		return (builtin_env(env));
+	else if (!ft_strncmp(arg[0], "exit", 5))
+		return (builtin_exit(arg, env, ast, pipes));
 	else
-		tmp = NULL;
-	while(tmp && tmp->next)
-	{
-		waitpid(tmp->pid, &status, 0);
-		tmp = tmp->next;
-	}
-	waitpid(last_child, &status, 0);
-	//ici on free la liste des pids
-	if (WIFEXITED(status))
-		exit_code = WEXITSTATUS(status);
-	else if (WIFSIGNALED(status))
-		exit_code = 128 + WTERMSIG(status);
-	if (exit_code == EXIT_SUCCESS && WIFEXITED(status))
-		exit_code = WEXITSTATUS(status);
-	else if (exit_code == EXIT_SUCCESS && WIFSIGNALED(status))
-		exit_code = 128 + WTERMSIG(status);
-	return (exit_code);
+		return (1);
 }
 
 int free_lists_and_exit(t_var **env, t_tree **ast, t_pipe **pipes)
@@ -54,99 +49,6 @@ int free_lists_and_exit(t_var **env, t_tree **ast, t_pipe **pipes)
 	//free_env
 	//free_ast
 	//free_pipes
-	return (0);
-}
-
-int add_pid(pid_t new_pid, t_pids **pids)
-{
-	t_pids *new_node; 
-	t_pids *last;
-
-	last = NULL;
-	new_node = malloc(sizeof(t_pids));
-	if (!new_node)
-	{
-		//malloc error
-	}
-	if (!*pids)
-		*pids = new_node;
-	else
-	{
-		last = *pids;
-		while (last->next)
-			last = last->next;
-		last->next = new_node;
-	}
-	new_node->next = NULL;
-	new_node->pid = new_pid;
-	return (0);
-}
-
-/* int print_pipes(t_pipe **pipes) */
-/* { */
-/* 	t_pipe *tmp; */
-/* 	int i; */
-/**/
-/* 	i = 1; */
-/* 	tmp = *pipes; */
-/* 	while (tmp) */
-/* 	{ */
-/* 		dprintf(2, "pipe #%d : fd[0] = %d | fd[1] = %d\n", i, (*pipes)->fd[0], (*pipes)->fd[1]); */
-/* 		tmp = tmp->next; */
-/* 		i++; */
-/* 	} */
-/* 	return (0); */
-/* } */
-
-int add_pipe(int fd[2], t_pipe **pipes)
-{
-	t_pipe *new_pipe;
-
-	if (pipe(fd) == -1)
-	{
-		//error
-	}
-	new_pipe = malloc(sizeof(t_pipe));
-	if (!new_pipe)
-	{
-		//error
-	}
-	new_pipe->next = *pipes;
-	new_pipe->prev = NULL;
-	new_pipe->fd[0] = fd[0];
-	new_pipe->fd[1] = fd[1];
-	if (*pipes)
-		(*pipes)->prev = new_pipe;
-	*pipes = new_pipe; 
-	return (0);
-}
-
-int free_pids(t_pids **pids)
-{
-	t_pids *tmp;
-
-	while(*pids && (*pids)->next)
-	{
-		tmp = *pids;
-		*pids = (*pids)->next;
-		free(tmp);
-	}
-	return (0);
-}
-
-int free_pipes(t_pipe **pipes)
-{
-	t_pipe *tmp;
-
-	tmp = *pipes;
-	while (*pipes && (*pipes)->next)
-	{
-		tmp = *pipes;
-		*pipes = (*pipes)->next;
-		free(tmp);
-	}
-	free(*pipes);
-	pipes = NULL;
 	return (0);
 }
 
@@ -306,68 +208,50 @@ int boolean_operators(t_tree **ast, t_var **env, t_pipe **pipes, t_pids **pids)
 		return (exit_code);
 }
 
-int open_dup2_close(t_tree **ast, t_var **env, t_type type)
+int open_dup2_close(t_tree **ast, t_type type)
 {
+	int fd;
 	//attention si c'est le proc parrent !! Redup avant de rendre le prompt !!!
 	if (type == R_IN)
 	{
 		fd = open((*ast)->token->content[0], O_RDONLY);
+		if (fd == -1)
+			//error
 		dup2(fd, STDIN_FILENO);
+		close(fd);
 	}
 	else if (type == APPEND)
 	{
 		fd = open((*ast)->token->content[0], O_CREAT | O_WRONLY | O_APPEND, 0644);
+		if (fd == -1)
+			//error
 		dup2(fd, STDOUT_FILENO);
+		close(fd);
 	}
 	else if (type == TRUNC)
 	{
 		fd = open((*ast)->token->content[0], O_CREAT | O_WRONLY | O_TRUNC, 0644);
+		if (fd == -1)
+			//error
 		dup2(fd, STDOUT_FILENO);
+		close(fd);
 	}
-	if (fd = -1)
-	{
-		//error
-	}
-	close(fd);
 	return (0);
 }
 
-int redirect_stdio(t_tree **ast, t_var **env)
+int redirect_stdio(t_tree **ast, t_var **env, t_pipe **pipes, t_pids **pids)
 {
-	int fd;
-	t_ast *left;
-	t_ast *right;
+	t_tree *left;
+	t_tree *right;
 
 	left = (*ast)->left;
 	right = (*ast)->right;
-	if (open_dup2_close(ast, env, (*ast)->token->token))
+	if (open_dup2_close(ast, (*ast)->token->token))
 		//Error 
 	if (right)
-	if (exec_ast(right, env, pipes)))
-		//erreur pendant une des autres redirections
-	return (exec_ast(left, env, pipes));
-}
-
-int	builtins(char **arg, t_var **env, t_tree **ast, t_pipe **pipes)
-{
-	if (!*arg)
-		return (1);
-	else if (!ft_strncmp(arg[0], "echo", 5))
-		return (builtin_echo(arg));
-	else if (!ft_strncmp(arg[0], "cd", 3))
-		return (builtin_cd(arg, env));
-	else if (!ft_strncmp(arg[0], "pwd", 4))
-		return (builtin_pwd());
-	else if (!ft_strncmp(arg[0], "export", 7))
-		return (builtin_export(env, arg));
-	else if (!ft_strncmp(arg[0], "unset", 6))
-		return (builtin_unset(env, arg));
-	else if (!ft_strncmp(arg[0], "env", 4))
-		return (builtin_env(env));
-	else if (!ft_strncmp(arg[0], "exit", 5))
-		return (builtin_exit(arg, env, ast, pipes));
-	else
-		return (1);
+	if (exec_ast(&right, env, pipes, pids))
+		return (1); //erreur pendant une des autres redirections
+	return (exec_ast(&left, env, pipes, pids));
 }
 
 int exec_ast(t_tree **ast, t_var **env, t_pipe **pipes, t_pids **pids)

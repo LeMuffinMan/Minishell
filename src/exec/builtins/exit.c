@@ -1,6 +1,8 @@
 
 #include "libft.h"
-#include "minishell.h"
+#include "exec.h"
+#include "structs.h"
+#include "tree.h"
 #include <stdio.h>
 /* #include <unistd.h> */
 #include <stdlib.h>
