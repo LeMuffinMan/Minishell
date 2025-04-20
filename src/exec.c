@@ -46,29 +46,6 @@ int	wait_children(pid_t last_child, t_pids **pids)
 	return (exit_code);
 }
 
-int	builtins(char **arg, t_var **env, t_tree **ast, t_pipe **pipes)
-{
-	/* printf("exec builtin %s\n", arg[0]); */
-	if (!*arg)
-		return (1);
-	else if (!ft_strncmp(arg[0], "echo", 5))
-		return (builtin_echo(arg));
-	else if (!ft_strncmp(arg[0], "cd", 3))
-		return (builtin_cd(arg, env));
-	else if (!ft_strncmp(arg[0], "pwd", 4))
-		return (builtin_pwd());
-	else if (!ft_strncmp(arg[0], "export", 7))
-		return (builtin_export(env, arg));
-	else if (!ft_strncmp(arg[0], "unset", 6))
-		return (builtin_unset(env, arg));
-	else if (!ft_strncmp(arg[0], "env", 4))
-		return (builtin_env(env));
-	else if (!ft_strncmp(arg[0], "exit", 5))
-		return (builtin_exit(arg, env, ast, pipes));
-	else
-		return (1);
-}
-
 int free_lists_and_exit(t_var **env, t_tree **ast, t_pipe **pipes)
 {
 	(void)env;
@@ -79,35 +56,6 @@ int free_lists_and_exit(t_var **env, t_tree **ast, t_pipe **pipes)
 	//free_pipes
 	return (0);
 }
-
-/* int get_pipe(int fd[2], t_pipe **pipes) */
-/* { */
-/* 	t_pipe *new_pipe; */
-/* 	t_pipe *last; */
-/**/
-/* 	new_pipe = malloc(sizeof(t_pipe)); */
-/* 	if(!new_pipe) */
-/* 	{ */
-/* 		//malloc error */
-/* 	} */
-/* 	if (!*pipes) */
-/* 		*pipes = new_pipe; */
-/* 	else  */
-/* 	{ */
-/*     last = *pipes; */
-/*     while (last->next) */
-/*         last = last->next; */
-/*     last->next = new_pipe; */
-/* 	} */
-/* 	new_pipe->next = NULL; */
-/* 	if (pipe(fd) == -1) */
-/* 	{ */
-/* 		//error de pipe */
-/* 	} */
-/* 	new_pipe->fd[0] = fd[0]; */
-/* 	new_pipe->fd[1] = fd[1]; */
-/* 	return (0); */
-/* } */
 
 int add_pid(pid_t new_pid, t_pids **pids)
 {
@@ -134,21 +82,21 @@ int add_pid(pid_t new_pid, t_pids **pids)
 	return (0);
 }
 
-int print_pipes(t_pipe **pipes)
-{
-	t_pipe *tmp;
-	int i;
-
-	i = 1;
-	tmp = *pipes;
-	while (tmp)
-	{
-		/* dprintf(2, "pipe #%d : fd[0] = %d | fd[1] = %d\n", i, (*pipes)->fd[0], (*pipes)->fd[1]); */
-		tmp = tmp->next;
-		i++;
-	}
-	return (0);
-}
+/* int print_pipes(t_pipe **pipes) */
+/* { */
+/* 	t_pipe *tmp; */
+/* 	int i; */
+/**/
+/* 	i = 1; */
+/* 	tmp = *pipes; */
+/* 	while (tmp) */
+/* 	{ */
+/* 		dprintf(2, "pipe #%d : fd[0] = %d | fd[1] = %d\n", i, (*pipes)->fd[0], (*pipes)->fd[1]); */
+/* 		tmp = tmp->next; */
+/* 		i++; */
+/* 	} */
+/* 	return (0); */
+/* } */
 
 int add_pipe(int fd[2], t_pipe **pipes)
 {
@@ -170,7 +118,6 @@ int add_pipe(int fd[2], t_pipe **pipes)
 	if (*pipes)
 		(*pipes)->prev = new_pipe;
 	*pipes = new_pipe; 
-	/* print_pipes(pipes); */
 	return (0);
 }
 
@@ -229,19 +176,14 @@ int exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, t_pids **pids)
 		//Dans tous les cas, on veut ecrire dans le pipe ici
 		dup2((*pipes)->fd[1], STDOUT_FILENO);
 		close((*pipes)->fd[1]);
-		/* dprintf(2, "write_fd duped : %d\n", pipefd[1]); */
 		close(pipefd[1]);
 		//Si pipes->next est NULL : c'est qu'on est le premier pipe : donc pas besoin de dup la lecture 
 		if (!(*pipes)->next)
 		{
-			/* tmp = (*pipes)->next; */
-			/* (*pipes)->next = NULL; */
 			dup2(pipefd[0], STDIN_FILENO);
-			/* dprintf(2, "pipes->fd[0] duped : %d\n", pipefd[0]); */
 			close(pipefd[0]);
-			/* free(tmp); */
 		}
-		else //sinon, c'est qu'on doit brancher la lecture du pipe precedent
+		else //si ya un autre pipe dans la liste, c'est qu'on est dans un pipeline, on doit brancher la lecture du pipe precedent
 		{
 			dup2((*pipes)->next->fd[0], STDIN_FILENO);
 			close((*pipes)->next->fd[0]);
@@ -262,11 +204,10 @@ int exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, t_pids **pids)
 			free(tmp);
 			//pour le parent on free le dernier pipe qu'on avait garder pour brancher la lecture de right
 		}
-		//on ajoute un pid a la liste pour les attendre a la fin 
+		//on ajoute un pid a la liste pour les attendre a la fin du pipeline 
 		add_pid(left, pids);
 		//si y'a pas de next : le pipe de la liste est celui qu'on vient de creer, on veut le garder pour la cmd qui suit
-		//donc on ferme pour le parent, mais on ne free pas 
-		/* close(pipefd[0]); */
+		//donc on ferme seulement la sortie pour le parent, on le fermera au prochain tour 
 		close(pipefd[1]);
 	}
 	//cas d'un pipeline : on lance la 1ere commande mais on rappelle exec_ast pour executer le pipe qui suit 
@@ -278,25 +219,21 @@ int exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, t_pids **pids)
 	{
 		//error
 	}
-	//la derniere commande executee lit dans le pipe qu'on vient de creer, pas besoin de la liste 
 	if (right == 0)
 	{
-		//le child n'a pas besoin d'attendre les pids donc on free la liste 
 		free_pids(pids);
 		//la cmd droite doit ecrire dans la STDOUT donc on close l'entree du pipe
+		//la derniere commande executee lit dans le pipe qu'on vient de creer, pas besoin de la liste des pipes 
 		close(pipefd[1]);
 		dup2(pipefd[0], STDIN_FILENO);
-		/* dprintf(2, "read_fd duped : %d\n", pipefd[0]); */
 		close(pipefd[0]);
 		return (exec_ast(&right_branch, env, pipes, pids));
 	}
 	else
 	{
-		print_pipes(pipes);
-		/* close((*pipes)->next->fd[0]); */
+		//potentiel close pas bons ici 
 		close((*pipes)->fd[0]);
 		close((*pipes)->fd[1]);
-		/* print_pipes(pipes); */
 		return(wait_children(right, pids));
 	}
 	//ON NE DEVRAIT JAMAIS ARRIVER ICI !
@@ -308,7 +245,6 @@ int exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes)
 	char **strings_env;
 	pid_t pid;
 
-	/* dprintf(2, "exec_cmd begins : cmd = %s\n", (*ast)->token->content[0]); */
 	//le parent execute que si c'est un builtin sans pipe : !*pipes == si la liste est vide
 	if ((*ast)->token->token == BUILT_IN && !*pipes)
 		return (builtins((*ast)->token->content, env, ast, pipes));
@@ -319,7 +255,6 @@ int exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes)
 	//Ici, on ne peut QUE avoir des CMD 
 	if (!pipes) //cas d'une cmd a executer alors qu'il ne vient pas d'un pipe : il faut fork
 	{
-		/* dprintf(2, "ici\n"); */
 		pid = fork();	
 		if (pid == -1)
 		{
@@ -328,13 +263,11 @@ int exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes)
 		if (pid == 0)
 		{
 			strings_env = lst_to_array(env);
-			/* printf("NO PIPE : exec cmd : %s | fd[0] : %d / fd[1] = %d\n", (*ast)->token->content[0], STDIN_FILENO, STDOUT_FILENO); */
 			execve((*ast)->token->content[0], (*ast)->token->content, strings_env);
-			// si on passe ici, c'est que l'execve a echouer
 			free_array(strings_env);
-			exit(1); //exit parce qu'on est dans un child 
+			exit(1); 
 		}
-		else // on wait juste vu qu'on n'a pas de pipe ?
+		else
 		{
 			free_pipes(pipes);
 			pipes = NULL;
@@ -344,11 +277,9 @@ int exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes)
 	else  //Si on a une cmd dans un pipe : on a deja fork
 	{
 		strings_env = lst_to_array(env);
-		/* dprintf(2, "PIPED : exec cmd : %s | fd[0] = %d / fd[1] = %d\n", (*ast)->token->content[0], STDIN_FILENO, STDOUT_FILENO); */
 		execve((*ast)->token->content[0], (*ast)->token->content, strings_env);
-		// si on passe ici, c'est que l'execve a echouer
 		free_array(strings_env);
-		exit(1); //exit parce qu'on est dans un child 
+		exit(1);
 	}
 	return (1);
 }
@@ -359,9 +290,6 @@ int boolean_operators(t_tree **ast, t_var **env, t_pipe **pipes, t_pids **pids)
 	t_tree *tmp;
 
 	exit_code = 0;
-	(void)tmp;
-	(void)pipes;
-	(void)env;
 	/* if (find_expands(ast->left)) */
 	/* 	expand_variables(ast->left); */
 	tmp = (*ast)->left;
@@ -378,68 +306,78 @@ int boolean_operators(t_tree **ast, t_var **env, t_pipe **pipes, t_pids **pids)
 		return (exit_code);
 }
 
-/* int find_expands(t_tree *ast) */
-/* { */
-/* 	// */
-/* 	return (0); */
-/* } */
-/**/
-/* int expand_variables(t_tree **ast) */
-/* { */
-/* 	// */
-/* 	return (0); */
-/* } */
-
-char *enum_to_string(t_type enumValue)
+int open_dup2_close(t_tree **ast, t_var **env, t_type type)
 {
-	char *s;
+	//attention si c'est le proc parrent !! Redup avant de rendre le prompt !!!
+	if (type == R_IN)
+	{
+		fd = open((*ast)->token->content[0], O_RDONLY);
+		dup2(fd, STDIN_FILENO);
+	}
+	else if (type == APPEND)
+	{
+		fd = open((*ast)->token->content[0], O_CREAT | O_WRONLY | O_APPEND, 0644);
+		dup2(fd, STDOUT_FILENO);
+	}
+	else if (type == TRUNC)
+	{
+		fd = open((*ast)->token->content[0], O_CREAT | O_WRONLY | O_TRUNC, 0644);
+		dup2(fd, STDOUT_FILENO);
+	}
+	if (fd = -1)
+	{
+		//error
+	}
+	close(fd);
+	return (0);
+}
 
-  if (enumValue == CMD)
-      s = ft_strdup("CMD");
-  else if (enumValue == BUILT_IN)
-      s = ft_strdup("BUILT_IN");
-  else if (enumValue == APPEND)
-      s = ft_strdup("APPEND");
-  else if (enumValue == D_QUOTE)
-      s = ft_strdup("D_QUOTE");
-  else if (enumValue == HD)
-      s = ft_strdup("HD");
-  else if (enumValue == LIM)
-      s = ft_strdup("LIM");
-  else if (enumValue == O_AND)
-      s = ft_strdup("O_AND");
-  else if (enumValue == O_OR)
-      s = ft_strdup("O_OR");
-  else if (enumValue == PIPE)
-      s = ft_strdup("PIPE");
-  else if (enumValue == R_IN)
-      s = ft_strdup("R_IN");
-  else if (enumValue == S_QUOTE)
-      s = ft_strdup("S_QUOTE");
-  else if (enumValue == TRUNC)
-      s = ft_strdup("TRUNC");
-  else if (enumValue == WILDCARD)
-      s = ft_strdup("WILDCARD");
-  else
-      s = ft_strdup("UNKNOWN");
-  return (s);
+int redirect_stdio(t_tree **ast, t_var **env)
+{
+	int fd;
+	t_ast *left;
+	t_ast *right;
+
+	left = (*ast)->left;
+	right = (*ast)->right;
+	if (open_dup2_close(ast, env, (*ast)->token->token))
+		//Error 
+	if (right)
+	if (exec_ast(right, env, pipes)))
+		//erreur pendant une des autres redirections
+	return (exec_ast(left, env, pipes));
+}
+
+int	builtins(char **arg, t_var **env, t_tree **ast, t_pipe **pipes)
+{
+	if (!*arg)
+		return (1);
+	else if (!ft_strncmp(arg[0], "echo", 5))
+		return (builtin_echo(arg));
+	else if (!ft_strncmp(arg[0], "cd", 3))
+		return (builtin_cd(arg, env));
+	else if (!ft_strncmp(arg[0], "pwd", 4))
+		return (builtin_pwd());
+	else if (!ft_strncmp(arg[0], "export", 7))
+		return (builtin_export(env, arg));
+	else if (!ft_strncmp(arg[0], "unset", 6))
+		return (builtin_unset(env, arg));
+	else if (!ft_strncmp(arg[0], "env", 4))
+		return (builtin_env(env));
+	else if (!ft_strncmp(arg[0], "exit", 5))
+		return (builtin_exit(arg, env, ast, pipes));
+	else
+		return (1);
 }
 
 int exec_ast(t_tree **ast, t_var **env, t_pipe **pipes, t_pids **pids)
 {
-	//1 boolean_operators
 	if ((*ast)->token->token == O_AND || (*ast)->token->token == O_OR)
 		return (boolean_operators(ast, env, pipes, pids));
-	//3 Redirections : on open dup close au fur et a mesure en descendant
 	/* if ((*ast)->token->token == R_IN || (*ast)->token->token == APPEND || (*ast)->token->token == TRUNC) */
 	/* 	return (redirect_stdio(ast, env, pipes)); */
-	//4 on pipe les nodes et on les lances 
 	if ((*ast)->token->token == PIPE)
 		return (exec_pipe(ast, env, pipes, pids));
- 	/* char *s = enum_to_string((*ast)->token->token); */
-	/* printf("token = %s\n", s); */
-	/* free(s); */
-	//5 on execute la commande :
 	if ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD)
 		return (exec_cmd(ast, env, pipes));
 	return (0);
@@ -461,3 +399,50 @@ int exec_ast(t_tree **ast, t_var **env, t_pipe **pipes, t_pids **pids)
 /* int find_expands(t_tree *ast) */
 /* int free_lists_and_exit(t_var **env, t_tree **ast, t_pipe **pipes) */
 
+/* int find_expands(t_tree *ast) */
+/* { */
+/* 	// */
+/* 	return (0); */
+/* } */
+/**/
+/* int expand_variables(t_tree **ast) */
+/* { */
+/* 	// */
+/* 	return (0); */
+/* } */
+
+/* char *enum_to_string(t_type enumValue) */
+/* { */
+/* 	char *s; */
+/**/
+/*   if (enumValue == CMD) */
+/*       s = ft_strdup("CMD"); */
+/*   else if (enumValue == BUILT_IN) */
+/*       s = ft_strdup("BUILT_IN"); */
+/*   else if (enumValue == APPEND) */
+/*       s = ft_strdup("APPEND"); */
+/*   else if (enumValue == D_QUOTE) */
+/*       s = ft_strdup("D_QUOTE"); */
+/*   else if (enumValue == HD) */
+/*       s = ft_strdup("HD"); */
+/*   else if (enumValue == LIM) */
+/*       s = ft_strdup("LIM"); */
+/*   else if (enumValue == O_AND) */
+/*       s = ft_strdup("O_AND"); */
+/*   else if (enumValue == O_OR) */
+/*       s = ft_strdup("O_OR"); */
+/*   else if (enumValue == PIPE) */
+/*       s = ft_strdup("PIPE"); */
+/*   else if (enumValue == R_IN) */
+/*       s = ft_strdup("R_IN"); */
+/*   else if (enumValue == S_QUOTE) */
+/*       s = ft_strdup("S_QUOTE"); */
+/*   else if (enumValue == TRUNC) */
+/*       s = ft_strdup("TRUNC"); */
+/*   else if (enumValue == WILDCARD) */
+/*       s = ft_strdup("WILDCARD"); */
+/*   else */
+/*       s = ft_strdup("UNKNOWN"); */
+/*   return (s); */
+/* } */
+/**/
