@@ -70,6 +70,6 @@ void	free_tree(t_tree *head)
 		return ;
 	free_tree(head->left);
 	free_tree(head->right);
-	free(head);
 	free_parse(head->token, NULL, 0);
+	free(head);
 }

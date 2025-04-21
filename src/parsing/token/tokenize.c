@@ -79,7 +79,7 @@ static void	is_command(t_token **node, char **envp)
 		cmd_w_path = verif_command(node, tmp, path, envp);
 	if ((*node)->error == SUCCESS)
 	{
-		/* replace_tab(node, cmd_w_path); //exec : fix l'absence de path */
+		replace_tab(node, cmd_w_path); //exec : fix l'absence de path
 		if ((int)(*node)->token < 0)
 			(*node)->token = CMD;
 	}

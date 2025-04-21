@@ -19,7 +19,7 @@ BOLD_CYAN			=	\e[1;36m
 STOP_COLOR			=	\e[0m
 
 -include $(DEPS) $(DEPS_BONUS)
-vpath %.c src/parsing/token:src/parsing/lexer:src/parsing/tree:src/builtins:src/utils:src/parsing:src/parsing/handle_quote:src/exec:src:src/ultrabonus
+vpath %.c src/parsing/token:src/parsing/lexer:src/parsing/tree:src/builtins:src/utils:src/parsing:src/parsing/handle_quote:src/exec:src/ultrabonus:src
 vpath %.h include:src/libft/include
 vpath %.a src/libft/obj
 
@@ -64,11 +64,11 @@ SRC					=	main.c \
 						exec/exec.c \
 						exec/pipe.c \
 						utils/misc.c \
-						ultrabonus/get_prompt.c \
-						ultrabonus/get_prompt_free.c \
-						ultrabonus/git_branch_utils.c \
-						ultrabonus/prompt_gets_fcts.c \
-						ultrabonus/prompt_gets_fcts_utils.c  
+						ultrabonus/get_prompt/get_prompt.c \
+						ultrabonus/get_prompt/get_prompt_free.c \
+						ultrabonus/get_prompt/git_branch_utils.c \
+						ultrabonus/get_prompt/prompt_gets_fcts.c \
+						ultrabonus/get_prompt/prompt_gets_fcts_utils.c  
 
 
 DEPS				=	$(SRC:%.c=$(OBJ_DIR)%.d)
