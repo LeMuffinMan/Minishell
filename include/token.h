@@ -34,6 +34,7 @@ typedef enum e_type
 	LIM,
 	O_AND,
 	O_OR,
+	PARENTHESIS,
 	PIPE,
 	R_IN,
 	S_QUOTE,

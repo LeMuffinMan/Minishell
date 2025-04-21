@@ -53,14 +53,14 @@ void	display_list(t_token *head)
 {
 	t_token				*tmp;
 	int					i;
-	static const char	*tab[14] = {"Append", "Built_in", "CMD",
-		"Infile", "Double quote", "Here_doc", "Limiter", "And", "Or", "Pipe",
-		"Redirection infile", "Simple quote", "Truncate", "Wildcard"};
+	static const char	*tab[15] = {"Append", "Built_in", "CMD", "Infile",
+		"Double quote", "Here_doc", "Limiter", "And", "Or", "Parenthesis",
+		"Pipe", "Redir in", "Simple quote", "Truncate", "Wildcard"};
 
 	i = 1;
 	tmp = head;
 	if (!tmp)
-		ft_error("list doesn't exist", EXIT_FAILURE);
+		return ;
 	printf("%sNULL\n ^\n |\n%s", BOLD_BLUE, STOP_COLOR);
 	while (tmp->next)
 	{
@@ -86,7 +86,7 @@ void	display_lexer(t_lexer *head)
 	i = 1;
 	tmp = head;
 	if (!tmp)
-		ft_error("list doesn't exist", EXIT_FAILURE);
+		return ;
 	printf("%sNULL\n ^\n |\n%s", BOLD_BLUE, STOP_COLOR);
 	while (tmp->next)
 	{

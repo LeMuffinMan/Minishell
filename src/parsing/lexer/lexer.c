@@ -93,12 +93,14 @@ static int	alloc_lexer(char *str, char c, t_lexer **list)
 	i = 1;
 	while (str[i])
 	{
-		if (str[i - 1] == '|' && str[i] != '|')
+		if ((str[i - 1] == '|' && str[i] != '|')
+			|| (str[i - 1] == '(' && str[i] != '(')
+			|| (str[i - 1] == ')' && str[i] != ')'))
 		{
 			i -= 1;
 			break ;
 		}
-		if (str[i] == c && str[i - 1] == '\\')
+		else if (str[i] == c && str[i - 1] == '\\')
 			i++;
 		else if (str[i] == c)
 			break ;
@@ -125,12 +127,14 @@ void	parse_line(char *str, t_lexer **list)
 	{
 		if (str[i] == ' ')
 			i++;
-		else if (str[i] == '|' || str[i] == '&')
+		else if (str[i] == '|' || str[i] == '&'
+			|| str[i] == '(' || str[i] == ')')
 			i += alloc_lexer(&str[i], str[i], list);
 		else
 		{
 			start = i;
-			while (str[i] && str[i] != ' ' && str[i] != '&' && str[i] != '|')
+			while (str[i] && str[i] != ' ' && str[i] != '&' && str[i] != '|'
+				&& str[i] != '(' && str[i] != ')')
 				i++;
 			word = ft_strndup(&str[start], i - start);
 			if (!word)
