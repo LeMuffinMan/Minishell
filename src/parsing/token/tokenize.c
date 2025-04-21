@@ -34,6 +34,9 @@ static void	is_operand_or_quote(t_token **node)
 	else if (((*node)->content[0][0] == '\'')
 				&& (*node)->content[0][len - 1] == '\'')
 		(*node)->token = S_QUOTE;
+	else if (((*node)->content[0][0] == '(')
+		|| ((*node)->content[0][0] == ')'))
+		(*node)->token = PARENTHESIS;
 }
 
 static void	is_redirection(t_token **node)
