@@ -28,7 +28,7 @@ t_tree	*parse(char *line, char **envp)
 	token = NULL;
 	lexer = NULL;
 	parse_line(line, &lexer);
-	display_lexer(lexer);
+	/* display_lexer(lexer); */
 	while (lexer->next)
 	{
 		add_back(&token, lexer->arg);
@@ -37,9 +37,9 @@ t_tree	*parse(char *line, char **envp)
 	add_back(&token, lexer->arg);
 	free_lexer(lexer, NULL, 0);
 	assign_token(&token, envp);
-	display_list(token);
+	/* display_list(token); */
 	concat_args(&token);
 	add_to_root(token, &root);
-	display_list(token);
+	/* display_list(token); */
 	return (root);
 }

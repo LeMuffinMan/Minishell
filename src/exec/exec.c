@@ -60,6 +60,7 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, t_pids **pids)
 	t_tree	*right_branch;
 	t_pipe	*tmp;
 	int		pipefd[2];
+	int exit_code;
 
 	right_branch = (*ast)->right;
 	left_branch = (*ast)->left;
@@ -88,8 +89,10 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, t_pids **pids)
 		}
 		return (exec_ast(&left_branch, env, pipes, pids));
 	}
-	else
+	else // parent de left
 	{
+		dup2(0, STDIN_FILENO);
+		dup2(1, STDOUT_FILENO);
 		if (pipes && (*pipes)->next)
 		{
 			tmp = (*pipes)->next;
@@ -117,9 +120,16 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, t_pids **pids)
 	}
 	else
 	{
+
+		dup2(0, STDIN_FILENO);
+		dup2(1, STDOUT_FILENO);
 		close((*pipes)->fd[0]);
 		close((*pipes)->fd[1]);
-		return (wait_children(right, pids));
+		free(pipes);
+		pipes = NULL;
+		exit_code = wait_children(right, pids);
+		free_pids(pids);
+		return(exit_code);
 	}
 	return (1);
 }
@@ -130,12 +140,25 @@ int	exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes)
 
 	char	**strings_env;
 	pid_t	pid;
+	int exit_code;
 
-	if ((*ast)->token->token == BUILT_IN && !*pipes)
-		return (builtins((*ast)->token->content, env, ast, pipes));
-	if ((*ast)->token->token == BUILT_IN)
+
+	//si un pipe existe : c'est un child qui soit executer
+	if ((*ast)->token->token == BUILT_IN && *pipes)
+	{
+		//ici free tout pour le child !
 		exit(builtins((*ast)->token->content, env, ast, pipes));
-	if (!pipes)
+	}
+  //si built in sans pipe : le parent execute
+	if ((*ast)->token->token == BUILT_IN)
+	{
+		exit_code = builtins((*ast)->token->content, env, ast, pipes);
+		dup2(0, STDIN_FILENO);
+		dup2(1, STDOUT_FILENO);
+		return (exit_code);
+	}
+	//si CMD et pas de pipes : on doit fork pour pas exit le parent
+	if (!*pipes)
 	{
 		pid = fork();
 		if (pid == -1)
@@ -152,11 +175,14 @@ int	exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes)
 		}
 		else
 		{
+			dup2(0, STDIN_FILENO);
+			dup2(1, STDOUT_FILENO);
 			free_pipes(pipes);
 			pipes = NULL;
 			return (wait_children(pid, NULL));
 		}
 	}
+	//si CMD dans un pipe, on a deja fork juste avant
 	else
 	{
 		strings_env = lst_to_array(env);
@@ -197,7 +223,7 @@ int	open_dup2_close(t_tree **ast, t_type type)
 
 	if (type == R_IN)
 	{
-		fd = open((*ast)->token->content[0], O_RDONLY);
+		fd = open((*ast)->token->content[1], O_RDONLY);
 		if (fd == -1)
 		{
 			// error
@@ -207,7 +233,7 @@ int	open_dup2_close(t_tree **ast, t_type type)
 	}
 	else if (type == APPEND)
 	{
-		fd = open((*ast)->token->content[0], O_CREAT | O_WRONLY | O_APPEND,
+		fd = open((*ast)->token->content[1], O_CREAT | O_WRONLY | O_APPEND,
 				0644);
 		if (fd == -1)
 		{
@@ -218,7 +244,7 @@ int	open_dup2_close(t_tree **ast, t_type type)
 	}
 	else if (type == TRUNC)
 	{
-		fd = open((*ast)->token->content[0], O_CREAT | O_WRONLY | O_TRUNC,
+		fd = open((*ast)->token->content[1], O_CREAT | O_WRONLY | O_TRUNC,
 				0644);
 		if (fd == -1)
 		{
@@ -242,18 +268,20 @@ int	redirect_stdio(t_tree **ast, t_var **env, t_pipe **pipes, t_pids **pids)
 		// Error
 	}
 	if (right)
-		if (exec_ast(&right, env, pipes, pids))
-			return (1);
+		exec_ast(&right, env, pipes, pids);
+	if (!left)
+		return (0);
 	return (exec_ast(&left, env, pipes, pids));
 }
 
 int	exec_ast(t_tree **ast, t_var **env, t_pipe **pipes, t_pids **pids)
 {
+
 	if ((*ast)->token->token == O_AND || (*ast)->token->token == O_OR)
 		return (boolean_operators(ast, env, pipes, pids));
-	/* if ((*ast)->token->token == R_IN || (*ast)->token->token == APPEND
-		|| (*ast)->token->token == TRUNC) */
-	/* 	return (redirect_stdio(ast, env, pipes)); */
+	if ((*ast)->token->token == R_IN || (*ast)->token->token == APPEND
+		|| (*ast)->token->token == TRUNC) 
+		redirect_stdio(ast, env, pipes, pids);
 	if ((*ast)->token->token == PIPE)
 		return (exec_pipe(ast, env, pipes, pids));
 	if ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD)

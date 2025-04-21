@@ -74,6 +74,7 @@ int main(int ac, char **av, char **env)
 	    /* if (find_here_docs(&ast)) */
 		   /*  exec_here_docs(ast); */
 		/* display_ast(ast); */
+
         error_code = exec_ast(&ast, &new_env, &pipes, &pids);
         free(line);
         line = NULL;

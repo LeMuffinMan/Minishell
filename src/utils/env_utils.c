@@ -43,6 +43,10 @@ int	update_env(t_var **env)
 
 	(void)buf;
 	old_pwd = get_key_node(env, "OLDPWD");
+	if (!old_pwd)
+	{
+		//ajouter le old_pwd a l'env
+	}
 	pwd = get_key_node(env, "PWD");
 	if (old_pwd->value)
 		free(old_pwd->value);

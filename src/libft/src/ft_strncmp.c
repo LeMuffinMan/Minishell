@@ -18,10 +18,12 @@ int	ft_strncmp(const char *s1, const char *s2, int size)
 	unsigned char	*str1;
 	unsigned char	*str2;
 
+	if (!s1 || !s2)
+		return (-1);
 	i = 0;
 	str1 = (unsigned char *)s1;
 	str2 = (unsigned char *)s2;
-	if (size < 0)
+	if (size <= 0)
 		return (-1);
 	while (i < size && (str1[i] || str2[i]))
 	{
