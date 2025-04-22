@@ -91,27 +91,13 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes)
 	{
 		//left ne vas jamais lire dnas le pipe qu'on vient de creer
 		close(pipefd[0]);
-		//add_pipe ajoute en premier le nv pipe, donc si on a un next, c'est qu'on est dans une pipeline
-		/* if ((*pipes)->next) */
-		/* { */
-		/* 	dprintf(2, "next->fd[0] = %d\n", (*pipes)->next->fd[0]); */
-		/* 	dup2((*pipes)->next->fd[0], STDIN_FILENO); */
-		/* 	close((*pipes)->next->fd[0]); */
-		/* 	free((*pipes)->next); */
-		/* 	(*pipes)->next = NULL; */
-		/* } */
 		dup2(pipefd[1], STDOUT_FILENO);
 		close(pipefd[1]);
-		//free les pipes vu qu'on a dup ?
 		free_pipes(pipes);
 		return(exec_ast(&left_branch, env, pipes));
 	}
 	else
-	{
 		close(pipefd[1]);
-		//on dprintf la struct ?
-
-	}
 	right_pid = fork();
 	if (!right_pid)
 	{
@@ -119,13 +105,8 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes)
 	}
 	if (right_pid == 0)
 	{
-		/* //si on doit continer un pipeline ce child lira sur le pipe qu'on vient de creer */
-		/* if ((*ast)->right->token->token == PIPE) */
-		/* { */
-			dup2(pipefd[0], STDIN_FILENO);
-			close(pipefd[0]);
-		/* } */
-		/* dprintf(2, "RIGHT read in %d\n", (*pipes)->fd[0]); */
+		dup2(pipefd[0], STDIN_FILENO);
+		close(pipefd[0]);
 		return (exec_ast(&right_branch, env, pipes));
 	}
 	else
@@ -226,13 +207,41 @@ int	exec_pipe_old(t_tree **ast, t_var **env, t_pipe **pipes)
 //BUILT_IN : PARENT
 //CMD : CHILD
 
+int error_cmd_not_found(char *cmd)
+{
+	char *s;
+	char *tmp;
+
+	s = ft_strjoin("mimishell: ", cmd);	
+	tmp = s;
+	s = ft_strjoin(s, ": command not found\n");
+	free(tmp);
+	ft_putstr_fd(s, 2);
+	free(s);
+	return (127);
+}
+
+//a tester !!
+int error_cmd_perm_denied(char *cmd)
+{
+	char *s;
+	char *tmp;
+
+	s = ft_strjoin("mimishell: ", cmd);	
+	tmp = s;
+	s = ft_strjoin(s, ": Permission denied\n");
+	free(tmp);
+	ft_putstr_fd(s, 2);
+	free(s);
+	return (126);
+}
+
 int	exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes)
 {
 	char	**strings_env;
 	pid_t	pid;
 	int exit_code;
 
-			/* dprintf(2, "%s about to be executed\n", (*ast)->token->content[0]); */
 	if ((*ast)->token->token == BUILT_IN)
 	{
 		exit_code = builtins((*ast)->token->content, env, ast, pipes);
@@ -269,65 +278,6 @@ int	exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes)
 	}
 	return (1); //on ne devrait pas arriver ici
 }
-
-/**/
-/* int	exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes) */
-/* { */
-/**/
-/* 	char	**strings_env; */
-/* 	pid_t	pid; */
-/* 	int exit_code; */
-/**/
-/**/
-/* 	//si un pipe existe : c'est un child qui soit executer */
-/* 	if ((*ast)->token->token == BUILT_IN && *pipes) */
-/* 	{ */
-/* 		//ici free tout pour le child ! */
-/* 		exit(builtins((*ast)->token->content, env, ast, pipes)); */
-/* 	} */
-/*   //si built in sans pipe : le parent execute */
-/* 	if ((*ast)->token->token == BUILT_IN) */
-/* 	{ */
-/* 		exit_code = builtins((*ast)->token->content, env, ast, pipes); */
-/* 		dup2(0, STDIN_FILENO); */
-/* 		dup2(1, STDOUT_FILENO); */
-/* 		return (exit_code); */
-/* 	} */
-/* 	//si CMD et pas de pipes : on doit fork pour pas exit le parent */
-/* 	if (!*pipes) */
-/* 	{ */
-/* 		pid = fork(); */
-/* 		if (pid == -1) */
-/* 		{ */
-/* 			// gerer l'erreur */
-/* 		} */
-/* 		if (pid == 0) */
-/* 		{ */
-/* 			strings_env = lst_to_array(env); */
-/* 			execve((*ast)->token->content[0], (*ast)->token->content, */
-/* 				strings_env); */
-/* 			free_array(strings_env); */
-/* 			exit(1); */
-/* 		} */
-/* 		else */
-/* 		{ */
-/* 			dup2(0, STDIN_FILENO); */
-/* 			dup2(1, STDOUT_FILENO); */
-/* 			free_pipes(pipes); */
-/* 			pipes = NULL; */
-/* 			return (wait_children(pid, NULL)); */
-/* 		} */
-/* 	} */
-/* 	//si CMD dans un pipe, on a deja fork juste avant */
-/* 	else */
-/* 	{ */
-/* 		strings_env = lst_to_array(env); */
-/* 		execve((*ast)->token->content[0], (*ast)->token->content, strings_env); */
-/* 		free_array(strings_env); */
-/* 		exit(1); */
-/* 	} */
-/* 	return (1); */
-/* } */
 
 int	boolean_operators(t_tree **ast, t_var **env, t_pipe **pipes)
 {
@@ -412,6 +362,11 @@ int	redirect_stdio(t_tree **ast, t_var **env, t_pipe **pipes)
 
 int	exec_ast(t_tree **ast, t_var **env, t_pipe **pipes)
 {
+
+	if ((*ast)->token->error == 127)
+		return (error_cmd_not_found((*ast)->token->content[0]));
+	if ((*ast)->token->error == 126)
+		return (error_cmd_perm_denied((*ast)->token->content[0]));
 	//O_AND VONT VIRER 
 	/* if ((*ast)->token->token == O_AND || (*ast)->token->token == O_OR) */
 	/* 	return (boolean_operators(ast, env, pipes, pids)); */
@@ -422,6 +377,11 @@ int	exec_ast(t_tree **ast, t_var **env, t_pipe **pipes)
 		return (exec_pipe(ast, env, pipes));
 	if ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD)
 		return (exec_cmd(ast, env, pipes));
+		//un token VAR ?
+	//Ultrabonus
+		//un token Alias
+	  //un token shell_func
+	  //un token substitution cmd ?
 	return (0);
 }
 

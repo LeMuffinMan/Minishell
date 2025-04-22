@@ -26,7 +26,7 @@
 /*     char *sequence; // ls -l | cat > file1 > file2 | echo "hello '$HOME'" > file3     (NULL si pas en bas d'une branche) */
 /*     struct *s_seq left; //comme on a deja pour les ET OU, les parentheses pour changer l'ordre dans l'arbre */
 /*     struct *s_seq right; */
-/* } */
+/* } t_seq; */
 /**/
 /**/
 /* int exec_seq(t_ast **seq, t_var **env) */
@@ -78,7 +78,6 @@ int main(int ac, char **av, char **env)
     t_var    *new_env;
     t_tree *ast;
     t_pipe *pipes;
-    t_pids *pids;
     char **strings_env;
 
     /* if (isatty(1)) */
@@ -93,7 +92,6 @@ int main(int ac, char **av, char **env)
     new_env = NULL;
     ast = NULL;
     pipes = NULL;
-    pids = NULL;
     /* utiliser getenv ?
         * Si on n'a pas d'env uniquement ?*/
     init_env(&new_env, env, av);
@@ -104,30 +102,32 @@ int main(int ac, char **av, char **env)
         //update env variables !!! si on a un && ou un || on DOIT update l'env entre les deux !!!
         //update prompt
         prompt = NULL;
-        if (isatty(0) && *env)
-        {
-            if (prompt)
-                free(prompt);
-            prompt = get_prompt(&new_env);
-        }
+        /* if (isatty(0) && *env) */
+        /* { */
+        /*     if (prompt) */
+        /*         free(prompt); */
+        /*     prompt = get_prompt(&new_env); */
+        /* } */
         if (!prompt)
             prompt = "[Minishell]$ ";
-        line = readline(prompt);
-        if (!ft_strncmp(line, "\n", 2))
+        line = ft_strdup("");
+        while (ft_strlen(line) == 0 || !ft_strncmp(line, "\n", 2))
         {
             free(line);
             line = readline(prompt);
         }
-        if (isatty(0) && env)
-            free(prompt);
-        prompt = NULL;
+        /* if (isatty(0) && env) */
+        /* { */
+        /*     free(prompt); */
+        /*     prompt = NULL; */
+        /* } */
 
         /* new_exec(line); */
         strings_env = lst_to_array(&new_env);
         ast = parse(line, strings_env);
         free_array(strings_env);
         strings_env = NULL;
-        error_code = exec_ast(&ast, &new_env, &pipes, &pids);
+        error_code = exec_ast(&ast, &new_env, &pipes);
         /* free_tree(ast); */
         /* ast = NULL; */
         free(line);

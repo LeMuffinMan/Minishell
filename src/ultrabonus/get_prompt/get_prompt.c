@@ -114,7 +114,7 @@ int build_prompt(t_prompt *prompt, t_var **env)
 char *get_prompt (t_var **env)
 {
   t_prompt *prompt;
-  char *ps1_fake = "[\\u@\\h \\H \\W \\g] \\$";
+  char *ps1_fake = "[\\u \\W \\g] \\$";
   char *expanded_prompt;
 
   prompt = malloc(sizeof(t_prompt));
