@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+         #
+#    By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/04/20 18:00:39 by oelleaum         ###   ########lyon.fr    #
+#    Updated: 2025/04/22 03:54:25 by asinsard         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,24 +19,26 @@ BOLD_CYAN			=	\e[1;36m
 STOP_COLOR			=	\e[0m
 
 -include $(DEPS) $(DEPS_BONUS)
-vpath %.c src/parsing/token:src/parsing/lexer:src/parsing/tree:src/builtins:src/utils:src/parsing:src/parsing/handle_quote:src/exec:src:src/ultrabonus
-vpath %.h include:src/libft/include
+vpath %.c src/parsing/token:src/parsing/lexer:src/parsing/tree:src/builtins:src/utils:src/parsing:src/parsing/handle_quote:src/exec:src:src/ultrabonus:src/parsing/here_doc
+vpath %.h include:include/parsing:include/exec:src/libft/include
 vpath %.a src/libft/obj
 
 CC					=	cc
-FLAG				=	-Wall -Wextra -Werror -g3 -MMD -MP -I$(LIBFT_HEAD_DIR) -I$(HEAD_DIR)
+FLAG				=	-Wall -Wextra -Werror -g3 -MMD -MP -I$(LIBFT_HEAD_DIR) $(INC_HEAD)
 NAME				=	minishell
-HEAD				=	token.h list.h display.h lexer.h
-HEAD_DIR			=	include/
+HEAD				=	here_doc.h lexer.h list.h quote.h token.h tree.h 
+HEAD_DIR			=	include
+INC_HEAD			=	-I$(HEAD_DIR) -I$(HEAD_DIR)/parsing -I$(HEAD_DIR)/exec
 
-LIBFT_DIR			=	src/libft/
-LIBFT_HEAD_DIR		=	src/libft/include/
-LIB_LIBFT			=	$(LIBFT_DIR)obj/libft.a
-LIBFT_FLAG			=	-L$(LIBFT_DIR)src/ $(LIB_LIBFT)
+LIBFT_DIR			=	src/libft
+LIBFT_HEAD_DIR		=	src/libft/include
+LIB_LIBFT			=	$(LIBFT_DIR)/obj/libft.a
+LIBFT_FLAG			=	-L$(LIBFT_DIR)/src/ $(LIB_LIBFT)
 LIBFT_HEAD			=	libft.h get_next_line.h ft_printf.h
 
 SRC					=	main.c \
 						concat_args.c \
+						create_here_doc.c \
 						create_tokenize_list.c \
 						create_tree.c \
 						display_list.c \
@@ -75,7 +77,7 @@ DEPS				=	$(SRC:%.c=$(OBJ_DIR)%.d)
 OBJ					=	$(SRC:%.c=$(OBJ_DIR)%.o)
 OBJ_DIR				=	.objs/
 
-$(OBJ_DIR)%.o:%.c $(HEAD) $(LIBFT_HEAD) Makefile $(LIBFT_DIR)Makefile
+$(OBJ_DIR)%.o:%.c $(HEAD) $(LIBFT_HEAD) Makefile $(LIBFT_DIR)/Makefile
 	@mkdir -p $(@D) 
 	@echo "$(BOLD_PURPLE)"
 	$(CC) $(FLAG) -c $< -o $@

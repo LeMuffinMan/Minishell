@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 14:13:11 by asinsard          #+#    #+#             */
-/*   Updated: 2025/03/26 00:25:53 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/22 04:26:39 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ size_t	ft_strlen(const char *str)
 	int	len;
 
 	len = 0;
+	if (str[len] == '\0')
+		return (len);
 	while (str[len])
 		len++;
 	return (len);

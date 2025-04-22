@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 03:09:12 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/20 17:25:59 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/22 03:58:06 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "tree.h"
 #include "libft.h"
 #include "quote.h"
+#include "here_doc.h"
 #include <unistd.h>
 #include <stdio.h>
 #include <readline/readline.h>
@@ -39,7 +40,9 @@ t_tree	*parse(char *line, char **envp)
 	assign_token(&token, envp);
 	display_list(token);
 	concat_args(&token);
+	if (!handle_here_doc(&token))
+		free_parse(token, "Problem with here_doc creation", MEM_ALLOC);
+	display_list(token);
 	add_to_root(token, &root);
-	/* display_list(token); */
 	return (root);
 }
