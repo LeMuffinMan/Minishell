@@ -18,7 +18,7 @@
 #include "structs.h"
 
 
-int exec_ast (t_tree **ast, t_var **env, t_pipe **pipes, t_pids **pids);
+int exec_ast (t_tree **ast, t_var **env, t_pipe **pipes);
 void	add_back_var(t_var **lst, char *s, int mode);
 void	add_first_node(t_var **lst, t_var *new, char *s, int mode);
 void	free_list(t_var **l);

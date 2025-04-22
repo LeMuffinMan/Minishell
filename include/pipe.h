@@ -16,8 +16,7 @@
 int free_pipes(t_pipe **pipes);
 int free_pids(t_pids **pids);
 int add_pipe(int fd[2], t_pipe **pipes);
-int add_pid(pid_t new_pid, t_pids **pids);
-int	wait_children(pid_t last_child, t_pids **pids);
+int	wait_children(pid_t last_child, pid_t first_child);
 
 #endif
 

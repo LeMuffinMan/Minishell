@@ -15,22 +15,13 @@
 #include <unistd.h>
 
 	// ici on free la liste des pids
-int	wait_children(pid_t last_child, t_pids **pids)
+int	wait_children(pid_t last_child, pid_t first_child)
 {
-	t_pids	*tmp;
 	int		status;
 	int		exit_code;
 
 	exit_code = EXIT_SUCCESS;
-	if (pids)
-		tmp = *pids;
-	else
-		tmp = NULL;
-	while (tmp && tmp->next)
-	{
-		waitpid(tmp->pid, &status, 0);
-		tmp = tmp->next;
-	}
+	waitpid(first_child, &status, 0);
 	waitpid(last_child, &status, 0);
 	if (WIFEXITED(status))
 		exit_code = WEXITSTATUS(status);
@@ -43,30 +34,27 @@ int	wait_children(pid_t last_child, t_pids **pids)
 	return (exit_code);
 }
 
-int	add_pid(pid_t new_pid, t_pids **pids)
-{
-	t_pids	*new_node;
-	t_pids	*last;
-
-	last = NULL;
-	new_node = malloc(sizeof(t_pids));
-	if (!new_node)
-	{
-		// malloc error
-	}
-	if (!*pids)
-		*pids = new_node;
-	else
-	{
-		last = *pids;
-		while (last->next)
-			last = last->next;
-		last->next = new_node;
-	}
-	new_node->next = NULL;
-	new_node->pid = new_pid;
-	return (0);
-}
+/* int add_pid(pid_t new_pid, t_pids **pids) */
+/* { */
+/*     t_pids *new_node; */
+/*     t_pids *last; */
+/**/
+/*     new_node = malloc(sizeof(t_pids)); */
+/*     if (!new_node) */
+/*         return (-1); */
+/*     new_node->pid = new_pid; */
+/*     new_node->next = NULL; */
+/*     if (!pids && !*pids) */
+/*         *pids = new_node; */
+/*     else */
+/*     { */
+/*         last = *pids; */
+/*         while (last && last->next != NULL) */
+/*             last = last->next; */
+/*         last->next = new_node; */
+/*     } */
+/*     return (0); */
+/* } */
 
 int	add_pipe(int fd[2], t_pipe **pipes)
 {
@@ -81,34 +69,38 @@ int	add_pipe(int fd[2], t_pipe **pipes)
 	{
 		// error
 	}
-	new_pipe->next = *pipes;
-	new_pipe->prev = NULL;
+	if (pipes && *pipes)
+		new_pipe->next = *pipes;
+	else
+		new_pipe->next = NULL;
 	new_pipe->fd[0] = fd[0];
 	new_pipe->fd[1] = fd[1];
-	if (*pipes)
-		(*pipes)->prev = new_pipe;
 	*pipes = new_pipe;
 	return (0);
 }
 
-int	free_pids(t_pids **pids)
-{
-	t_pids	*tmp;
-
-	while (*pids && (*pids)->next)
-	{
-		tmp = *pids;
-		*pids = (*pids)->next;
-		free(tmp);
-	}
-	return (0);
-}
+/* int	free_pids(t_pids **pids) */
+/* { */
+/* 	t_pids	*tmp; */
+/**/
+/* 	while (*pids && (*pids)->next) */
+/* 	{ */
+/* 		tmp = *pids; */
+/* 		*pids = (*pids)->next; */
+/* 		free(tmp); */
+/* 	} */
+/* 	*pids = NULL; */
+/* 	return (0); */
+/* } */
 
 int	free_pipes(t_pipe **pipes)
 {
 	t_pipe	*tmp;
 
-	tmp = *pipes;
+	if (pipes)
+		tmp = *pipes;
+	else
+		return (1);
 	while (*pipes && (*pipes)->next)
 	{
 		tmp = *pipes;
@@ -116,6 +108,6 @@ int	free_pipes(t_pipe **pipes)
 		free(tmp);
 	}
 	free(*pipes);
-	pipes = NULL;
+	*pipes = NULL;
 	return (0);
 }
