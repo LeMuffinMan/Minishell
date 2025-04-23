@@ -39,6 +39,9 @@ int	builtins(char **arg, t_var **env, t_tree **ast)
 		return (builtin_exit(arg, env, ast));
 	else
 		return (1);
+	//ajouter source
+		//vide les var exportee depuis minishellrc
+		//relance l'init du minishell_rc
 }
 // free_env
 // free_ast
@@ -138,12 +141,16 @@ int error_cmd_perm_denied(char *cmd)
 	return (126);
 }
 
+
+
 int	exec_cmd(t_tree **ast, t_var **env)
 {
 	char	**strings_env;
 	pid_t	pid;
 	int exit_code;
 
+	
+	/* expand_cmd_sub((*ast)->token->content, env); */
 	if ((*ast)->token->token == BUILT_IN)
 	{
 		exit_code = builtins((*ast)->token->content, env, ast);
@@ -281,6 +288,7 @@ int	exec_ast(t_tree **ast, t_var **env)
 		//un token Alias
 	  //un token shell_func
 	  //un token substitution cmd ?
+			//on fork direct, et on execute le contenu des parentheses 
 	return (0);
 }
 

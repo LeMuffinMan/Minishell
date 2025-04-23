@@ -94,7 +94,8 @@ int main(int ac, char **av, char **env)
         * Si on n'a pas d'env uniquement ?*/
     init_env(&new_env, env, av);
     /* print_env(&new_env); */
-    //execute_minishellrc avant ou apres ?
+    if (find_minishellrc)
+        load_minishell_rc(&new_env);
     while (1)
     {
         //update env variables !!! si on a un && ou un || on DOIT update l'env entre les deux !!!
@@ -134,3 +135,5 @@ int main(int ac, char **av, char **env)
     free_list(&new_env);
     exit(error_code);
 }
+
+
