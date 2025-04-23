@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 01:26:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/20 17:03:18 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/23 03:57:13 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,8 @@ typedef enum e_type
 	LIM,
 	O_AND,
 	O_OR,
-	PARENTHESIS,
+	L_PARENTHESIS,
+	R_PARENTHESIS,
 	PIPE,
 	R_IN,
 	S_QUOTE,

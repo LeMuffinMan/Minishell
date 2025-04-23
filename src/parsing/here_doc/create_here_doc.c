@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 23:50:55 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/22 05:15:30 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/22 18:33:39 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,17 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "ft_printf.h"
+
+static bool	free_and_return(char *str, char **tab, int fd)
+{
+	if (str)
+		free(str);
+	if (tab)
+		free_tab(tab);
+	if (fd > 0)
+		close(fd);
+	return (false);
+}
 
 static char	*make_hd_name(int fd, char *print_char, char *res)
 {
@@ -49,28 +60,19 @@ static char	*make_hd_name(int fd, char *print_char, char *res)
 static bool	replace_content(t_token	**node, char *add_content)
 {
 	char	**res;
-	
+
 	res = malloc(sizeof(char *) * 4);
 	if (!res)
 		return (false);
 	res[0] = ft_strdup((*node)->content[0]);
 	if (!res[0])
-	{
-		free_tab(res);
-		return(false);
-	}
+		return (free_and_return(NULL, res, -1));
 	res[1] = ft_strdup((*node)->content[1]);
 	if (!res[1])
-	{
-		free_tab(res);
-		return (false);
-	}
+		return (free_and_return(NULL, res, -1));
 	res[2] = ft_strdup(add_content);
 	if (!res[2])
-	{
-		free_tab(res);
-		return (false);
-	}
+		return (free_and_return(NULL, res, -1));
 	res[3] = NULL;
 	free_tab((*node)->content);
 	(*node)->content = res;
@@ -89,21 +91,18 @@ static bool	handle_name(t_token **node)
 		return (false);
 	res = ft_calloc(1, 1);
 	if (!res)
-	{
-		close(fd);
-		return (false);
-	}
+		return (free_and_return(NULL, NULL, fd));
 	print_char = ft_calloc(2, 1);
+	if (!print_char)
+		return (free_and_return(res, NULL, fd));
 	name = make_hd_name(fd, print_char, res);
+	free(res);
 	free(print_char);
 	close(fd);
 	if (!name)
 		return (false);
 	if (!replace_content(node, name))
-	{
-		free(name);
-		return (false);
-	}
+		return (free_and_return(name, NULL, -1));
 	free(name);
 	return (true);
 }

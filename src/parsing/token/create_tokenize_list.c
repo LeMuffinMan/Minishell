@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 02:24:25 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/10 20:51:46 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/23 03:10:02 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,8 @@ static t_token	*add_new_node(char *str)
 	new_node->content = alloc_tab(str);
 	new_node->fd[0] = -1;
 	new_node->fd[1] = -1;
+	new_node->priority = 10;
+	new_node->seq = true;
 	if (!new_node->content)
 	{
 		free(new_node);

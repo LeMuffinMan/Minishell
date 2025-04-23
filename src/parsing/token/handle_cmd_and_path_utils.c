@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 00:53:37 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/14 15:52:49 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/22 19:16:49 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,26 +62,25 @@ static void	case_of_absolute_path(t_token **node)
 	free(tmp);
 }
 
-int print_tab(char **s)
+/* int print_tab(char **s)
 {
 	int i;
 
-	/* #include <stdio.h> */
-	/* printf("%s\n", s[0]); */
+	#include <stdio.h>
+	printf("%s\n", s[0]);
 	i = 0;
 	while (s[i])
 	{
-		/* #include <stdio.h> */
-		/* printf("%s\n", s[i]); */
+		#include <stdio.h>
+		printf("%s\n", s[i]);
 		i++;
 	}
 	return (0);
-}
+} */
 
 void	replace_tab(t_token **node, char *str)
 {
 	char	*tmp;
-
 
 	/* #include <stdio.h> */
 	/* printf("%s\n", str); */
@@ -94,7 +93,7 @@ void	replace_tab(t_token **node, char *str)
 			free_parse(*node, "Malloc failed in 'replace_tab'", MEM_ALLOC);
 		free_tab((*node)->content);
 		(*node)->content = ft_split(str, ' ');
-		print_tab((*node)->content);
+		// print_tab((*node)->content);
 		if (!(*node)->content || !(*node)->content[0])
 		{
 			free(tmp);
