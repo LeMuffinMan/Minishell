@@ -37,6 +37,10 @@ int	builtins(char **arg, t_var **env, t_tree **ast)
 		return (builtin_env(env));
 	else if (!ft_strncmp(arg[0], "exit", 5))
 		return (builtin_exit(arg, env, ast));
+	/* else if (!ft_strncmp(arg[0], "set", 4)) */
+	/* 	return (builtin_set(arg, env, ast)); */
+	/* else if (!ft_strncmp(arg[0], "source", 7)) */
+	/* 	return (builtin_source(arg, env, ast)); */
 	else
 		return (1);
 	//ajouter source

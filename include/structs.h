@@ -19,11 +19,6 @@ typedef struct s_var
 {
   char *key;
   char *value;
-  //booleen ?
-  int env; 
-  int exported;
-  //si un bool == 1 on veut l'afficher dans env ou export
-  //si les deux == 0 : variables de shell, non exportees 
   struct s_var *next;
 } t_var;
 
@@ -34,13 +29,23 @@ typedef struct s_pipe
 	struct s_pipe *prev;
 } t_pipe;
 
-typedef struct s_pids
-{
-	pid_t pid;
-	struct s_pids *next;
-} t_pids;
-
 //ultrabonus
+// typedef struct s_shell_fct
+// {
+// 	char *name;
+// 	char **content;
+// 	struct s_shell_fct *next;
+// } t_shell_fct;
+
+typedef struct s_env
+{
+  t_var **heritated_variables;
+  t_var **exported_variables;
+  // t_var **aliases;
+  // t_fct **shell_fcts;
+  struct s_env *next;
+} t_env;
+
 typedef struct s_prompt
 {
 	char	*ps1;
