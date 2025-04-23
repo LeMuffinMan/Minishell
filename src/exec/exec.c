@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-int	builtins(char **arg, t_var **env, t_tree **ast, t_pipe **pipes)
+int	builtins(char **arg, t_var **env, t_tree **ast)
 {
 	if (!*arg)
 		return (1);
@@ -36,7 +36,7 @@ int	builtins(char **arg, t_var **env, t_tree **ast, t_pipe **pipes)
 	else if (!ft_strncmp(arg[0], "env", 4))
 		return (builtin_env(env));
 	else if (!ft_strncmp(arg[0], "exit", 5))
-		return (builtin_exit(arg, env, ast, pipes));
+		return (builtin_exit(arg, env, ast));
 	else
 		return (1);
 }
@@ -51,24 +51,6 @@ int	free_lists_and_exit(t_var **env, t_tree **ast, t_pipe **pipes)
 	return (0);
 }
 
-/* int free_pipes(t_pipe **pipes) */
-/* { */
-/* 	t_pipe *tmp; */
-/* 	t_pipe *last; */
-/**/
-/* 	tmp = *pipes; */
-/* 	last = NULL; */
-/* 	while (tmp) */
-/* 	{ */
-/* 		if (last) */
-/* 			free(last); */
-/* 		last = tmp; */
-/* 		tmp = tmp->next;  */
-/* 	} */
-/* 	if (last) */
-/* 		free(last); */
-/* 	return (0); */
-/* } */
 
 int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes)
 {
@@ -94,7 +76,7 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes)
 		dup2(pipefd[1], STDOUT_FILENO);
 		close(pipefd[1]);
 		free_pipes(pipes);
-		return(exec_ast(&left_branch, env, pipes));
+		return(exec_ast(&left_branch, env));
 	}
 	else
 		close(pipefd[1]);
@@ -107,7 +89,11 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes)
 	{
 		dup2(pipefd[0], STDIN_FILENO);
 		close(pipefd[0]);
-		return (exec_ast(&right_branch, env, pipes));
+		free_pipes(pipes);
+		if (right_branch->token->token == PIPE)
+			return(exec_pipe(&right_branch, env, pipes));
+		else
+			return (exec_ast(&right_branch, env));
 	}
 	else
 	{
@@ -115,94 +101,10 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes)
 		free_pipes(pipes);
 		pipes = NULL;
 		exit_code = wait_children(right_pid, left_pid);
-		/* free_tree(*ast); */
 		return(exit_code);
 	}
 	return (1);
 }
-
-
-// checker les fd open : des cas ou ca peut arriver je pense
-int	exec_pipe_old(t_tree **ast, t_var **env, t_pipe **pipes)
-{
-	pid_t	left_pid;
-	pid_t	right_pid;
-	t_tree	*left_branch;
-	t_tree	*right_branch;
-	int		pipefd[2];
-	int exit_code;
-
-	right_branch = (*ast)->right;
-	left_branch = (*ast)->left;
-	add_pipe(pipefd, pipes);
-	left_pid = fork();
-	if (!left_pid)
-	{
-		// error
-	}
-	if (left_pid == 0)
-	{
-		//si je suis dans une pipeline, je branche ma lecture
-		if ((*pipes)->next)
-		{
-			dup2((*pipes)->next->fd[0], STDIN_FILENO);
-			close((*pipes)->next->fd[0]);
-			free((*pipes)->next);
-			(*pipes)->next = NULL;
-			/* dprintf (2, "LEFT %s read in %d\n", (*ast)->left->token->content[0], (*pipes)->fd[0]); */
-		}
-		//vu que c'est a gauche : on veut ecrire, pas besoin de la lecture du pipe qu'on vient de creer 
-		/* if (!(*pipes)->next) */
-		/* 	close(pipefd[0]); */
-		dup2(pipefd[1], STDOUT_FILENO);
-		close(pipefd[1]);
-		/* dprintf(2, "LEFT %s write in %d\n", (*ast)->left->token->content[0], pipefd[1]); */
-				//free_pipes ici ?
-		//et donner NULL a pipes ?
-		return(exec_ast(&left_branch, env, pipes));
-	}
-	else // parent de left
-	{
-		//si on est dans une pipeline on peut fermer et free le dernier
-		if ((*pipes)->next)
-		{
-			close((*pipes)->next->fd[0]);
-			(*pipes)->next = NULL;
-			/* dprintf(2, "closing fd %d\n", tmp->fd[0]); */
-			free((*pipes)->next);
-			//si on etait dans une pipeline, le parent vient de fermer et free le pipe d'AVANT 
-		}
-		//on ne ferme pas la lecture : on doit la donner a right
-		close(pipefd[1]);
-	}
-	right_pid = fork();
-	if (!right_pid)
-	{
-		// error
-	}
-	if (right_pid == 0)
-	{
-		if ((*ast)->right->token->token == PIPE)
-		{
-			dup2((*pipes)->fd[0], STDIN_FILENO);
-			close((*pipes)->fd[0]);
-		}
-		/* dprintf(2, "RIGHT read in %d\n", (*pipes)->fd[0]); */
-		return (exec_ast(&right_branch, env, pipes));
-	}
-	else
-	{
-		/* close(pipefd[0]); */
-		free_pipes(pipes);
-		/* free(pipes); */
-		pipes = NULL;
-		exit_code = wait_children(right_pid, left_pid);
-		/* free_tree(*ast); */
-		return(exit_code);
-	}
-	return (1);
-}
-// normalement on ne devrait pas arriver au dernier return !
 
 //BUILT_IN : PARENT
 //CMD : CHILD
@@ -236,7 +138,7 @@ int error_cmd_perm_denied(char *cmd)
 	return (126);
 }
 
-int	exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes)
+int	exec_cmd(t_tree **ast, t_var **env)
 {
 	char	**strings_env;
 	pid_t	pid;
@@ -244,7 +146,7 @@ int	exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes)
 
 	if ((*ast)->token->token == BUILT_IN)
 	{
-		exit_code = builtins((*ast)->token->content, env, ast, pipes);
+		exit_code = builtins((*ast)->token->content, env, ast);
 		return (exit_code);
 	}
 
@@ -252,9 +154,7 @@ int	exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes)
 	{
 		pid = fork();
 		if (pid == -1)
-		{
-			// gerer l'erreur
-		}
+			return(-1);
 		if (pid == 0)
 		{
 			strings_env = lst_to_array(env);
@@ -268,9 +168,6 @@ int	exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes)
 		else
 		{
 			exit_code = wait_children(pid, pid);
-			//le faire avant !
-			free_pipes(pipes);
-			pipes = NULL;
 			/* free_tree(*ast); */
 			free_list(env);
 			return (exit_code);
@@ -279,28 +176,28 @@ int	exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes)
 	return (1); //on ne devrait pas arriver ici
 }
 
-int	boolean_operators(t_tree **ast, t_var **env, t_pipe **pipes)
-{
-	int		exit_code;
-	t_tree	*tmp;
-
-	exit_code = 0;
-	/* if (find_expands(ast->left)) */
-	/* 	expand_variables(ast->left); */
-	tmp = (*ast)->left;
-	exit_code = exec_ast(&tmp, env, pipes);
-	if ((exit_code == 0 && (*ast)->token->token == O_AND) || (exit_code != 0
-			&& (*ast)->token->token == O_OR))
-	{
-		/* if (find_expands(ast->right)) */
-		/* 	expand_variables(ast->right); */
-		tmp = (*ast)->right;
-		return (exec_ast(&tmp, env, pipes));
-		return (1);
-	}
-	else
-		return (exit_code);
-}
+/* int	boolean_operators(t_tree **ast, t_var **env) */
+/* { */
+/* 	int		exit_code; */
+/* 	t_tree	*tmp; */
+/**/
+/* 	exit_code = 0; */
+/* 	if (find_expands(ast->left)) */
+/* 		expand_variables(ast->left); */
+/* 	tmp = (*ast)->left; */
+/* 	exit_code = exec_ast(&tmp, env); */
+/* 	if ((exit_code == 0 && (*ast)->token->token == O_AND) || (exit_code != 0 */
+/* 			&& (*ast)->token->token == O_OR)) */
+/* 	{ */
+/* 		if (find_expands(ast->right)) */
+/* 			expand_variables(ast->right); */
+/* 		tmp = (*ast)->right; */
+/* 		return (exec_ast(&tmp, env, pipes)); */
+/* 		return (1); */
+/* 	} */
+/* 	else */
+/* 		return (exit_code); */
+/* } */
 
 // attention si c'est le proc parrent !! Redup avant de rendre le prompt !!!
 int	open_dup2_close(t_tree **ast, t_type type)
@@ -342,7 +239,7 @@ int	open_dup2_close(t_tree **ast, t_type type)
 	return (0);
 }
 
-int	redirect_stdio(t_tree **ast, t_var **env, t_pipe **pipes)
+int	redirect_stdio(t_tree **ast, t_var **env)
 {
 	t_tree	*left;
 	t_tree	*right;
@@ -354,15 +251,17 @@ int	redirect_stdio(t_tree **ast, t_var **env, t_pipe **pipes)
 		// Error
 	}
 	if (right)
-		exec_ast(&right, env, pipes);
+		exec_ast(&right, env);
 	if (!left)
 		return (0);
-	return (exec_ast(&left, env, pipes));
+	return (exec_ast(&left, env));
 }
 
-int	exec_ast(t_tree **ast, t_var **env, t_pipe **pipes)
+int	exec_ast(t_tree **ast, t_var **env)
 {
+  t_pipe *pipes;
 
+  pipes = NULL;
 	if ((*ast)->token->error == 127)
 		return (error_cmd_not_found((*ast)->token->content[0]));
 	if ((*ast)->token->error == 126)
@@ -374,9 +273,9 @@ int	exec_ast(t_tree **ast, t_var **env, t_pipe **pipes)
 	/* 	|| (*ast)->token->token == TRUNC)  */
 		/* redirect_stdio(ast, env, pipes, pids); */
 	if ((*ast)->token->token == PIPE)
-		return (exec_pipe(ast, env, pipes));
+		return (exec_pipe(ast, env, &pipes));
 	if ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD)
-		return (exec_cmd(ast, env, pipes));
+		return (exec_cmd(ast, env));
 		//un token VAR ?
 	//Ultrabonus
 		//un token Alias

@@ -37,7 +37,7 @@ int	is_only_numeric_argument(char *s)
 // a voir
 // des fuites et des exits a des moments ou ils doivent pas
 // a tester : is only numeric arg
-int	builtin_exit(char **arg, t_var **env, t_tree **ast, t_pipe **pipes)
+int	builtin_exit(char **arg, t_var **env, t_tree **ast)
 {
 	int		n;
 	char	*s;
@@ -50,7 +50,6 @@ int	builtin_exit(char **arg, t_var **env, t_tree **ast, t_pipe **pipes)
 		free_list(env);
 		free_array(arg);
 		free_tree(*ast);
-		free_pipes(pipes);
 		ft_putstr_fd("exit\n", 1);
 		exit(0);
 	}
@@ -80,7 +79,6 @@ int	builtin_exit(char **arg, t_var **env, t_tree **ast, t_pipe **pipes)
 		free_list(env);
 		free_array(arg);
 		free_tree(*ast);
-		free_pipes(pipes);
 		exit(2);
 	}
 	n = ft_atoi(arg[1]);
@@ -89,7 +87,6 @@ int	builtin_exit(char **arg, t_var **env, t_tree **ast, t_pipe **pipes)
 	free_list(env);
 	free_array(arg);
 	free_tree(*ast);
-	free_pipes(pipes);
 	exit(n);
 	return (0);
 }

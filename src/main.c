@@ -77,7 +77,6 @@ int main(int ac, char **av, char **env)
     int        error_code;
     t_var    *new_env;
     t_tree *ast;
-    t_pipe *pipes;
     char **strings_env;
 
     /* if (isatty(1)) */
@@ -91,7 +90,6 @@ int main(int ac, char **av, char **env)
     error_code = 1;
     new_env = NULL;
     ast = NULL;
-    pipes = NULL;
     /* utiliser getenv ?
         * Si on n'a pas d'env uniquement ?*/
     init_env(&new_env, env, av);
@@ -127,7 +125,7 @@ int main(int ac, char **av, char **env)
         ast = parse(line, strings_env);
         free_array(strings_env);
         strings_env = NULL;
-        error_code = exec_ast(&ast, &new_env, &pipes);
+        error_code = exec_ast(&ast, &new_env);
         /* free_tree(ast); */
         /* ast = NULL; */
         free(line);

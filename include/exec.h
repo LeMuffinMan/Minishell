@@ -18,7 +18,7 @@
 #include "structs.h"
 
 
-int exec_ast (t_tree **ast, t_var **env, t_pipe **pipes);
+int exec_ast (t_tree **ast, t_var **env);
 void	add_back_var(t_var **lst, char *s, int mode);
 void	add_first_node(t_var **lst, t_var *new, char *s, int mode);
 void	free_list(t_var **l);
@@ -35,7 +35,7 @@ int	builtin_echo(char **arg);
 //builtins/env
 int builtin_env(t_var **env);
 //builtins/exit
-int	builtin_exit(char **arg, t_var **env, t_tree **ast, t_pipe **pipes);
+int	builtin_exit(char **arg, t_var **env, t_tree **ast);
 //builtins/pwd
 int	builtin_pwd(void);
 //builtins/unset

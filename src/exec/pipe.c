@@ -34,40 +34,16 @@ int	wait_children(pid_t last_child, pid_t first_child)
 	return (exit_code);
 }
 
-/* int add_pid(pid_t new_pid, t_pids **pids) */
-/* { */
-/*     t_pids *new_node; */
-/*     t_pids *last; */
-/**/
-/*     new_node = malloc(sizeof(t_pids)); */
-/*     if (!new_node) */
-/*         return (-1); */
-/*     new_node->pid = new_pid; */
-/*     new_node->next = NULL; */
-/*     if (!pids && !*pids) */
-/*         *pids = new_node; */
-/*     else */
-/*     { */
-/*         last = *pids; */
-/*         while (last && last->next != NULL) */
-/*             last = last->next; */
-/*         last->next = new_node; */
-/*     } */
-/*     return (0); */
-/* } */
-
 int	add_pipe(int fd[2], t_pipe **pipes)
 {
 	t_pipe	*new_pipe;
 
 	if (pipe(fd) == -1)
-	{
-		// error
-	}
+		return (-1);
 	new_pipe = malloc(sizeof(t_pipe));
 	if (!new_pipe)
 	{
-		// error
+		//error
 	}
 	if (pipes && *pipes)
 		new_pipe->next = *pipes;
@@ -78,20 +54,6 @@ int	add_pipe(int fd[2], t_pipe **pipes)
 	*pipes = new_pipe;
 	return (0);
 }
-
-/* int	free_pids(t_pids **pids) */
-/* { */
-/* 	t_pids	*tmp; */
-/**/
-/* 	while (*pids && (*pids)->next) */
-/* 	{ */
-/* 		tmp = *pids; */
-/* 		*pids = (*pids)->next; */
-/* 		free(tmp); */
-/* 	} */
-/* 	*pids = NULL; */
-/* 	return (0); */
-/* } */
 
 int	free_pipes(t_pipe **pipes)
 {
