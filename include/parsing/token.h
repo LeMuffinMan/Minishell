@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 01:26:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/20 17:03:18 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/24 02:18:11 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,12 @@ typedef enum e_type
 	BUILT_IN,
 	CMD,
 	D_QUOTE,
-	INFILE,
 	HD,
 	LIM,
 	O_AND,
 	O_OR,
+	L_PARENTHESIS,
+	R_PARENTHESIS,
 	PIPE,
 	R_IN,
 	S_QUOTE,

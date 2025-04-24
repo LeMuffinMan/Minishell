@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 21:44:17 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/20 18:22:54 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/23 03:58:32 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,10 @@ static void	is_operand_or_quote(t_token **node)
 	else if (((*node)->content[0][0] == '\'')
 				&& (*node)->content[0][len - 1] == '\'')
 		(*node)->token = S_QUOTE;
+	else if ((*node)->content[0][0] == '(')
+		(*node)->token = L_PARENTHESIS;
+	else if ((*node)->content[0][0] == ')')
+		(*node)->token = R_PARENTHESIS;
 }
 
 static void	is_redirection(t_token **node)

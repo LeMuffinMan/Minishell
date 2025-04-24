@@ -29,6 +29,7 @@ typedef struct s_token
 	char			**content;
 	enum e_type		token;
 	int				priority;
+	bool			seq;
 }	t_token;
 
 void	add_back(t_token **head, char *str);
