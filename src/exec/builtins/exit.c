@@ -48,7 +48,6 @@ int	builtin_exit(char **arg, t_var **env, t_tree **ast)
 	if (!arg[1])
 	{
 		free_list(env);
-		free_array(arg);
 		free_tree(ast);
 		ft_putstr_fd("exit\n", 1);
 		exit(0);
@@ -77,7 +76,6 @@ int	builtin_exit(char **arg, t_var **env, t_tree **ast)
 		ft_putstr_fd(s, 2);
 		free(s);
 		free_list(env);
-		free_array(arg);
 		free_tree(ast);
 		exit(2);
 	}
@@ -85,7 +83,6 @@ int	builtin_exit(char **arg, t_var **env, t_tree **ast)
 	if (n > 255)
 		n = n % 256;
 	free_list(env);
-	free_array(arg);
 	free_tree(ast);
 	exit(n);
 	return (0);

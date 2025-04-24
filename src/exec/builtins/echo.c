@@ -44,7 +44,9 @@ int	builtin_echo(char **arg)
 	}
 	while (arg[i])
 	{
+		tmp = s;
 		s = ft_strjoin(s, arg[i]);
+		free(tmp);
 		if (arg[i + 1])
 		{
 			tmp = s;
@@ -54,7 +56,11 @@ int	builtin_echo(char **arg)
 		i++;
 	}
 	if (option == 0)
+	{
+		tmp = s;
 		s = ft_strjoin(s, "\n");
+		free(tmp);
+	}
 	if (s)
 		ft_putstr_fd(s, 1);
 	free(s);

@@ -120,10 +120,10 @@ int main(int ac, char **av, char **env)
             {
                 free_tree(&ast);
                 free_list(&new_env);
-                exit (0);
+                exit (error_code);
             }
         }
-        /* if (isatty(0) && env) */
+        /* if (isatty(0) && *env) */
         /* { */
         /*     free(prompt); */
         /*     prompt = NULL; */
@@ -143,4 +143,4 @@ int main(int ac, char **av, char **env)
     exit(error_code);
 }
 
-
+//CTRL V + Tab : fait un tab dans le minishell a gerer !
