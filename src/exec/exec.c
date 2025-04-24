@@ -131,7 +131,7 @@ int error_cmd_not_found(char *cmd)
 	char *s;
 	char *tmp;
 
-	s = ft_strjoin("mimishell: ", cmd);	
+	s = ft_strjoin("minishell: ", cmd);	
 	tmp = s;
 	s = ft_strjoin(s, ": command not found\n");
 	free(tmp);
@@ -146,7 +146,7 @@ int error_cmd_perm_denied(char *cmd)
 	char *s;
 	char *tmp;
 
-	s = ft_strjoin("mimishell: ", cmd);	
+	s = ft_strjoin("minishell: ", cmd);	
 	tmp = s;
 	s = ft_strjoin(s, ": Permission denied\n");
 	free(tmp);
@@ -163,7 +163,7 @@ int	exec_cmd(t_tree **ast, t_var **env)
 	pid_t	pid;
 	int exit_code;
 
-	
+
 	/* expand_cmd_sub((*ast)->token->content, env); */
 	if ((*ast)->token->token == BUILT_IN)
 	{
@@ -278,11 +278,7 @@ int	redirect_stdio(t_tree **ast, t_var **env)
 		// Error
 	}
 	if (right)
-	{
 		exec_ast(&right, env);
-    dup2(stdin_fd, STDIN_FILENO);
-    dup2(stdout_fd, STDOUT_FILENO);
-	}
 	if (!left)
 		return (0);
 	else
@@ -300,10 +296,7 @@ int	exec_ast(t_tree **ast, t_var **env)
   t_pipe *pipes;
 
   pipes = NULL;
-	if ((*ast)->token->error == 127)
-		return (error_cmd_not_found((*ast)->token->content[0]));
-	if ((*ast)->token->error == 126)
-		return (error_cmd_perm_denied((*ast)->token->content[0]));
+
 	//O_AND VONT VIRER 
 	/* if ((*ast)->token->token == O_AND || (*ast)->token->token == O_OR) */
 	/* 	return (boolean_operators(ast, env, pipes, pids)); */
@@ -314,6 +307,10 @@ int	exec_ast(t_tree **ast, t_var **env)
 		return (exec_pipe(ast, env, &pipes));
 	if ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD)
 		return (exec_cmd(ast, env));
+	if ((*ast)->token->error == 127)
+		return (error_cmd_not_found((*ast)->token->content[0]));
+	if ((*ast)->token->error == 126)
+		return (error_cmd_perm_denied((*ast)->token->content[0]));
 		//un token VAR ?
 	//Ultrabonus
 		//un token Alias
@@ -323,19 +320,53 @@ int	exec_ast(t_tree **ast, t_var **env)
 	return (0);
 }
 
-//deux constantes : int pour garder les vrais fd de lecture / ecriture 
-//juste avant le prompt
-//limite de process ? 
-
 //Gros debuggage 
 //
 //implementer le nouveau free de l'arbre 
 //corriger si on fait un ctrl D dans le prompt : tout free
 //idem pour exit : tout free
 //
-//whoami > file1 
-//ne rend pas le prompt
+//Parsing ?
+//whoami | cat | > file1 | uname
+//doit afficher Linux et pas cmd not found !
+//
+					//TESTS
+//
+//PIPES
+//
+//whoami OK
+//whoami | cat OK
+//whoami | cat | cat OK
+//whoami | cat | cat | cat OK
+//
+//REDIRS OUT
+//whoami > file1 OK
+//not_existing_cmd > file1 OK
+//whoami > file1 > file2 OK
+//whoami > file1 > file2 > file3 > file4 OK
+//whoami >> file1 OK
+//whoami > file1 >> file2 OK
+//whoami >> file1 > file2 > file3
+//whoami > file1 > file2 >> file3 KO
+//
+//REIDRS IN
+//< file1 whoami KO
+//< file1 cat : boucle infinie KO
+//
+//PIPE + redirs out
+//whoami | cat | cat > file1 | cat > file1 > file2 | cat KO
+//
+//PIPE + redirs in
+//TODO
 
+//Mettre 1024 en limite de pipes !!
+//
+//gros BUG !
+/* [Minishell]$ whoami | file1 */
+/* mimishell: file1: Permission denied */
+/* [Minishell]$ oelleaum */
+/* mimishell: oelleaum: command not found */
+/* [Minishell]$ 2004h[Minishell]$ */
 
 // exec_ast.c
 /* int exec_ast(t_tree **ast, t_var **env, t_pipe **pipes); */
@@ -352,18 +383,6 @@ int	exec_ast(t_tree **ast, t_var **env)
 /* int expand_variables(t_tree **ast); */
 /* int find_expands(t_tree *ast) */
 /* int free_lists_and_exit(t_var **env, t_tree **ast, t_pipe **pipes) */
-
-/* int find_expands(t_tree *ast) */
-/* { */
-/* 	// */
-/* 	return (0); */
-/* } */
-/**/
-/* int expand_variables(t_tree **ast) */
-/* { */
-/* 	// */
-/* 	return (0); */
-/* } */
 
 /* char *enum_to_string(t_type enumValue) */
 /* { */
