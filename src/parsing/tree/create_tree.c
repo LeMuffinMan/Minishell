@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 21:12:15 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/23 23:33:11 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/24 04:28:46 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,8 @@ static t_tree	*add_new_node(t_token *token, t_tree *left,
 	return (new_node);
 }
 
-static t_tree	*parse_list(t_token *start, t_token *end, t_tree *parent, bool flag)
+static t_tree	*parse_list(t_token *start, t_token *end,
+							t_tree *parent, bool flag)
 {
 	t_tree	*left;
 	t_tree	*right;

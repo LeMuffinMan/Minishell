@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 16:03:15 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/23 04:15:28 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/24 04:28:23 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,8 @@ static void	cost_priority(t_token **node, bool flag)
 {
 	if (!flag)
 	{
-		if (((*node)->token == L_PARENTHESIS) || ((*node)->token == R_PARENTHESIS))
+		if (((*node)->token == L_PARENTHESIS)
+			|| ((*node)->token == R_PARENTHESIS))
 			(*node)->priority = 0;
 		else if ((*node)->token == O_OR)
 			(*node)->priority = 1;

@@ -6,7 +6,7 @@
 #    By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/04/22 03:54:25 by asinsard         ###   ########lyon.fr    #
+#    Updated: 2025/04/24 02:09:07 by asinsard         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -50,6 +50,7 @@ SRC					=	main.c \
 						tokenize.c \
 						tree_utils.c \
 						lexer.c \
+						lexer_utils.c \
 						parser.c \
 						init.c \
     				exec/builtins/echo.c \

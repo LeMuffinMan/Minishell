@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 00:19:05 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/20 16:36:22 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/24 04:29:18 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,9 +93,7 @@ static int	alloc_lexer(char *str, char c, t_lexer **list)
 	i = 1;
 	while (str[i])
 	{
-		if ((str[i - 1] == '|' && str[i] != '|')
-			|| (str[i - 1] == '(' && str[i] != '(')
-			|| (str[i - 1] == ')' && str[i] != ')'))
+		if (c != '"' && c != '\'' && (str[i - 1] == '|' && str[i] != '|'))
 		{
 			i -= 1;
 			break ;
@@ -128,13 +126,12 @@ void	parse_line(char *str, t_lexer **list)
 		if (str[i] == ' ')
 			i++;
 		else if (str[i] == '|' || str[i] == '&'
-			|| str[i] == '(' || str[i] == ')')
+			|| str[i] == '"' || str[i] == '\'')
 			i += alloc_lexer(&str[i], str[i], list);
 		else
 		{
 			start = i;
-			while (str[i] && str[i] != ' ' && str[i] != '&' && str[i] != '|'
-				&& str[i] != '(' && str[i] != ')')
+			while (str[i] && str[i] != ' ' && str[i] != '&' && str[i] != '|')
 				i++;
 			word = ft_strndup(&str[start], i - start);
 			if (!word)
@@ -143,4 +140,5 @@ void	parse_line(char *str, t_lexer **list)
 			free(word);
 		}
 	}
+	check_parenthesis(list);
 }
