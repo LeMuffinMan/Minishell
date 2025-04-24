@@ -73,14 +73,23 @@ void	add_to_root(t_token *node, t_tree **root, bool flag)
 		set_bool_seq(root);
 }
 
-void	free_tree(t_tree *head)
+void	free_tree(t_tree **head)
 {
-	if (!head)
+	t_tree *left;
+	t_tree *right;
+
+	if (!*head)
 		return ;
-	while (head->prev)
-		head = head->prev;
-	free_tree(head->left);
-	free_tree(head->right);
-	free_parse(head->token, NULL, 0);
-	free(head);
+	while ((*head)->prev)
+		(*head) = (*head)->prev;
+	left = (*head)->left;
+	right = (*head)->right;
+	if (left)
+		free_tree(&left);
+	if (right)
+		free_tree(&right);
+	if ((*head)->token)
+		free_parse((*head)->token, NULL, 0);
+	free(*head);
+	*head = NULL;
 }

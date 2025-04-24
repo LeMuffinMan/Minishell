@@ -49,7 +49,7 @@ int	builtin_exit(char **arg, t_var **env, t_tree **ast)
 	{
 		free_list(env);
 		free_array(arg);
-		free_tree(*ast);
+		free_tree(ast);
 		ft_putstr_fd("exit\n", 1);
 		exit(0);
 	}
@@ -78,7 +78,7 @@ int	builtin_exit(char **arg, t_var **env, t_tree **ast)
 		free(s);
 		free_list(env);
 		free_array(arg);
-		free_tree(*ast);
+		free_tree(ast);
 		exit(2);
 	}
 	n = ft_atoi(arg[1]);
@@ -86,7 +86,7 @@ int	builtin_exit(char **arg, t_var **env, t_tree **ast)
 		n = n % 256;
 	free_list(env);
 	free_array(arg);
-	free_tree(*ast);
+	free_tree(ast);
 	exit(n);
 	return (0);
 }

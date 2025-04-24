@@ -87,7 +87,7 @@ void	last_node(t_token **node, bool flag)
 	{
 		while ((*node) && (*node)->priority != 10)
 			*node = (*node)->next;
-		*node = (*node)->next;
+		/* *node = (*node)->next; */
 	}
 }
 

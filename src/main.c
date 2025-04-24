@@ -116,12 +116,12 @@ int main(int ac, char **av, char **env)
         {
             free(line);
             line = readline(prompt);
-        }
-        if (!line)
-        {
-            free_tree(ast);
-            free_list(&new_env);
-            exit (0);
+            if (!line)
+            {
+                free_tree(&ast);
+                free_list(&new_env);
+                exit (0);
+            }
         }
         /* if (isatty(0) && env) */
         /* { */
@@ -135,8 +135,7 @@ int main(int ac, char **av, char **env)
         free_array(strings_env);
         strings_env = NULL;
         error_code = exec_ast(&ast, &new_env);
-        /* free_tree(ast); */
-        /* ast = NULL; */
+        free_tree(&ast);
         free(line);
         line = NULL;
     }

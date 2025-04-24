@@ -28,7 +28,7 @@ typedef struct s_tree
 }	t_tree;
 
 void	add_to_root(t_token *node, t_tree **root, bool flag);
-void	free_tree(t_tree *head);
+void	free_tree(t_tree **head);
 
 t_token	*find_best_priority(t_token *start, t_token *end, bool flag);
 void	last_node(t_token **node, bool flag);
