@@ -6,7 +6,7 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:49:28 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/24 17:01:03 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/04/24 17:03:34 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,7 +214,7 @@ int	exec_ast(t_tree **ast, t_var **env)
 		//un token Alias
 	  //un token shell_func
 	  //un token substitution cmd ?
-			//on fork direct, et on execute le contenu des parentheses 
+			//on ne l'expand pas jusqu'au dernier moment, et on execute le contenu des parentheses 
 	return (0);
 }
 
