@@ -6,7 +6,7 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 14:31:45 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/20 16:02:04 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/04/24 17:00:37 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,18 @@
 #include <sys/wait.h>
 #include "structs.h"
 
+
+
+//init
+int	init_env(t_var **new_env, char **env, char **arg);
+
+//errors.c
+int error_cmd_not_found(char *cmd);
+int error_cmd_perm_denied(char *cmd);
+
+//redirections_stdio.c
+int	redirect_stdio(t_tree **ast, t_var **env);
+int	open_dup2_close(t_tree **ast, t_type type);
 
 int exec_ast (t_tree **ast, t_var **env);
 void	add_back_var(t_var **lst, char *s, int mode);
@@ -42,8 +54,6 @@ int	builtin_pwd(void);
 int builtin_unset(t_var **env, char **arg);
 int env_size(t_var *env);
 
-//init
-int	init_env(t_var **new_env, char **env, char **arg);
 
 //UTILS
 //utils/builtins_utils

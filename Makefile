@@ -6,7 +6,7 @@
 #    By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/04/20 18:00:39 by oelleaum         ###   ########lyon.fr    #
+#    Updated: 2025/04/24 17:01:22 by oelleaum         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -50,6 +50,10 @@ SRC					=	main.c \
 						lexer.c \
 						parser.c \
 						init.c \
+						exec/exec.c \
+						exec/errors.c \
+						exec/redirections_stdio.c \
+						exec/pipe.c \
     				exec/builtins/echo.c \
     				exec/builtins/cd.c \
     				exec/builtins/pwd.c \
@@ -61,8 +65,6 @@ SRC					=	main.c \
 						utils/env_utils.c \
 						utils/init_utils.c \
 						utils/prints.c \
-						exec/exec.c \
-						exec/pipe.c \
 						utils/misc.c \
 						ultrabonus/get_prompt/get_prompt.c \
 						ultrabonus/get_prompt/get_prompt_free.c \
