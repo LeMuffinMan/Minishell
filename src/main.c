@@ -75,6 +75,8 @@ int main(int ac, char **av, char **env)
     char    *prompt;
     // char    **arg;
     int        error_code;
+    /* int         stdin_fd; */
+    /* int         stdout_fd; */
     t_var    *new_env;
     t_tree *ast;
     char **strings_env;
@@ -94,8 +96,8 @@ int main(int ac, char **av, char **env)
         * Si on n'a pas d'env uniquement ?*/
     init_env(&new_env, env, av);
     /* print_env(&new_env); */
-    if (find_minishellrc)
-        load_minishell_rc(&new_env);
+    /* if (find_minishellrc) */
+    /*     load_minishell_rc(&new_env); */
     while (1)
     {
         //update env variables !!! si on a un && ou un || on DOIT update l'env entre les deux !!!
@@ -114,6 +116,12 @@ int main(int ac, char **av, char **env)
         {
             free(line);
             line = readline(prompt);
+        }
+        if (!line)
+        {
+            free_tree(ast);
+            free_list(&new_env);
+            exit (0);
         }
         /* if (isatty(0) && env) */
         /* { */

@@ -67,10 +67,15 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes)
 	t_tree	*right_branch;
 	int		pipefd[2];
 	int exit_code;
+	int stdin_fd;
+	int stdout_fd;
 
 	right_branch = (*ast)->right;
 	left_branch = (*ast)->left;
 	add_pipe(pipefd, pipes);
+  //on veut sauvegarder le numero des fds originaux des lectures /ecritures
+  stdin_fd = dup(STDIN_FILENO);
+  stdout_fd = dup(STDOUT_FILENO);
 	left_pid = fork();
 	if (!left_pid)
 	{
@@ -106,7 +111,12 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes)
 	{
 		close(pipefd[0]);
 		free_pipes(pipes);
-		pipes = NULL;
+		/* pipes = NULL; */
+    //si j'ai rediriger la lecture / ecriture du parent, 
+    //il faut la reset correctement avant de rendre le prompt
+    //il faut peut etre le faire encore plus tot ?
+    dup2(stdin_fd, STDIN_FILENO);
+    dup2(stdout_fd, STDOUT_FILENO);
 		exit_code = wait_children(right_pid, left_pid);
 		return(exit_code);
 	}
@@ -181,6 +191,7 @@ int	exec_cmd(t_tree **ast, t_var **env)
 			exit_code = wait_children(pid, pid);
 			/* free_tree(*ast); */
 			free_list(env);
+
 			return (exit_code);
 		}
 	}
@@ -254,7 +265,12 @@ int	redirect_stdio(t_tree **ast, t_var **env)
 {
 	t_tree	*left;
 	t_tree	*right;
+	int stdin_fd;
+	int stdout_fd;
+	int exit_code;
 
+	stdin_fd = dup(STDIN_FILENO);
+  stdout_fd = dup(STDOUT_FILENO);
 	left = (*ast)->left;
 	right = (*ast)->right;
 	if (open_dup2_close(ast, (*ast)->token->token))
@@ -262,10 +278,21 @@ int	redirect_stdio(t_tree **ast, t_var **env)
 		// Error
 	}
 	if (right)
+	{
 		exec_ast(&right, env);
+    dup2(stdin_fd, STDIN_FILENO);
+    dup2(stdout_fd, STDOUT_FILENO);
+	}
 	if (!left)
 		return (0);
-	return (exec_ast(&left, env));
+	else
+	{
+		exit_code = exec_ast(&left, env);
+    dup2(stdin_fd, STDIN_FILENO);
+    dup2(stdout_fd, STDOUT_FILENO);
+		return (exit_code);
+	}
+
 }
 
 int	exec_ast(t_tree **ast, t_var **env)
@@ -280,9 +307,9 @@ int	exec_ast(t_tree **ast, t_var **env)
 	//O_AND VONT VIRER 
 	/* if ((*ast)->token->token == O_AND || (*ast)->token->token == O_OR) */
 	/* 	return (boolean_operators(ast, env, pipes, pids)); */
-	/* if ((*ast)->token->token == R_IN || (*ast)->token->token == APPEND */
-	/* 	|| (*ast)->token->token == TRUNC)  */
-		/* redirect_stdio(ast, env, pipes, pids); */
+	if ((*ast)->token->token == R_IN || (*ast)->token->token == APPEND
+		|| (*ast)->token->token == TRUNC) 
+		redirect_stdio(ast, env);
 	if ((*ast)->token->token == PIPE)
 		return (exec_pipe(ast, env, &pipes));
 	if ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD)
@@ -295,6 +322,20 @@ int	exec_ast(t_tree **ast, t_var **env)
 			//on fork direct, et on execute le contenu des parentheses 
 	return (0);
 }
+
+//deux constantes : int pour garder les vrais fd de lecture / ecriture 
+//juste avant le prompt
+//limite de process ? 
+
+//Gros debuggage 
+//
+//implementer le nouveau free de l'arbre 
+//corriger si on fait un ctrl D dans le prompt : tout free
+//idem pour exit : tout free
+//
+//whoami > file1 
+//ne rend pas le prompt
+
 
 // exec_ast.c
 /* int exec_ast(t_tree **ast, t_var **env, t_pipe **pipes); */

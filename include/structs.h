@@ -19,6 +19,8 @@ typedef struct s_var
 {
   char *key;
   char *value;
+  int exported;
+  int env;
   struct s_var *next;
 } t_var;
 
