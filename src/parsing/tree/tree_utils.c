@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 16:03:15 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/24 04:28:23 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/24 18:30:31 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ void	set_bool_seq(t_tree **root)
 
 void	last_node(t_token **node, bool flag)
 {
-	if (!(*node))
+	if (!(*node) || !(*node)->next)
 		return ;
 	if (flag == false)
 	{
@@ -85,7 +85,7 @@ void	last_node(t_token **node, bool flag)
 	}
 	else
 	{
-		while ((*node)->priority != 10)
+		while ((*node) && (*node)->priority != 10)
 			*node = (*node)->next;
 		*node = (*node)->next;
 	}
