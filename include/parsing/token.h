@@ -40,7 +40,7 @@ typedef enum e_type
 	S_QUOTE,
 	TRUNC,
 	WILDCARD
-}	t_type;
+}	t_type; 
 
 /* ----------------------Token---------------------- */
 void	assign_token(t_token **head, char **envp);

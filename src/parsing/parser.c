@@ -45,6 +45,6 @@ t_tree	*parse(char *line, char **envp)
 		free_parse(token, "Problem with here_doc creation", MEM_ALLOC);
 	add_to_root(token, &root, true);
 	/* display_list(token); */
-	/* display_ast(root); */
+	display_ast(root);
 	return (root);
 }

@@ -21,11 +21,12 @@
 // tester en unsetant PWD ...
 // tester un unset avec un env vide
 		//  1 ou errno ?
-int	builtin_pwd(void)
+int	builtin_pwd(char **content)
 {
 	char	buf[PATH_MAX];
 	char	*s;
 
+	(void)content;
 	s = NULL;
 	if (getcwd(buf, sizeof(buf)) != NULL)
 	{

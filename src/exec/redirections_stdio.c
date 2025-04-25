@@ -68,6 +68,9 @@ int	redirect_stdio(t_tree **ast, t_var **env)
   stdout_fd = dup(STDOUT_FILENO);
 	left = (*ast)->left;
 	right = (*ast)->right;
+
+		#include <stdio.h>
+		printf("ici\n");
 	if (open_dup2_close(ast, (*ast)->token->token))
 	{
 		// Error

@@ -200,7 +200,7 @@ int	exec_ast(t_tree **ast, t_var **env)
 	/* 	return (boolean_operators(ast, env, pipes, pids)); */
 	if ((*ast)->token->token == R_IN || (*ast)->token->token == APPEND
 		|| (*ast)->token->token == TRUNC) 
-		redirect_stdio(ast, env);
+		printf("ici"), redirect_stdio(ast, env);
 	if ((*ast)->token->token == PIPE)
 		return (exec_pipe(ast, env, &pipes));
 	if ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD)
