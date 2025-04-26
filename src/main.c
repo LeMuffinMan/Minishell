@@ -78,6 +78,8 @@
 //verifier le unset d'une liste vide
 //verifier export / export arg args
 //verifier env 
+//
+//CTRL V + Tab : fait un tab dans le minishell a gerer !
 
 int main(int ac, char **av, char **env)
 {
@@ -153,4 +155,3 @@ int main(int ac, char **av, char **env)
     exit(error_code);
 }
 
-//CTRL V + Tab : fait un tab dans le minishell a gerer !

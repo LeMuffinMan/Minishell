@@ -31,43 +31,104 @@ int	env_size(t_var *env)
 	return (i);
 }
 
-int	builtin_unset(t_var **env, char **arg)
+//return 0 si a trouve le node a free
+//return 1 si il n'a pas trouve de node a free
+/* int delete_node(t_var **node, t_var **env) */
+/* { */
+/* 	t_var *tmp; */
+/* 	t_var *last; */
+/* 	 */
+/* 	last = NULL; */
+/* 	if (env_size(*env) == 1) */
+/* 	{ */
+/* 		free((*env)->key); */
+/* 		free((*env)->value); */
+/* 		free(*env); */
+/* 		env = NULL; */
+/* 		return (0); */
+/* 	} */
+/* 	tmp = *env; */
+/* 	while(tmp) */
+/* 	{ */
+/* 		if (tmp == *node) */
+/* 		{	 */
+/* 			if (last) */
+/* 				last->next = tmp->next; */
+/* 			free(node->key); */
+/* 			free(node->value); */
+/* 			free(tmp); */
+/* 			return (0); */
+/* 		} */
+/* 		last = tmp; */
+/* 		tmp = tmp->next; */
+/* 	} */
+/* 	return (1); */
+/* } */
+
+int builtin_unset(t_var **env, char **arg)
 {
 	t_var	*tmp;
-	int		i;
+	t_var *node_to_remove;
+	int i;
 
 	i = 1;
-	while (arg[i])
+	while(arg[i])
 	{
 		tmp = *env;
-		while (tmp)
+		while(tmp)
 		{
-			if (!ft_strncmp(arg[i], tmp->key, ft_strlen(arg[i])))
+			if (tmp->key && !ft_strncmp(tmp->key, arg[i], ft_strlen(arg[i])))
 			{
-				if (env_size(*env) == 1)
-				{
-					free_list(env);
-					*env = NULL;
-					tmp = NULL;
-					break ;
-				}
-				if (tmp->next)
-					*env = tmp->next;
-				free(tmp->key);
-				free(tmp->value);
-				free(tmp);
-				break ;
-			}
-			else
+				node_to_remove = tmp;
 				tmp = tmp->next;
+				/* delete_node(&node_to_remove, env); */ //a revoir ! des invalid read of size
+				return (0);
+			}
+			tmp = tmp->next;
 		}
-		if (*env == NULL)
-			break ;
-		i++;
 	}
 	return (0);
 }
 
+/* int	builtin_unset(t_var **env, char **arg) */
+/* { */
+/* 	t_var	*tmp; */
+/* 	t_var	*temp; */
+/* 	int		i; */
+/**/
+/* 	i = 1; */
+/* 	while (arg[i] && *env) */
+/* 	{ */
+/* 		tmp = *env; */
+/* 		while (tmp) */
+/* 		{ */
+/* 			if (tmp->next!ft_strncmp(arg[i], tmp->next->key, ft_strlen(arg[i]))) */
+/* 			{ */
+/* 				temp = tmp;	 */
+/* 				tmp = tmp->next; */
+/* 				temp->next = tmp->next; */
+/* 				if (env_size(*env) == 1) */
+/* 				{ */
+/* 					free_list(env); */
+/* 					*env = NULL; */
+/* 					tmp = NULL; */
+/* 					break ; */
+/* 				} */
+/* 				free(tmp->key); */
+/* 				free(tmp->value); */
+/* 				free(tmp); */
+/* 				break ; */
+/* 			} */
+/* 			else */
+/* 				tmp = tmp->next; */
+/* 		} */
+/* 		if (*env == NULL) */
+/* 			break ; */
+/* 		i++; */
+/* 	} */
+/* 	return (0); */
+/* } */
+/**/
 /* Remove each variable or function name. If the -v option is given,
 	each name */
 /* refers to a shell variable and that variable is removed. If the
