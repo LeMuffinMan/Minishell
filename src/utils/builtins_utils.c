@@ -37,31 +37,6 @@ int	swap_nodes(t_var *n1, t_var *n2)
 	return (0);
 }
 
-int	sort_list(t_var **l)
-{
-	t_var	*tmp;
-	int		sorted;
-
-	sorted = 0;
-	tmp = *l;
-	if (!tmp)
-		return (1);
-	while (sorted == 0)
-	{
-		sorted = 1;
-		tmp = *l;
-		while (tmp->next)
-		{
-			if (compare_keys(tmp->key, tmp->next->key) > 0)
-			{
-				sorted = 0;
-				swap_nodes(tmp, tmp->next);
-			}
-			tmp = tmp->next;
-		}
-	}
-	return (0);
-}
 
 // proteger mieux l'erreur de malloc
 t_var	*copy_list(t_var **env)

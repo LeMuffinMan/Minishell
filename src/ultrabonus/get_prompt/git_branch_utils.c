@@ -72,6 +72,7 @@ char *get_branch(char *pwd)
 
   git_branch = NULL;
   path_to_head = ft_strjoin(pwd, "/.git/HEAD");
+  //si on va dans SRC on trouve plus la branche
   if (access(path_to_head, F_OK | R_OK) == 0)
   {
     git_branch = exctract_branch(path_to_head);

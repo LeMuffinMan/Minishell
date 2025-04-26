@@ -37,8 +37,6 @@ int	builtins(char **arg, t_var **env, t_tree **ast)
 		return (builtin_env(env));
 	else if (!ft_strncmp(arg[0], "exit", 5))
 		return (builtin_exit(arg, env, ast));
-	/* else if (!ft_strncmp(arg[0], "set", 4)) */
-	/* 	return (builtin_set(arg, env, ast)); */
 	/* else if (!ft_strncmp(arg[0], "source", 7)) */
 	/* 	return (builtin_source(arg, env, ast)); */
 	else
@@ -149,8 +147,9 @@ int	exec_cmd(t_tree **ast, t_var **env)
 			strings_env = lst_to_array(env);
 			execve((*ast)->token->content[0], (*ast)->token->content,
 				strings_env);
+			perror("execve");
 			free_array(strings_env);
-			/* free_tree(*ast); */
+			free_tree(ast);
 			free_list(env);
 			exit(1);
 		}
@@ -158,8 +157,8 @@ int	exec_cmd(t_tree **ast, t_var **env)
 		{
 			exit_code = wait_children(pid, pid);
 			/* free_tree(*ast); */
-			free_list(env);
-
+			/* free_list(env); */
+			update_env(env);
 			return (exit_code);
 		}
 	}
@@ -200,7 +199,7 @@ int	exec_ast(t_tree **ast, t_var **env)
 	/* 	return (boolean_operators(ast, env, pipes, pids)); */
 	if ((*ast)->token->token == R_IN || (*ast)->token->token == APPEND
 		|| (*ast)->token->token == TRUNC) 
-		printf("ici"), redirect_stdio(ast, env);
+		redirect_stdio(ast, env); // je devrai return ici ?
 	if ((*ast)->token->token == PIPE)
 		return (exec_pipe(ast, env, &pipes));
 	if ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD)

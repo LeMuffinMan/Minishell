@@ -15,6 +15,7 @@
 #include "structs.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include<unistd.h>
 
 int	print_array(char **array)
 {
@@ -39,10 +40,9 @@ int	print_sorted_env(t_var **env)
 	char	*temp;
 
 	tmp = *env;
-	s = ft_strdup("declare -x ");
 	while (tmp)
 	{
-		s = ft_strjoin(s, tmp->key);
+		s = ft_strjoin("declare -x ", tmp->key);
 		temp = s;
 		if (tmp->value)
 		{

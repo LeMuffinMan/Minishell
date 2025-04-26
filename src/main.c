@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "display.h"
+#include "prints.h"
 
 /* typedef struct s_seq */
 /* { */
@@ -68,6 +69,15 @@
 /*     exit_code = exec_seq(&seq, env); */
 /* } */
 
+//TODO ENV
+//
+//revoir les booleens env | export
+//exit code $?
+//variable _ a gerer dans la liste et pour les echo $_
+//verifier PWD et OLDPWD
+//verifier le unset d'une liste vide
+//verifier export / export arg args
+//verifier env 
 
 int main(int ac, char **av, char **env)
 {
@@ -103,12 +113,12 @@ int main(int ac, char **av, char **env)
         //update env variables !!! si on a un && ou un || on DOIT update l'env entre les deux !!!
         //update prompt
         prompt = NULL;
-        if (isatty(0) && *env)
-        {
-            if (prompt)
-                free(prompt);
-            prompt = get_prompt(&new_env);
-        }
+        /* if (isatty(0) && *env) */
+        /* { */
+        /*     if (prompt) */
+        /*         free(prompt); */
+        /*     prompt = get_prompt(&new_env); */
+        /* } */
         if (!prompt)
             prompt = "[Minishell]$ ";
         line = ft_strdup("");
@@ -123,11 +133,11 @@ int main(int ac, char **av, char **env)
                 exit (error_code);
             }
         }
-        if (isatty(0) && *env)
-        {
-            free(prompt);
-            prompt = NULL;
-        }
+        /* if (isatty(0) && *env) */
+        /* { */
+        /*     free(prompt); */
+        /*     prompt = NULL; */
+        /* } */
 
         /* new_exec(line); */
         strings_env = lst_to_array(&new_env);

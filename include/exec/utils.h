@@ -16,5 +16,6 @@
 # include "structs.h"
 
 void	add_back_var(t_var **lst, char *s, int mode);
+int		swap_nodes(t_var *n1, t_var *n2);
 
 #endif

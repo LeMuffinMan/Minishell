@@ -15,6 +15,7 @@
 #include "structs.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "utils.h"
 
 // DECIDER
 // CAR=CAR
@@ -86,6 +87,33 @@
 // Pareil pour chaque arg
 //
 
+
+int	sort_list(t_var **l)
+{
+	t_var	*tmp;
+	int		sorted;
+
+	sorted = 0;
+	tmp = *l;
+	if (!tmp)
+		return (1);
+	while (sorted == 0)
+	{
+		sorted = 1;
+		tmp = *l;
+		while (tmp->next)
+		{
+			if (compare_keys(tmp->key, tmp->next->key) > 0)
+			{
+				sorted = 0;
+				swap_nodes(tmp, tmp->next);
+			}
+			tmp = tmp->next;
+		}
+	}
+	return (0);
+}
+
 int	free_array(char **array)
 {
 	int	i;
@@ -151,10 +179,12 @@ int	builtin_export(t_var **env, char **arg)
 	if (!arg[1])
 	{
 		copy = copy_list(env);
+		sort_list(&copy);
 		print_sorted_env(&copy);
+		free_list(&copy);
 	}
-	else if (!ft_strncmp("_=", arg[1], 3))
-		return (0);
+	/* else if (!ft_strncmp("_=", arg[1], 3)) */
+	/* 	return (0); */
 	else
 	{
 		key_value = ft_split(arg[1], '=');

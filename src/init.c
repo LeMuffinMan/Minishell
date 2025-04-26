@@ -18,6 +18,7 @@
 #include <unistd.h>
 #include <stdio.h>
 
+//a revoir 
 int	init_last_cmd_var(char *name, t_var **env)
 {
 	char	*s;
@@ -51,14 +52,15 @@ int	build_minimal_env(t_var **env, char **arg)
 	s = ft_strdup("SHLVL=1"); // si le SHLVL est negatif il met SHLVL = 0
 	add_back_var(env, s, 3);
 	free(s);
-	s = ft_strdup("OLDPWD"); // updated in CD seulement ?
-	add_back_var(env, s, 2);
+	s = ft_strdup("OLDPWD="); // updated in CD seulement ?
+	add_back_var(env, s, 1);
 	free(s);
 	init_last_cmd_var(arg[0], env);
 	return (0);
 }
 
 // a tester
+// des char chelou avant le SHLVL
 int	init_and_incremente_shlvl(char *s, t_var **env)
 {
 	int		n;
@@ -93,12 +95,11 @@ int	init_and_incremente_shlvl(char *s, t_var **env)
 	return (0);
 }
 
+//revoir la variable _
 int	init_env(t_var **new_env, char **env, char **arg)
 {
 	int	i;
 
-	// pour simuler un environnement absent et tester les leaks
-	/* *env = NULL; */
 	if (!*env)
 		return (build_minimal_env(new_env, arg));
 	i = 0;
