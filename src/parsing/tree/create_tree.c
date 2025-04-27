@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 21:12:15 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/24 04:28:46 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/27 17:29:54 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ static t_tree	*add_new_node(t_token *token, t_tree *left,
 	new_node->priority = 10;
 	return (new_node);
 }
-
 static t_tree	*parse_list(t_token *start, t_token *end,
 							t_tree *parent, bool flag)
 {
@@ -78,7 +77,7 @@ void	free_tree(t_tree **head)
 	t_tree *left;
 	t_tree *right;
 
-	if (!*head)
+	if (!*head || !head)
 		return ;
 	while ((*head)->prev)
 		(*head) = (*head)->prev;
@@ -88,8 +87,6 @@ void	free_tree(t_tree **head)
 		free_tree(&left);
 	if (right)
 		free_tree(&right);
-	if ((*head)->token)
-		free_parse((*head)->token, NULL, 0);
 	free(*head);
 	*head = NULL;
 }

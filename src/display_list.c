@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 19:15:40 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/24 01:40:27 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/27 17:41:22 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,13 +32,13 @@ static void	display_valid(t_token *node, int i, char **arg, const char **tok)
 		}
 		printf("[%s%s%s]--->[%s%d%s]\n | ^\n v |\n%s",
 			BOLD_PURPLE, tok[node->token],
-			BOLD_BLUE, BOLD_RED, node->priority, BOLD_BLUE, STOP_COLOR);
+			BOLD_BLUE, BOLD_RED, node->error, BOLD_BLUE, STOP_COLOR);
 	}
 	else
 		printf("%sNODE %d: [%s%s%s]--->[%s%s%s]--->[%s%d%s]\n | ^\n v |\n%s",
 			BOLD_BLUE, i, BOLD_GREEN, arg[0], BOLD_BLUE,
 			BOLD_PURPLE, tok[node->token], BOLD_BLUE,
-			BOLD_RED, node->priority, BOLD_BLUE, STOP_COLOR);
+			BOLD_RED, node->error, BOLD_BLUE, STOP_COLOR);
 }
 
 static void	display_unvalid(int i, t_token *node)
@@ -46,7 +46,7 @@ static void	display_unvalid(int i, t_token *node)
 	printf("%sNODE %d: [%s%s%s]--->[%s%d%s]\n | ^\n v |\n%s",
 		BOLD_BLUE, i,
 		BOLD_GREEN, node->content[0], BOLD_BLUE,
-		BOLD_RED, node->priority, BOLD_BLUE, STOP_COLOR);
+		BOLD_RED, node->error, BOLD_BLUE, STOP_COLOR);
 }
 
 void	display_list(t_token *head)

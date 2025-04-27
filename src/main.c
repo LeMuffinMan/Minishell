@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:21:52 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/24 18:21:00 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/27 17:35:23 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,10 +132,14 @@ int main(int ac, char **av, char **env)
         /* new_exec(line); */
         strings_env = lst_to_array(&new_env);
         ast = parse(line, strings_env);
-        free_array(strings_env);
-        strings_env = NULL;
-        error_code = exec_ast(&ast, &new_env);
-        free_tree(&ast);
+        if (ast)
+        {
+            free_array(strings_env);
+            strings_env = NULL;
+            // error_code = exec_ast(&ast, &new_env);
+            free_parse(ast->token, NULL, 0); // a mettre avant chaque free_tree
+            free_tree(&ast);
+        }
         free(line);
         line = NULL;
     }
