@@ -15,19 +15,11 @@
 #include "libft.h"
 #include "list.h"
 #include "exec.h"
-#include <sys/stat.h>
 
 // attention si c'est le proc parrent !! Redup avant de rendre le prompt !!!
 int	open_dup2_close(t_tree **ast, t_type type, int fd[2])
 {
-	struct stat file_infos;
 
-	if (stat((*ast)->token->content[1], &file_infos) == -1)
-	{
-		//error
-	}
-	if (S_ISDIR(file_infos.st_mode)) //maccro qui renvoie un booleen true si c'est un dossier
-		return (1); // si on a un whoami > file > dir > file je veux aller jusqu'au file avant de renvoyer l'erreur ?
 	if (type == R_IN)
 	{
 		fd[0] = open((*ast)->token->content[1], O_RDONLY);
@@ -63,6 +55,7 @@ int	open_dup2_close(t_tree **ast, t_type type, int fd[2])
 	return (0);
 }
 
+
 int	redirect_stdio(t_tree **ast, t_var **env)
 {
 	t_tree	*left;
@@ -75,14 +68,24 @@ int	redirect_stdio(t_tree **ast, t_var **env)
 	/* int stdout_fd; */
 
 	left = (*ast)->left;
+	right = (*ast)->right;
 	fd[0] = -1;
 	fd[1] = -1;
+	if (!(*ast)->token->content[1])
+	{
+		if (right)
+			exit_code = redirect_stdio(&right, env);
+		else 
+		{
+			ft_putstr_fd("minishell: syntax error\n", 2);
+			return (2);
+		}
+	}
 	/* if (left) */
 	/* { */
 	/* 	stdin_fd = dup(STDIN_FILENO); */
  /*  	stdout_fd = dup(STDOUT_FILENO); */
 	/* } */
-	right = (*ast)->right;
 	exit_code = open_dup2_close(ast, (*ast)->token->token, fd);
 	if (exit_code == 1) // Is a dir
 	{
@@ -102,11 +105,11 @@ int	redirect_stdio(t_tree **ast, t_var **env)
 	/* if (!left) // cas impossible ? */
 	/* 	return (exit_code); */
 
-	#include <stdio.h>
-	dprintf(2, "STDIN = %d\n", STDIN_FILENO);
-	dprintf(2, "STDOUT = %d\n", STDOUT_FILENO);
-	printf("left = %p\n", (*ast)->left);
-	printf("right = %p\n", (*ast)->right);
+	/* #include <stdio.h> */
+	/* dprintf(2, "STDIN = %d\n", STDIN_FILENO); */
+	/* dprintf(2, "STDOUT = %d\n", STDOUT_FILENO); */
+	/* printf("left = %p\n", (*ast)->left); */
+	/* printf("right = %p\n", (*ast)->right); */
 	if (left)
 	{
 		exit_code = exec_cmd(&left, env, fd);

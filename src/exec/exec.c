@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
 int	builtins(char **arg, t_var **env, t_tree **ast)
 {
@@ -119,9 +120,21 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes)
 	return (1);
 }
 
+int is_a_directory(char *name)
+{
+	struct stat file_infos;
 
+	if (stat(name, &file_infos) == -1)
+	{
+		//perror
+		return (-1);
+	}
+	if (S_ISDIR(file_infos.st_mode)) //maccro qui renvoie un booleen true si c'est un dossier
+		return (1); // si on a un whoami > file > dir > file je veux aller jusqu'au file avant de renvoyer l'erreur ?
+	return (0);
+}
 
-#include <stdio.h>
+/* #include <stdio.h> */
 //BUILT_IN : PARENT
 //CMD : CHILD
 int	exec_cmd(t_tree **ast, t_var **env, int fd[2])
@@ -129,12 +142,36 @@ int	exec_cmd(t_tree **ast, t_var **env, int fd[2])
 	char	**strings_env;
 	pid_t	pid;
 	int exit_code;
+	char *s;
+	char *tmp;
+
 	/* expand_cmd_sub((*ast)->token->content, env); */
 	if ((*ast)->token->token == BUILT_IN)
 	{
 		exit_code = builtins((*ast)->token->content, env, ast);
 		return (exit_code);
 	}
+	if (is_a_directory((*ast)->token->content[0]))
+	{
+		if (!ft_strncmp((*ast)->token->content[0], ".", 2))
+		{
+			ft_putstr_fd("minishell: .: filename argument required\n.: usage: . filename [arguments]\n", 2);
+			return(2);
+		}
+		if (!ft_strncmp((*ast)->token->content[0], "..", 3))
+		{
+			ft_putstr_fd("minishell: ..: command not found\n", 2);
+			return(127);
+		}
+		s = ft_strjoin("minishell: ", (*ast)->token->content[0]);
+		tmp = s;
+		s = ft_strjoin(s, ": Is a directory\n");
+		free(tmp);
+		ft_putstr_fd(s, 2);
+		free(s);
+		return (126);
+	}
+
 	if ((*ast)->token->token == CMD)
 	{
 		pid = fork();
@@ -200,24 +237,42 @@ int	exec_cmd(t_tree **ast, t_var **env, int fd[2])
 /* 		return (exit_code); */
 /* } */
 
+int is_first_char_a_redir(char c)
+{
+	if (c == '>' || c == '<')
+		return (1);
+	return (0);
+}
+
 int	exec_ast(t_tree **ast, t_var **env)
 {
   t_pipe *pipes;
+  int exit_code;
   int fd[2];
 
 	fd[0] = -1;
 	fd[1] = -1;
   pipes = NULL;
+  exit_code = 0;
 	//O_AND VONT VIRER 
 	/* if ((*ast)->token->token == O_AND || (*ast)->token->token == O_OR) */
 	/* 	return (boolean_operators(ast, env, pipes, pids)); */
 	if ((*ast)->token->token == R_IN || (*ast)->token->token == APPEND
 		|| (*ast)->token->token == TRUNC) 
-		redirect_stdio(ast, env); // je devrai return ici ?
+		exit_code = redirect_stdio(ast, env); // je devrai return ici ?
 	if ((*ast)->token->token == PIPE)
 		return (exec_pipe(ast, env, &pipes));
 	if ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD)
 		return (exec_cmd(ast, env, fd));
+	//errors
+	if (!ft_strncmp((*ast)->token->content[0], ":", 2))
+			return(0);
+	//si on a un content[0] qui ne correspond a aucune des redirections a gerer
+	if (is_first_char_a_redir((*ast)->token->content[0][0]) && ft_strncmp((*ast)->token->content[0], ">", 2) && ft_strncmp((*ast)->token->content[0], "<", 2) && ft_strncmp((*ast)->token->content[0], "<<", 3) && ft_strncmp((*ast)->token->content[0], ">>", 3))
+	{
+		ft_putstr_fd("minishell: syntax error\n", 2);
+		return (2);
+	}
 	if ((*ast)->token->error == 127)
 		return (error_cmd_not_found((*ast)->token->content[0]));
 	if ((*ast)->token->error == 126)
@@ -228,7 +283,7 @@ int	exec_ast(t_tree **ast, t_var **env)
 	  //un token shell_func
 	  //un token substitution cmd ?
 			//on ne l'expand pas jusqu'au dernier moment, et on execute le contenu des parentheses 
-	return (0);
+	return (exit_code);
 }
 
 //Gros debuggage 
