@@ -113,30 +113,28 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes)
     //si j'ai rediriger la lecture / ecriture du parent, 
     //il faut la reset correctement avant de rendre le prompt
     //il faut peut etre le faire encore plus tot ?
-    dup2(stdin_fd, STDIN_FILENO);
-    dup2(stdout_fd, STDOUT_FILENO);
 		exit_code = wait_children(right_pid, left_pid);
 		return(exit_code);
 	}
 	return (1);
 }
 
+
+
+#include <stdio.h>
 //BUILT_IN : PARENT
 //CMD : CHILD
-int	exec_cmd(t_tree **ast, t_var **env)
+int	exec_cmd(t_tree **ast, t_var **env, int fd[2])
 {
 	char	**strings_env;
 	pid_t	pid;
 	int exit_code;
-
-
 	/* expand_cmd_sub((*ast)->token->content, env); */
 	if ((*ast)->token->token == BUILT_IN)
 	{
 		exit_code = builtins((*ast)->token->content, env, ast);
 		return (exit_code);
 	}
-
 	if ((*ast)->token->token == CMD)
 	{
 		pid = fork();
@@ -144,6 +142,20 @@ int	exec_cmd(t_tree **ast, t_var **env)
 			return(-1);
 		if (pid == 0)
 		{
+			if (fd[0] > 2) //si on une redir in
+			{
+				dprintf(2, "fd[0] = %d\n", fd[0]);
+				dup2(fd[0], STDIN_FILENO);
+				close(fd[0]);
+				dprintf(2, "STDIN = %d\n", STDIN_FILENO);
+			}
+			if (fd[2] > 2)
+			{
+				dprintf(2, "fd[1] = %d\n", fd[1]);
+				dup2(fd[1], STDOUT_FILENO);
+				close(fd[1]);
+				dprintf(2, "STDOUT = %d\n", STDOUT_FILENO);
+			}
 			strings_env = lst_to_array(env);
 			execve((*ast)->token->content[0], (*ast)->token->content,
 				strings_env);
@@ -191,9 +203,11 @@ int	exec_cmd(t_tree **ast, t_var **env)
 int	exec_ast(t_tree **ast, t_var **env)
 {
   t_pipe *pipes;
+  int fd[2];
 
+	fd[0] = -1;
+	fd[1] = -1;
   pipes = NULL;
-
 	//O_AND VONT VIRER 
 	/* if ((*ast)->token->token == O_AND || (*ast)->token->token == O_OR) */
 	/* 	return (boolean_operators(ast, env, pipes, pids)); */
@@ -203,7 +217,7 @@ int	exec_ast(t_tree **ast, t_var **env)
 	if ((*ast)->token->token == PIPE)
 		return (exec_pipe(ast, env, &pipes));
 	if ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD)
-		return (exec_cmd(ast, env));
+		return (exec_cmd(ast, env, fd));
 	if ((*ast)->token->error == 127)
 		return (error_cmd_not_found((*ast)->token->content[0]));
 	if ((*ast)->token->error == 126)
