@@ -66,15 +66,15 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes)
 	t_tree	*right_branch;
 	int		pipefd[2];
 	int exit_code;
-	int stdin_fd;
-	int stdout_fd;
+	/* int stdin_fd; */
+	/* int stdout_fd; */
 
 	right_branch = (*ast)->right;
 	left_branch = (*ast)->left;
 	add_pipe(pipefd, pipes);
   //on veut sauvegarder le numero des fds originaux des lectures /ecritures
-  stdin_fd = dup(STDIN_FILENO);
-  stdout_fd = dup(STDOUT_FILENO);
+  /* stdin_fd = dup(STDIN_FILENO); */
+  /* stdout_fd = dup(STDOUT_FILENO); */
 	left_pid = fork();
 	if (!left_pid)
 	{

@@ -68,7 +68,7 @@ int	env_size(t_var *env)
 int builtin_unset(t_var **env, char **arg)
 {
 	t_var	*tmp;
-	t_var *node_to_remove;
+	/* t_var *node_to_remove; */
 	int i;
 
 	i = 1;
@@ -79,7 +79,7 @@ int builtin_unset(t_var **env, char **arg)
 		{
 			if (tmp->key && !ft_strncmp(tmp->key, arg[i], ft_strlen(arg[i])))
 			{
-				node_to_remove = tmp;
+				/* node_to_remove = tmp; */
 				tmp = tmp->next;
 				/* delete_node(&node_to_remove, env); */ //a revoir ! des invalid read of size
 				return (0);
