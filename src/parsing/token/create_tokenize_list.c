@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 02:24:25 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/23 03:10:02 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/27 17:21:33 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,9 @@ void	free_parse(t_token *list, const char *str, int error)
 		next_node = tmp->next;
 		if (tmp->content)
 			free_tab(tmp->content);
-		free(tmp);
+		if (tmp)
+			free(tmp);
+		tmp = NULL;
 		tmp = next_node;
 	}
 	if (str)

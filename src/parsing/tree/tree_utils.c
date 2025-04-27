@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 16:03:15 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/24 18:30:31 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/27 17:18:39 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,9 +85,12 @@ void	last_node(t_token **node, bool flag)
 	}
 	else
 	{
-		while ((*node) && (*node)->priority != 10)
+		while ((*node)->next)
+		{
+			if ((*node)->token == O_AND || (*node)->token == O_OR)
+				break ;
 			*node = (*node)->next;
-		/* *node = (*node)->next; */
+		}
 	}
 }
 

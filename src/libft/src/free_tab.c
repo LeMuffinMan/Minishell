@@ -17,7 +17,7 @@ void	free_tab(char **tab)
 	int	i;
 
 	i = 0;
-	if (!tab)
+	if (!tab || !tab[0])
 		return ;
 	while (tab[i])
 	{
@@ -26,4 +26,5 @@ void	free_tab(char **tab)
 	}
 	if (tab)
 		free(tab);
+	tab = NULL;
 }
