@@ -144,12 +144,12 @@ int main(int ac, char **av, char **env)
         /* new_exec(line); */
         strings_env = lst_to_array(&new_env);
         ast = parse(line, strings_env);
+        free_array(strings_env);
+        strings_env = NULL;
+        error_code = exec_ast(&ast, &new_env);
         if (ast)
         {
-            free_array(strings_env);
-            strings_env = NULL;
-            // error_code = exec_ast(&ast, &new_env);
-            free_parse(ast->token, NULL, 0); // a mettre avant chaque free_tree
+            free_parse(ast->token, NULL, 0);
             free_tree(&ast);
         }
         free(line);

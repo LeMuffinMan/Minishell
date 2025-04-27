@@ -32,7 +32,7 @@ t_tree	*parse(char *line, char **envp)
 	parse_line(line, &lexer);
 	if (!lexer)
 		return (NULL);
-	display_lexer(lexer);
+	/* display_lexer(lexer); */
 	while (lexer->next)
 	{
 		add_back(&token, lexer->arg);

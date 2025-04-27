@@ -198,6 +198,7 @@ int	exec_cmd(t_tree **ast, t_var **env, int fd[2])
 				strings_env);
 			perror("execve");
 			free_array(strings_env);
+      free_parse((*ast)->token, NULL, 0);
 			free_tree(ast);
 			free_list(env);
 			exit(1);
@@ -254,9 +255,15 @@ int	exec_ast(t_tree **ast, t_var **env)
 	fd[1] = -1;
   pipes = NULL;
   exit_code = 0;
+
 	//O_AND VONT VIRER 
 	/* if ((*ast)->token->token == O_AND || (*ast)->token->token == O_OR) */
 	/* 	return (boolean_operators(ast, env, pipes, pids)); */
+
+  if (!*ast)
+  {
+  	return(127);
+  }
 	if ((*ast)->token->token == R_IN || (*ast)->token->token == APPEND
 		|| (*ast)->token->token == TRUNC) 
 		exit_code = redirect_stdio(ast, env); // je devrai return ici ?
@@ -267,7 +274,7 @@ int	exec_ast(t_tree **ast, t_var **env)
 	//errors
 	if (!ft_strncmp((*ast)->token->content[0], ":", 2))
 			return(0);
-	//si on a un content[0] qui ne correspond a aucune des redirections a gerer
+	//le dernier merge a peter ca
 	if (is_first_char_a_redir((*ast)->token->content[0][0]) && ft_strncmp((*ast)->token->content[0], ">", 2) && ft_strncmp((*ast)->token->content[0], "<", 2) && ft_strncmp((*ast)->token->content[0], "<<", 3) && ft_strncmp((*ast)->token->content[0], ">>", 3))
 	{
 		ft_putstr_fd("minishell: syntax error\n", 2);
