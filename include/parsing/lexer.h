@@ -25,5 +25,8 @@ typedef struct s_lexer
 void	parse_line(char *str, t_lexer **list);
 void	free_lexer(t_lexer *head, const char *str, int error);
 void	check_parenthesis(t_lexer **list);
+void	add_lexer_back(t_lexer **head, char *str);
+void	alloc_operator_to_lexer(char *str, char **res, int i, t_lexer **list);
+void	alloc_word_to_lexer(char *str, int *i, t_lexer **list);
 
 #endif

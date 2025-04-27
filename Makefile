@@ -40,6 +40,7 @@ LIBFT_HEAD			=	libft.h get_next_line.h ft_printf.h
 
 SRC					=	main.c \
 						concat_args.c \
+						concat_args_utils.c \
 						create_here_doc.c \
 						create_tokenize_list.c \
 						create_tree.c \

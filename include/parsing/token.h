@@ -14,6 +14,7 @@
 # define TOKEN_H
 
 # define SUCCESS 0
+# define NO_F_OR_D 2
 # define MEM_ALLOC 12
 # define PERMISSION_DENIED 126
 # define CMD_NOT_FOUND 127
@@ -58,5 +59,9 @@ void	is_built_in(t_token **node);
 int		is_slash(const char *s1);
 int		env_is_alive(char **envp);
 void	replace_tab(t_token **node, char *str);
+
+void	check_syntax_error(t_token **head);
+
+t_token	*add_new_token(char *str, int error_code);
 
 #endif

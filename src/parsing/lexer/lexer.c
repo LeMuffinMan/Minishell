@@ -60,7 +60,7 @@ static t_lexer	*add_new_node(char *str)
 	return (new_node);
 }
 
-static void	add_lexer_back(t_lexer **head, char *str)
+void	add_lexer_back(t_lexer **head, char *str)
 {
 	t_lexer	*new_node;
 	t_lexer	*tmp;
@@ -85,15 +85,18 @@ static void	add_lexer_back(t_lexer **head, char *str)
 	new_node->prev = tmp;
 }
 
-static int	alloc_lexer(char *str, char c, t_lexer **list)
+static int	parse_operator(char *str, char c, t_lexer **list)
 {
 	int		i;
 	char	*res;
+	int		len;
 
 	i = 1;
+	len = ft_strlen(str);
 	while (str[i])
 	{
-		if (c != '"' && c != '\'' && (str[i - 1] == '|' && str[i] != '|'))
+		if (c != '"' && c != '\'' && ((str[i - 1] == '|' && str[i] != '|') 
+		|| (str[i - 1] == '<' && str[i] != '<')))
 		{
 			i -= 1;
 			break ;
@@ -105,40 +108,29 @@ static int	alloc_lexer(char *str, char c, t_lexer **list)
 		i++;
 	}
 	i++;
-	res = ft_strndup(str, i);
-	if (!res)
-		free_lexer(*list,
-			"Malloc failed in function 'alloc_lexer'", MEM_ALLOC);
-	add_lexer_back(list, res);
-	free(res);
+	if (i >= len)
+		i--;
+	alloc_operator_to_lexer(str, &res, i, list);
 	return (i);
 }
 
 void	parse_line(char *str, t_lexer **list)
 {
 	int		i;
-	int		start;
-	char	*word;
-
+	
 	i = 0;
+	if (!str)
+		return ;
 	while (str[i])
 	{
 		if (str[i] == ' ')
 			i++;
 		else if (str[i] == '|' || str[i] == '&'
-			|| str[i] == '"' || str[i] == '\'')
-			i += alloc_lexer(&str[i], str[i], list);
+			|| str[i] == '"' || str[i] == '\''
+			|| str[i] == '<' || str[i] == '>')
+			i += parse_operator(&str[i], str[i], list);
 		else
-		{
-			start = i;
-			while (str[i] && str[i] != ' ' && str[i] != '&' && str[i] != '|')
-				i++;
-			word = ft_strndup(&str[start], i - start);
-			if (!word)
-				free_lexer(*list, "Malloc failed in parse_line", MEM_ALLOC);
-			add_lexer_back(list, word);
-			free(word);
-		}
+			alloc_word_to_lexer(str, &i, list);
 	}
 	check_parenthesis(list);
 }

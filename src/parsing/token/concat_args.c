@@ -41,7 +41,9 @@ static bool	is_same_family(t_token *node)
 		|| (node->token == HD)
 		|| (node->token == R_IN) || (node->token == TRUNC))
 	{
-		if (node->next)
+		if (node->next && node->next->token != APPEND
+		&& node->next->token != HD
+		&& node->next->token != R_IN && node->next->token != TRUNC)
 			return (true);
 	}
 	else if ((node->token == BUILT_IN) || (node->token == CMD))
@@ -118,4 +120,5 @@ void	concat_args(t_token **head)
 		else
 			tmp = tmp->next;
 	}
+	check_syntax_error(head);
 }
