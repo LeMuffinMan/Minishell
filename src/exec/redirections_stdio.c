@@ -23,6 +23,7 @@ int	open_dup2_close(t_tree **ast, t_type type)
 
 	if (is_a_directory((*ast)->token->content[1]))
 		return (1);
+	//ajouter un check pour les perm !!
 	if (type == R_IN)
 	{
 		fd[0] = open((*ast)->token->content[1], O_RDONLY);
