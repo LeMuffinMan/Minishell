@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 01:26:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/24 02:18:11 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/28 12:44:07 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define TOKEN_H
 
 # define SUCCESS 0
+# define NO_F_OR_D 2
 # define MEM_ALLOC 12
 # define PERMISSION_DENIED 126
 # define CMD_NOT_FOUND 127
@@ -40,7 +41,7 @@ typedef enum e_type
 	S_QUOTE,
 	TRUNC,
 	WILDCARD
-}	t_type; 
+}	t_type;
 
 /* ----------------------Token---------------------- */
 void	assign_token(t_token **head, char **envp);
@@ -58,5 +59,9 @@ void	is_built_in(t_token **node);
 int		is_slash(const char *s1);
 int		env_is_alive(char **envp);
 void	replace_tab(t_token **node, char *str);
+
+void	check_syntax_error(t_token **head);
+
+t_token	*add_new_token(char *str, int error_code);
 
 #endif

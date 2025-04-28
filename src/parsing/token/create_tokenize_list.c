@@ -32,7 +32,7 @@ static char	**alloc_tab(char *str)
 	return (res);
 }
 
-static t_token	*add_new_node(char *str)
+t_token	*add_new_token(char *str, int error_code)
 {
 	t_token	*new_node;
 
@@ -44,7 +44,7 @@ static t_token	*add_new_node(char *str)
 	new_node->next = NULL;
 	new_node->prev = NULL;
 	new_node->token = -1;
-	new_node->error = SUCCESS;
+	new_node->error = error_code;
 	new_node->content = alloc_tab(str);
 	new_node->priority = 10;
 	new_node->seq = true;
@@ -61,7 +61,7 @@ void	add_back(t_token **head, char *str)
 	t_token	*new_node;
 	t_token	*tmp;
 
-	new_node = add_new_node(str);
+	new_node = add_new_token(str, SUCCESS);
 	if (!new_node)
 	{
 		free_parse(*head, NULL, 0);
