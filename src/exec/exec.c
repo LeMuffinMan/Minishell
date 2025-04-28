@@ -265,6 +265,11 @@ int	exec_ast(t_tree **ast, t_var **env)
   {
   	return(127);
   }
+  if ((*ast)->token->error == 2)
+  {
+  	ft_putendl_fd((*ast)->token->content[0], 2);
+  	return ((*ast)->token->error);
+  }
 	if ((*ast)->token->token == R_IN || (*ast)->token->token == APPEND
 		|| (*ast)->token->token == TRUNC) 
 		exit_code = redirect_stdio(ast, env); // je devrai return ici ?
