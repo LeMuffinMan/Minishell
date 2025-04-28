@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 01:45:03 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/28 13:44:40 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/28 16:32:02 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,8 @@ void	alloc_word_to_lexer(char *str, int *i, t_lexer **list)
 	start = *i;
 	while (str[*i] && str[*i] != ' ' && str[*i] != '&'
 		&& str[*i] != '|' && str[*i] != '<' && str[*i] != '>'
-		&& str[*i] != '(' && str[*i] != ')')
+		&& str[*i] != '(' && str[*i] != ')'
+		&& str[*i] != '"' && str[*i] != '\'')
 		(*i)++;
 	word = ft_strndup(&str[start], *i - start);
 	if (!word)
