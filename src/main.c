@@ -92,6 +92,7 @@ int main(int ac, char **av, char **env)
     t_var    *new_env;
     t_tree *ast;
     char **strings_env;
+	int origin_fds[2];
 
     /* if (isatty(1)) */
     /* { */
@@ -110,6 +111,9 @@ int main(int ac, char **av, char **env)
     /* print_env(&new_env); */
     /* if (find_minishellrc) */
     /*     load_minishell_rc(&new_env); */
+
+	/* dprintf(2, "origin_fds[0] = %d\n", origin_fds[0]); */
+	/* dprintf(2, "origin_fds[1] = %d\n", origin_fds[1]); */
     while (1)
     {
         //update env variables !!! si on a un && ou un || on DOIT update l'env entre les deux !!!
@@ -136,6 +140,8 @@ int main(int ac, char **av, char **env)
                 exit (error_code);
             }
         }
+	    origin_fds[0] = dup(STDIN_FILENO);
+	    origin_fds[1] = dup(STDOUT_FILENO);
         /* if (isatty(0) && *env) */
         /* { */
         /*     free(prompt); */
@@ -148,6 +154,10 @@ int main(int ac, char **av, char **env)
         free_array(strings_env);
         strings_env = NULL;
         error_code = exec_ast(&ast, &new_env);
+        dup2(origin_fds[0], STDIN_FILENO);
+        dup2(origin_fds[1], STDOUT_FILENO);
+        close(origin_fds[0]);
+        close(origin_fds[1]);
         if (ast)
         {
             free_parse(ast->token, NULL, 0);

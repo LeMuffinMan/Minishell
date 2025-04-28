@@ -28,7 +28,7 @@ int error_cmd_perm_denied(char *cmd);
 
 //redirections_stdio.c
 int	redirect_stdio(t_tree **ast, t_var **env);
-int	open_dup2_close(t_tree **ast, t_type type, int fd[2]);
+int	open_dup2_close(t_tree **ast, t_type type);
 
 int exec_ast (t_tree **ast, t_var **env);
 int	exec_cmd(t_tree **ast, t_var **env);
