@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 00:19:05 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/28 10:36:28 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/28 16:35:49 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,8 +108,6 @@ static int	parse_operator(char *str, char c, t_lexer **list)
 		i++;
 	}
 	i++;
-	if (i >= (int)ft_strlen(str))
-		i--;
 	alloc_operator_to_lexer(str, i, list);
 	return (i);
 }
