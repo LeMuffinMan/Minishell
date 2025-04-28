@@ -112,7 +112,7 @@ int	redirect_stdio(t_tree **ast, t_var **env)
 	/* printf("right = %p\n", (*ast)->right); */
 	if (left)
 	{
-		exit_code = exec_cmd(&left, env, fd);
+		exit_code = exec_cmd(&left, env);
 	}
 	return (exit_code);
 }
