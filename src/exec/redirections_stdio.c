@@ -21,6 +21,8 @@ int	open_dup2_close(t_tree **ast, t_type type)
 {
 	int fd[2];
 
+	if (is_a_directory((*ast)->token->content[1]))
+		return (1);
 	if (type == R_IN)
 	{
 		fd[0] = open((*ast)->token->content[1], O_RDONLY);
