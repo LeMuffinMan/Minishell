@@ -66,15 +66,15 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes)
 	t_tree	*right_branch;
 	int		pipefd[2];
 	int exit_code;
-	int stdin_fd;
-	int stdout_fd;
+	/* int stdin_fd; */
+	/* int stdout_fd; */
 
 	right_branch = (*ast)->right;
 	left_branch = (*ast)->left;
 	add_pipe(pipefd, pipes);
   //on veut sauvegarder le numero des fds originaux des lectures /ecritures
-  stdin_fd = dup(STDIN_FILENO);
-  stdout_fd = dup(STDOUT_FILENO);
+  /* stdin_fd = dup(STDIN_FILENO); */
+  /* stdout_fd = dup(STDOUT_FILENO); */
 	left_pid = fork();
 	if (!left_pid)
 	{
@@ -86,8 +86,9 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes)
 		close(pipefd[0]);
 		dup2(pipefd[1], STDOUT_FILENO);
 		close(pipefd[1]);
+		/* close(0); */
 		free_pipes(pipes);
-		return(exec_ast(&left_branch, env));
+		exit(exec_ast(&left_branch, env));
 	}
 	else
 		close(pipefd[1]);
@@ -102,9 +103,9 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes)
 		close(pipefd[0]);
 		free_pipes(pipes);
 		if (right_branch->token->token == PIPE)
-			return(exec_pipe(&right_branch, env, pipes));
+			exit(exec_pipe(&right_branch, env, pipes));
 		else
-			return (exec_ast(&right_branch, env));
+			exit(exec_ast(&right_branch, env));
 	}
 	else
 	{
@@ -137,7 +138,7 @@ int is_a_directory(char *name)
 /* #include <stdio.h> */
 //BUILT_IN : PARENT
 //CMD : CHILD
-int	exec_cmd(t_tree **ast, t_var **env, int fd[2])
+int	exec_cmd(t_tree **ast, t_var **env)
 {
 	char	**strings_env;
 	pid_t	pid;
@@ -179,20 +180,20 @@ int	exec_cmd(t_tree **ast, t_var **env, int fd[2])
 			return(-1);
 		if (pid == 0)
 		{
-			if (fd[0] > 2) //si on une redir in
-			{
-				dprintf(2, "fd[0] = %d\n", fd[0]);
-				dup2(fd[0], STDIN_FILENO);
-				close(fd[0]);
-				dprintf(2, "STDIN = %d\n", STDIN_FILENO);
-			}
-			if (fd[2] > 2)
-			{
-				dprintf(2, "fd[1] = %d\n", fd[1]);
-				dup2(fd[1], STDOUT_FILENO);
-				close(fd[1]);
-				dprintf(2, "STDOUT = %d\n", STDOUT_FILENO);
-			}
+			/* if (fd[0] > 2) //si on une redir in */
+			/* { */
+			/* 	dprintf(2, "fd[0] = %d\n", fd[0]); */
+			/* 	dup2(fd[0], STDIN_FILENO); */
+			/* 	close(fd[0]); */
+			/* 	dprintf(2, "STDIN = %d\n", STDIN_FILENO); */
+			/* } */
+			/* if (fd[2] > 2) */
+			/* { */
+			/* 	dprintf(2, "fd[1] = %d\n", fd[1]); */
+			/* 	dup2(fd[1], STDOUT_FILENO); */
+			/* 	close(fd[1]); */
+			/* 	dprintf(2, "STDOUT = %d\n", STDOUT_FILENO); */
+			/* } */
 			strings_env = lst_to_array(env);
 			execve((*ast)->token->content[0], (*ast)->token->content,
 				strings_env);
@@ -270,10 +271,10 @@ int	exec_ast(t_tree **ast, t_var **env)
 	if ((*ast)->token->token == PIPE)
 		return (exec_pipe(ast, env, &pipes));
 	if ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD)
-		return (exec_cmd(ast, env, fd));
+		return (exec_cmd(ast, env));
 	//errors
-	if (!ft_strncmp((*ast)->token->content[0], ":", 2))
-			return(0);
+	/* if (!ft_strncmp((*ast)->token->content[0], ":", 2)) */
+	/* 		return(0); */
 	//le dernier merge a peter ca
 	if (is_first_char_a_redir((*ast)->token->content[0][0]) && ft_strncmp((*ast)->token->content[0], ">", 2) && ft_strncmp((*ast)->token->content[0], "<", 2) && ft_strncmp((*ast)->token->content[0], "<<", 3) && ft_strncmp((*ast)->token->content[0], ">>", 3))
 	{
