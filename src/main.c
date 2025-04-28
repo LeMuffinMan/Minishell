@@ -127,6 +127,7 @@ int main(int ac, char **av, char **env)
         while (ft_strlen(line) == 0 || !ft_strncmp(line, "\n", 2))
         {
             free(line);
+            line = NULL;
             line = readline(prompt);
             if (!line)
             {
