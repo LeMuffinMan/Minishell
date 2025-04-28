@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   concat_args_utils.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/28 12:44:43 by asinsard          #+#    #+#             */
+/*   Updated: 2025/04/28 12:53:06 by asinsard         ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "list.h"
 #include "libft.h"
 #include <stdlib.h>
@@ -37,10 +49,10 @@ void	check_syntax_error(t_token **head)
 	tmp = *head;
 	while (tmp)
 	{
-		if ((tmp->token == PIPE && (!tmp->prev || !tmp->next)) 
-			|| ((tmp->token == R_IN || tmp->token == HD 
-			|| tmp->token == TRUNC || tmp->token == APPEND) 
-			&& !tmp->content[1]))
+		if ((tmp->token == PIPE && (!tmp->prev || !tmp->next))
+			|| (((tmp->token == R_IN) || (tmp->token == HD)
+					|| (tmp->token == TRUNC) || (tmp->token == APPEND))
+				&& !tmp->content[1]))
 		{
 			*head = set_syntax_error(tmp);
 			return ;

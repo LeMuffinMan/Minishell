@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 01:26:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/24 02:18:11 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/28 12:44:07 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ typedef enum e_type
 	S_QUOTE,
 	TRUNC,
 	WILDCARD
-}	t_type; 
+}	t_type;
 
 /* ----------------------Token---------------------- */
 void	assign_token(t_token **head, char **envp);

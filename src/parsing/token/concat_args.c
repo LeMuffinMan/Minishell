@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 04:50:03 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/28 10:53:05 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/28 12:47:20 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,8 @@ static bool	is_same_family(t_token *node)
 		|| (node->token == R_IN) || (node->token == TRUNC))
 	{
 		if (node->next && node->next->token != APPEND
-		&& node->next->token != HD
-		&& node->next->token != R_IN && node->next->token != TRUNC)
+			&& node->next->token != HD
+			&& node->next->token != R_IN && node->next->token != TRUNC)
 			return (true);
 	}
 	else if ((node->token == BUILT_IN) || (node->token == CMD))

@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:21:52 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/27 17:35:23 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/28 13:29:17 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,6 +127,7 @@ int main(int ac, char **av, char **env)
         while (ft_strlen(line) == 0 || !ft_strncmp(line, "\n", 2))
         {
             free(line);
+            line = NULL;
             line = readline(prompt);
             if (!line)
             {
