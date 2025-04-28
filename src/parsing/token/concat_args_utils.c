@@ -40,7 +40,7 @@ void	check_syntax_error(t_token **head)
 		if ((tmp->token == PIPE && (!tmp->prev || !tmp->next)) 
 			|| ((tmp->token == R_IN || tmp->token == HD 
 			|| tmp->token == TRUNC || tmp->token == APPEND) 
-			&& (!tmp->next || !tmp->content[1])))
+			&& !tmp->content[1]))
 		{
 			*head = set_syntax_error(tmp);
 			return ;
