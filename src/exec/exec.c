@@ -146,6 +146,7 @@ int	exec_cmd(t_tree **ast, t_var **env)
 	char *s;
 	char *tmp;
 
+
 	/* expand_cmd_sub((*ast)->token->content, env); */
 	if ((*ast)->token->token == BUILT_IN)
 	{
@@ -209,6 +210,12 @@ int	exec_cmd(t_tree **ast, t_var **env)
 			exit_code = wait_children(pid, pid);
 			/* free_tree(*ast); */
 			/* free_list(env); */
+			/* dprintf(2, "origin_fds[0] = %d\n", origin_fds[0]); */
+			/* dprintf(2, "origin_fds[1] = %d\n", origin_fds[1]); */
+			/* dup2(origin_fds[0], STDIN_FILENO); */
+			/* dup2(origin_fds[1], STDOUT_FILENO); */
+			/* close(origin_fds[0]); */
+			/* close(origin_fds[1]); */
 			update_env(env);
 			return (exit_code);
 		}
@@ -250,17 +257,14 @@ int	exec_ast(t_tree **ast, t_var **env)
 {
   t_pipe *pipes;
   int exit_code;
-  int fd[2];
 
-	fd[0] = -1;
-	fd[1] = -1;
   pipes = NULL;
   exit_code = 0;
-
 	//O_AND VONT VIRER 
 	/* if ((*ast)->token->token == O_AND || (*ast)->token->token == O_OR) */
 	/* 	return (boolean_operators(ast, env, pipes, pids)); */
 
+	//on veut que seulement le parent fasse ca
   if (!*ast)
   {
   	return(127);
@@ -272,25 +276,22 @@ int	exec_ast(t_tree **ast, t_var **env)
   }
 	if ((*ast)->token->token == R_IN || (*ast)->token->token == APPEND
 		|| (*ast)->token->token == TRUNC) 
-		exit_code = redirect_stdio(ast, env); // je devrai return ici ?
+		return(redirect_stdio(ast, env));
 	if ((*ast)->token->token == PIPE)
 		return (exec_pipe(ast, env, &pipes));
 	if ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD)
-		return (exec_cmd(ast, env));
+	{
+		exit_code = exec_cmd(ast, env);
+
+		return (exit_code);
+	}
 	//errors
 	/* if (!ft_strncmp((*ast)->token->content[0], ":", 2)) */
 	/* 		return(0); */
-	//le dernier merge a peter ca
-	if (is_first_char_a_redir((*ast)->token->content[0][0]) && ft_strncmp((*ast)->token->content[0], ">", 2) && ft_strncmp((*ast)->token->content[0], "<", 2) && ft_strncmp((*ast)->token->content[0], "<<", 3) && ft_strncmp((*ast)->token->content[0], ">>", 3))
-	{
-		ft_putstr_fd("minishell: syntax error\n", 2);
-		return (2);
-	}
 	if ((*ast)->token->error == 127)
 		return (error_cmd_not_found((*ast)->token->content[0]));
 	if ((*ast)->token->error == 126)
 		return (error_cmd_perm_denied((*ast)->token->content[0]));
-		//un token VAR ?
 	//Ultrabonus
 		//un token Alias
 	  //un token shell_func
