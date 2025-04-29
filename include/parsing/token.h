@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 01:26:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/28 12:44:07 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/29 18:50:19 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@
 
 struct					s_token;
 typedef struct s_token	t_token;
+struct					s_var;
+typedef struct s_var	t_var;
 
 typedef enum e_type
 {
@@ -45,7 +47,7 @@ typedef enum e_type
 
 /* ----------------------Token---------------------- */
 void	assign_token(t_token **head, char **envp);
-void	concat_args(t_token **head);
+void	concat_args(t_token **head, t_var *list_env);
 
 /* ------------------Handle command----------------- */
 bool	parse_path_without_env(t_token *node);

@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 19:51:51 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/15 23:54:20 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/29 15:21:45 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ char	*verif_command(t_token **node, char *tmp, char **path, char **envp)
 {
 	tmp = extract_path(envp);
 	if (!tmp)
-		free_parse(*node, "Malloc failed in function 'is_command'", MEM_ALLOC);
+		free_parse(*node, "Malloc failed in function 'extract_path'", MEM_ALLOC);
 	path = split_the_path(tmp);
 	free(tmp);
 	tmp = NULL;

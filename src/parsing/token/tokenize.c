@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 21:44:17 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/29 13:36:18 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/29 15:42:20 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,10 @@ static void	is_command_whithout_env(t_token **node, char **envp)
 	else if (is_slash((*node)->content[0]) || !env_is_alive(envp))
 	{
 		if (!parse_path_without_env(*node))
+		{
+			
 			return ;
+		}	
 		else
 		{
 			replace_tab(node, NULL);
@@ -102,27 +105,24 @@ void	assign_token(t_token **head, char **envp)
 {
 	t_token	*tmp;
 
-	tmp = *head;
-	while (tmp->next)
+	tmp = *head;	
+	while (tmp)
 	{
 		is_redirection(&tmp);
 		if ((int)tmp->token < 0)
 			is_operand_or_quote(&tmp);
 		if ((int)tmp->token < 0)
 		{
-			is_command_whithout_env(&tmp, envp);
-			if ((int)tmp->token < 0)
-				is_command(&tmp, envp);
+			if (!tmp->prev || (tmp->prev->token != CMD
+				&& tmp->prev->token != BUILT_IN))
+			{
+				is_command_whithout_env(&tmp, envp);
+				if ((int)tmp->token < 0)
+					is_command(&tmp, envp);	
+			}
+			else
+				tmp->error = PERMISSION_DENIED;
 		}
 		tmp = tmp->next;
-	}
-	is_redirection(&tmp);
-	if ((int)tmp->token < 0)
-		is_operand_or_quote(&tmp);
-	if ((int)tmp->token < 0)
-	{
-		is_command_whithout_env(&tmp, envp);
-		if ((int)tmp->token < 0)
-			is_command(&tmp, envp);
 	}
 }

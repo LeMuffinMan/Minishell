@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 14:31:45 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/24 17:00:37 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/04/29 18:50:48 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ int	print_array(char **array);
 
 //utils.c 
 char **lst_to_array(t_var **env);
-t_tree	*parse(char *line, char **envp);
+t_tree	*parse(char *line, char **envp, t_var *list_env);
 int free_pipes(t_pipe **pipes);
 
 //get_prompt

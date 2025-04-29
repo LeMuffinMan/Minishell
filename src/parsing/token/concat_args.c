@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 04:50:03 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/28 12:47:20 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/29 20:05:50 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,10 +106,12 @@ static void	change_node(t_token **node)
 		*node = (*node)->next;
 }
 
-void	concat_args(t_token **head)
+void	concat_args(t_token **head, t_var *list_env)
 {
 	t_token	*tmp;
 
+	// init_expand(head);
+	(void)list_env;
 	if (!*head)
 		return ;
 	tmp = *head;

@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 03:09:12 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/29 13:30:37 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/29 18:49:12 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,12 @@
 #include "libft.h"
 #include "quote.h"
 #include "here_doc.h"
+#include "structs.h"
 #include <unistd.h>
 #include <stdio.h>
 #include <readline/readline.h>
 
-t_tree	*parse(char *line, char **envp)
+t_tree	*parse(char *line, char **envp, t_var *list_env)
 {
 	t_token	*token;
 	t_lexer	*lexer;
@@ -41,11 +42,11 @@ t_tree	*parse(char *line, char **envp)
 	add_back(&token, lexer->arg);
 	free_lexer(lexer, NULL, 0);
 	assign_token(&token, envp);
-	concat_args(&token);
+	concat_args(&token, list_env);
 	if (!handle_here_doc(&token))
 		free_parse(token, "Problem with here_doc creation", MEM_ALLOC);
 	add_to_root(token, &root, true);
-	 display_list(token);
-	 display_ast(root);
+	display_list(token);
+	display_ast(root);
 	return (root);
 }

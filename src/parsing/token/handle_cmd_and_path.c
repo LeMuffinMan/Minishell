@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 23:46:28 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/14 15:53:38 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/29 15:21:59 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,19 +68,19 @@ char	*extract_path(char **envp)
 	}
 	return (res);
 }
-
+#include <stdio.h>
 static char	*verif_path(char **path, char *cmd, int *error)
 {
 	int		i;
 	char	*tmp_cmd;
 	char	*tmp_path;
 
-	i = -1;
-	while (path[++i] && *error != PERMISSION_DENIED)
+	i = 0;
+	while (path[i] && *error != PERMISSION_DENIED)
 	{
 		tmp_path = ft_strjoin(path[i], "/");
 		if (!tmp_path)
-			return (NULL);
+		return (NULL);
 		tmp_cmd = ft_strjoin(tmp_path, cmd);
 		free(tmp_path);
 		if (!tmp_cmd)
@@ -89,6 +89,7 @@ static char	*verif_path(char **path, char *cmd, int *error)
 			break ;
 		free(tmp_cmd);
 		tmp_cmd = NULL;
+		i++;
 	}
 	return (tmp_cmd);
 }
@@ -129,7 +130,7 @@ char	*parse_cmd(char *arg, char **path, int *error)
 		if (split_cmd && !split_cmd[0])
 		{
 			free_tab(split_cmd);
-			*error = 127;
+			*error = CMD_NOT_FOUND;
 			return (cmd);
 		}
 		return (NULL);

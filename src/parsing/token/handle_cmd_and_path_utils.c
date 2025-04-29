@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 00:53:37 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/22 19:16:49 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/29 15:29:56 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int	env_is_alive(char **envp)
 	i = 0;
 	while (envp[i])
 	{
-		if (ft_strcmp(envp[i], "PATH=") == 0)
+		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
 			return (1);
 		i++;
 	}
