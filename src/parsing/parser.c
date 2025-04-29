@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 03:09:12 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/29 13:15:33 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/29 13:30:37 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ t_tree	*parse(char *line, char **envp)
 	if (!handle_here_doc(&token))
 		free_parse(token, "Problem with here_doc creation", MEM_ALLOC);
 	add_to_root(token, &root, true);
-	display_list(token);
-	display_ast(root);
+	// display_list(token);
+	// display_ast(root);
 	return (root);
 }

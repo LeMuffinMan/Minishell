@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 21:44:17 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/28 17:47:11 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/29 13:30:06 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,10 +83,10 @@ static void	is_command(t_token **node, char **envp)
 		cmd_w_path = verif_command(node, tmp, path, envp);
 	if ((*node)->error == SUCCESS)
 	{
-		if ((*node)->prev && ((*node)->prev->token != R_IN
-			|| (*node)->prev->token != HD
-			|| (*node)->prev->token != APPEND
-			|| (*node)->prev->token != TRUNC))
+		if ((*node)->prev && ((*node)->prev->token == R_IN
+			|| (*node)->prev->token == HD
+			|| (*node)->prev->token == APPEND
+			|| (*node)->prev->token == TRUNC))
 		{
 			free(cmd_w_path);
 			return ;
