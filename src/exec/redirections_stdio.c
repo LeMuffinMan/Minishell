@@ -59,7 +59,7 @@ int	open_dup2_close(t_tree **ast, t_type type)
 	return (0);
 }
 
-int redirect_stdio(t_tree **ast, t_var **env)
+int redirect_stdio(t_tree **ast, t_var **env, int origin_fds[2])
 {
 	t_tree *left;
 	t_tree *right;
@@ -89,10 +89,10 @@ int redirect_stdio(t_tree **ast, t_var **env)
 	}
 	//si right existe : c'est qu'on a une chaine de redirections
 	if (right)
-		exit_code = redirect_stdio(&right, env);
+		exit_code = redirect_stdio(&right, env, origin_fds);
 	if (left)
 	{
-		exit_code = exec_cmd(&left, env);
+		exit_code = exec_cmd(&left, env, origin_fds);
 	}
 	return (exit_code);
 }

@@ -79,6 +79,8 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, int origin_fds[2])
 	{
 		close(origin_fds[0]);
 		close(origin_fds[1]);
+		origin_fds[0] = -1;
+		origin_fds[1] = -1;
 		//left ne vas jamais lire dnas le pipe qu'on vient de creer
 		close(pipefd[0]);
 		dup2(pipefd[1], STDOUT_FILENO);
@@ -102,6 +104,8 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, int origin_fds[2])
 	{
 		close(origin_fds[0]);
 		close(origin_fds[1]);
+		origin_fds[0] = -1;
+		origin_fds[1] = -1;
 		dup2(pipefd[0], STDIN_FILENO);
 		close(pipefd[0]);
 		free_pipes(pipes);
@@ -191,22 +195,10 @@ int	exec_cmd(t_tree **ast, t_var **env, int origin_fds[2])
 			return(-1);
 		if (pid == 0)
 		{
-			close(origin_fds[0]);
-			close(origin_fds[1]);
-			/* if (fd[0] > 2) //si on une redir in */
-			/* { */
-			/* 	dprintf(2, "fd[0] = %d\n", fd[0]); */
-			/* 	dup2(fd[0], STDIN_FILENO); */
-			/* 	close(fd[0]); */
-			/* 	dprintf(2, "STDIN = %d\n", STDIN_FILENO); */
-			/* } */
-			/* if (fd[2] > 2) */
-			/* { */
-			/* 	dprintf(2, "fd[1] = %d\n", fd[1]); */
-			/* 	dup2(fd[1], STDOUT_FILENO); */
-			/* 	close(fd[1]); */
-			/* 	dprintf(2, "STDOUT = %d\n", STDOUT_FILENO); */
-			/* } */
+			if (origin_fds && origin_fds[0] != -1)
+				close(origin_fds[0]);
+			if (origin_fds && origin_fds[1] != -1)
+				close(origin_fds[1]);
 			strings_env = lst_to_array(env);
 			execve((*ast)->token->content[0], (*ast)->token->content,
 				strings_env);
@@ -220,14 +212,6 @@ int	exec_cmd(t_tree **ast, t_var **env, int origin_fds[2])
 		else
 		{
 			exit_code = wait_children(pid, pid);
-			/* free_tree(*ast); */
-			/* free_list(env); */
-			/* dprintf(2, "origin_fds[0] = %d\n", origin_fds[0]); */
-			/* dprintf(2, "origin_fds[1] = %d\n", origin_fds[1]); */
-			/* dup2(origin_fds[0], STDIN_FILENO); */
-			/* dup2(origin_fds[1], STDOUT_FILENO); */
-			/* close(origin_fds[0]); */
-			/* close(origin_fds[1]); */
 			update_env(env);
 			return (exit_code);
 		}
@@ -288,7 +272,7 @@ int	exec_ast(t_tree **ast, t_var **env, int origin_fds[2])
   }
 	if ((*ast)->token->token == R_IN || (*ast)->token->token == APPEND
 		|| (*ast)->token->token == TRUNC) 
-		return(redirect_stdio(ast, env));
+		return(redirect_stdio(ast, env, origin_fds));
 	if ((*ast)->token->token == PIPE)
 		return (exec_pipe(ast, env, &pipes, origin_fds));
 	if ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD)
