@@ -12,6 +12,8 @@
 
 #include "list.h"
 #include "libft.h"
+#include "expand.h"
+#include "structs.h"
 #include <stdlib.h>
 
 static char	**cpy_tab(char **dest, char **src, int index)
@@ -110,8 +112,7 @@ void	concat_args(t_token **head, t_var *list_env)
 {
 	t_token	*tmp;
 
-	// init_expand(head);
-	(void)list_env;
+	init_expand(head, list_env);
 	if (!*head)
 		return ;
 	tmp = *head;

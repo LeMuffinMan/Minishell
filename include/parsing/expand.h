@@ -16,6 +16,10 @@
 struct					s_token;
 typedef struct s_token t_token;
 
-void	init_expand(t_token **head);
+struct					s_var;
+typedef struct s_var t_var;
+
+
+void	init_expand(t_token **head, t_var *list_env);
 
 #endif

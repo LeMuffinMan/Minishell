@@ -32,6 +32,7 @@ typedef enum e_type
 	BUILT_IN,
 	CMD,
 	D_QUOTE,
+	EXPAND,
 	HD,
 	LIM,
 	O_AND,

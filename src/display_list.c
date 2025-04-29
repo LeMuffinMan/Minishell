@@ -53,9 +53,9 @@ void	display_list(t_token *head)
 {
 	t_token				*tmp;
 	int					i;
-	static const char	*tab[15] = {"Append", "Built_in", "CMD",
-		"Double quote", "Here_doc", "Limiter", "And", "Or", "Left_Par", "Right_Par",
-		"Pipe", "Redir in", "Simple quote", "Truncate", "Wildcard"};
+	static const char	*tab[16] = {"Append", "Built_in", "CMD",
+		"D_quote", "Expand", "Here_doc", "Limiter", "And", "Or", "Left_Par", "Right_Par",
+		"Pipe", "Redir in", "S_quote", "Truncate", "Wildcard"};
 
 	i = 1;
 	tmp = head;

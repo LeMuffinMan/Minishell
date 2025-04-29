@@ -72,14 +72,12 @@ int	alloc_quote_to_lexer(char *str, char c, t_lexer **list)
 		i++;
 		if (str[i] == c)
 		{
-			if (str[i - 1] == '\\')
-			i++;
-			else
-			break;
+			if (str[i - 1] != '\\')
+				break;
 		}
 	}
-	// if (str[i] && str[i] == c)
-	// 	i++;
+	if (str[i] && str[i] == c)
+		i++;
 	word = ft_strndup(str, i);
 	if (!word)
 		free_lexer(*list, "Malloc failed in 'alloc_space_to_lexer'", MEM_ALLOC);
