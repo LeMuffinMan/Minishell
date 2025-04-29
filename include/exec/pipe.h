@@ -16,7 +16,7 @@
 int free_pipes(t_pipe **pipes);
 int add_pipe(int fd[2], t_pipe **pipes);
 int	wait_children(pid_t last_child, pid_t first_child);
-int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes);
+int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, int origin_fds[2]);
 
 #endif
 

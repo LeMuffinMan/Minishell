@@ -31,8 +31,8 @@ int	redirect_stdio(t_tree **ast, t_var **env);
 int	open_dup2_close(t_tree **ast, t_type type);
 int is_a_directory(char *name);
 
-int exec_ast (t_tree **ast, t_var **env);
-int	exec_cmd(t_tree **ast, t_var **env);
+int exec_ast (t_tree **ast, t_var **env, int origin_fds[2]);
+int	exec_cmd(t_tree **ast, t_var **env, int origin_fds[2]);
 
 void	add_back_var(t_var **lst, char *s, int mode);
 void	add_first_node(t_var **lst, t_var *new, char *s, int mode);

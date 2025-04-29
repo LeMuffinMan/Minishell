@@ -153,7 +153,7 @@ int main(int ac, char **av, char **env)
         ast = parse(line, strings_env);
         free_array(strings_env);
         strings_env = NULL;
-        error_code = exec_ast(&ast, &new_env);
+        error_code = exec_ast(&ast, &new_env, origin_fds);
         dup2(origin_fds[0], STDIN_FILENO);
         dup2(origin_fds[1], STDOUT_FILENO);
         close(origin_fds[0]);

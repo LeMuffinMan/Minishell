@@ -58,7 +58,7 @@ int	free_lists_and_exit(t_var **env, t_tree **ast, t_pipe **pipes)
 }
 
 
-int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes)
+int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, int origin_fds[2])
 {
 	pid_t	left_pid;
 	pid_t	right_pid;
@@ -66,15 +66,10 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes)
 	t_tree	*right_branch;
 	int		pipefd[2];
 	int exit_code;
-	/* int stdin_fd; */
-	/* int stdout_fd; */
 
 	right_branch = (*ast)->right;
 	left_branch = (*ast)->left;
 	add_pipe(pipefd, pipes);
-  //on veut sauvegarder le numero des fds originaux des lectures /ecritures
-  /* stdin_fd = dup(STDIN_FILENO); */
-  /* stdout_fd = dup(STDOUT_FILENO); */
 	left_pid = fork();
 	if (!left_pid)
 	{
@@ -82,13 +77,19 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes)
 	}
 	if (left_pid == 0)
 	{
+		close(origin_fds[0]);
+		close(origin_fds[1]);
 		//left ne vas jamais lire dnas le pipe qu'on vient de creer
 		close(pipefd[0]);
 		dup2(pipefd[1], STDOUT_FILENO);
 		close(pipefd[1]);
 		/* close(0); */
 		free_pipes(pipes);
-		exit(exec_ast(&left_branch, env));
+		exit_code = exec_ast(&left_branch, env, origin_fds);
+		free_list(env);
+		free_parse((*ast)->token, NULL, 0);
+		free_tree(ast);
+		exit(exit_code);
 	}
 	else
 		close(pipefd[1]);
@@ -99,22 +100,32 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes)
 	}
 	if (right_pid == 0)
 	{
+		close(origin_fds[0]);
+		close(origin_fds[1]);
 		dup2(pipefd[0], STDIN_FILENO);
 		close(pipefd[0]);
 		free_pipes(pipes);
 		if (right_branch->token->token == PIPE)
-			exit(exec_pipe(&right_branch, env, pipes));
+		{
+			exit_code = exec_pipe(&right_branch, env, pipes, origin_fds);
+			free_list(env);
+			free_parse((*ast)->token, NULL, 0);
+			free_tree(ast);
+			exit(exit_code);
+		}
 		else
-			exit(exec_ast(&right_branch, env));
+		{
+			exit_code = exec_ast(&right_branch, env, origin_fds);
+			free_list(env);
+			free_parse((*ast)->token, NULL, 0);
+			free_tree(ast);
+			exit(exit_code);
+		}
 	}
 	else
 	{
 		close(pipefd[0]);
 		free_pipes(pipes);
-		/* pipes = NULL; */
-    //si j'ai rediriger la lecture / ecriture du parent, 
-    //il faut la reset correctement avant de rendre le prompt
-    //il faut peut etre le faire encore plus tot ?
 		exit_code = wait_children(right_pid, left_pid);
 		return(exit_code);
 	}
@@ -138,14 +149,13 @@ int is_a_directory(char *name)
 /* #include <stdio.h> */
 //BUILT_IN : PARENT
 //CMD : CHILD
-int	exec_cmd(t_tree **ast, t_var **env)
+int	exec_cmd(t_tree **ast, t_var **env, int origin_fds[2])
 {
 	char	**strings_env;
 	pid_t	pid;
 	int exit_code;
 	char *s;
 	char *tmp;
-
 
 	/* expand_cmd_sub((*ast)->token->content, env); */
 	if ((*ast)->token->token == BUILT_IN)
@@ -181,6 +191,8 @@ int	exec_cmd(t_tree **ast, t_var **env)
 			return(-1);
 		if (pid == 0)
 		{
+			close(origin_fds[0]);
+			close(origin_fds[1]);
 			/* if (fd[0] > 2) //si on une redir in */
 			/* { */
 			/* 	dprintf(2, "fd[0] = %d\n", fd[0]); */
@@ -253,7 +265,7 @@ int is_first_char_a_redir(char c)
 	return (0);
 }
 
-int	exec_ast(t_tree **ast, t_var **env)
+int	exec_ast(t_tree **ast, t_var **env, int origin_fds[2])
 {
   t_pipe *pipes;
   int exit_code;
@@ -278,10 +290,10 @@ int	exec_ast(t_tree **ast, t_var **env)
 		|| (*ast)->token->token == TRUNC) 
 		return(redirect_stdio(ast, env));
 	if ((*ast)->token->token == PIPE)
-		return (exec_pipe(ast, env, &pipes));
+		return (exec_pipe(ast, env, &pipes, origin_fds));
 	if ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD)
 	{
-		exit_code = exec_cmd(ast, env);
+		exit_code = exec_cmd(ast, env, origin_fds);
 
 		return (exit_code);
 	}
