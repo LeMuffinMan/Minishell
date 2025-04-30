@@ -6,7 +6,7 @@
 #    By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/04/24 02:09:07 by asinsard         ###   ########lyon.fr    #
+#    Updated: 2025/04/30 20:50:06 by asinsard         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,6 +46,7 @@ SRC					=	main.c \
 						create_tree.c \
 						display_list.c \
 						display_tree.c \
+						expand_utils.c \
 						expand.c \
 						handle_cmd_and_path_utils.c \
 						handle_cmd_and_path.c \

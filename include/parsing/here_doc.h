@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 23:51:21 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/22 03:59:30 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/30 17:08:03 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,6 @@
 struct					s_token;
 typedef struct s_token	t_token;
 
-bool	handle_here_doc(t_token **head);
+bool					handle_here_doc(t_token **head);
 
 #endif

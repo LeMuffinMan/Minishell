@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:28:16 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/29 17:28:45 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/30 23:32:04 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,9 @@ struct					s_var;
 typedef struct s_var t_var;
 
 
-void	init_expand(t_token **head, t_var *list_env);
+char					*alloc_first_expand(char *value, char *str_to_expand, int index);
+char					*ft_strjoin3(char *str_node, char *value, int j, int index);
+void					copy_value(t_token *node, char *value, char **value_cpy);
+void					to_expand(t_token **node, t_var *list_env);
 
 #endif

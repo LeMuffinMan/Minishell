@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 21:44:17 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/29 15:42:20 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/30 23:31:35 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,9 @@
 #include "libft.h"
 #include "ft_printf.h"
 
-static void	is_operand_or_quote(t_token **node)
+static void	is_operand_or_quote(t_token **node, t_var *list_env)
 {
-	int	len;
-
-	len = ft_strlen((*node)->content[0]);
+	is_quote(node, list_env);
 	if (!ft_strcmp((*node)->content[0], "&&"))
 		(*node)->token = O_AND;
 	else if (!ft_strcmp((*node)->content[0], "||"))
@@ -28,16 +26,12 @@ static void	is_operand_or_quote(t_token **node)
 		(*node)->token = PIPE;
 	else if (!ft_strcmp((*node)->content[0], "*"))
 		(*node)->token = WILDCARD;
-	else if (((*node)->content[0][0] == '"')
-				&& (*node)->content[0][len - 1] == '"')
-		(*node)->token = D_QUOTE;
-	else if (((*node)->content[0][0] == '\'')
-				&& (*node)->content[0][len - 1] == '\'')
-		(*node)->token = S_QUOTE;
 	else if ((*node)->content[0][0] == '(')
 		(*node)->token = L_PARENTHESIS;
 	else if ((*node)->content[0][0] == ')')
 		(*node)->token = R_PARENTHESIS;
+	else if (ft_str_isspace((*node)->content[0]))
+		(*node)->token = SPACE;
 }
 
 static void	is_redirection(t_token **node)
@@ -57,13 +51,10 @@ static void	is_command_whithout_env(t_token **node, char **envp)
 	is_built_in(node);
 	if ((*node)->token == BUILT_IN)
 		(*node)->error = SUCCESS;
-	else if (is_slash((*node)->content[0]) || !env_is_alive(envp))
+	else if (ft_isslash((*node)->content[0]) || !env_is_alive(envp))
 	{
 		if (!parse_path_without_env(*node))
-		{
-			
 			return ;
-		}	
 		else
 		{
 			replace_tab(node, NULL);
@@ -82,43 +73,46 @@ static void	is_command(t_token **node, char **envp)
 	tmp = NULL;
 	path = NULL;
 	cmd_w_path = NULL;
-	if ((int)(*node)->token < 0)
+	if ((*node)->token == NO_TOKEN
+		|| (*node)->token == D_QUOTE || (*node)->token == S_QUOTE)
 		cmd_w_path = verif_command(node, tmp, path, envp);
-	if ((*node)->error == SUCCESS)
+	if (cmd_w_path && ((*node)->error == SUCCESS || (*node)->error == QUOTE))
 	{
 		if ((*node)->prev && ((*node)->prev->token == R_IN
-			|| (*node)->prev->token == HD
-			|| (*node)->prev->token == APPEND
-			|| (*node)->prev->token == TRUNC))
+				|| (*node)->prev->token == HD
+				|| (*node)->prev->token == APPEND
+				|| (*node)->prev->token == TRUNC))
 		{
 			free(cmd_w_path);
 			return ;
 		}
 		replace_tab(node, cmd_w_path); //exec : fix l'absence de path
-		if ((int)(*node)->token < 0)
-			(*node)->token = CMD;
+		(*node)->token = CMD;
 	}
 	free(cmd_w_path);
 }
 
-void	assign_token(t_token **head, char **envp)
+void	assign_token(t_token **head, char **envp, t_var *list_env)
 {
 	t_token	*tmp;
 
-	tmp = *head;	
+	tmp = *head;
 	while (tmp)
 	{
 		is_redirection(&tmp);
-		if ((int)tmp->token < 0)
-			is_operand_or_quote(&tmp);
-		if ((int)tmp->token < 0)
+		if (tmp->token == NO_TOKEN)
+			is_operand_or_quote(&tmp, list_env);
+		if (tmp->token == NO_TOKEN
+			|| tmp->token == D_QUOTE || tmp->token == S_QUOTE)
 		{
-			if (!tmp->prev || (tmp->prev->token != CMD
-				&& tmp->prev->token != BUILT_IN))
+			if (tmp->token == D_QUOTE || tmp->token == S_QUOTE
+				|| !tmp->prev || (tmp->prev->token != CMD
+					&& tmp->prev->token != BUILT_IN))
 			{
 				is_command_whithout_env(&tmp, envp);
-				if ((int)tmp->token < 0)
-					is_command(&tmp, envp);	
+				if (tmp->token == NO_TOKEN
+					|| tmp->token == D_QUOTE || tmp->token == S_QUOTE)
+					is_command(&tmp, envp);
 			}
 			else
 				tmp->error = PERMISSION_DENIED;

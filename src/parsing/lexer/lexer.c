@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 00:19:05 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/29 20:42:00 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/30 17:03:17 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,11 +92,11 @@ static int	parse_operator(char *str, char c, t_lexer **list)
 	i = 1;
 	while (str[i])
 	{
-		if (c != '"' && c != '\'' && ((str[i - 1] == '|' && str[i] != '|') 
-			|| (str[i - 1] == '<' && str[i] != '<')
-			|| (str[i - 1] == '>' && str[i] != '>')
-			|| ((str[i - 1] == '(' && str[i] != '('))
-			|| (str[i - 1] == ')' && str[i] != ')')))
+		if (str[i - 1] != '\\' && ((str[i - 1] == '|' && str[i] != '|')
+				|| (str[i - 1] == '<' && str[i] != '<')
+				|| (str[i - 1] == '>' && str[i] != '>')
+				|| ((str[i - 1] == '(' && str[i] != '('))
+				|| (str[i - 1] == ')' && str[i] != ')')))
 		{
 			i -= 1;
 			break ;
@@ -115,13 +115,13 @@ static int	parse_operator(char *str, char c, t_lexer **list)
 void	parse_line(char *str, t_lexer **list)
 {
 	int		i;
-	
+
 	i = 0;
 	if (!str)
 		return ;
 	while (str[i])
 	{
-		if (str[i] == ' ')
+		if (ft_isspace(str[i]))
 			i += alloc_space_to_lexer(&str[i], list);
 		else if (str[i] == '|' || str[i] == '&'
 			|| str[i] == '<' || str[i] == '>'

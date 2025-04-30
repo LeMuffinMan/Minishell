@@ -6,28 +6,13 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 00:53:37 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/29 15:29:56 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/30 22:42:21 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include "list.h"
 #include <unistd.h>
-
-int	is_slash(const char *s1)
-{
-	int	i;
-
-	i = 0;
-	while (s1[i])
-	{
-		if (s1[i] == '/')
-			return (1);
-		else
-			i++;
-	}
-	return (0);
-}
 
 int	env_is_alive(char **envp)
 {
@@ -62,6 +47,20 @@ static void	case_of_absolute_path(t_token **node)
 	free(tmp);
 }
 
+void	alloc_cmd_split(char ***split_cmd, char **path, char *arg, int *error)
+{
+	*split_cmd = ft_split(arg, ' ');
+	if (!*split_cmd || !*split_cmd[0])
+	{
+		free_tab(path);
+		if (*split_cmd && !*split_cmd[0])
+		{
+			free_tab(*split_cmd);
+			*error = CMD_NOT_FOUND;
+		}
+	}
+}
+
 /* int print_tab(char **s)
 {
 	int i;
@@ -82,8 +81,6 @@ void	replace_tab(t_token **node, char *str)
 {
 	char	*tmp;
 
-	/* #include <stdio.h> */
-	/* printf("%s\n", str); */
 	if (!str)
 		case_of_absolute_path(node);
 	else
@@ -93,7 +90,6 @@ void	replace_tab(t_token **node, char *str)
 			free_parse(*node, "Malloc failed in 'replace_tab'", MEM_ALLOC);
 		free_tab((*node)->content);
 		(*node)->content = ft_split(str, ' ');
-		// print_tab((*node)->content);
 		if (!(*node)->content || !(*node)->content[0])
 		{
 			free(tmp);

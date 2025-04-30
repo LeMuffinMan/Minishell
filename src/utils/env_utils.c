@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 17:15:02 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/29 18:35:59 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/30 23:13:46 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ char	*get_value(t_var **env, char *key)
 	value = NULL;
 	while (tmp)
 	{
-		if (!ft_strncmp(key, tmp->key, ft_strlen(key)))
+		if (!ft_strncmp(key, tmp->key, ft_strlen(tmp->key) + 1))
 		{
 			value = tmp->value;
 			break ;

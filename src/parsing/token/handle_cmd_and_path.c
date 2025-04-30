@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 23:46:28 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/29 15:21:59 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/30 22:44:29 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ char	*extract_path(char **envp)
 	}
 	return (res);
 }
-#include <stdio.h>
+
 static char	*verif_path(char **path, char *cmd, int *error)
 {
 	int		i;
@@ -80,7 +80,7 @@ static char	*verif_path(char **path, char *cmd, int *error)
 	{
 		tmp_path = ft_strjoin(path[i], "/");
 		if (!tmp_path)
-		return (NULL);
+			return (NULL);
 		tmp_cmd = ft_strjoin(tmp_path, cmd);
 		free(tmp_path);
 		if (!tmp_cmd)
@@ -117,25 +117,23 @@ char	**split_the_path(char *path)
 	return (new_path);
 }
 
-char	*parse_cmd(char *arg, char **path, int *error)
+char	*parse_cmd(char *arg, char **path, int *error, bool flag)
 {
 	char	*cmd;
 	char	**split_cmd;
 
 	cmd = NULL;
-	split_cmd = ft_split(arg, ' ');
-	if (!split_cmd || !split_cmd[0])
+	split_cmd = NULL;
+	if (flag)
 	{
-		free_tab(path);
-		if (split_cmd && !split_cmd[0])
-		{
-			free_tab(split_cmd);
-			*error = CMD_NOT_FOUND;
-			return (cmd);
-		}
-		return (NULL);
+		alloc_cmd_split(&split_cmd, path, arg, error);
+		if (*error == CMD_NOT_FOUND)
+			return (NULL);
 	}
-	cmd = verif_path(path, split_cmd[0], error);
+	if (flag)
+		cmd = verif_path(path, split_cmd[0], error);
+	else
+		cmd = verif_path(path, arg, error);
 	free_tab(path);
 	free_tab(split_cmd);
 	return (cmd);
