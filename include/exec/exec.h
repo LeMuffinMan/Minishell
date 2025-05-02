@@ -50,7 +50,7 @@ int	builtin_echo(char **arg);
 //builtins/env
 int builtin_env(t_var **env);
 //builtins/exit
-int	builtin_exit(char **arg, t_var **env, t_tree **ast);
+int	builtin_exit(char **arg, t_var **env, t_tree **ast, int origin_fds[2]);
 //builtins/pwd
 int	builtin_pwd(void);
 //builtins/unset

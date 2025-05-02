@@ -20,7 +20,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-int	builtins(char **arg, t_var **env, t_tree **ast)
+int	builtins(char **arg, t_var **env, t_tree **ast, int origin_fds[2])
 {
 	if (!*arg)
 		return (1);
@@ -37,7 +37,7 @@ int	builtins(char **arg, t_var **env, t_tree **ast)
 	else if (!ft_strncmp(arg[0], "env", 4))
 		return (builtin_env(env));
 	else if (!ft_strncmp(arg[0], "exit", 5))
-		return (builtin_exit(arg, env, ast));
+		return (builtin_exit(arg, env, ast, origin_fds));
 	/* else if (!ft_strncmp(arg[0], "source", 7)) */
 	/* 	return (builtin_source(arg, env, ast)); */
 	else
@@ -63,7 +63,6 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, int origin_fds[2])
 	pid_t right_pid;
 	int		pipefd[2];
 	int exit_code;
-	int status;
 
 	add_pipe(pipefd, pipes);
 	left_pid = fork();
@@ -109,13 +108,13 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, int origin_fds[2])
 	{
 		//attendre avant ?
 		exit_code = exec_pipe(&((*ast)->right), env, pipes, origin_fds);
-		waitpid(left_pid, &status, 0);
+		exit_code = wait_children(left_pid, left_pid);
 		return (exit_code);
 	}
 	else
 	{
 		right_pid = fork();
-		if (left_pid < 0)
+		if (right_pid < 0)
 		{
 			//error
 		}
@@ -128,7 +127,7 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, int origin_fds[2])
 			dup2(pipefd[0], STDIN_FILENO);
 			close(pipefd[0]);
 			free_pipes(pipes);
-			exit_code = exec_ast(&((*ast)->left), env, origin_fds);
+			exit_code = exec_ast(&((*ast)->right), env, origin_fds);
 			free_list(env);
     	free_parse((*ast)->token, NULL, 0);
 			free_tree(ast);
@@ -173,7 +172,7 @@ int	exec_cmd(t_tree **ast, t_var **env, int origin_fds[2])
 	/* expand_cmd_sub((*ast)->token->content, env); */
 	if ((*ast)->token->token == BUILT_IN)
 	{
-		exit_code = builtins((*ast)->token->content, env, ast);
+		exit_code = builtins((*ast)->token->content, env, ast, origin_fds);
 		return (exit_code);
 	}
 	if (is_a_directory((*ast)->token->content[0]))
@@ -309,7 +308,6 @@ int	exec_ast(t_tree **ast, t_var **env, int origin_fds[2])
 	if ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD)
 	{
 		exit_code = exec_cmd(ast, env, origin_fds);
-
 		return (exit_code);
 	}
 	//errors

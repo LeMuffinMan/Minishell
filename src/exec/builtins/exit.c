@@ -15,7 +15,7 @@
 #include "structs.h"
 #include "tree.h"
 #include <stdio.h>
-/* #include <unistd.h> */
+#include <unistd.h>
 #include <stdlib.h>
 
 // Traps ???
@@ -37,7 +37,7 @@ int	is_only_numeric_argument(char *s)
 // a voir
 // des fuites et des exits a des moments ou ils doivent pas
 // a tester : is only numeric arg
-int	builtin_exit(char **arg, t_var **env, t_tree **ast)
+int	builtin_exit(char **arg, t_var **env, t_tree **ast, int origin_fds[2])
 {
 	int		n;
 	char	*s;
@@ -51,6 +51,10 @@ int	builtin_exit(char **arg, t_var **env, t_tree **ast)
     free_parse((*ast)->token, NULL, 0);
 		free_tree(ast);
 		ft_putstr_fd("exit\n", 1);
+		if (origin_fds[0] > 2)
+			close(origin_fds[0]);
+		if (origin_fds[1] > 2)
+			close(origin_fds[1]);
 		exit(0);
 	}
 	if (ft_strlen(arg[1]) > 18)
@@ -79,6 +83,10 @@ int	builtin_exit(char **arg, t_var **env, t_tree **ast)
 		free_list(env);
     free_parse((*ast)->token, NULL, 0);
 		free_tree(ast);
+		if (origin_fds[0] > 2)
+			close(origin_fds[0]);
+		if (origin_fds[1] > 2)
+			close(origin_fds[1]);
 		exit(2);
 	}
 	n = ft_atoi(arg[1]);
@@ -87,6 +95,10 @@ int	builtin_exit(char **arg, t_var **env, t_tree **ast)
 	free_list(env);
   free_parse((*ast)->token, NULL, 0);
 	free_tree(ast);
+	if (origin_fds[0] > 2)
+		close(origin_fds[0]);
+	if (origin_fds[1] > 2)
+		close(origin_fds[1]);
 	exit(n);
 	return (0);
 }
