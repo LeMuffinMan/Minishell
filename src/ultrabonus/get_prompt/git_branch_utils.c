@@ -64,25 +64,52 @@ char *trim_git_branch(char *s)
   return (trimmed);
 }
 
+char *seek_git_folder(char *old_pwd)
+{
+  int i;
+  char *pwd;
+
+  i = ft_strlen(old_pwd);
+  while (i > 0 && old_pwd[i] != '/')
+    i--;
+  pwd = malloc(sizeof(char) * i + 1);
+  if (!pwd)
+    return(NULL);
+  ft_strlcpy(pwd, old_pwd, i + 1);
+  free(old_pwd);
+  return (pwd);
+}
+
 char *get_branch(char *pwd)
 {
   char *git_branch;
   char *path_to_head;
   char *tmp;
+  char *path;
 
+  pwd = ft_strdup(pwd);
   git_branch = NULL;
-  path_to_head = ft_strjoin(pwd, "/.git/HEAD");
-  //si on va dans SRC on trouve plus la branche
-  if (access(path_to_head, F_OK | R_OK) == 0)
+  while(pwd && ft_strlen(pwd) > 1)
   {
-    git_branch = exctract_branch(path_to_head);
-    if (git_branch)
+    path = "/.git/HEAD";
+    path_to_head = ft_strjoin(pwd, path);
+    //si on va dans SRC on trouve plus la branche
+    if (access(path_to_head, F_OK | R_OK) == 0)
     {
-      tmp = git_branch;
-      git_branch = trim_git_branch(git_branch);
-      free(tmp);
+      git_branch = exctract_branch(path_to_head);
+      if (git_branch)
+      {
+        tmp = git_branch;
+        git_branch = trim_git_branch(git_branch);
+        free(tmp);
+        free(path_to_head);
+        free(pwd);
+        return (git_branch);
+      }
     }
+    pwd = seek_git_folder(pwd);
+    free(path_to_head);
   }
-  free(path_to_head);
+  free(pwd);
   return (git_branch);
 }

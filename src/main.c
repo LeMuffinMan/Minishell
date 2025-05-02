@@ -134,12 +134,12 @@ int main(int ac, char **av, char **env)
         //update env variables !!! si on a un && ou un || on DOIT update l'env entre les deux !!!
         //update prompt
         prompt = NULL;
-        /* if (isatty(0) && *env) */
-        /* { */
-        /*     if (prompt) */
-        /*         free(prompt); */
-        /*     prompt = get_prompt(&new_env); */
-        /* } */
+        if (isatty(0) && *env)
+        {
+            if (prompt)
+                free(prompt);
+            prompt = get_prompt(&new_env);
+        }
         if (!prompt)
             prompt = "[Minishell]$ ";
         line = ft_strdup("");
@@ -150,6 +150,7 @@ int main(int ac, char **av, char **env)
             line = readline(prompt);
             if (!line)
             {
+                free(prompt);
                 free_tree(&ast); // pas de free parse ici ?
                 free_list(&new_env);
                 exit (error_code);
@@ -157,11 +158,11 @@ int main(int ac, char **av, char **env)
         }
 	    origin_fds[0] = dup(STDIN_FILENO);
 	    origin_fds[1] = dup(STDOUT_FILENO);
-        /* if (isatty(0) && *env) */
-        /* { */
-        /*     free(prompt); */
-        /*     prompt = NULL; */
-        /* } */
+        if (isatty(0) && *env)
+        {
+            free(prompt);
+            prompt = NULL;
+        }
 
         /* t_tree *seq_order; */
         /**/
