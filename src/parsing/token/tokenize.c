@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 21:44:17 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/30 23:31:35 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/02 23:50:56 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,9 @@
 #include "libft.h"
 #include "ft_printf.h"
 
-static void	is_operand_or_quote(t_token **node, t_var *list_env)
+static void	is_operand_or_quote(t_token **node)
 {
-	is_quote(node, list_env);
+	is_quote(node);
 	if (!ft_strcmp((*node)->content[0], "&&"))
 		(*node)->token = O_AND;
 	else if (!ft_strcmp((*node)->content[0], "||"))
@@ -46,7 +46,7 @@ static void	is_redirection(t_token **node)
 		(*node)->token = TRUNC;
 }
 
-static void	is_command_whithout_env(t_token **node, char **envp)
+void	is_command_whithout_env(t_token **node, char **envp)
 {
 	is_built_in(node);
 	if ((*node)->token == BUILT_IN)
@@ -64,7 +64,7 @@ static void	is_command_whithout_env(t_token **node, char **envp)
 	}
 }
 
-static void	is_command(t_token **node, char **envp)
+void	is_command(t_token **node, char **envp)
 {
 	char	*tmp;
 	char	**path;
@@ -73,7 +73,7 @@ static void	is_command(t_token **node, char **envp)
 	tmp = NULL;
 	path = NULL;
 	cmd_w_path = NULL;
-	if ((*node)->token == NO_TOKEN
+	if ((*node)->token == NO_TOKEN || (*node)->token == EXPAND
 		|| (*node)->token == D_QUOTE || (*node)->token == S_QUOTE)
 		cmd_w_path = verif_command(node, tmp, path, envp);
 	if (cmd_w_path && ((*node)->error == SUCCESS || (*node)->error == QUOTE))
@@ -92,31 +92,21 @@ static void	is_command(t_token **node, char **envp)
 	free(cmd_w_path);
 }
 
-void	assign_token(t_token **head, char **envp, t_var *list_env)
+void	assign_token(t_token **head, char **envp, t_var *list_env, bool flag)
 {
 	t_token	*tmp;
 
 	tmp = *head;
+	(void)list_env;
 	while (tmp)
 	{
 		is_redirection(&tmp);
 		if (tmp->token == NO_TOKEN)
-			is_operand_or_quote(&tmp, list_env);
+			is_operand_or_quote(&tmp);
 		if (tmp->token == NO_TOKEN
-			|| tmp->token == D_QUOTE || tmp->token == S_QUOTE)
-		{
-			if (tmp->token == D_QUOTE || tmp->token == S_QUOTE
-				|| !tmp->prev || (tmp->prev->token != CMD
-					&& tmp->prev->token != BUILT_IN))
-			{
-				is_command_whithout_env(&tmp, envp);
-				if (tmp->token == NO_TOKEN
-					|| tmp->token == D_QUOTE || tmp->token == S_QUOTE)
-					is_command(&tmp, envp);
-			}
-			else
-				tmp->error = PERMISSION_DENIED;
-		}
+			|| tmp->token == D_QUOTE || tmp->token == S_QUOTE
+			|| tmp->token == EXPAND)
+			handle_cmd(&tmp, envp, flag);
 		tmp = tmp->next;
 	}
 }

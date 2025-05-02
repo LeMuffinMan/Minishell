@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 20:47:42 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/30 23:34:09 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/02 19:01:56 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,21 @@
 #include "list.h"
 #include <stdlib.h>
 
+void	add_space(t_token **node)
+{
+	char	*res;
+
+	res = ft_strjoin((*node)->content[0], " ");
+	if (!res)
+		free_parse(*node, "Malloc faile in function add_space", MEM_ALLOC);
+	free((*node)->content[0]);
+	(*node)->content[0] = res;
+}
+
 void	copy_value(t_token *node, char *value, char **value_cpy)
 {
 	if (!value)
-		*value_cpy = ft_strdup("");
+		*value_cpy = ft_calloc(1, sizeof(char));
 	else
 		*value_cpy = ft_strdup(value);
 	if (!*value_cpy)
@@ -79,7 +90,7 @@ char	*ft_strjoin3(char *str_node, char *value, int j, int index)
 	first_part = alloc_first_part(str_node, value, j);
 	if (!first_part)
 		return (NULL);
-	last_part = ft_strdup(&str_node[index + j]);
+	last_part = ft_strdup(&str_node[index + j + 1]);
 	if (!last_part)
 	{
 		free(first_part);

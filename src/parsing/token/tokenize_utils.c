@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 19:51:51 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/30 23:30:46 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/02 23:56:33 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,23 @@
 #include "expand.h"
 #include <stdlib.h>
 
-void	is_quote(t_token **node, t_var *list_env)
+void	handle_cmd(t_token **node, char **envp, bool flag)
+{
+	if ((*node)->token == D_QUOTE || (*node)->token == S_QUOTE
+		|| (*node)->token == EXPAND
+		|| !(*node)->prev || ((*node)->prev->token != CMD
+			&& (*node)->prev->token != BUILT_IN))
+	{
+		is_command_whithout_env(node, envp);
+		if (flag || (*node)->token == NO_TOKEN || (*node)->token == APPEND
+			|| (*node)->token == D_QUOTE || (*node)->token == S_QUOTE)
+			is_command(node, envp);
+	}
+	else
+		(*node)->error = PERMISSION_DENIED;
+}
+
+void	is_quote(t_token **node)
 {
 	int	len;
 
@@ -25,7 +41,6 @@ void	is_quote(t_token **node, t_var *list_env)
 			&& (*node)->content[0][len - 1] == '"')
 	{
 		(*node)->token = D_QUOTE;
-		to_expand(node, list_env);
 		(*node)->error = QUOTE;
 	}
 	else if (((*node)->content[0][0] == '\'')
@@ -70,6 +85,8 @@ char	*verif_command(t_token **node, char *tmp, char **path, char **envp)
 		tmp = parse_cmd((*node)->content[0], path, &(*node)->error, true);
 	if ((*node)->error == CMD_NOT_FOUND || (*node)->error == PERMISSION_DENIED)
 		return (NULL);
+	if (cmd_in_quote)
+		free(cmd_in_quote);
 	if (!tmp)
 		free_parse(*node, "Malloc failed in function 'parse_cmd'", MEM_ALLOC);
 	return (tmp);
