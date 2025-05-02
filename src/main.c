@@ -20,6 +20,7 @@
 #include <unistd.h>
 #include "display.h"
 #include "prints.h"
+#include "minishellrc.h"
 
 /* int exec_sequence(char *sequence, t_var **env) */
 /* { */
@@ -123,8 +124,8 @@ int main(int ac, char **av, char **env)
     init_env(&new_env, env, av);
     /* print_env(&new_env); */
 
-    /* if (find_minishellrc) */
-    /*     load_minishell_rc(&new_env); */
+    if (find_minishellrc(&new_env, NULL))
+        load_minishellrc(&new_env, NULL);
 
 	/* dprintf(2, "origin_fds[0] = %d\n", origin_fds[0]); */
 	/* dprintf(2, "origin_fds[1] = %d\n", origin_fds[1]); */

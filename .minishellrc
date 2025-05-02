@@ -1,0 +1,18 @@
+#!/bin/bash
+
+alias ll='ls -alF'
+alias gs='git status'
+
+alias test='echo yolilol'
+alias ls='ls --color=auto'
+alias grep='grep --color=auto'
+
+PS1='[\u@\h \W]\$ '
+
+export MINISHELLRC=TRUE
+
+cdmk()
+{
+  mkdir -p $1
+  cd $1
+}

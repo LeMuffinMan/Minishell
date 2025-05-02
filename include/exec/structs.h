@@ -21,6 +21,8 @@ typedef struct s_var
   char *value;
   int exported;
   int env;
+  int alias;
+  int shell_fct;
   struct s_var *next;
 } t_var;
 

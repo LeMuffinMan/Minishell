@@ -69,6 +69,8 @@ char	*get_value(t_var **env, char *key)
 	char	*value;
 	t_var	*tmp;
 
+	if (!env || !*env)
+		return (NULL);
 	tmp = *env;
 	value = NULL;
 	while (tmp)
