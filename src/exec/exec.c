@@ -57,77 +57,90 @@ int	free_lists_and_exit(t_var **env, t_tree **ast, t_pipe **pipes)
 	return (0);
 }
 
-
 int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, int origin_fds[2])
 {
-	pid_t	left_pid;
-	pid_t	right_pid;
-	t_tree	*left_branch;
-	t_tree	*right_branch;
+	pid_t left_pid;
+	pid_t right_pid;
 	int		pipefd[2];
 	int exit_code;
+	int status;
 
-	right_branch = (*ast)->right;
-	left_branch = (*ast)->left;
 	add_pipe(pipefd, pipes);
 	left_pid = fork();
-	if (!left_pid)
+	if (left_pid < 0)
 	{
 		// error
 	}
 	if (left_pid == 0)
 	{
+		
 		close(origin_fds[0]);
+		origin_fds[0] = -1;
 		close(origin_fds[1]);
-		//left ne vas jamais lire dnas le pipe qu'on vient de creer
+		origin_fds[1] = -1;
 		close(pipefd[0]);
+		if ((*pipes)->next)
+		{
+			dup2((*pipes)->next->fd[0], STDIN_FILENO);
+			close((*pipes)->next->fd[0]);
+			free((*pipes)->next);
+			(*pipes)->next = NULL;
+		}
 		dup2(pipefd[1], STDOUT_FILENO);
 		close(pipefd[1]);
-		/* close(0); */
 		free_pipes(pipes);
-		exit_code = exec_ast(&left_branch, env, origin_fds);
+		exit_code = exec_ast(&((*ast)->left), env, origin_fds);
 		free_list(env);
-		free_parse((*ast)->token, NULL, 0);
+    free_parse((*ast)->token, NULL, 0);
 		free_tree(ast);
 		exit(exit_code);
 	}
 	else
-		close(pipefd[1]);
-	right_pid = fork();
-	if (!right_pid)
 	{
-		// error
-	}
-	if (right_pid == 0)
-	{
-		close(origin_fds[0]);
-		close(origin_fds[1]);
-		dup2(pipefd[0], STDIN_FILENO);
-		close(pipefd[0]);
-		free_pipes(pipes);
-		if (right_branch->token->token == PIPE)
+		if ((*pipes)->next)
 		{
-			exit_code = exec_pipe(&right_branch, env, pipes, origin_fds);
+			close((*pipes)->next->fd[0]);
+			free((*pipes)->next);
+			(*pipes)->next = NULL;
+		}
+		close(pipefd[1]);
+	}
+	if ((*ast)->right && (*ast)->right->token->token == PIPE)
+	{
+		//attendre avant ?
+		exit_code = exec_pipe(&((*ast)->right), env, pipes, origin_fds);
+		waitpid(left_pid, &status, 0);
+		return (exit_code);
+	}
+	else
+	{
+		right_pid = fork();
+		if (left_pid < 0)
+		{
+			//error
+		}
+		if (right_pid == 0)
+		{
+			close(origin_fds[0]);
+			origin_fds[0] = -1;
+			close(origin_fds[1]);
+			origin_fds[1] = -1;
+			dup2(pipefd[0], STDIN_FILENO);
+			close(pipefd[0]);
+			free_pipes(pipes);
+			exit_code = exec_ast(&((*ast)->left), env, origin_fds);
 			free_list(env);
-			free_parse((*ast)->token, NULL, 0);
+    	free_parse((*ast)->token, NULL, 0);
 			free_tree(ast);
 			exit(exit_code);
 		}
 		else
 		{
-			exit_code = exec_ast(&right_branch, env, origin_fds);
-			free_list(env);
-			free_parse((*ast)->token, NULL, 0);
-			free_tree(ast);
-			exit(exit_code);
+			close(pipefd[0]);
+			free_pipes(pipes);
+			exit_code = wait_children(right_pid, left_pid);
+			return(exit_code);
 		}
-	}
-	else
-	{
-		close(pipefd[0]);
-		free_pipes(pipes);
-		exit_code = wait_children(right_pid, left_pid);
-		return(exit_code);
 	}
 	return (1);
 }
@@ -191,8 +204,10 @@ int	exec_cmd(t_tree **ast, t_var **env, int origin_fds[2])
 			return(-1);
 		if (pid == 0)
 		{
-			close(origin_fds[0]);
-			close(origin_fds[1]);
+			if (origin_fds[0] > 2)
+				close(origin_fds[0]);
+			if (origin_fds[1] > 2)
+				close(origin_fds[1]);
 			/* if (fd[0] > 2) //si on une redir in */
 			/* { */
 			/* 	dprintf(2, "fd[0] = %d\n", fd[0]); */
@@ -288,7 +303,7 @@ int	exec_ast(t_tree **ast, t_var **env, int origin_fds[2])
   }
 	if ((*ast)->token->token == R_IN || (*ast)->token->token == APPEND
 		|| (*ast)->token->token == TRUNC) 
-		return(redirect_stdio(ast, env));
+		return(redirect_stdio(ast, env, origin_fds));
 	if ((*ast)->token->token == PIPE)
 		return (exec_pipe(ast, env, &pipes, origin_fds));
 	if ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD)
