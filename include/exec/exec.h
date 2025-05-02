@@ -23,12 +23,12 @@
 int	init_env(t_var **new_env, char **env, char **arg);
 
 //errors.c
-int error_cmd_not_found(char *cmd);
-int error_cmd_perm_denied(char *cmd);
+int error_cmd(char *cmd, int error_code);
+int print_error_file_opening(char *file, char *error);
 
 //redirections_stdio.c
 int	redirect_stdio(t_tree **ast, t_var **env, int origin_fds[2]);
-int	open_dup2_close(t_tree **ast, t_type type);
+int	open_dup2_close(char *file, t_type type);
 int is_a_directory(char *name);
 
 int exec_ast (t_tree **ast, t_var **env, int origin_fds[2]);

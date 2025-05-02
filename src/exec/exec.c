@@ -18,7 +18,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <sys/stat.h>
 
 int	builtins(char **arg, t_var **env, t_tree **ast, int origin_fds[2])
 {
@@ -45,16 +44,6 @@ int	builtins(char **arg, t_var **env, t_tree **ast, int origin_fds[2])
 	//ajouter source
 		//vide les var exportee depuis minishellrc
 		//relance l'init du minishell_rc
-}
-// free_env
-// free_ast
-// free_pipes
-int	free_lists_and_exit(t_var **env, t_tree **ast, t_pipe **pipes)
-{
-	(void)env;
-	(void)pipes;
-	(void)ast;
-	return (0);
 }
 
 int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, int origin_fds[2])
@@ -144,22 +133,6 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, int origin_fds[2])
 	return (1);
 }
 
-//renvoie 1 pour un dossier
-//renvoie 0 autrement
-int is_a_directory(char *name)
-{
-	struct stat file_infos;
-
-	if (stat(name, &file_infos) == -1)
-	{
-		//perror
-		return (-1);
-	}
-	if (S_ISDIR(file_infos.st_mode)) //maccro qui renvoie un booleen true si c'est un dossier
-		return (1); // si on a un whoami > file > dir > file je veux aller jusqu'au file avant de renvoyer l'erreur ?
-	return (0);
-}
-
 /* #include <stdio.h> */
 //BUILT_IN : PARENT
 //CMD : CHILD
@@ -209,20 +182,6 @@ int	exec_cmd(t_tree **ast, t_var **env, int origin_fds[2])
 				close(origin_fds[0]);
 			if (origin_fds[1] > 2)
 				close(origin_fds[1]);
-			/* if (fd[0] > 2) //si on une redir in */
-			/* { */
-			/* 	dprintf(2, "fd[0] = %d\n", fd[0]); */
-			/* 	dup2(fd[0], STDIN_FILENO); */
-			/* 	close(fd[0]); */
-			/* 	dprintf(2, "STDIN = %d\n", STDIN_FILENO); */
-			/* } */
-			/* if (fd[2] > 2) */
-			/* { */
-			/* 	dprintf(2, "fd[1] = %d\n", fd[1]); */
-			/* 	dup2(fd[1], STDOUT_FILENO); */
-			/* 	close(fd[1]); */
-			/* 	dprintf(2, "STDOUT = %d\n", STDOUT_FILENO); */
-			/* } */
 			strings_env = lst_to_array(env);
 			execve((*ast)->token->content[0], (*ast)->token->content,
 				strings_env);
@@ -236,49 +195,11 @@ int	exec_cmd(t_tree **ast, t_var **env, int origin_fds[2])
 		else
 		{
 			exit_code = wait_children(pid, pid);
-			/* free_tree(*ast); */
-			/* free_list(env); */
-			/* dprintf(2, "origin_fds[0] = %d\n", origin_fds[0]); */
-			/* dprintf(2, "origin_fds[1] = %d\n", origin_fds[1]); */
-			/* dup2(origin_fds[0], STDIN_FILENO); */
-			/* dup2(origin_fds[1], STDOUT_FILENO); */
-			/* close(origin_fds[0]); */
-			/* close(origin_fds[1]); */
 			update_env(env);
 			return (exit_code);
 		}
 	}
 	return (1); //on ne devrait pas arriver ici
-}
-
-/* int	boolean_operators(t_tree **ast, t_var **env) */
-/* { */
-/* 	int		exit_code; */
-/* 	t_tree	*tmp; */
-/**/
-/* 	exit_code = 0; */
-/* 	if (find_expands(ast->left)) */
-/* 		expand_variables(ast->left); */
-/* 	tmp = (*ast)->left; */
-/* 	exit_code = exec_ast(&tmp, env); */
-/* 	if ((exit_code == 0 && (*ast)->token->token == O_AND) || (exit_code != 0 */
-/* 			&& (*ast)->token->token == O_OR)) */
-/* 	{ */
-/* 		if (find_expands(ast->right)) */
-/* 			expand_variables(ast->right); */
-/* 		tmp = (*ast)->right; */
-/* 		return (exec_ast(&tmp, env, pipes)); */
-/* 		return (1); */
-/* 	} */
-/* 	else */
-/* 		return (exit_code); */
-/* } */
-
-int is_first_char_a_redir(char c)
-{
-	if (c == '>' || c == '<')
-		return (1);
-	return (0);
 }
 
 int	exec_ast(t_tree **ast, t_var **env, int origin_fds[2])
@@ -288,15 +209,8 @@ int	exec_ast(t_tree **ast, t_var **env, int origin_fds[2])
 
   pipes = NULL;
   exit_code = 0;
-	//O_AND VONT VIRER 
-	/* if ((*ast)->token->token == O_AND || (*ast)->token->token == O_OR) */
-	/* 	return (boolean_operators(ast, env, pipes, pids)); */
-
-	//on veut que seulement le parent fasse ca
   if (!*ast)
-  {
   	return(127);
-  }
   if ((*ast)->token->error == 2)
   {
   	ft_putendl_fd((*ast)->token->content[0], 2);
@@ -315,10 +229,8 @@ int	exec_ast(t_tree **ast, t_var **env, int origin_fds[2])
 	//errors
 	/* if (!ft_strncmp((*ast)->token->content[0], ":", 2)) */
 	/* 		return(0); */
-	if ((*ast)->token->error == 127)
-		return (error_cmd_not_found((*ast)->token->content[0]));
-	if ((*ast)->token->error == 126)
-		return (error_cmd_perm_denied((*ast)->token->content[0]));
+	if ((*ast)->token->error == 127 || (*ast)->token->error == 126)
+		return (error_cmd((*ast)->token->content[0], (*ast)->token->error));
 	//Ultrabonus
 		//un token Alias
 	  //un token shell_func
@@ -391,38 +303,3 @@ int	exec_ast(t_tree **ast, t_var **env, int origin_fds[2])
 /* int find_expands(t_tree *ast) */
 /* int free_lists_and_exit(t_var **env, t_tree **ast, t_pipe **pipes) */
 
-/* char *enum_to_string(t_type enumValue) */
-/* { */
-/* 	char *s; */
-/**/
-/*   if (enumValue == CMD) */
-/*       s = ft_strdup("CMD"); */
-/*   else if (enumValue == BUILT_IN) */
-/*       s = ft_strdup("BUILT_IN"); */
-/*   else if (enumValue == APPEND) */
-/*       s = ft_strdup("APPEND"); */
-/*   else if (enumValue == D_QUOTE) */
-/*       s = ft_strdup("D_QUOTE"); */
-/*   else if (enumValue == HD) */
-/*       s = ft_strdup("HD"); */
-/*   else if (enumValue == LIM) */
-/*       s = ft_strdup("LIM"); */
-/*   else if (enumValue == O_AND) */
-/*       s = ft_strdup("O_AND"); */
-/*   else if (enumValue == O_OR) */
-/*       s = ft_strdup("O_OR"); */
-/*   else if (enumValue == PIPE) */
-/*       s = ft_strdup("PIPE"); */
-/*   else if (enumValue == R_IN) */
-/*       s = ft_strdup("R_IN"); */
-/*   else if (enumValue == S_QUOTE) */
-/*       s = ft_strdup("S_QUOTE"); */
-/*   else if (enumValue == TRUNC) */
-/*       s = ft_strdup("TRUNC"); */
-/*   else if (enumValue == WILDCARD) */
-/*       s = ft_strdup("WILDCARD"); */
-/*   else */
-/*       s = ft_strdup("UNKNOWN"); */
-/*   return (s); */
-/* } */
-/**/
