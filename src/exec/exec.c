@@ -144,6 +144,8 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, int origin_fds[2])
 	return (1);
 }
 
+//renvoie 1 pour un dossier
+//renvoie 0 autrement
 int is_a_directory(char *name)
 {
 	struct stat file_infos;
@@ -301,7 +303,7 @@ int	exec_ast(t_tree **ast, t_var **env, int origin_fds[2])
   	return ((*ast)->token->error);
   }
 	if ((*ast)->token->token == R_IN || (*ast)->token->token == APPEND
-		|| (*ast)->token->token == TRUNC) 
+		|| (*ast)->token->token == TRUNC || (*ast)->token->token == HD) //HD dans l'arbre ? 
 		return(redirect_stdio(ast, env, origin_fds));
 	if ((*ast)->token->token == PIPE)
 		return (exec_pipe(ast, env, &pipes, origin_fds));

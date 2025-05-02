@@ -21,9 +21,6 @@ int	open_dup2_close(t_tree **ast, t_type type)
 {
 	int fd[2];
 
-	/* if (!is_a_directory((*ast)->token->content[1])) */
-	/* 	return (1); */
-	//ajouter un check pour les perm !!
 	if (type == R_IN)
 	{
 		fd[0] = open((*ast)->token->content[1], O_RDONLY);
@@ -59,41 +56,69 @@ int	open_dup2_close(t_tree **ast, t_type type)
 	return (0);
 }
 
+int print_error_file_opening(char *file, char *error)
+{
+	char *s;
+	char *tmp;
+
+	s = ft_strjoin("minishell: ", file);
+	tmp = s;
+	s = ft_strjoin(s, error);
+	free(tmp);
+	ft_putstr_fd(s, 2);
+	free(s);
+	return (1);
+}
+
+int file_check(char *file, t_type type)
+{
+	if (type == R_IN || HD)
+	{
+		if(access(file, F_OK) == -1)
+			return (print_error_file_opening(file, ": No such file or directory\n"));
+		if (access(file, R_OK) == -1)
+			return (print_error_file_opening(file, ": Permission denied\n"));
+	}
+	if (is_a_directory(file))
+		return(print_error_file_opening(file, ": Is a directory\n"));
+	if (type == APPEND || TRUNC)
+	{
+		if (access(file, W_OK) == -1)
+			return (print_error_file_opening(file, ": Permission denied\n"));
+	}
+	return (0);
+}
+
 int redirect_stdio(t_tree **ast, t_var **env, int origin_fds[2])
 {
 	t_tree *left;
 	t_tree *right;
 	int exit_code;
-	char *s;
-	char *tmp;
 
 	left = (*ast)->left;
 	right = (*ast)->right;
 
+	//doute pour ce if, on devrait le faire au parsing ?
+	//dans tous les cas, avec juste un input "<" je trouve un synbole aleatoire dans content[1]
+	if (!(*ast)->token->content[1])
+		return(print_error_file_opening("", "syntax error\n"));
+	exit_code = file_check((*ast)->token->content[1], (*ast)->token->token);
+	if (exit_code != 0)
+		return(exit_code);
 	exit_code = open_dup2_close(ast, (*ast)->token->token);
-	//si exit_code == 1 => c'est qu'on a un dossier milieu : on arrete l'exec 
-	if (exit_code == 1)
-	{
-		s = ft_strjoin("minishell: ", (*ast)->token->content[1]);
-		tmp = s;
-		s = ft_strjoin(s, ": Is a directory\n");
-		free(tmp);
-		ft_putstr_fd(s, 2);
-		free(s);
-		return (1);
-	}
-	else if (exit_code == -1)
+	if (exit_code == -1)
 	{
 		/* un open ou un dup qui a foire  */
-		return (-1);
+		return (-1);//on stop la chaine de redirections
 	}
-	//si right existe : c'est qu'on a une chaine de redirections
-	if (right)
+	if (left && (left->token->token == R_IN || left->token->token == APPEND || left->token->token == TRUNC || left->token->token == HD))
+		exit_code = redirect_stdio(&left, env, origin_fds);
+	if (exit_code == 0 && right && (right->token->token == R_IN || right->token->token == APPEND || right->token->token == TRUNC || right->token->token == HD))
 		exit_code = redirect_stdio(&right, env, origin_fds);
-	if (left)
-	{
+	if (exit_code == 0 && left && (left->token->token == CMD || left->token->token == BUILT_IN))
 		exit_code = exec_cmd(&left, env, origin_fds);
-	}
+	if (exit_code == 0 && right && (right->token->token == CMD || right->token->token == BUILT_IN))
+		exit_code = exec_cmd(&right, env, origin_fds);
 	return (exit_code);
 }
 
