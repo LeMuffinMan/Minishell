@@ -124,8 +124,8 @@ int main(int ac, char **av, char **env)
     init_env(&new_env, env, av);
     /* print_env(&new_env); */
 
-    if (find_minishellrc(&new_env, NULL))
-        load_minishellrc(&new_env, NULL);
+    /* if (find_minishellrc(&new_env, NULL)) */
+    /*     load_minishellrc(&new_env, NULL); */
 
 	/* dprintf(2, "origin_fds[0] = %d\n", origin_fds[0]); */
 	/* dprintf(2, "origin_fds[1] = %d\n", origin_fds[1]); */
