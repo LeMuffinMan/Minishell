@@ -21,74 +21,87 @@
 #include "display.h"
 #include "prints.h"
 
-/* typedef struct s_seq */
+/* int exec_sequence(char *sequence, t_var **env) */
 /* { */
-/*     enum t_type token; // && || et SEQ  */
-/*     char *sequence; // ls -l | cat > file1 > file2 | echo "hello '$HOME'" > file3     (NULL si pas en bas d'une branche) */
-/*     struct *s_seq left; //comme on a deja pour les ET OU, les parentheses pour changer l'ordre dans l'arbre */
-/*     struct *s_seq right; */
-/* } t_seq; */
+/*     t_tree *seq; */
+/*     int exit_code; */
+/* 	int origin_fds[2]; */
 /**/
-/**/
-/* int exec_seq(t_ast **seq, t_var **env) */
-/* { */
-/*     t_tree *ast; */
-/**/
-/*     ast = NULL; */
-/*     //tant qu'on a pas la premiere sequence (le node le plus en bas a gauche), on execute de maniere recursive */
-/*     if ((*seq)->token == O_AND || (*seq)->token == O_OR) */
+/* 	origin_fds[0] = dup(STDIN_FILENO); */
+/* 	origin_fds[1] = dup(STDOUT_FILENO); */
+/*     seq = NULL; */
+/*     strings_env = lst_to_array(&new_env); */
+/*     seq = parse(sequence, strings_env); */
+/*     free_array(strings_env); */
+/*     strings_env = NULL; */
+/*     exit_code = exec_seq(&seq, env, origin_fds); */
+/*     //update la variable exit_code dans l'environnement ! */
+/*     //ici on update tout l'environnement ? */
+/*     dup2(origin_fds[0], STDIN_FILENO); */
+/*     dup2(origin_fds[1], STDOUT_FILENO); */
+/*     close(origin_fds[0]); */
+/*     close(origin_fds[1]); */
+/*     if (seq) */
 /*     { */
-/*         //a chaque node && || on fait la comparaison pour continuer a droite ou break et revenir au node parent */
-/*         exit_code = exec_seq((*seq)->left) */
-/*         if((exit_code != 0 && (*seq)->token == O_AND) || (exit_code == 0 && (*seq)->token == O_OR)) */
-/*             return (exit_code); */
-/*         else */
-/*             return(exec_seq((*seq)->right)); */
+/*         free_parse(seq->token, NULL, 0); */
+/*         free_tree(&seq); */
 /*     } */
-/*     if ((*seq)->token == SEQ) */
-/*     { */
-/*         //une fois en bas de l'arbre, on trouve une seq, on l'envoie a notre parser actuel */
-/*         //cette fois on a une line sans aucune parenthese ni && || */
-/*         ast = parse((*seq)->sequence); */
-/*         exit_code = exec_ast(ast, env); */
-/*         //free_tree */
-/*     } */
-/*     return(exit_code)); */
+/*     return(exit_code) */
 /* } */
 /**/
-/* int  new_exec(char *line) */
+/* int get_subshell(t_tree **left, t_tree **right, t_var **env) */
 /* { */
-/*     t_seq *seq; */
-/*     int exit_code; */
+/*     pid_t pid; */
 /**/
-/*     line = readline(prompt); */
-/*     seq = NULL; */
-/*     //on recupere un premiere arbre pour connaitre l'ordre des sequences  */
-/*     seq = get_sequence_order(line); */
-/*     //notre premiere exec cherche la premiere sequence a executer : en bas a gauche */
-/*     exit_code = exec_seq(&seq, env); */
+/*     pid = fork(); */
+/*     if (pid == -1) */
+/*         return(-1); */
+/*     if (pid == 0) */
+/*     { */
+/*         //sur un maillon () la suite est a droite ou a gauche ou les deux ??? */
+/*         if (left) */
+/*             exit(exec_line(left, env)); */
+/*         if (right) */
+/*             exit(exec_line(right, env)); */
+/*     } */
+/*     else */
+/*     { */
+/*         exit_code = wait_childen(pid, pid); */
+/*         return (exit_code); */
+/*     } */
+/* } */
+/**/
+/* int exec_line(t_tree **seq_order, t_var **env) */
+/* { */
+/*     int exit_code; */
+/*     t_tree **left; */
+/*     t_tree **right; */
+/**/
+/**/
+/*     left = (*seq_order)->left; */
+/*     right = (*seq_order)->right; */
+/*     exit_code = exec_line(&left, env); */
+/*     if ((*seq_order)->token->token == O_AND && exit_code == 0) */
+/*         return (exec_line(&right, env)); */
+/*     if ((*seq_order)->token->token == O_OR && exit_code != 0) */
+/*         return(exec_line(&right, env)); */
+/*     if ((*seq_order)->token->token == PARENTHESIS) */
+/*         return (get_subshell(&left, &right, env)); */
+/*     if (!(*seq_order)->token->token) //si on n'a pas de token : on doit executer */
+/*         return (exec_sequence((*seq_order)->token->content[0], env)); //penser aux erreurs de syntaxe avec rien apres ou avant un && ou un || ou deux && || colles */
+/*     else //cas ou la porte n'est pas franchie et ou on n'est pas sur un node parenthesis */
+/*         return(exit_code); */
 /* } */
 
-//TODO ENV
-//
-//revoir les booleens env | export
 //exit code $?
 //variable _ a gerer dans la liste et pour les echo $_
-//verifier PWD et OLDPWD
-//verifier le unset d'une liste vide
-//verifier export / export arg args
-//verifier env 
-//
 //CTRL V + Tab : fait un tab dans le minishell a gerer !
 
 int main(int ac, char **av, char **env)
 {
     char    *line;
     char    *prompt;
-    // char    **arg;
     int        error_code;
-    /* int         stdin_fd; */
-    /* int         stdout_fd; */
     t_var    *new_env;
     t_tree *ast;
     char **strings_env;
@@ -102,13 +115,14 @@ int main(int ac, char **av, char **env)
     // pour ac et av : est-ce qu'on veut accepter des demarrages custom ?
     (void)ac;
     (void)av;
-    error_code = 1;
+    error_code = 0;
     new_env = NULL;
     ast = NULL;
     /* utiliser getenv ?
         * Si on n'a pas d'env uniquement ?*/
     init_env(&new_env, env, av);
     /* print_env(&new_env); */
+
     /* if (find_minishellrc) */
     /*     load_minishell_rc(&new_env); */
 
@@ -135,7 +149,7 @@ int main(int ac, char **av, char **env)
             line = readline(prompt);
             if (!line)
             {
-                free_tree(&ast);
+                free_tree(&ast); // pas de free parse ici ?
                 free_list(&new_env);
                 exit (error_code);
             }
@@ -148,7 +162,19 @@ int main(int ac, char **av, char **env)
         /*     prompt = NULL; */
         /* } */
 
-        /* new_exec(line); */
+        /* t_tree *seq_order; */
+        /**/
+        /* seq_order = NULL; */
+        /* seq_order = get_sequence_order(line); */
+        /* error_code = exec_line(&seq_order); */
+        /* if (seq_order) // a revoir */
+        /* { */
+        /*     free_parse(seq_order->token, NULL, 0); */
+        /*     free_tree(&seq_order); */
+        /* } */
+        //
+        //
+        //
         strings_env = lst_to_array(&new_env);
         ast = parse(line, strings_env);
         free_array(strings_env);
@@ -164,6 +190,9 @@ int main(int ac, char **av, char **env)
             free_parse(ast->token, NULL, 0);
             free_tree(&ast);
         }
+        //
+        //
+        //
         free(line);
         line = NULL;
     }

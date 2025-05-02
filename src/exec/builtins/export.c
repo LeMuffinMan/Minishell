@@ -87,6 +87,9 @@
 // Pareil pour chaque arg
 //
 
+//verifier le unset d'une liste vide
+//verifier PWD et OLDPWD
+//verifier export / export arg args
 
 int	sort_list(t_var **l)
 {
