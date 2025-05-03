@@ -10,12 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "exec.h"
 #include "libft.h"
 #include "structs.h"
+#include "env_utils.h"
 #include <limits.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
 
 t_var	*get_key_node(t_var **env, char *key)
@@ -113,4 +112,42 @@ int	update_last_cmd_var(t_var **env, char *last_cmd)
 		tmp->value = ft_strdup(last_cmd);
 	}
 	return (0);
+}
+
+//a tester !
+int update_last_arg_var(t_var **env, char **content)
+{
+	t_var *tmp;
+	int i;
+
+	tmp = *env;
+	while (tmp)
+	{
+		if(!ft_strncmp(tmp->key, "_", 2) && tmp->env == 0)
+		{
+			i = 0;
+			while(content[i])
+				i++;
+			if (tmp->value) //mettre cette protection partout !
+				free(tmp->value);
+			tmp->value = ft_strdup(content[i]);
+			return (0);
+		}
+		tmp = tmp->next;
+	}
+	return (1);
+}
+
+t_var	*is_known_key(t_var **env, char *key)
+{
+	t_var	*tmp;
+
+	tmp = *env;
+	while (tmp)
+	{
+		if (!ft_strncmp(key, tmp->key, ft_strlen(tmp->key) + 1))
+			return (tmp);
+		tmp = tmp->next;
+	}
+	return (NULL);
 }

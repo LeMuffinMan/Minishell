@@ -10,15 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "exec.h"
 #include "libft.h"
 #include "structs.h"
+#include "utils.h"
 #include "tree.h"
-#include <stdio.h>
 #include <unistd.h>
-#include <stdlib.h>
-
-// Traps ???
 
 int	is_only_numeric_argument(char *s)
 {

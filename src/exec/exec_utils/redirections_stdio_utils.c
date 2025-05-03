@@ -71,33 +71,3 @@ int open_dup2_close(char *file, t_type type)
 	close(fd);
 	return (0);
 }
-
-int redirect_stdio(t_tree **ast, t_var **env, int origin_fds[2])
-{
-	t_tree *left;
-	t_tree *right;
-	int exit_code;
-
-	left = (*ast)->left;
-	right = (*ast)->right;
-	//doute pour ce if, on devrait le faire au parsing ?
-	//dans tous les cas, avec juste un input "<" je trouve un synbole aleatoire dans content[1]
-	if (!(*ast)->token->content[1])
-		return(print_error_file_opening("", "syntax error\n"));
-	exit_code = file_check((*ast)->token->content[1], (*ast)->token->token);
-	if (exit_code != 0)
-		return(exit_code);
-	exit_code = open_dup2_close((*ast)->token->content[1], (*ast)->token->token);
-	if (exit_code == -1)
-		return (-1);//on stop la chaine de redirections
-	if (left && (left->token->token == R_IN || left->token->token == APPEND || left->token->token == TRUNC || left->token->token == HD))
-		exit_code = redirect_stdio(&left, env, origin_fds);
-	if (exit_code == 0 && right && (right->token->token == R_IN || right->token->token == APPEND || right->token->token == TRUNC || right->token->token == HD))
-		exit_code = redirect_stdio(&right, env, origin_fds);
-	if (exit_code == 0 && left && (left->token->token == CMD || left->token->token == BUILT_IN))
-		exit_code = exec_cmd(&left, env, origin_fds);
-	if (exit_code == 0 && right && (right->token->token == CMD || right->token->token == BUILT_IN))
-		exit_code = exec_cmd(&right, env, origin_fds);
-	return (exit_code);
-}
-

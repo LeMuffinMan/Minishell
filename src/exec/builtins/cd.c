@@ -10,13 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "exec.h"
+#include "builtins.h"
+#include "env_utils.h"
 #include "libft.h"
 #include "structs.h"
-#include <limits.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <sys/stat.h>
 #include <unistd.h>
 
 /* DECIDER : */

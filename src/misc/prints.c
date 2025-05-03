@@ -10,12 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "exec.h"
 #include "libft.h"
 #include "structs.h"
-#include <stdlib.h>
 #include <stdio.h>
-#include<unistd.h>
 
 int	print_array(char **array)
 {

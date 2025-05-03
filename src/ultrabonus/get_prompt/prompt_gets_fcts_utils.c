@@ -13,7 +13,7 @@
 #include "libft.h"
 #include "structs.h"
 #include "get_prompt.h"
-#include "exec.h"
+#include "env_utils.h"
 
 int get_value_len(t_var **env, t_prompt *prompt, char c)
 {

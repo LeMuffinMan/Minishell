@@ -11,9 +11,8 @@
 /* ************************************************************************** */
 
 #include "structs.h"
-#include "utils.h"
+#include "env_utils.h"
 #include "libft.h"
-#include <stdlib.h>
 #include <limits.h>
 #include <unistd.h>
 #include <stdio.h>

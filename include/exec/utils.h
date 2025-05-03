@@ -15,7 +15,14 @@
 
 # include "structs.h"
 
-void	add_back_var(t_var **lst, char *s, int mode);
+void	free_list(t_var **l);
+int	sort_list(t_var **l);
+int	free_array(char **array);
+t_var	*copy_list(t_var **env);
+int	print_sorted_env(t_var **env);
+int	print_array(char **array);
+char **lst_to_array(t_var **env);
+int free_pipes(t_pipe **pipes);
 int		swap_nodes(t_var *n1, t_var *n2);
 
 #endif

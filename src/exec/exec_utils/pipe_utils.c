@@ -14,7 +14,6 @@
 #include "structs.h"
 #include <unistd.h>
 
-	// ici on free la liste des pids
 int	wait_children(pid_t last_child, pid_t first_child)
 {
 	int		status;

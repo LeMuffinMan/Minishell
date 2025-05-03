@@ -10,11 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "exec.h"
 #include "libft.h"
-#include "minishell.h"
-#include "structs.h"
-#include <stdlib.h>
+#include "env_utils.h"
 
 int	env_size(t_var *env)
 {

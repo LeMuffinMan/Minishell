@@ -10,9 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "exec.h"
 #include "libft.h"
 #include "structs.h"
+#include "utils.h"
 #include <stdlib.h>
 
 void	free_list(t_var **l)

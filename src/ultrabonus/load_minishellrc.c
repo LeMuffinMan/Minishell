@@ -14,6 +14,8 @@
 #include <stdlib.h>
 #include "libft.h"
 #include "exec.h"
+#include "env_utils.h"
+#include "utils.h"
 #include "structs.h"
 #include <stdio.h>
 #include <readline/readline.h> // compiler avec -l readline

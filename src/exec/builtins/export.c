@@ -12,9 +12,7 @@
 
 #include "exec.h"
 #include "libft.h"
-#include "structs.h"
-#include <stdio.h>
-#include <stdlib.h>
+#include "builtins.h"
 #include "utils.h"
 
 // DECIDER
@@ -91,71 +89,6 @@
 //verifier PWD et OLDPWD
 //verifier export / export arg args
 
-int	sort_list(t_var **l)
-{
-	t_var	*tmp;
-	int		sorted;
-
-	sorted = 0;
-	tmp = *l;
-	if (!tmp)
-		return (1);
-	while (sorted == 0)
-	{
-		sorted = 1;
-		tmp = *l;
-		while (tmp->next)
-		{
-			if (compare_keys(tmp->key, tmp->next->key) > 0)
-			{
-				sorted = 0;
-				swap_nodes(tmp, tmp->next);
-			}
-			tmp = tmp->next;
-		}
-	}
-	return (0);
-}
-
-int	free_array(char **array)
-{
-	int	i;
-
-	i = 0;
-	while (array[i])
-	{
-		free(array[i]);
-		i++;
-	}
-	free(array);
-	return (0);
-}
-
-t_var	*is_known_key(t_var **env, char *key)
-{
-	t_var	*tmp;
-
-	tmp = *env;
-	while (tmp)
-	{
-		if (!ft_strncmp(key, tmp->key, ft_strlen(tmp->key) + 1))
-			return (tmp);
-		tmp = tmp->next;
-	}
-	return (NULL);
-}
-
-int	compare_keys(char *key1, char *key2)
-{
-	char	*longest_key;
-
-	if (ft_strlen(key1) > ft_strlen(key2))
-		longest_key = key1;
-	else
-		longest_key = key2;
-	return (ft_strncmp(key1, key2, ft_strlen(longest_key)));
-}
-
 // a reparer
 /* sort_list(&copy); */
 /* if (copy) */
@@ -164,107 +97,6 @@ int	compare_keys(char *key1, char *key2)
 /* 	free_list(&copy); */
 /* } */
 
-int is_valid_identifier(char *var)
-{
-	int i;
-	int j;
-
-	i = 0;
-	j = 0;
-	while(var[i])
-	{
-		if (var[i] == '=')
-			break ;
-		i++;
-	}
-	j = 0;
-	while (j < i)
-	{
-		if (var[j] == '+' || var[j] == '-' || var[j] == '/' || var[j] == '*')
-		{
-			if (!(j == i - 1 && var[j] == '+'))
-				return (1);
-		}
-		j++;
-	}
-	return (0);	
-}
-
-char **concat_var(char **arg)
-{
-	char **key_value;
-	char *tmp;
-	int i;
-
-	key_value = malloc(sizeof(char *) * 3);
-	if (!key_value)
-		return (NULL);
-	key_value[0] = ft_strdup(arg[0]);
-	i = 1;
-	key_value[1] = ft_strdup("");
-	while (arg[i])
-	{
-		tmp = key_value[1];
-		key_value[1] = ft_strjoin(key_value[1], arg[i]);
-		free(tmp);
-		if (arg[i + 1])
-		{
-			tmp = key_value[1];
-			key_value[1] = ft_strjoin(key_value[1], "=");
-			free(tmp);
-		}
-		i++;
-	}
-	key_value[2] = NULL;
-	free_array(arg);
-	return (key_value);
-}
-
-int is_increment_operator(char *s)
-{
-	if (s[ft_strlen(s) - 1] == '+')
-		return (1);
-	else
-		return (0);
-}
-
-char *trim_operator(char *s)
-{
-	char *trimmed;
-
-	trimmed = NULL;
-	trimmed = malloc(sizeof(char) * ft_strlen(s));
-	ft_strlcpy(trimmed, s, ft_strlen(s));
-	free(s);
-	return (trimmed);
-}
-
-int error_not_valid_identifier(char *s)
-{
-	char *tmp;
-	
-	s = ft_strjoin("minishell: export: `", s);
-	tmp = s;
-	s = ft_strjoin(s, "\': not a valid identifier\n");
-	free(tmp);
-	ft_putstr_fd(s, 2);
-	free(s);
-	return (0);
-}
-
-int add_new_var(t_var **env, char **key_value)
-{
-	char *s;
-	char *tmp;
-	//si ce n'est pas une variable protegee !
-	s = ft_strjoin(key_value[0], "=");
-	tmp = s;
-	s = ft_strjoin(s, key_value[1]);
-	free(tmp);
-	add_back_var(env, s, 3);
-	free(s);
-	return (0);
-}
 
 int update_var(t_var **node, char **key_value, int inc)
 {

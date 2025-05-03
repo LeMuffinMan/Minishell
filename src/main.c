@@ -11,9 +11,11 @@
 /* ************************************************************************** */
 
 #include "libft.h"
-#include "get_prompt.h"
+#include "get_prompt.h" // A VIRER !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #include "tree.h"
 #include "exec.h"
+#include "utils.h"
+#include "env_utils.h"
 #include <stdio.h>
 #include <readline/readline.h> // compiler avec -l readline
 #include <stdlib.h>

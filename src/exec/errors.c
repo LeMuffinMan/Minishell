@@ -45,3 +45,16 @@ int print_error_file_opening(char *file, char *error)
 	free(s);
 	return (1);
 }
+
+int error_not_valid_identifier(char *s)
+{
+	char *tmp;
+	
+	s = ft_strjoin("minishell: export: `", s);
+	tmp = s;
+	s = ft_strjoin(s, "\': not a valid identifier\n");
+	free(tmp);
+	ft_putstr_fd(s, 2);
+	free(s);
+	return (0);
+}
