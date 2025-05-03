@@ -338,7 +338,7 @@ int add_or_update_var(t_var **env, char *arg)
 		free(tmp);
 	}
 	//il me faudrait un is_known_key specifique aux variables exported pour pas override _ ou ?
-	/* node = is_known_exported_key(env, key_value[0]); */
+	node = is_known_exported_key(env, key_value[0]);
 	if (!node)
 		add_new_var(env, key_value);
 	else

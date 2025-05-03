@@ -44,8 +44,8 @@ int	print_sorted_env(t_var **env)
 	{
 		/* printf("key = %s | exported = %d\n", tmp->key, tmp->exported); */
 		//cette condition casse tout !
-		/* if (tmp->exported == 1) */
-		/* { */
+		if (tmp->exported == 1)
+		{
 			s = ft_strjoin("declare -x ", tmp->key);
 			temp = s;
 			if (tmp->value)
@@ -62,7 +62,7 @@ int	print_sorted_env(t_var **env)
 			}
 			ft_putstr_fd(s, 1);
 			free(s);
-		/* } */
+		}
 		tmp = tmp->next;
 	}
 	return (0);

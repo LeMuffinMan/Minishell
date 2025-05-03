@@ -22,7 +22,7 @@ int update_underscore_var(t_var **env)
 	tmp = *env;
 	while(tmp)
 	{
-		if (!ft_strncmp(tmp->key, "_", 2))
+		if (!ft_strncmp(tmp->key, "_", 2) && tmp->env == 1)
 		{
 			free(tmp->value);
 			tmp->value = ft_strdup("env");

@@ -37,8 +37,6 @@ int	swap_nodes(t_var *n1, t_var *n2)
 	return (0);
 }
 
-
-// proteger mieux l'erreur de malloc
 t_var	*copy_list(t_var **env)
 {
 	t_var	*tmp;
@@ -53,9 +51,13 @@ t_var	*copy_list(t_var **env)
 	{
 		new_node = malloc(sizeof(t_var));
 		if (!new_node)
-			exit(1);
+			return(NULL);
 		new_node->key = ft_strdup(tmp->key);
 		new_node->value = ft_strdup(tmp->value);
+		new_node->exported = tmp->exported;
+		new_node->env = tmp->env;
+		new_node->alias = tmp->alias;
+		new_node->shell_fct = tmp->shell_fct;
 		new_node->next = NULL;
 		if (last)
 			last->next = new_node;
