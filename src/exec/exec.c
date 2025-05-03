@@ -19,6 +19,30 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+//a tester !
+int update_last_arg_var(t_var **env, char **content)
+{
+	t_var *tmp;
+	int i;
+
+	tmp = *env;
+	while (tmp)
+	{
+		if(!ft_strncmp(tmp->key, "_", 2) && tmp->env == 0)
+		{
+			i = 0;
+			while(content[i])
+				i++;
+			if (tmp->value) //mettre cette protection partout !
+				free(tmp->value);
+			tmp->value = ft_strdup(content[i]);
+			return (0);
+		}
+		tmp = tmp->next;
+	}
+	return (1);
+}
+
 int	builtins(char **arg, t_var **env, t_tree **ast, int origin_fds[2])
 {
 	if (!*arg)
@@ -34,7 +58,7 @@ int	builtins(char **arg, t_var **env, t_tree **ast, int origin_fds[2])
 	else if (!ft_strncmp(arg[0], "unset", 6))
 		return (builtin_unset(env, arg));
 	else if (!ft_strncmp(arg[0], "env", 4))
-		return (builtin_env(env));
+		return (builtin_env(env, arg));
 	else if (!ft_strncmp(arg[0], "exit", 5))
 		return (builtin_exit(arg, env, ast, origin_fds));
 	/* else if (!ft_strncmp(arg[0], "source", 7)) */
@@ -127,6 +151,7 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, int origin_fds[2])
 			close(pipefd[0]);
 			free_pipes(pipes);
 			exit_code = wait_children(right_pid, left_pid);
+			update_last_arg_var(env, (*ast)->token->content);
 			return(exit_code);
 		}
 	}
@@ -145,6 +170,7 @@ int	exec_cmd(t_tree **ast, t_var **env, int origin_fds[2])
 	char *tmp;
 
 	/* expand_cmd_sub((*ast)->token->content, env); */
+	//les builtins ne mettent pas a jour la variable _ !!
 	if ((*ast)->token->token == BUILT_IN)
 	{
 		exit_code = builtins((*ast)->token->content, env, ast, origin_fds);
@@ -196,6 +222,7 @@ int	exec_cmd(t_tree **ast, t_var **env, int origin_fds[2])
 		{
 			exit_code = wait_children(pid, pid);
 			update_env(env);
+			update_last_arg_var(env, (*ast)->token->content);
 			return (exit_code);
 		}
 	}

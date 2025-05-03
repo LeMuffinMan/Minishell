@@ -42,22 +42,27 @@ int	print_sorted_env(t_var **env)
 	tmp = *env;
 	while (tmp)
 	{
-		s = ft_strjoin("declare -x ", tmp->key);
-		temp = s;
-		if (tmp->value)
-		{
-			s = ft_strjoin(s, "=\"");
-			free(temp);
+		/* printf("key = %s | exported = %d\n", tmp->key, tmp->exported); */
+		//cette condition casse tout !
+		/* if (tmp->exported == 1) */
+		/* { */
+			s = ft_strjoin("declare -x ", tmp->key);
 			temp = s;
-			s = ft_strjoin(s, tmp->value);
-			free(temp);
-			temp = s;
-			s = ft_strjoin(s, "\"\n");
-			free(temp);
-			temp = s;
-		}
-		ft_putstr_fd(s, 1);
-		free(s);
+			if (tmp->value)
+			{
+				s = ft_strjoin(s, "=\"");
+				free(temp);
+				temp = s;
+				s = ft_strjoin(s, tmp->value);
+				free(temp);
+				temp = s;
+				s = ft_strjoin(s, "\"\n");
+				free(temp);
+				temp = s;
+			}
+			ft_putstr_fd(s, 1);
+			free(s);
+		/* } */
 		tmp = tmp->next;
 	}
 	return (0);
@@ -86,6 +91,8 @@ int print_env(t_var **env)
     tmp = *env;
     while (tmp)
     {
+    	if (tmp->env == 1)
+    	{
         if (tmp->key)
             ft_putstr_fd(tmp->key, 1);
         if (tmp->value) //Si on fait VAR= on ft_strdup("")
@@ -94,7 +101,8 @@ int print_env(t_var **env)
             ft_putstr_fd(tmp->value, 1);
         }
         ft_putstr_fd("\n", 1);
-        tmp = tmp->next;
+    	}
+      tmp = tmp->next;
     }
     return (0);
 }

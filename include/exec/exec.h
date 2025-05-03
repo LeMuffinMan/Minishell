@@ -20,7 +20,7 @@
 
 
 //init
-int	init_env(t_var **new_env, char **env, char **arg);
+int	init_env(t_var **new_env, char **env, char *name_of_program);
 
 //errors.c
 int error_cmd(char *cmd, int error_code);
@@ -35,7 +35,7 @@ int exec_ast (t_tree **ast, t_var **env, int origin_fds[2]);
 int	exec_cmd(t_tree **ast, t_var **env, int origin_fds[2]);
 
 void	add_back_var(t_var **lst, char *s, int mode);
-void	add_first_node(t_var **lst, t_var *new, char *s, int mode);
+void	add_first_node(t_var **lst, t_var **new, char *s, int mode);
 void	free_list(t_var **l);
 
 //BUILTINS
@@ -43,12 +43,13 @@ void	free_list(t_var **l);
 int free_array(char **array);
 int	compare_keys(char *key1, char *key2);
 int builtin_export(t_var **env, char **arg);
+t_var	*is_known_key(t_var **env, char *key);
 //builtins/cd
 int	builtin_cd(char **arg, t_var **env);
 //builtins/echo
 int	builtin_echo(char **arg);
 //builtins/env
-int builtin_env(t_var **env);
+int builtin_env(t_var **env, char **arg);
 //builtins/exit
 int	builtin_exit(char **arg, t_var **env, t_tree **ast, int origin_fds[2]);
 //builtins/pwd

@@ -75,8 +75,9 @@ SRC					=	main.c \
 						ultrabonus/get_prompt/get_prompt.c \
 						ultrabonus/get_prompt/get_prompt_free.c \
 						ultrabonus/get_prompt/git_branch_utils.c \
+						ultrabonus/load_minishellrc.c \
 						ultrabonus/get_prompt/prompt_gets_fcts.c \
-						ultrabonus/get_prompt/prompt_gets_fcts_utils.c  
+						ultrabonus/get_prompt/prompt_gets_fcts_utils.c 
 
 
 DEPS				=	$(SRC:%.c=$(OBJ_DIR)%.d)

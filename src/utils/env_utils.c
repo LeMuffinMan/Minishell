@@ -108,7 +108,7 @@ int	update_last_cmd_var(t_var **env, char *last_cmd)
 		add_back_var(env, last_cmd, 1);
 	else
 	{
-		printf("update\n");
+		/* printf("update\n"); */
 		free(tmp->value);
 		tmp->value = ft_strdup(last_cmd);
 	}

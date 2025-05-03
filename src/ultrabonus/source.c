@@ -23,7 +23,7 @@ void	delete_loaded_variables(t_var **env, void (*del)(void *))
 	return (0);
 }
 
-int builtin_source(t_var **env)
+int builtin_source(t_var **env, char *path)
 {
   t_var *tmp;
 
@@ -34,6 +34,6 @@ int builtin_source(t_var **env)
       delete_loaded_variables(tmp, &free)
     tmp = tmp->next;
   }
-  load_minishell_rc(env);
+  load_minishellrc(env, path);
   return (0);
 }

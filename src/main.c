@@ -98,11 +98,36 @@
 //variable _ a gerer dans la liste et pour les echo $_
 //CTRL V + Tab : fait un tab dans le minishell a gerer !
 
+int print_all_variables(t_var **env)
+{
+    t_var *tmp;
+
+    tmp = *env;
+    while(tmp)
+    {
+        printf("key = %s | value = %s | exported = %d | env = %d\n", tmp->key, tmp->value, tmp->exported, tmp->env);
+        tmp = tmp->next;
+    }
+    return (0);
+}
+
+int update_exit_code_var(t_var **env, int exit_code)
+{
+    t_var *tmp;
+
+    tmp = is_known_key(env, "?");
+    if (!tmp)
+        return (1);
+    free(tmp->value);
+    tmp->value = ft_itoa(exit_code);
+    return(0);
+}
+
 int main(int ac, char **av, char **env)
 {
     char    *line;
     char    *prompt;
-    int        error_code;
+    int        exit_code;
     t_var    *new_env;
     t_tree *ast;
     char **strings_env;
@@ -116,12 +141,13 @@ int main(int ac, char **av, char **env)
     // pour ac et av : est-ce qu'on veut accepter des demarrages custom ?
     (void)ac;
     (void)av;
-    error_code = 0;
+    exit_code = 0;
     new_env = NULL;
     ast = NULL;
     /* utiliser getenv ?
         * Si on n'a pas d'env uniquement ?*/
-    init_env(&new_env, env, av);
+    init_env(&new_env, env, av[0]);
+    /* print_all_variables(&new_env); */
     /* print_env(&new_env); */
 
     /* if (find_minishellrc(&new_env, NULL)) */
@@ -150,10 +176,11 @@ int main(int ac, char **av, char **env)
             line = readline(prompt);
             if (!line)
             {
-                free(prompt);
+                if (isatty(0) && *env)
+                    free(prompt);
                 free_tree(&ast); // pas de free parse ici ?
                 free_list(&new_env);
-                exit (error_code);
+                exit (exit_code);
             }
         }
 	    origin_fds[0] = dup(STDIN_FILENO);
@@ -168,7 +195,7 @@ int main(int ac, char **av, char **env)
         /**/
         /* seq_order = NULL; */
         /* seq_order = get_sequence_order(line); */
-        /* error_code = exec_line(&seq_order); */
+        /* exit_code = exec_line(&seq_order); */
         /* if (seq_order) // a revoir */
         /* { */
         /*     free_parse(seq_order->token, NULL, 0); */
@@ -181,7 +208,8 @@ int main(int ac, char **av, char **env)
         ast = parse(line, strings_env);
         free_array(strings_env);
         strings_env = NULL;
-        error_code = exec_ast(&ast, &new_env, origin_fds);
+        exit_code = exec_ast(&ast, &new_env, origin_fds);
+        update_exit_code_var(&new_env, exit_code);
         //update la variable exit_code dans l'environnement !
         dup2(origin_fds[0], STDIN_FILENO);
         dup2(origin_fds[1], STDOUT_FILENO);
@@ -199,6 +227,6 @@ int main(int ac, char **av, char **env)
         line = NULL;
     }
     free_list(&new_env);
-    exit(error_code);
+    exit(exit_code);
 }
 

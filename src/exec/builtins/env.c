@@ -15,15 +15,46 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+int update_underscore_var(t_var **env)
+{
+	t_var *tmp;
+
+	tmp = *env;
+	while(tmp)
+	{
+		if (!ft_strncmp(tmp->key, "_", 2))
+		{
+			free(tmp->value);
+			tmp->value = ft_strdup("env");
+		}
+		tmp = tmp->next;
+	}
+	return (0);
+}
+
+
 // ne pas afficher les variables non exportees ? ou justement on affiche tout ?
 // NE PAS AFFICHER LES VARIABLES SANS VALEUR !
 // //revoir la valeur de return en cas d'erreur
-int	builtin_env(t_var **env)
+int	builtin_env(t_var **env, char **content)
 {
 	t_var	*tmp;
+	char *s;
+	char *temp;
 
 	if (!*env)
 		return (0);
+	if (content[1])
+	{
+		s = ft_strjoin("env: \'", content[1]);
+		temp = s;
+		s = ft_strjoin(s, "\': No option or argument accepted for env builtin\n");
+		free(temp);
+		ft_putstr_fd(s, 2);
+		free(s);
+		return (127);
+	}
+	update_underscore_var(env);
 	tmp = *env;
 	while (tmp)
 	{

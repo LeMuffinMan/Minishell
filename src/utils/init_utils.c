@@ -34,41 +34,49 @@ void	free_list(t_var **l)
 	*l = NULL;
 }
 
-void	set_node(t_var *node, int mode)
+void	set_node(t_var **node, int mode)
 {
 	if (mode == 1)
 	{
-		node->env = 1;
-		node->exported = 0;
+		(*node)->env = 1;
+		(*node)->exported = 0;
+		(*node)->alias = 0;
+		(*node)->shell_fct = 0;
 	}
 	if (mode == 2)
 	{
-		node->env = 0;
-		node->exported = 1;
+		(*node)->env = 0;
+		(*node)->exported = 1;
+		(*node)->alias = 0;
+		(*node)->shell_fct = 0;
 	}
 	if (mode == 3)
 	{
-		node->env = 1;
-		node->exported = 1;
+		(*node)->env = 1;
+		(*node)->exported = 1;
+		(*node)->alias = 0;
+		(*node)->shell_fct = 0;
 	}
 	else
 	{
-		node->env = 0;
-		node->exported = 0;
+		(*node)->env = 0;
+		(*node)->exported = 0;
+		(*node)->alias = 0;
+		(*node)->shell_fct = 0;
 	}
 }
 
-void	add_first_node(t_var **lst, t_var *new, char *s, int mode)
+void	add_first_node(t_var **lst, t_var **new, char *s, int mode)
 {
 	char	**key_value;
 
 	key_value = ft_split(s, '=');
-	new->key = ft_strdup(key_value[0]);
+	(*new)->key = ft_strdup(key_value[0]);
 	if (key_value[1])
-		new->value = ft_strdup(key_value[1]);
+		(*new)->value = ft_strdup(key_value[1]);
 	free_array(key_value);
-	*lst = new;
-	new->next = NULL;
+	*lst = *new;
+	(*new)->next = NULL;
 	set_node(new, mode);
 }
 
@@ -86,7 +94,7 @@ void	add_back_var(t_var **lst, char *s, int mode)
 		exit(139);
 	}
 	if (*lst == NULL)
-		add_first_node(lst, new, s, mode);
+		add_first_node(lst, &new, s, mode);
 	else
 	{
 		ptr = *lst;
@@ -101,6 +109,6 @@ void	add_back_var(t_var **lst, char *s, int mode)
 		if (key_value && key_value[1])
 			new->value = ft_strdup(key_value[1]);
 		free_array(key_value);
-		set_node(new, mode);
+		set_node(&new, mode);
 	}
 }
