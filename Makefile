@@ -26,7 +26,7 @@ vpath %.h include:include/parsing:include/exec:src/libft/include
 vpath %.a src/libft/obj
 
 CC					=	cc
-FLAG				=	-Wall -Wextra -Werror -g3 -MMD -MP -I$(LIBFT_HEAD_DIR) $(INC_HEAD)
+FLAGS				=	-Wall -Wextra -Werror -g3 -MMD -MP -I$(LIBFT_HEAD_DIR) $(INC_HEAD)
 NAME				=	minishell
 HEAD				=	here_doc.h lexer.h list.h quote.h token.h tree.h 
 HEAD_DIR			=	include
@@ -88,10 +88,16 @@ OBJ_DIR				=	.objs/
 $(OBJ_DIR)%.o:%.c $(HEAD) $(LIBFT_HEAD) Makefile $(LIBFT_DIR)/Makefile
 	@mkdir -p $(@D) 
 	@echo "$(BOLD_PURPLE)"
-	$(CC) $(FLAG) -c $< -o $@
+	$(CC) $(FLAGS) -c $< -o $@
 	@echo "$(STOP_COLOR)"
 
 all: lib $(NAME)
+
+debug:
+	make re FLAGS="$(FLAGS) -DDEBUG=1"
+
+release:
+	make re FLAGS="$(FLAGS) -DDEBUG=0"
 
 lib:
 	@echo "$(BOLD_BLUE)Compilling Libft...$(STOP_COLOR)"

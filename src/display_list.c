@@ -49,36 +49,40 @@ static void	display_unvalid(int i, t_token *node)
 		BOLD_RED, node->error, BOLD_BLUE, STOP_COLOR);
 }
 
-void	display_list(t_token *head)
+static void	print_token(t_token *head, const char **tab, int i)
 {
-	t_token				*tmp;
+	printf("%sNULL\n ^\n |\n%s", BOLD_BLUE, STOP_COLOR);
+	while (head->next)
+	{
+		if ((int)head->token != 0)
+			display_valid(head, i, head->content, tab);
+		else
+			display_unvalid(i, head);
+		head = head->next;
+		i++;
+	}
+	if ((int)head->token != 0)
+		display_valid(head, i, head->content, tab);
+	else
+		display_unvalid(i, head);
+	printf("%sNULL\n%s", BOLD_BLUE, STOP_COLOR);
+}
+
+void	display_list(t_token *head, int debug)
+{
 	int					i;
 	static const char	*tab[18] = {"No_Token", "Append", "Built_in", "CMD",
 		"D_quote", "Expand", "Group_Par", "HD", "And", "Or", "L_Par", "R_Par",
 		"Pipe", "Redir in", "S_quote", "Space", "Truncate", "Wildcard"};
 
 	i = 1;
-	tmp = head;
-	if (!tmp)
+	if (!head)
 		return ;
-	printf("%sNULL\n ^\n |\n%s", BOLD_BLUE, STOP_COLOR);
-	while (tmp->next)
-	{
-		if ((int)tmp->token != 0)
-			display_valid(tmp, i, tmp->content, tab);
-		else
-			display_unvalid(i, tmp);
-		tmp = tmp->next;
-		i++;
-	}
-	if ((int)tmp->token != 0)
-		display_valid(tmp, i, tmp->content, tab);
-	else
-		display_unvalid(i, tmp);
-	printf("%sNULL\n%s", BOLD_BLUE, STOP_COLOR);
+	if  (debug)
+		print_token(head, tab, i);
 }
 
-void	display_lexer(t_lexer *head)
+void	display_lexer(t_lexer *head, int debug)
 {
 	t_lexer	*tmp;
 	int		i;
@@ -87,17 +91,20 @@ void	display_lexer(t_lexer *head)
 	tmp = head;
 	if (!tmp)
 		return ;
-	printf("%sNULL\n ^\n |\n%s", BOLD_BLUE, STOP_COLOR);
-	while (tmp->next)
+	if (debug)
 	{
-		printf("%sNODE %d: [%s%s%s]\n | ^\n v |\n%s",
+		printf("%sNULL\n ^\n |\n%s", BOLD_BLUE, STOP_COLOR);
+		while (tmp->next)
+		{
+			printf("%sNODE %d: [%s%s%s]\n | ^\n v |\n%s",
+				BOLD_BLUE, i,
+				BOLD_GREEN, tmp->arg, BOLD_BLUE, STOP_COLOR);
+			tmp = tmp->next;
+			i++;
+		}
+		printf("%sNODE %d: [%s%s%s]\n |\n v\n%s",
 			BOLD_BLUE, i,
 			BOLD_GREEN, tmp->arg, BOLD_BLUE, STOP_COLOR);
-		tmp = tmp->next;
-		i++;
+		printf("%sNULL\n%s", BOLD_BLUE, STOP_COLOR);
 	}
-	printf("%sNODE %d: [%s%s%s]\n |\n v\n%s",
-		BOLD_BLUE, i,
-		BOLD_GREEN, tmp->arg, BOLD_BLUE, STOP_COLOR);
-	printf("%sNULL\n%s", BOLD_BLUE, STOP_COLOR);
 }
