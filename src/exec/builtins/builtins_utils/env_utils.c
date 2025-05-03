@@ -151,3 +151,30 @@ t_var	*is_known_key(t_var **env, char *key)
 	}
 	return (NULL);
 }
+
+int print_all_variables(t_var **env)
+{
+    t_var *tmp;
+
+    tmp = *env;
+    while(tmp)
+    {
+        printf("key = %s | value = %s | exported = %d | env = %d\n", tmp->key, tmp->value, tmp->exported, tmp->env);
+        tmp = tmp->next;
+    }
+    return (0);
+}
+
+int update_exit_code_var(t_var **env, int exit_code)
+{
+    t_var *tmp;
+
+    tmp = is_known_key(env, "?");
+    if (!tmp)
+        return (1);
+    free(tmp->value);
+    tmp->value = ft_itoa(exit_code);
+    return(0);
+}
+
+

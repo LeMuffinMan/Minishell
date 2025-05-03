@@ -96,34 +96,7 @@
 /*         return(exit_code); */
 /* } */
 
-//exit code $?
-//variable _ a gerer dans la liste et pour les echo $_
 //CTRL V + Tab : fait un tab dans le minishell a gerer !
-
-int print_all_variables(t_var **env)
-{
-    t_var *tmp;
-
-    tmp = *env;
-    while(tmp)
-    {
-        printf("key = %s | value = %s | exported = %d | env = %d\n", tmp->key, tmp->value, tmp->exported, tmp->env);
-        tmp = tmp->next;
-    }
-    return (0);
-}
-
-int update_exit_code_var(t_var **env, int exit_code)
-{
-    t_var *tmp;
-
-    tmp = is_known_key(env, "?");
-    if (!tmp)
-        return (1);
-    free(tmp->value);
-    tmp->value = ft_itoa(exit_code);
-    return(0);
-}
 
 int main(int ac, char **av, char **env)
 {
@@ -154,13 +127,8 @@ int main(int ac, char **av, char **env)
 
     /* if (find_minishellrc(&new_env, NULL)) */
     /*     load_minishellrc(&new_env, NULL); */
-
-	/* dprintf(2, "origin_fds[0] = %d\n", origin_fds[0]); */
-	/* dprintf(2, "origin_fds[1] = %d\n", origin_fds[1]); */
     while (1)
     {
-        //update env variables !!! si on a un && ou un || on DOIT update l'env entre les deux !!!
-        //update prompt
         prompt = NULL;
         if (isatty(0) && *env)
         {
