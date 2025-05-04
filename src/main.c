@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:21:52 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/04 19:32:03 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/04 20:50:22 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,6 +133,12 @@
     //substitution cmd :
         //exception dans les expands 
         //fct pour executer la cmd_s
+    //faire l'historique a la main
+        //charger au demarrage un .minishell_history
+        //save l'historique a la fin, meme avec un ctrl c 
+        //limite l'historique a une size (on ecrase la plus ancienne entree)
+        //un builtin history qui affiche le contenu du fichier avec le numerotage des lignes 
+        //ajouter !! et !-x 
 
 //Tests de cons :
 //CTRL V + Tab : fait un tab dans le minishell a gerer !
