@@ -325,10 +325,10 @@ int load_minishellrc(t_var **env, char *path)
             /* print_fct_content(lines[i], env); */
             i = closed_bracket_index;
         }
-        if (lines[i][0] && lines[i][0] == '#')
-        {
+        /* if (lines[i][0] && lines[i][0] == '#') */
+        /* { */
             /* printf("comment : %s\n", lines[i]); */
-        }
+        /* } */
         else if (!ft_strncmp("alias ", lines[i], 6))
         {
             add_alias(lines[i], env);
@@ -343,9 +343,9 @@ int load_minishellrc(t_var **env, char *path)
             tmp = *env;
             while(tmp->next)
                 tmp = tmp->next;
-            printf("PS1 added in env : %s=%s | exported = %d | env = %d\n", tmp->key, tmp->value, tmp->exported, tmp->env);
+            /* printf("PS1 added in env : %s=%s | exported = %d | env = %d\n", tmp->key, tmp->value, tmp->exported, tmp->env); */
         }
-        else if (ft_strlen(lines[i]) > 1 && lines[i][0] != '}')//if is command du parsing
+        else if (ft_strlen(lines[i]) > 1 && lines[i][0] != '}' && lines[i][0] != '#')//if is command du parsing
         {
             (void)lines;
             /* printf("cmd to execute : %s\n", lines[i]); */

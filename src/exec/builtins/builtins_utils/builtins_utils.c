@@ -6,7 +6,7 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 17:27:22 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/20 17:27:51 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/04 19:22:26 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ t_var	*copy_list(t_var **env)
 	{
 		new_node = malloc(sizeof(t_var));
 		if (!new_node)
-			return(NULL);
+			return (NULL);
 		new_node->key = ft_strdup(tmp->key);
 		new_node->value = ft_strdup(tmp->value);
 		new_node->exported = tmp->exported;

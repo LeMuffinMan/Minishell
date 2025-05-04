@@ -1,15 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   prints.h                                           :+:      :+:    :+:   */
+/*   signals.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/20 17:57:12 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/04 19:22:05 by oelleaum         ###   ########lyon.fr   */
+/*   Created: 2025/05/04 19:21:28 by oelleaum          #+#    #+#             */
+/*   Updated: 2025/05/04 19:38:26 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <structs.h>
+#ifndef SIGNALS_H
+# define SIGNALS_H
 
-int	print_env(t_var **env);
+#include <signal.h>
+
+extern volatile sig_atomic_t g_signal;
+
+// void	setup_child_signals(void);
+void	handle_sig(int sig);
+void do_nothing_sig(int sig);
+int		set_signals(int mode);
+
+#endif

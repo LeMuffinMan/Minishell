@@ -1,16 +1,28 @@
-#include "libft.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   export_utils.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/04 19:22:41 by oelleaum          #+#    #+#             */
+/*   Updated: 2025/05/04 19:22:42 by oelleaum         ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "env_utils.h"
+#include "libft.h"
 #include "utils.h"
 #include <stdlib.h>
 
-int is_valid_identifier(char *var)
+int	is_valid_identifier(char *var)
 {
-	int i;
-	int j;
+	int	i;
+	int	j;
 
 	i = 0;
 	j = 0;
-	while(var[i])
+	while (var[i])
 	{
 		if (var[i] == '=')
 			break ;
@@ -26,14 +38,14 @@ int is_valid_identifier(char *var)
 		}
 		j++;
 	}
-	return (0);	
+	return (0);
 }
 
-char **concat_var(char **arg)
+char	**concat_var(char **arg)
 {
-	char **key_value;
-	char *tmp;
-	int i;
+	char	**key_value;
+	char	*tmp;
+	int		i;
 
 	key_value = malloc(sizeof(char *) * 3);
 	if (!key_value)
@@ -59,7 +71,7 @@ char **concat_var(char **arg)
 	return (key_value);
 }
 
-int is_increment_operator(char *s)
+int	is_increment_operator(char *s)
 {
 	if (s[ft_strlen(s) - 1] == '+')
 		return (1);
@@ -67,9 +79,9 @@ int is_increment_operator(char *s)
 		return (0);
 }
 
-char *trim_operator(char *s)
+char	*trim_operator(char *s)
 {
-	char *trimmed;
+	char	*trimmed;
 
 	trimmed = NULL;
 	trimmed = malloc(sizeof(char) * ft_strlen(s));
@@ -78,11 +90,12 @@ char *trim_operator(char *s)
 	return (trimmed);
 }
 
-int add_new_var(t_var **env, char **key_value)
+int	add_new_var(t_var **env, char **key_value)
 {
-	char *s;
-	char *tmp;
-	//si ce n'est pas une variable protegee !
+	char	*s;
+	char	*tmp;
+
+	// si ce n'est pas une variable protegee !
 	s = ft_strjoin(key_value[0], "=");
 	tmp = s;
 	s = ft_strjoin(s, key_value[1]);
@@ -91,4 +104,3 @@ int add_new_var(t_var **env, char **key_value)
 	free(s);
 	return (0);
 }
-

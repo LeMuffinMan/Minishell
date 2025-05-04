@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:21:52 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/28 13:29:17 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/04 19:32:03 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,12 @@
 #include "env_utils.h"
 #include <stdio.h>
 #include <readline/readline.h> // compiler avec -l readline
+#include <readline/history.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include "display.h"
 #include "prints.h"
+#include "signals.h"
 #include "minishellrc.h"
 
 /* int exec_sequence(char *sequence, t_var **env) */
@@ -98,6 +100,7 @@
 
 //CTRL V + Tab : fait un tab dans le minishell a gerer !
 
+
 int main(int ac, char **av, char **env)
 {
     char    *line;
@@ -129,6 +132,7 @@ int main(int ac, char **av, char **env)
         load_minishellrc(&new_env, NULL);
     while (1)
     {
+        set_signals(0);
         prompt = NULL;
         if (isatty(0) && *env)
         {
@@ -152,6 +156,11 @@ int main(int ac, char **av, char **env)
                 free_list(&new_env);
                 exit (exit_code);
             }
+            add_history(line);
+            //A gerer avec les signaux correctement !
+            //pour avoir un historique complet on est suppose l'enregistrer dans un fichier a la sortie
+            //et charger ce fichier au demarrage si il existe
+            //on peut fixer une limite a l'historique des commandes 
         }
 	    origin_fds[0] = dup(STDIN_FILENO);
 	    origin_fds[1] = dup(STDOUT_FILENO);

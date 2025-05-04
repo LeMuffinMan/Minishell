@@ -30,6 +30,8 @@ int	wait_children(pid_t last_child, pid_t first_child)
 		exit_code = WEXITSTATUS(status);
 	else if (exit_code == EXIT_SUCCESS && WIFSIGNALED(status))
 		exit_code = 128 + WTERMSIG(status);
+  else if (WTERMSIG(status) == SIGINT)
+      write(STDOUT_FILENO, "\n", 1);
 	return (exit_code);
 }
 

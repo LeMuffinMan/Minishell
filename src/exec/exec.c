@@ -6,7 +6,7 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:49:28 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/24 17:03:34 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/04 19:36:34 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,10 @@
 #include "utils.h"
 #include "libft.h"
 #include "list.h"
+#include "signals.h"
 #include <stdio.h>
 #include <unistd.h>
+#include <readline/readline.h> // compiler avec -l readline
 
 int	builtins(char **arg, t_var **env, t_tree **ast, int origin_fds[2])
 {
@@ -134,6 +136,29 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, int origin_fds[2])
 	return (1);
 }
 
+void handle_child_sigint(int sig)
+{
+    (void)sig;
+    /* write(STDOUT_FILENO, "\n", 1);  // Force un saut de ligne */
+    exit(130);  // Code de sortie standard pour SIGINT (128 + 2)
+}
+
+void handle_child_sigquit
+
+void	setup_child_signals(void)
+{
+	struct sigaction	sa;
+
+	sa.sa_handler = handle_child_sigint; 
+	// SIGINT par défaut dans les enfants
+	sa.sa_flags = 0;
+	sigemptyset(&sa.sa_mask);
+	sigaction(SIGINT, &sa, NULL);
+	// SIGQUIT par défaut dans les enfants
+	sa.sa_handler = SIG_DFL;
+	sigaction(SIGQUIT, &sa, NULL);
+}
+
 /* #include <stdio.h> */
 //BUILT_IN : PARENT
 //CMD : CHILD
@@ -180,6 +205,7 @@ int	exec_cmd(t_tree **ast, t_var **env, int origin_fds[2])
 			return(-1);
 		if (pid == 0)
 		{
+    	setup_child_signals(); // a tester !
 			if (origin_fds[0] > 2)
 				close(origin_fds[0]);
 			if (origin_fds[1] > 2)
@@ -196,9 +222,12 @@ int	exec_cmd(t_tree **ast, t_var **env, int origin_fds[2])
 		}
 		else
 		{
+			set_signals(1);
 			exit_code = wait_children(pid, pid);
 			update_env(env);
 			update_last_arg_var(env, (*ast)->token->content);
+      set_signals(0); // a virer ?
+      rl_on_new_line();
 			return (exit_code);
 		}
 	}
@@ -270,6 +299,13 @@ int	exec_ast(t_tree **ast, t_var **env, int origin_fds[2])
 			//on ne l'expand pas jusqu'au dernier moment, et on execute le contenu des parentheses 
 	return (exit_code);
 }
+
+//modifs pour le ctrl dans un pipe :
+//
+//il faut avoir un check is_in_pipe dans cmd : pour gerer un cat tout seul
+//il faut deplacer les ajouts de set sig etc faites dans cmd dans exec_pipe
+//il faut modifier la fonction wait_children pour qu'il recupere correctement le signal
+//https://chat.deepseek.com/a/chat/s/a6fb8416-77db-418a-9c33-91607fa40c13
 
 //Gros debuggage 
 //
