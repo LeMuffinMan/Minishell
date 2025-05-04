@@ -143,8 +143,6 @@ void handle_child_sigint(int sig)
     exit(130);  // Code de sortie standard pour SIGINT (128 + 2)
 }
 
-void handle_child_sigquit
-
 void	setup_child_signals(void)
 {
 	struct sigaction	sa;
