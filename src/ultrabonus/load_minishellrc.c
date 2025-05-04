@@ -321,13 +321,13 @@ int load_minishellrc(t_var **env, char *path)
         if (closed_bracket_index > 2)
         {
             add_shell_fct(lines, env, i, closed_bracket_index);
-            printf("shell fct name: %s\n", lines[i]);
-            print_fct_content(lines[i], env);
+            /* printf("shell fct name: %s\n", lines[i]); */
+            /* print_fct_content(lines[i], env); */
             i = closed_bracket_index;
         }
         if (lines[i][0] && lines[i][0] == '#')
         {
-            printf("comment : %s\n", lines[i]);
+            /* printf("comment : %s\n", lines[i]); */
         }
         else if (!ft_strncmp("alias ", lines[i], 6))
         {
@@ -335,7 +335,7 @@ int load_minishellrc(t_var **env, char *path)
             tmp = *env;
             while(tmp->next)
                 tmp = tmp->next;
-            printf("alias added in env : %s=%s\n", tmp->key, tmp->value);
+            /* printf("alias added in env : %s=%s\n", tmp->key, tmp->value); */
         }
         else if (!ft_strncmp("PS1=", lines[i], 4))
         {
@@ -343,10 +343,13 @@ int load_minishellrc(t_var **env, char *path)
             tmp = *env;
             while(tmp->next)
                 tmp = tmp->next;
-            printf("PS1 added in env : %s=%s\n", tmp->key, tmp->value);
+            /* printf("PS1 added in env : %s=%s\n", tmp->key, tmp->value); */
         }
         else if (ft_strlen(lines[i]) > 1 && lines[i][0] != '}')//if is command du parsing
-            printf("cmd to execute : %s\n", lines[i]);
+        {
+            (void)lines;
+            /* printf("cmd to execute : %s\n", lines[i]); */
+        }
         /*     exit_code = exec_sequence(lines[i], env); */
         i++;
     }

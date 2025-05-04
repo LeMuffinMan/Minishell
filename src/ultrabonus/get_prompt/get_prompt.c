@@ -124,6 +124,60 @@ int build_prompt(t_prompt *prompt, t_var **env)
     return (0);
 }
 
+char *trim_ps1(char *ps1)
+{
+  char *trimmed;
+  long unsigned int i;
+
+  i = 0;
+  trimmed = malloc(sizeof(char) * ft_strlen(ps1) - 2);
+  if (!trimmed)
+    return (NULL);
+  while(ps1[i] && ps1[i + 1] != '\'' && ps1[i + 1] != '\"')
+  {
+    trimmed[i] = ps1[i + 1];
+    i++;
+  }
+  trimmed[i] = '\0';
+  free(ps1);
+  return (trimmed);
+}
+
+char *clean_quotes(char *ps1)
+{
+  int i;
+  char *trimmed;
+
+  i = 0;
+  if (ps1[i] == '\'' && ps1[ft_strlen(ps1) - 1] == '\'')
+    trimmed = trim_ps1(ps1);
+  if (!trimmed)
+    return (NULL);
+  if (ps1[i] == '\"' && ps1[ft_strlen(ps1) - 1] == '\"')
+    trimmed = trim_ps1(ps1);
+  if (!trimmed)
+    return (NULL);
+  return (trimmed);
+}
+
+char *read_ps1(t_var **env)
+{
+  char *ps1;
+  char *new_ps1;
+
+  ps1 = ft_strdup(get_value(env, "PS1"));
+  if ((ps1[0] == '\'' && ps1[ft_strlen(ps1) - 1] == '\'') || 
+    (ps1[0] == '\"' && ps1[ft_strlen(ps1) - 1] == '\"')) 
+  {
+    new_ps1 = ft_substr(ps1, 1, ft_strlen(ps1) - 2);
+    free(ps1);
+    if (!new_ps1)
+      return (NULL);
+    return (new_ps1);
+  }
+  return (ps1);
+}
+
 char *get_prompt (t_var **env)
 {
   t_prompt *prompt;
@@ -131,9 +185,8 @@ char *get_prompt (t_var **env)
   char *expanded_prompt;
 
   prompt = malloc(sizeof(t_prompt));
-  if (get_value(env, "PS1"))
-    prompt->ps1 = ft_strdup(get_value(env, "PS1"));
-  else
+  prompt->ps1 = read_ps1(env);
+  if (!prompt->ps1)
     prompt->ps1 = ft_strdup(ps1_fake);
   /* printf("%s\n", get_value(env, "PS1")); */
 /*prompt->ps1 = get_value(env, "PS1");*/

@@ -125,8 +125,8 @@ int main(int ac, char **av, char **env)
     /* print_all_variables(&new_env); */
     /* print_env(&new_env); */
 
-    /* if (find_minishellrc(&new_env, NULL)) */
-    /*     load_minishellrc(&new_env, NULL); */
+    if (find_minishellrc(&new_env, NULL))
+        load_minishellrc(&new_env, NULL);
     while (1)
     {
         prompt = NULL;
