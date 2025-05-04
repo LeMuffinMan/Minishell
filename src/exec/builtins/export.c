@@ -117,6 +117,7 @@ int update_var(t_var **node, char **key_value, int inc)
 		free((*node)->value);
 		(*node)->value = ft_strdup(key_value[1]);
 	}
+	(*node)->exported = 1;
 	return(0);
 }
 
@@ -139,7 +140,8 @@ t_var *is_known_exported_key(t_var **env, char *key)
 	tmp = *env;
 	while(tmp)
 	{
-		if (!ft_strncmp(tmp->key, key, ft_strlen(tmp->key) + 1) && tmp->exported == 1)
+		if ((!ft_strncmp(tmp->key, key, ft_strlen(tmp->key) + 1) && tmp->exported == 1) ||
+		(!ft_strncmp(tmp->key, "PS1", ft_strlen(tmp->key) + 1)))
 			return (tmp);
 		tmp = tmp->next;
 	}
@@ -158,6 +160,8 @@ int add_or_update_var(t_var **env, char *arg)
 	key_value = ft_split(arg, '='); // marche pas, je dois split au 1er egal seuelement
 	if (!key_value)
 		return (-1);
+	/* if (!key_value[1]) // pas du tout sur de ce fix ! */
+	/* 	key_value[1] = ft_strdup(""); */
 	if (key_value [0] && key_value[1] && key_value[2]) // si on a 3 words : on concatene les derniers mots
 		key_value = concat_var(key_value);
 	if (is_increment_operator(key_value[0]))
@@ -171,6 +175,11 @@ int add_or_update_var(t_var **env, char *arg)
 	}
 	//il me faudrait un is_known_key specifique aux variables exported pour pas override _ ou ?
 	node = is_known_exported_key(env, key_value[0]);
+	/* if (node) */
+	/* { */
+	/* 	#include <stdio.h> */
+	/* 	printf("%s=%s | exported = %d | env = %d\n", node->key, node->value, node->exported, node->env); */
+	/* } */
 	if (!node)
 		add_new_var(env, key_value);
 	else

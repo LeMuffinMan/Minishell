@@ -57,6 +57,11 @@ int	print_sorted_env(t_var **env)
 				free(temp);
 				temp = s;
 			}
+			else 
+			{
+				s = ft_strjoin(s, "\n");
+				free(temp);
+			}
 			ft_putstr_fd(s, 1);
 			free(s);
 		}

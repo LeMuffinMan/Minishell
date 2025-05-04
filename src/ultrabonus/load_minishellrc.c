@@ -339,11 +339,11 @@ int load_minishellrc(t_var **env, char *path)
         }
         else if (!ft_strncmp("PS1=", lines[i], 4))
         {
-            add_back_var(env, lines[i], 2);
+            add_back_var(env, lines[i], 0);
             tmp = *env;
             while(tmp->next)
                 tmp = tmp->next;
-            /* printf("PS1 added in env : %s=%s\n", tmp->key, tmp->value); */
+            printf("PS1 added in env : %s=%s | exported = %d | env = %d\n", tmp->key, tmp->value, tmp->exported, tmp->env);
         }
         else if (ft_strlen(lines[i]) > 1 && lines[i][0] != '}')//if is command du parsing
         {
