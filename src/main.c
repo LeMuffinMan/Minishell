@@ -98,6 +98,43 @@
 /*         return(exit_code); */
 /* } */
 
+//TODO
+//Mardi : merge 
+//tester : 
+    //pipeline + redirs : fixer leak
+    //expands + quotes
+    //here_docs ?
+    //builtins (env et export surtout)
+    //signaux
+
+//pour le merge suivant (vendredi 9 mai ?):
+    //ast pour les && || ()
+    //builtins fixed in pipe
+    //echo avec expands
+    //export VAR="a b"
+    //fichier historique de cmds ?
+    //normer et securiser toutes les fcts ext de l'exec
+
+//overkill time + On clean, on norme, on securise TOUT
+//final merge sur master pour vendredi 16 mai ?
+
+//ultrabonus :
+    //tester PS1 avec quotes
+    //tester load minishellrc
+    //tester une execution de ligne
+    //proteger get_prompt
+    //alias : 
+        //tester exec
+        //decla d'alias au parsing ?
+        //token d'alias au parsing ?
+    //shell_fct :
+        //decla shlfct au parsing ?
+        //token shlfct au parsing ?
+    //substitution cmd :
+        //exception dans les expands 
+        //fct pour executer la cmd_s
+
+//Tests de cons :
 //CTRL V + Tab : fait un tab dans le minishell a gerer !
 
 
