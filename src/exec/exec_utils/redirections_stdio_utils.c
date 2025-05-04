@@ -35,7 +35,7 @@ int is_a_directory(char *name)
 
 int file_check(char *file, t_type type)
 {
-	if (type == R_IN || HD)
+	if (type == R_IN || type == HD)
 	{
 		if(access(file, F_OK) == -1)
 			return (print_error_file_opening(file, ": No such file or directory\n"));
@@ -44,7 +44,7 @@ int file_check(char *file, t_type type)
 	}
 	if (is_a_directory(file))
 		return(print_error_file_opening(file, ": Is a directory\n"));
-	if (type == APPEND || TRUNC)
+	if (type == APPEND || type == TRUNC)
 	{
 		if (access(file, W_OK) == -1)
 			return (print_error_file_opening(file, ": Permission denied\n"));
@@ -62,6 +62,8 @@ int open_dup2_close(char *file, t_type type)
 		fd = open(file, O_CREAT | O_WRONLY | O_APPEND, 0644);
 	else if (type == TRUNC)
 		fd = open(file, O_CREAT | O_WRONLY | O_TRUNC,	0644);
+	else 
+		fd = -1; //fix pour la compile : aucun cas ou o narrive ici 
 	if (fd == -1)
 		return(-1);
 	if (type == R_IN || type == HD)

@@ -149,6 +149,7 @@ char *clean_quotes(char *ps1)
   char *trimmed;
 
   i = 0;
+  trimmed = NULL;
   if (ps1[i] == '\'' && ps1[ft_strlen(ps1) - 1] == '\'')
     trimmed = trim_ps1(ps1);
   if (!trimmed)
