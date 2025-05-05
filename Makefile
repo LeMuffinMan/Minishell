@@ -74,6 +74,7 @@ SRC					=	main.c \
 						init/init_utils.c \
 						misc/prints.c \
 						misc/misc.c \
+						ultrabonus/source.c \
 						ultrabonus/get_prompt/get_prompt.c \
 						ultrabonus/get_prompt/get_prompt_free.c \
 						ultrabonus/get_prompt/git_branch_utils.c \

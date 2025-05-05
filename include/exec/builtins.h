@@ -16,6 +16,10 @@
 # include "structs.h"
 # include "tree.h"
 
+
+//ultrabonus
+int builtin_source(char *arg, t_var **env);
+
 // builtins/export
 int		free_array(char **array);
 int		compare_keys(char *key1, char *key2);
@@ -53,5 +57,6 @@ char	*trim_operator(char *s);
 int		is_increment_operator(char *s);
 char	**concat_var(char **arg);
 int		is_valid_identifier(char *var);
+
 
 #endif

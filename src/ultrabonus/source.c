@@ -10,30 +10,66 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-void	delete_loaded_variables(t_var **env, void (*del)(void *))
-{
-  t_var *tmp;
+#include "libft.h"
+#include "minishellrc.h"
+#include "structs.h"
 
-  tmp = *env;
-  *env = (*env)->next;
-  tmp->next = tmp->next->next;
+int	delete_loaded_variables(t_var **env, void (*del)(void *))
+{
 	(*del)((*env)->key);
 	(*del)((*env)->value);
 	free(*env);
 	return (0);
 }
 
-int builtin_source(t_var **env, char *path)
+int print_source_error_message()
+{
+  ft_putstr_fd("minishell: source: filename argument required\nsource: usage: source filename [arguments]\n", 2);
+  return (2);
+}
+
+int builtin_source(char *arg, t_var **env)
 {
   t_var *tmp;
+  t_var *last;
 
+  /* if (!arg[1]) */
+  /*   return (print_source_error_message()); */
   tmp = *env;
+  last = NULL;
   while (tmp)
   {
-    if (tmp->next->loaded == 1)
-      delete_loaded_variables(tmp, &free)
-    tmp = tmp->next;
+    if (tmp->loaded == 1)
+    {
+      if (!last)
+      {
+        *env = tmp->next;
+        delete_loaded_variables(&tmp, &free);
+        tmp = *env;
+      }
+      else
+      {
+        last->next = tmp->next;
+        delete_loaded_variables(&tmp, &free);
+        tmp = last;
+      }
+    }
+    else
+    {
+      last = tmp;
+      tmp = tmp->next;
+    }
   }
-  load_minishellrc(env, path);
+
+  /*   if (tmp->next && tmp->next->loaded == 1) */
+  /*   { */
+  /*     temp = tmp->next->next; */
+  /*     delete_loaded_variables(&tmp->next, &free); */
+  /*     tmp = temp; */
+  /*   } */
+  /*   else  */
+  /*     tmp = tmp->next; */
+  /* } */
+  load_minishellrc(env, arg/* [1] */);
   return (0);
 }

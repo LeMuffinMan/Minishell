@@ -72,6 +72,10 @@ char	*get_value(t_var **env, char *key)
 		return (NULL);
 	tmp = *env;
 	value = NULL;
+	/* if (tmp) */
+	/* 	printf("%p\n", tmp); */
+	/* else */
+	/* 	printf("waat"); */
 	while (tmp)
 	{
 		if (!ft_strncmp(key, tmp->key, ft_strlen(key)))

@@ -39,8 +39,8 @@ int	builtins(char **arg, t_var **env, t_tree **ast, int origin_fds[2])
 		return (builtin_env(env, arg));
 	else if (!ft_strncmp(arg[0], "exit", 5))
 		return (builtin_exit(arg, env, ast, origin_fds));
-	/* else if (!ft_strncmp(arg[0], "source", 7)) */
-	/* 	return (builtin_source(arg, env, ast)); */
+	else if (!ft_strncmp(arg[0], "source", 7))
+		return (builtin_source((*ast)->right->token->content[0], env));
 	else
 		return (1);
 	//ajouter source
@@ -170,7 +170,7 @@ int	exec_cmd(t_tree **ast, t_var **env, int origin_fds[2])
 
 	/* expand_cmd_sub((*ast)->token->content, env); */
 	//les builtins ne mettent pas a jour la variable _ !!
-	if ((*ast)->token->token == BUILT_IN)
+	if ((*ast)->token->token == BUILT_IN  || !ft_strncmp((*ast)->token->content[0], "source", 7))
 	{
 		exit_code = builtins((*ast)->token->content, env, ast, origin_fds);
 		return (exit_code);
@@ -280,7 +280,7 @@ int	exec_ast(t_tree **ast, t_var **env, int origin_fds[2])
 		return(redirect_stdio(ast, env, origin_fds));
 	if ((*ast)->token->token == PIPE)
 		return (exec_pipe(ast, env, &pipes, origin_fds));
-	if ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD)
+	if ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD  || !ft_strncmp((*ast)->token->content[0], "source", 7))
 	{
 		exit_code = exec_cmd(ast, env, origin_fds);
 		return (exit_code);

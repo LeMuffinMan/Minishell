@@ -23,6 +23,7 @@ typedef struct s_var
 	int				env;
 	int				alias;
 	int				shell_fct;
+	int 			loaded;
 	struct s_var	*next;
 }					t_var;
 
@@ -41,14 +42,14 @@ typedef struct s_pipe
 // 	struct s_shell_fct *next;
 // } t_shell_fct;
 
-typedef struct s_env
-{
-	t_var			**heritated_variables;
-	t_var			**exported_variables;
-	// t_var **aliases;
-	// t_fct **shell_fcts;
-	struct s_env	*next;
-}					t_env;
+// typedef struct s_env
+// {
+// 	t_var			**heritated_variables;
+// 	t_var			**exported_variables;
+// 	// t_var **aliases;
+// 	// t_fct **shell_fcts;
+// 	struct s_env	*next;
+// }					t_env;
 
 typedef struct s_prompt
 {

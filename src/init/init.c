@@ -63,7 +63,6 @@ int	build_minimal_env(t_var **env, char *arg)
 }
 
 // a tester
-// des char chelou avant le SHLVL
 int	init_and_incremente_shlvl(char *s, t_var **env)
 {
 	int		n;
@@ -99,17 +98,15 @@ int	init_and_incremente_shlvl(char *s, t_var **env)
 }
 
 //revoir la variable _
-int	init_env(t_var **new_env, char **env, char *name_of_program)
+int	init_env(t_var **new_env, char **env, char *program_name)
 {
 	int	i;
 
 	if (!*env)
-		return (build_minimal_env(new_env, name_of_program));
+		return (build_minimal_env(new_env, program_name));
 	i = 0;
 	while (env[i])
 	{
-		// des choses a revoir sur le shell level !
-		// on doit gerer SHLVL+=1 ?
 		if (!ft_strncmp("_=", env[i], 2))
 			i++;
 		if (!env[i])
@@ -126,7 +123,7 @@ int	init_env(t_var **new_env, char **env, char *name_of_program)
 		/* printf("%s=%s\n", tmp->key, tmp->value); */
 		i++;
 	}
-	init_last_cmd_var(name_of_program, new_env);
+	init_last_cmd_var(program_name, new_env);
 	add_back_var(new_env, "?=0", 0);
 	return (0);
 }

@@ -131,6 +131,7 @@ int add_alias(char *line, t_var **env)
     new_alias->env = 0;
     new_alias->shell_fct = 0;
     new_alias->alias = 1;
+    new_alias->loaded = 1;
     tmp = *env;
     while (tmp->next)
         tmp = tmp->next;
@@ -167,6 +168,7 @@ int setup_fct_node(t_var **new_node, char *line)
     (*new_node)->env = 0;
     (*new_node)->alias = 0;
     (*new_node)->shell_fct = 1;
+    (*new_node)->loaded = 1;
     (*new_node)->key = ft_strdup(line);
     if (!(*new_node)->key)
     {
@@ -339,7 +341,8 @@ int load_minishellrc(t_var **env, char *path)
         }
         else if (!ft_strncmp("PS1=", lines[i], 4))
         {
-            add_back_var(env, lines[i], 0);
+            /* printf("PS1 : %s\n", lines[i]); */
+            add_back_var(env, lines[i], 4);
             tmp = *env;
             while(tmp->next)
                 tmp = tmp->next;
