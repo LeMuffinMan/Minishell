@@ -60,16 +60,6 @@ int builtin_source(char *arg, t_var **env)
       tmp = tmp->next;
     }
   }
-
-  /*   if (tmp->next && tmp->next->loaded == 1) */
-  /*   { */
-  /*     temp = tmp->next->next; */
-  /*     delete_loaded_variables(&tmp->next, &free); */
-  /*     tmp = temp; */
-  /*   } */
-  /*   else  */
-  /*     tmp = tmp->next; */
-  /* } */
   load_minishellrc(env, arg/* [1] */);
   return (0);
 }
