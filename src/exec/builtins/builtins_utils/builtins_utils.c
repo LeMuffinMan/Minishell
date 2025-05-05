@@ -36,6 +36,18 @@ int	swap_nodes(t_var *n1, t_var *n2)
 	return (0);
 }
 
+int copy_node(t_var **new_node, t_var **tmp)
+{
+	(*new_node)->key = ft_strdup((*tmp)->key);
+	(*new_node)->value = ft_strdup((*tmp)->value);
+	(*new_node)->exported = (*tmp)->exported;
+	(*new_node)->env = (*tmp)->env;
+	(*new_node)->alias = (*tmp)->alias;
+	(*new_node)->shell_fct = (*tmp)->shell_fct;
+	(*new_node)->next = NULL;
+	return (0);
+}
+
 t_var	*copy_list(t_var **env)
 {
 	t_var	*tmp;
@@ -51,13 +63,7 @@ t_var	*copy_list(t_var **env)
 		new_node = malloc(sizeof(t_var));
 		if (!new_node)
 			return (NULL);
-		new_node->key = ft_strdup(tmp->key);
-		new_node->value = ft_strdup(tmp->value);
-		new_node->exported = tmp->exported;
-		new_node->env = tmp->env;
-		new_node->alias = tmp->alias;
-		new_node->shell_fct = tmp->shell_fct;
-		new_node->next = NULL;
+		copy_node(&new_node, &tmp);
 		if (last)
 			last->next = new_node;
 		else

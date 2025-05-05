@@ -125,6 +125,27 @@ int	builtin_cd_without_arg(t_var **env)
 	return (0);
 }
 
+int builtin_cd_with_arg(char **arg, t_var **env, char *path)
+{
+	if (!ft_strncmp(arg[1], "-", 2))
+		path = ft_strdup(get_value(env, "OLDPWD"));
+	else
+		path = ft_strdup(arg[1]);
+	if (!change_directory(path))
+		update_env(env);
+	else
+	{
+		if (path)
+			free(path);
+		return (1);
+	}
+	if (!ft_strncmp(arg[1], "-", 2))
+		builtin_pwd();
+	if (path && *path)
+		free(path);
+	return (0);
+}
+
 /* printf("hello !\n"); */
 /* printf("%s | %s\n", arg[0], arg[1]); */
 /* print_var(env); */
@@ -139,25 +160,8 @@ int	builtin_cd(char **arg, t_var **env)
 		return (1);
 	}
 	if (array_size(arg) == 1)
-		builtin_cd_without_arg(env);
+		return(builtin_cd_without_arg(env));
 	if (array_size(arg) == 2)
-	{
-		if (!ft_strncmp(arg[1], "-", 2))
-			path = ft_strdup(get_value(env, "OLDPWD"));
-		else
-			path = ft_strdup(arg[1]);
-		if (!change_directory(path))
-			update_env(env);
-		else
-		{
-			if (path)
-				free(path);
-			return (1);
-		}
-		if (!ft_strncmp(arg[1], "-", 2))
-			builtin_pwd();
-		if (path && *path)
-			free(path);
-	}
+		return (builtin_cd_with_arg(arg, env, path));
 	return (0);
 }

@@ -28,6 +28,22 @@ int	env_size(t_var *env)
 	return (i);
 }
 
+int free_node(t_var **node)
+{
+	free((*node)->key);
+	free((*node)->value);
+	free(*node);
+	return (0);
+}
+
+int free_single_node(t_var **node, t_var **env)
+{
+	(void)env;
+	free_node(node);
+	env = NULL;
+	return (0);
+}
+
 //return 0 si a trouve le node a free
 //return 1 si il n'a pas trouve de node a free
 int delete_node(t_var **node, t_var **env)
@@ -37,13 +53,7 @@ int delete_node(t_var **node, t_var **env)
 	
 	last = NULL;
 	if (env_size(*env) == 1)
-	{
-		free((*env)->key);
-		free((*env)->value);
-		free(*env);
-		env = NULL;
-		return (0);
-	}
+		return (free_single_node(node, env));
 	tmp = *env;
 	while(tmp)
 	{
@@ -53,15 +63,12 @@ int delete_node(t_var **node, t_var **env)
 				*env = tmp->next; 
 			else
 				last->next = tmp->next;
-			free((*node)->key);
-			free((*node)->value);
-			free(*node);
-			return (0);
+			return (free_node(node));
 		}
 		last = tmp;
 		tmp = tmp->next;
 	}
-	return (1);
+	return (1); // 1 ?
 }
 
 int builtin_unset(t_var **env, char **arg)

@@ -60,11 +60,7 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, int origin_fds[2])
 	}
 	if (left_pid == 0)
 	{
-		
-		close(origin_fds[0]);
-		origin_fds[0] = -1;
-		close(origin_fds[1]);
-		origin_fds[1] = -1;
+		close_origin_fds(origin_fds);
 		close(pipefd[0]);
 		if ((*pipes)->next)
 		{
@@ -108,10 +104,7 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, int origin_fds[2])
 		}
 		if (right_pid == 0)
 		{
-			close(origin_fds[0]);
-			origin_fds[0] = -1;
-			close(origin_fds[1]);
-			origin_fds[1] = -1;
+			close_origin_fds(origin_fds);
 			dup2(pipefd[0], STDIN_FILENO);
 			close(pipefd[0]);
 			free_pipes(pipes);
@@ -202,10 +195,7 @@ int	exec_cmd(t_tree **ast, t_var **env, int origin_fds[2])
 		if (pid == 0)
 		{
     	setup_child_signals(); // a tester !
-			if (origin_fds[0] > 2)
-				close(origin_fds[0]);
-			if (origin_fds[1] > 2)
-				close(origin_fds[1]);
+			close_origin_fds(origin_fds);
 			strings_env = lst_to_array(env);
 			execve((*ast)->token->content[0], (*ast)->token->content,
 				strings_env);
