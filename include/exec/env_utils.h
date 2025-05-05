@@ -24,5 +24,6 @@ int		update_last_arg_var(t_var **env, char **content);
 t_var	*is_known_key(t_var **env, char *key);
 int		print_all_variables(t_var **env);
 int		update_exit_code_var(t_var **env, int exit_code);
+t_var	*get_key_node(t_var **env, char *key);
 
 #endif

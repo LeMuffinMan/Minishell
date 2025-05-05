@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <readline/readline.h> // compiler avec -l readline
 #include <fcntl.h>
+#include <env_utils.h>
 
 /* #define BUFFER_SIZE 1024 */
 
@@ -302,6 +303,84 @@ char **read_minishell_rc(char *path)
     return (lines);
 }
 
+char *trim_quotes(char *str)
+{
+    int len = ft_strlen(str);
+    char *trimmed;
+    int i;
+
+    if (len < 2 ||
+        !( (str[0] == '\'' && str[len - 1] == '\'') ||
+           (str[0] == '\"' && str[len - 1] == '\"') ) )
+        return (str);
+    trimmed = malloc(sizeof(char) * (len - 1));
+    if (!trimmed) 
+        return (NULL);
+    i = 0;
+    while (i < len - 2)
+    {
+        trimmed[i] = str[i + 1];
+        i++;
+    }
+    trimmed[i] = '\0';
+    return trimmed;
+}
+
+int is_a_segfault_trap(char *line, char *file_path)
+{
+    char **path_to_load;
+    char *trimmed_line;
+
+    trimmed_line = trim_quotes(line);
+    path_to_load = NULL;
+    path_to_load = ft_split(trimmed_line, ' ');
+    //si on a pas la cmd source
+    /* printf("path_to_load[0] = %s | path_to_load[1]= %s | file_path = %s\n", path_to_load[0], path_to_load[1], file_path); */
+    if (path_to_load[0] && ft_strncmp(path_to_load[0], "source", 7))
+    {
+        free_array(path_to_load);
+        return (0);
+    }
+    //si le path donne a source est le meme que le file path 
+    /* printf("path_to_load = %s | file_path = %s\n", path_to_load[1], file_path); */
+    if (!ft_strncmp(path_to_load[1], file_path, ft_strlen(file_path)))
+    {
+        /* printf("ERROR MSG !\n"); */
+        free_array(path_to_load);
+        return (1); //1 pour empecher le segfault / 0 pour le laisser faire
+        //qund on pourra executer chaque ligne a tester 
+    }
+    free_array(path_to_load);
+    return (0);
+}
+
+int print_noway()
+{
+    ft_putstr_fd("[STACK OVERFLOW] Bravo. You made .minishellrc self-replicate until reality tore.\nThis isn’t a bug — this is performance art.\nI'm just the canvas. Enjoy your core dump, Banksy.\n", 1);
+        return (0);
+}
+
+int add_or_update_last_rc_file_var(t_var **env, char *path)
+{
+    char *value;
+    t_var *node;
+
+    value = get_value(env, "last_rc_file");
+    if (!value)
+    {
+        value = ft_strjoin("last_rc_file=", path);
+        add_back_var(env, value, 0); // ajouter une exception pour unset
+        return (0);
+    }
+    else
+    {
+        node = get_key_node(env, "last_rc_file");
+        free(node->value);
+        node->value = ft_strdup(path);
+        return (0);
+    }
+}
+
 //on accepte un .minishellrc de 4096 octets max
 int load_minishellrc(t_var **env, char *path)
 {
@@ -310,6 +389,7 @@ int load_minishellrc(t_var **env, char *path)
     int closed_bracket_index;
     t_var *tmp;
 
+    /* printf("path = %s\n", path); */
     lines = read_minishell_rc(path);
     if (!lines)
         return (-1);
@@ -341,7 +421,6 @@ int load_minishellrc(t_var **env, char *path)
         }
         else if (!ft_strncmp("PS1=", lines[i], 4))
         {
-            /* printf("PS1 : %s\n", lines[i]); */
             add_back_var(env, lines[i], 4);
             tmp = *env;
             while(tmp->next)
@@ -350,12 +429,25 @@ int load_minishellrc(t_var **env, char *path)
         }
         else if (ft_strlen(lines[i]) > 1 && lines[i][0] != '}' && lines[i][0] != '#')//if is command du parsing
         {
-            (void)lines;
+            /* printf("lines[%d] = %s\n", i, lines[i]); */
+            if (path && is_a_segfault_trap(lines[i], path) > 0)
+            {
+                if (print_noway())
+                {
+                    //error
+                }
+            }
+            else
+            {
+                //execute line 
             /* printf("cmd to execute : %s\n", lines[i]); */
-        }
         /*     exit_code = exec_sequence(lines[i], env); */
+            }
+            (void)lines;
+        }
         i++;
     }
+    add_or_update_last_rc_file_var(env, path);
     free_array(lines);
     return(0);
 }
@@ -388,7 +480,7 @@ char *find_minishellrc(t_var **env, char *path)
         path = get_default_minishellrc_path(env);
     if (access(path, F_OK) == -1)
     {
-        ft_putstr_fd("no .minishellrc found at location ...\n", 2);
+        print_error_file_opening(path, "No such file or directory\n");
         return (NULL);
     }
     if (access(path, R_OK) == 0)

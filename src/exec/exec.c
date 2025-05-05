@@ -43,9 +43,6 @@ int	builtins(char **arg, t_var **env, t_tree **ast, int origin_fds[2])
 		return (builtin_source((*ast)->right->token->content[0], env));
 	else
 		return (1);
-	//ajouter source
-		//vide les var exportee depuis minishellrc
-		//relance l'init du minishell_rc
 }
 
 int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, int origin_fds[2])
@@ -143,6 +140,7 @@ void handle_child_sigint(int sig)
     exit(130);  // Code de sortie standard pour SIGINT (128 + 2)
 }
 
+//a bouger !
 void	setup_child_signals(void)
 {
 	struct sigaction	sa;

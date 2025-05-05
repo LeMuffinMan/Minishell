@@ -102,26 +102,26 @@
 //Mardi : merge 
 //tester : 
     //pipeline + redirs : fixer leak
-    //expands + quotes
-    //here_docs ?
+    //expands + quotes :
     //builtins (env et export surtout)
     //signaux
 
 //pour le merge suivant (vendredi 9 mai ?):
     //ast pour les && || ()
-    //builtins fixed in pipe
-    //echo avec expands
-    //export VAR="a b"
-    //fichier historique de cmds ?
-    //normer et securiser toutes les fcts ext de l'exec
+    //signaux dans les pipes
+    //builtins fixed in pipe   
+    //here_docs ?
+    //echo et export avec expands
+    //export VAR="a b"  des cas de con de ouf a gerer export A="    b . bb    .   "
+    //normer et securiser tout
+
+//Debuggage industriel (1 semaine ?)
 
 //overkill time + On clean, on norme, on securise TOUT
-//final merge sur master pour vendredi 16 mai ?
+//final merge sur master pour vendredi 16 mai / semaine du 20 mai ?
 
 //ultrabonus :
-    //tester PS1 avec quotes
-    //tester load minishellrc
-    //tester une execution de ligne
+    //tester load minishellrc avec le parsing fini
     //proteger get_prompt
     //alias : 
         //tester exec
@@ -133,7 +133,7 @@
     //substitution cmd :
         //exception dans les expands 
         //fct pour executer la cmd_s
-    //faire l'historique a la main
+    //faire l'historique a la main ?
         //charger au demarrage un .minishell_history
         //save l'historique a la fin, meme avec un ctrl c 
         //limite l'historique a une size (on ecrase la plus ancienne entree)
