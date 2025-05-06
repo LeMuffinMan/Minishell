@@ -20,6 +20,7 @@ typedef struct s_token	t_token;
 
 typedef struct s_tree
 {
+	struct s_tree **head;
 	struct s_tree	*left;
 	struct s_tree	*right;
 	struct s_tree	*parent;

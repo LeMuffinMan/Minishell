@@ -370,6 +370,8 @@ int add_or_update_last_rc_file_var(t_var **env, char *path)
     {
         value = ft_strjoin("last_rc_file=", path);
         add_back_var(env, value, 0); // ajouter une exception pour unset
+        if (value)
+            free(value);
         return (0);
     }
     else
