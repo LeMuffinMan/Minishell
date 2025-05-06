@@ -12,20 +12,21 @@
 
 #include "tree.h"
 #include "list.h"
-#include "stdlib.h"
+#include <stdlib.h>
+#include "libft.h"
 
-static void assign_head(t_tree **root)
+static void assign_head(t_tree **root, t_tree *head)
 {
 	t_tree *tmp;
 	
 	tmp = *root;
+	tmp->head = head;
 	if (!tmp)
 		return ;
 	if (tmp->left)
-		assign_head(&(tmp->left));
+		assign_head(&(tmp->left), head);
 	if (tmp->right)
-		assign_head(&(tmp->right));
-	tmp->head = root;
+		assign_head(&(tmp->right), head);
 }
 
 static t_tree	*add_new_node(t_token *token, t_tree *left,
@@ -84,24 +85,37 @@ void	add_to_root(t_token *node, t_tree **root, bool flag)
 	*root = parse_list(node, end, flag);
 	if (flag)
 		set_bool_seq(root);
-	assign_head(root);
+	assign_head(root, *root);
 }
 
 void	free_tree(t_tree **head)
 {
 	t_tree	*left;
 	t_tree	*right;
+	t_token *tmp_token;
+	t_tree *tmp_head;
 
-	if (!*head || !head)
-		return ;
+	tmp_head = *head;
 	left = (*head)->left;
 	right = (*head)->right;
+	tmp_token = (*head)->token;
+	if (!*head || !head)
+		return ;
+	if (left)
+		left = (*head)->left;
+	if (right)
+		right = (*head)->right;
 	if (left)
 		free_tree(&left);
 	if (right)
 		free_tree(&right);
-	free_tab((*head)->token->content);
-	free((*head)->token);
-	free(*head);
-	*head = NULL;
+	if (tmp_token)
+	{
+		if (tmp_token->content)
+			free_tab(tmp_token->content);
+		free(tmp_token);
+		tmp_token = NULL;
+	}
+	if (tmp_head)
+		free(tmp_head);
 }

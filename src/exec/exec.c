@@ -74,8 +74,8 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, int origin_fds[2])
 		free_pipes(pipes);
 		exit_code = exec_ast(&((*ast)->left), env, origin_fds);
 		free_list(env);
-    free_parse((*ast)->token, NULL, 0);
-		free_tree((*ast)->head);
+		printf("exec : %p\n", (*ast)->head);
+		free_tree(&((*ast)->head));
 		exit(exit_code);
 	}
 	else
@@ -110,8 +110,7 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, int origin_fds[2])
 			free_pipes(pipes);
 			exit_code = exec_ast(&((*ast)->right), env, origin_fds);
 			free_list(env);
-    	free_parse((*ast)->token, NULL, 0);
-			free_tree((*ast)->head);
+			free_tree(&((*ast)->head));
 			exit(exit_code);
 		}
 		else
@@ -199,8 +198,7 @@ int	exec_cmd(t_tree **ast, t_var **env, int origin_fds[2])
 				strings_env);
 			perror("execve");
 			free_array(strings_env);
-      free_parse((*ast)->token, NULL, 0);
-			free_tree((*ast)->head);
+			free_tree(&((*ast)->head));
 			free_list(env);
 			exit(1);
 		}

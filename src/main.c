@@ -238,10 +238,7 @@ int main(int ac, char **av, char **env)
         close(origin_fds[0]);
         close(origin_fds[1]);
         if (ast)
-        {
-            free_parse(ast->token, NULL, 0);
             free_tree(&ast);
-        }
         //
         //
         //
