@@ -195,7 +195,8 @@ int main(int ac, char **av, char **env)
             {
                 if (isatty(0) && *env)
                     free(prompt);
-                free_tree(&ast); // pas de free parse ici ?
+                if (ast)
+                    free_tree(&ast); // pas de free parse ici ?
                 free_list(&new_env);
                 exit (exit_code);
             }

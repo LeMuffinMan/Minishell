@@ -33,8 +33,7 @@ int	is_only_numeric_argument(char *s)
 int exit_no_arg(t_var **env, t_tree **ast, int origin_fds[2])
 {
 	free_list(env);
-  free_parse((*ast)->token, NULL, 0);
-	free_tree(ast);
+	free_tree(&(*ast)->head);
 	ft_putstr_fd("exit\n", 1);
 	close_origin_fds(origin_fds);
 	exit(0);
@@ -66,8 +65,7 @@ int exit_numeric_argument_required_error(char **arg, t_var **env, t_tree **ast, 
 	ft_putstr_fd(s, 2);
 	free(s);
 	free_list(env);
-  free_parse((*ast)->token, NULL, 0);
-	free_tree(ast);
+	free_tree(&(*ast)->head);
 	close_origin_fds(origin_fds);
 	exit(2);
 }
@@ -80,8 +78,7 @@ int exit_with_valid_arg(char **arg, t_var **env, t_tree **ast, int origin_fds[2]
 	if (n > 255)
 		n = n % 256;
 	free_list(env);
-  free_parse((*ast)->token, NULL, 0);
-	free_tree(ast);
+	free_tree(&(*ast)->head);
 	close_origin_fds(origin_fds);
 	exit(n);
 }
