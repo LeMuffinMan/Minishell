@@ -12,9 +12,7 @@
 
 #include "exec.h"
 #include "libft.h"
-#include "structs.h"
-#include <stdio.h>
-#include <stdlib.h>
+#include "builtins.h"
 #include "utils.h"
 
 // DECIDER
@@ -87,71 +85,9 @@
 // Pareil pour chaque arg
 //
 
-
-int	sort_list(t_var **l)
-{
-	t_var	*tmp;
-	int		sorted;
-
-	sorted = 0;
-	tmp = *l;
-	if (!tmp)
-		return (1);
-	while (sorted == 0)
-	{
-		sorted = 1;
-		tmp = *l;
-		while (tmp->next)
-		{
-			if (compare_keys(tmp->key, tmp->next->key) > 0)
-			{
-				sorted = 0;
-				swap_nodes(tmp, tmp->next);
-			}
-			tmp = tmp->next;
-		}
-	}
-	return (0);
-}
-
-int	free_array(char **array)
-{
-	int	i;
-
-	i = 0;
-	while (array[i])
-	{
-		free(array[i]);
-		i++;
-	}
-	free(array);
-	return (0);
-}
-
-t_var	*is_known_key(t_var **env, char *key)
-{
-	t_var	*tmp;
-
-	tmp = *env;
-	while (tmp)
-	{
-		if (!ft_strncmp(key, tmp->key, ft_strlen(tmp->key) + 1))
-			return (tmp);
-		tmp = tmp->next;
-	}
-	return (NULL);
-}
-
-int	compare_keys(char *key1, char *key2)
-{
-	char	*longest_key;
-
-	if (ft_strlen(key1) > ft_strlen(key2))
-		longest_key = key1;
-	else
-		longest_key = key2;
-	return (ft_strncmp(key1, key2, ft_strlen(longest_key)));
-}
+//verifier le unset d'une liste vide
+//verifier PWD et OLDPWD
+//verifier export / export arg args
 
 // a reparer
 /* sort_list(&copy); */
@@ -161,6 +97,97 @@ int	compare_keys(char *key1, char *key2)
 /* 	free_list(&copy); */
 /* } */
 
+
+int update_var(t_var **node, char **key_value, int inc)
+{
+	char *s;
+	char *tmp;
+
+	if (inc == 1)
+	{
+		s = ft_strdup((*node)->value);
+		tmp = s;
+		s = ft_strjoin(s, key_value[1]);
+		free(tmp);
+		free((*node)->value);	
+		(*node)->value = s;
+	}
+	else
+	{
+		free((*node)->value);
+		(*node)->value = ft_strdup(key_value[1]);
+	}
+	(*node)->exported = 1;
+	return(0);
+}
+
+int export_without_argument(t_var **env)
+{
+	t_var *copy;
+
+	copy = NULL;
+	copy = copy_list(env);
+	sort_list(&copy);
+	print_sorted_env(&copy);
+	free_list(&copy);
+	return (0);
+}
+
+t_var *is_known_exported_key(t_var **env, char *key)
+{
+	t_var *tmp;
+
+	tmp = *env;
+	while(tmp)
+	{
+		if ((!ft_strncmp(tmp->key, key, ft_strlen(tmp->key) + 1) && tmp->exported == 1) ||
+		(!ft_strncmp(tmp->key, "PS1", ft_strlen(tmp->key) + 1)))
+			return (tmp);
+		tmp = tmp->next;
+	}
+	return (NULL);
+}
+
+int add_or_update_var(t_var **env, char *arg)
+{
+	t_var *node;
+	int inc;
+	char **key_value;
+	char *tmp;
+
+	inc = 0;
+	node = NULL;
+	key_value = ft_split(arg, '='); // marche pas, je dois split au 1er egal seuelement
+	if (!key_value)
+		return (-1);
+	/* if (!key_value[1]) // pas du tout sur de ce fix ! */
+	/* 	key_value[1] = ft_strdup(""); */
+	if (key_value [0] && key_value[1] && key_value[2]) // si on a 3 words : on concatene les derniers mots
+		key_value = concat_var(key_value);
+	if (is_increment_operator(key_value[0]))
+	{
+		inc = 1; 
+		key_value[0] = trim_operator(key_value[0]);
+		tmp = key_value[1];
+		key_value[1] = ft_strjoin("", arg + ft_strlen(key_value[0]) + 2);
+		/* printf("key_value[1] = %s\n", key_value[1]); */
+		free(tmp);
+	}
+	//il me faudrait un is_known_key specifique aux variables exported pour pas override _ ou ?
+	node = is_known_exported_key(env, key_value[0]);
+	/* if (node) */
+	/* { */
+	/* 	#include <stdio.h> */
+	/* 	printf("%s=%s | exported = %d | env = %d\n", node->key, node->value, node->exported, node->env); */
+	/* } */
+	if (!node)
+		add_new_var(env, key_value);
+	else
+		update_var(&node, key_value, inc);
+	free_array(key_value);
+	return (0);
+}
+
 // Si on a deja la cle dans les variables non visibles,
 /* on la rend visible */
 // pas suuuur (le strdup"")
@@ -169,40 +196,21 @@ int	compare_keys(char *key1, char *key2)
 //  // changer le systene de mode ?
 int	builtin_export(t_var **env, char **arg)
 {
-	t_var	*node;
-	t_var	*copy;
-	char	**key_value;
+	int i;
 
-	(void)key_value;
-	node = NULL;
-	copy = NULL;
 	if (!arg[1])
-	{
-		copy = copy_list(env);
-		sort_list(&copy);
-		print_sorted_env(&copy);
-		free_list(&copy);
-	}
-	/* else if (!ft_strncmp("_=", arg[1], 3)) */
-	/* 	return (0); */
+		return(export_without_argument(env));
 	else
 	{
-		key_value = ft_split(arg[1], '=');
-		node = is_known_key(env, key_value[0]);
-		if (node)
+		i = 1;
+		while(arg[i])
 		{
-			if (node->value)
-				free(node->value);
-			if (key_value && key_value[1])
-				node->value = ft_strdup(key_value[1]);
+			if (is_valid_identifier(arg[i]))
+				error_not_valid_identifier(arg[i]);
 			else
-				node->value = ft_strdup("");
-			node->exported = 1;
-			node->env = 1;
-			return (0);
+				add_or_update_var(env, arg[i]);
+			i++;
 		}
-		add_back_var(env, arg[1], 3);
-		free_array(key_value);
 	}
 	return (0);
 }

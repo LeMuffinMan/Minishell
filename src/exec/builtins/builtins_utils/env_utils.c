@@ -6,16 +6,15 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 17:15:02 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/20 17:28:49 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/04 19:22:34 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "exec.h"
+#include "env_utils.h"
 #include "libft.h"
 #include "structs.h"
 #include <limits.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
 
 t_var	*get_key_node(t_var **env, char *key)
@@ -45,7 +44,7 @@ int	update_env(t_var **env)
 	old_pwd = get_key_node(env, "OLDPWD");
 	if (!old_pwd)
 	{
-		//ajouter le old_pwd a l'env
+		// ajouter le old_pwd a l'env
 	}
 	pwd = get_key_node(env, "PWD");
 	if (old_pwd->value)
@@ -69,8 +68,14 @@ char	*get_value(t_var **env, char *key)
 	char	*value;
 	t_var	*tmp;
 
+	if (!env || !*env)
+		return (NULL);
 	tmp = *env;
 	value = NULL;
+	/* if (tmp) */
+	/* 	printf("%p\n", tmp); */
+	/* else */
+	/* 	printf("waat"); */
 	while (tmp)
 	{
 		if (!ft_strncmp(key, tmp->key, ft_strlen(key)))
@@ -106,9 +111,73 @@ int	update_last_cmd_var(t_var **env, char *last_cmd)
 		add_back_var(env, last_cmd, 1);
 	else
 	{
-		printf("update\n");
+		/* printf("update\n"); */
 		free(tmp->value);
 		tmp->value = ft_strdup(last_cmd);
 	}
+	return (0);
+}
+
+// a tester !
+int	update_last_arg_var(t_var **env, char **content)
+{
+	t_var	*tmp;
+	int		i;
+
+	tmp = *env;
+	while (tmp)
+	{
+		if (!ft_strncmp(tmp->key, "_", 2) && tmp->env == 0)
+		{
+			i = 0;
+			while (content[i])
+				i++;
+			if (tmp->value) // mettre cette protection partout !
+				free(tmp->value);
+			tmp->value = ft_strdup(content[i]);
+			return (0);
+		}
+		tmp = tmp->next;
+	}
+	return (1);
+}
+
+t_var	*is_known_key(t_var **env, char *key)
+{
+	t_var	*tmp;
+
+	tmp = *env;
+	while (tmp)
+	{
+		if (!ft_strncmp(key, tmp->key, ft_strlen(tmp->key) + 1))
+			return (tmp);
+		tmp = tmp->next;
+	}
+	return (NULL);
+}
+
+int	print_all_variables(t_var **env)
+{
+	t_var	*tmp;
+
+	tmp = *env;
+	while (tmp)
+	{
+		printf("key = %s | value = %s | exported = %d | env = %d\n", tmp->key,
+			tmp->value, tmp->exported, tmp->env);
+		tmp = tmp->next;
+	}
+	return (0);
+}
+
+int	update_exit_code_var(t_var **env, int exit_code)
+{
+	t_var	*tmp;
+
+	tmp = is_known_key(env, "?");
+	if (!tmp)
+		return (1);
+	free(tmp->value);
+	tmp->value = ft_itoa(exit_code);
 	return (0);
 }

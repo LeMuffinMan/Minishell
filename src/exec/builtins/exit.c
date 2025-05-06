@@ -10,15 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "exec.h"
 #include "libft.h"
 #include "structs.h"
+#include "utils.h"
 #include "tree.h"
-#include <stdio.h>
-/* #include <unistd.h> */
-#include <stdlib.h>
-
-// Traps ???
+#include <unistd.h>
 
 int	is_only_numeric_argument(char *s)
 {
@@ -34,60 +30,79 @@ int	is_only_numeric_argument(char *s)
 	return (1);
 }
 
-// a voir
-// des fuites et des exits a des moments ou ils doivent pas
-// a tester : is only numeric arg
-int	builtin_exit(char **arg, t_var **env, t_tree **ast)
+int exit_no_arg(t_var **env, t_tree **ast, int origin_fds[2])
 {
-	int		n;
-	char	*s;
-	char	*tmp;
+	free_list(env);
+  free_parse((*ast)->token, NULL, 0);
+	free_tree(ast);
+	ft_putstr_fd("exit\n", 1);
+	close_origin_fds(origin_fds);
+	exit(0);
+}
 
-	(void)env;
-	s = NULL;
-	if (!arg[1])
-	{
-		free_list(env);
-    free_parse((*ast)->token, NULL, 0);
-		free_tree(ast);
-		ft_putstr_fd("exit\n", 1);
-		exit(0);
-	}
-	if (ft_strlen(arg[1]) > 18)
-	{
-		s = ft_strjoin("minishell: exit: ", arg[1]);
-		tmp = s;
-		s = ft_strjoin(s, ": numeric argument required\n");
-		free(tmp);
-		ft_putstr_fd(s, 2);
-		free(s);
-		return (2);
-	}
-	if (arg[2])
-	{
-		ft_putstr_fd("minishell: exit: too many arguments\n", 2);
-		return (1);
-	}
-	if (!is_only_numeric_argument(arg[1]))
-	{
-		s = ft_strjoin("minishell: exit: ", arg[1]);
-		tmp = s;
-		s = ft_strjoin(s, "numeric argument required\n");
-		free(tmp);
-		ft_putstr_fd(s, 2);
-		free(s);
-		free_list(env);
-    free_parse((*ast)->token, NULL, 0);
-		free_tree(ast);
-		exit(2);
-	}
+int exit_overflow_error(char **arg)
+{
+	char *s;
+	char *tmp;
+
+	s = ft_strjoin("minishell: exit: ", arg[1]);
+	tmp = s;
+	s = ft_strjoin(s, ": numeric argument required\n");
+	free(tmp);
+	ft_putstr_fd(s, 2);
+	free(s);
+	return (2);
+}
+
+int exit_numeric_argument_required_error(char **arg, t_var **env, t_tree **ast, int origin_fds[2])
+{
+	char *s;
+	char *tmp;
+
+	s = ft_strjoin("minishell: exit: ", arg[1]);
+	tmp = s;
+	s = ft_strjoin(s, "numeric argument required\n");
+	free(tmp);
+	ft_putstr_fd(s, 2);
+	free(s);
+	free_list(env);
+  free_parse((*ast)->token, NULL, 0);
+	free_tree(ast);
+	close_origin_fds(origin_fds);
+	exit(2);
+}
+
+int exit_with_valid_arg(char **arg, t_var **env, t_tree **ast, int origin_fds[2])
+{
+	int n;
+
 	n = ft_atoi(arg[1]);
 	if (n > 255)
 		n = n % 256;
 	free_list(env);
   free_parse((*ast)->token, NULL, 0);
 	free_tree(ast);
+	close_origin_fds(origin_fds);
 	exit(n);
+}
+
+// a voir
+// des fuites et des exits a des moments ou ils doivent pas
+// a tester : is only numeric arg
+int	builtin_exit(char **arg, t_var **env, t_tree **ast, int origin_fds[2])
+{
+	if (!arg[1])
+		exit_no_arg(env, ast, origin_fds);
+	if (ft_strlen(arg[1]) > 18)
+		return (exit_overflow_error(arg));
+	if (arg[2])
+	{
+		ft_putstr_fd("minishell: exit: too many arguments\n", 2);
+		return (1);
+	}
+	if (!is_only_numeric_argument(arg[1]))
+		return(exit_numeric_argument_required_error(arg, env, ast, origin_fds));
+	exit_with_valid_arg(arg, env, ast, origin_fds);
 	return (0);
 }
 /* Exit status: */

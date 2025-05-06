@@ -1,6 +1,5 @@
 
 #include "libft.h"
-#include "minishell.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -62,7 +61,9 @@ int	builtin_echo(char **arg)
 		free(tmp);
 	}
 	if (s)
+	{
 		ft_putstr_fd(s, 1);
-	free(s);
+		free(s);
+	}
 	return (0);
 }

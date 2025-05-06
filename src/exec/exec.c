@@ -6,21 +6,22 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:49:28 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/24 17:03:34 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/04 19:36:34 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "exec.h"
+#include "builtins.h"
+#include "env_utils.h"
+#include "utils.h"
 #include "libft.h"
 #include "list.h"
-#include "pipe.h"
-#include <fcntl.h>
+#include "signals.h"
 #include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
-#include <sys/stat.h>
+#include <readline/readline.h> // compiler avec -l readline
 
-int	builtins(char **arg, t_var **env, t_tree **ast)
+int	builtins(char **arg, t_var **env, t_tree **ast, int origin_fds[2])
 {
 	if (!*arg)
 		return (1);
@@ -35,119 +36,116 @@ int	builtins(char **arg, t_var **env, t_tree **ast)
 	else if (!ft_strncmp(arg[0], "unset", 6))
 		return (builtin_unset(env, arg));
 	else if (!ft_strncmp(arg[0], "env", 4))
-		return (builtin_env(env));
+		return (builtin_env(env, arg));
 	else if (!ft_strncmp(arg[0], "exit", 5))
-		return (builtin_exit(arg, env, ast));
-	/* else if (!ft_strncmp(arg[0], "source", 7)) */
-	/* 	return (builtin_source(arg, env, ast)); */
+		return (builtin_exit(arg, env, ast, origin_fds));
+	else if (!ft_strncmp(arg[0], "source", 7))
+		return (builtin_source((*ast)->right->token->content[0], env));
 	else
 		return (1);
-	//ajouter source
-		//vide les var exportee depuis minishellrc
-		//relance l'init du minishell_rc
 }
-// free_env
-// free_ast
-// free_pipes
-int	free_lists_and_exit(t_var **env, t_tree **ast, t_pipe **pipes)
-{
-	(void)env;
-	(void)pipes;
-	(void)ast;
-	return (0);
-}
-
 
 int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, int origin_fds[2])
 {
-	pid_t	left_pid;
-	pid_t	right_pid;
-	t_tree	*left_branch;
-	t_tree	*right_branch;
+	pid_t left_pid;
+	pid_t right_pid;
 	int		pipefd[2];
 	int exit_code;
 
-	right_branch = (*ast)->right;
-	left_branch = (*ast)->left;
 	add_pipe(pipefd, pipes);
 	left_pid = fork();
-	if (!left_pid)
+	if (left_pid < 0)
 	{
 		// error
 	}
 	if (left_pid == 0)
 	{
-		close(origin_fds[0]);
-		close(origin_fds[1]);
-		origin_fds[0] = -1;
-		origin_fds[1] = -1;
-		//left ne vas jamais lire dnas le pipe qu'on vient de creer
+		close_origin_fds(origin_fds);
 		close(pipefd[0]);
+		if ((*pipes)->next)
+		{
+			dup2((*pipes)->next->fd[0], STDIN_FILENO);
+			close((*pipes)->next->fd[0]);
+			free((*pipes)->next);
+			(*pipes)->next = NULL;
+		}
 		dup2(pipefd[1], STDOUT_FILENO);
 		close(pipefd[1]);
-		/* close(0); */
 		free_pipes(pipes);
-		exit_code = exec_ast(&left_branch, env, origin_fds);
+		exit_code = exec_ast(&((*ast)->left), env, origin_fds);
 		free_list(env);
-		free_parse((*ast)->token, NULL, 0);
+    free_parse((*ast)->token, NULL, 0);
 		free_tree(ast);
 		exit(exit_code);
 	}
 	else
-		close(pipefd[1]);
-	right_pid = fork();
-	if (!right_pid)
 	{
-		// error
-	}
-	if (right_pid == 0)
-	{
-		close(origin_fds[0]);
-		close(origin_fds[1]);
-		origin_fds[0] = -1;
-		origin_fds[1] = -1;
-		dup2(pipefd[0], STDIN_FILENO);
-		close(pipefd[0]);
-		free_pipes(pipes);
-		if (right_branch->token->token == PIPE)
+		if ((*pipes)->next)
 		{
-			exit_code = exec_pipe(&right_branch, env, pipes, origin_fds);
+			close((*pipes)->next->fd[0]);
+			free((*pipes)->next);
+			(*pipes)->next = NULL;
+		}
+		close(pipefd[1]);
+	}
+	if ((*ast)->right && (*ast)->right->token->token == PIPE)
+	{
+		//attendre avant ?
+		exit_code = exec_pipe(&((*ast)->right), env, pipes, origin_fds);
+		exit_code = wait_children(left_pid, left_pid);
+		return (exit_code);
+	}
+	else
+	{
+		right_pid = fork();
+		if (right_pid < 0)
+		{
+			//error
+		}
+		if (right_pid == 0)
+		{
+			close_origin_fds(origin_fds);
+			dup2(pipefd[0], STDIN_FILENO);
+			close(pipefd[0]);
+			free_pipes(pipes);
+			exit_code = exec_ast(&((*ast)->right), env, origin_fds);
 			free_list(env);
-			free_parse((*ast)->token, NULL, 0);
+    	free_parse((*ast)->token, NULL, 0);
 			free_tree(ast);
 			exit(exit_code);
 		}
 		else
 		{
-			exit_code = exec_ast(&right_branch, env, origin_fds);
-			free_list(env);
-			free_parse((*ast)->token, NULL, 0);
-			free_tree(ast);
-			exit(exit_code);
+			close(pipefd[0]);
+			free_pipes(pipes);
+			exit_code = wait_children(right_pid, left_pid);
+			update_last_arg_var(env, (*ast)->token->content);
+			return(exit_code);
 		}
-	}
-	else
-	{
-		close(pipefd[0]);
-		free_pipes(pipes);
-		exit_code = wait_children(right_pid, left_pid);
-		return(exit_code);
 	}
 	return (1);
 }
 
-int is_a_directory(char *name)
+void handle_child_sigint(int sig)
 {
-	struct stat file_infos;
+    (void)sig;
+    /* write(STDOUT_FILENO, "\n", 1);  // Force un saut de ligne */
+    exit(130);  // Code de sortie standard pour SIGINT (128 + 2)
+}
 
-	if (stat(name, &file_infos) == -1)
-	{
-		//perror
-		return (-1);
-	}
-	if (S_ISDIR(file_infos.st_mode)) //maccro qui renvoie un booleen true si c'est un dossier
-		return (1); // si on a un whoami > file > dir > file je veux aller jusqu'au file avant de renvoyer l'erreur ?
-	return (0);
+//a bouger !
+void	setup_child_signals(void)
+{
+	struct sigaction	sa;
+
+	sa.sa_handler = handle_child_sigint; 
+	// SIGINT par défaut dans les enfants
+	sa.sa_flags = 0;
+	sigemptyset(&sa.sa_mask);
+	sigaction(SIGINT, &sa, NULL);
+	// SIGQUIT par défaut dans les enfants
+	sa.sa_handler = SIG_DFL;
+	sigaction(SIGQUIT, &sa, NULL);
 }
 
 /* #include <stdio.h> */
@@ -162,9 +160,10 @@ int	exec_cmd(t_tree **ast, t_var **env, int origin_fds[2])
 	char *tmp;
 
 	/* expand_cmd_sub((*ast)->token->content, env); */
-	if ((*ast)->token->token == BUILT_IN)
+	//les builtins ne mettent pas a jour la variable _ !!
+	if ((*ast)->token->token == BUILT_IN  || !ft_strncmp((*ast)->token->content[0], "source", 7))
 	{
-		exit_code = builtins((*ast)->token->content, env, ast);
+		exit_code = builtins((*ast)->token->content, env, ast, origin_fds);
 		return (exit_code);
 	}
 	if (is_a_directory((*ast)->token->content[0]))
@@ -195,10 +194,6 @@ int	exec_cmd(t_tree **ast, t_var **env, int origin_fds[2])
 			return(-1);
 		if (pid == 0)
 		{
-			if (origin_fds && origin_fds[0] != -1)
-				close(origin_fds[0]);
-			if (origin_fds && origin_fds[1] != -1)
-				close(origin_fds[1]);
 			strings_env = lst_to_array(env);
 			execve((*ast)->token->content[0], (*ast)->token->content,
 				strings_env);
@@ -211,42 +206,45 @@ int	exec_cmd(t_tree **ast, t_var **env, int origin_fds[2])
 		}
 		else
 		{
+			set_signals(1);
 			exit_code = wait_children(pid, pid);
 			update_env(env);
+			update_last_arg_var(env, (*ast)->token->content);
+      set_signals(0); // a virer ?
+      rl_on_new_line();
 			return (exit_code);
 		}
 	}
 	return (1); //on ne devrait pas arriver ici
 }
 
-/* int	boolean_operators(t_tree **ast, t_var **env) */
-/* { */
-/* 	int		exit_code; */
-/* 	t_tree	*tmp; */
-/**/
-/* 	exit_code = 0; */
-/* 	if (find_expands(ast->left)) */
-/* 		expand_variables(ast->left); */
-/* 	tmp = (*ast)->left; */
-/* 	exit_code = exec_ast(&tmp, env); */
-/* 	if ((exit_code == 0 && (*ast)->token->token == O_AND) || (exit_code != 0 */
-/* 			&& (*ast)->token->token == O_OR)) */
-/* 	{ */
-/* 		if (find_expands(ast->right)) */
-/* 			expand_variables(ast->right); */
-/* 		tmp = (*ast)->right; */
-/* 		return (exec_ast(&tmp, env, pipes)); */
-/* 		return (1); */
-/* 	} */
-/* 	else */
-/* 		return (exit_code); */
-/* } */
-
-int is_first_char_a_redir(char c)
+int redirect_stdio(t_tree **ast, t_var **env, int origin_fds[2])
 {
-	if (c == '>' || c == '<')
-		return (1);
-	return (0);
+	t_tree *left;
+	t_tree *right;
+	int exit_code;
+
+	left = (*ast)->left;
+	right = (*ast)->right;
+	//doute pour ce if, on devrait le faire au parsing ?
+	//dans tous les cas, avec juste un input "<" je trouve un synbole aleatoire dans content[1]
+	if (!(*ast)->token->content[1])
+		return(print_error_file_opening("", "syntax error\n"));
+	exit_code = file_check((*ast)->token->content[1], (*ast)->token->token);
+	if (exit_code != 0)
+		return(exit_code);
+	exit_code = open_dup2_close((*ast)->token->content[1], (*ast)->token->token);
+	if (exit_code == -1)
+		return (-1);//on stop la chaine de redirections
+	if (left && (left->token->token == R_IN || left->token->token == APPEND || left->token->token == TRUNC || left->token->token == HD))
+		exit_code = redirect_stdio(&left, env, origin_fds);
+	if (exit_code == 0 && right && (right->token->token == R_IN || right->token->token == APPEND || right->token->token == TRUNC || right->token->token == HD))
+		exit_code = redirect_stdio(&right, env, origin_fds);
+	if (exit_code == 0 && left && (left->token->token == CMD || left->token->token == BUILT_IN))
+		exit_code = exec_cmd(&left, env, origin_fds);
+	if (exit_code == 0 && right && (right->token->token == CMD || right->token->token == BUILT_IN))
+		exit_code = exec_cmd(&right, env, origin_fds);
+	return (exit_code);
 }
 
 int	exec_ast(t_tree **ast, t_var **env, int origin_fds[2])
@@ -256,38 +254,27 @@ int	exec_ast(t_tree **ast, t_var **env, int origin_fds[2])
 
   pipes = NULL;
   exit_code = 0;
-	//O_AND VONT VIRER 
-	/* if ((*ast)->token->token == O_AND || (*ast)->token->token == O_OR) */
-	/* 	return (boolean_operators(ast, env, pipes, pids)); */
-
-	//on veut que seulement le parent fasse ca
   if (!*ast)
-  {
   	return(127);
-  }
   if ((*ast)->token->error == 2)
   {
   	ft_putendl_fd((*ast)->token->content[0], 2);
   	return ((*ast)->token->error);
   }
 	if ((*ast)->token->token == R_IN || (*ast)->token->token == APPEND
-		|| (*ast)->token->token == TRUNC) 
 		return(redirect_stdio(ast, env, origin_fds));
 	if ((*ast)->token->token == PIPE)
 		return (exec_pipe(ast, env, &pipes, origin_fds));
-	if ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD)
+	if ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD  || !ft_strncmp((*ast)->token->content[0], "source", 7))
 	{
 		exit_code = exec_cmd(ast, env, origin_fds);
-
 		return (exit_code);
 	}
 	//errors
 	/* if (!ft_strncmp((*ast)->token->content[0], ":", 2)) */
 	/* 		return(0); */
-	if ((*ast)->token->error == 127)
-		return (error_cmd_not_found((*ast)->token->content[0]));
-	if ((*ast)->token->error == 126)
-		return (error_cmd_perm_denied((*ast)->token->content[0]));
+	if ((*ast)->token->error == 127 || (*ast)->token->error == 126)
+		return (error_cmd((*ast)->token->content[0], (*ast)->token->error));
 	//Ultrabonus
 		//un token Alias
 	  //un token shell_func
@@ -295,6 +282,13 @@ int	exec_ast(t_tree **ast, t_var **env, int origin_fds[2])
 			//on ne l'expand pas jusqu'au dernier moment, et on execute le contenu des parentheses 
 	return (exit_code);
 }
+
+//modifs pour le ctrl dans un pipe :
+//
+//il faut avoir un check is_in_pipe dans cmd : pour gerer un cat tout seul
+//il faut deplacer les ajouts de set sig etc faites dans cmd dans exec_pipe
+//il faut modifier la fonction wait_children pour qu'il recupere correctement le signal
+//https://chat.deepseek.com/a/chat/s/a6fb8416-77db-418a-9c33-91607fa40c13
 
 //Gros debuggage 
 //
@@ -360,38 +354,3 @@ int	exec_ast(t_tree **ast, t_var **env, int origin_fds[2])
 /* int find_expands(t_tree *ast) */
 /* int free_lists_and_exit(t_var **env, t_tree **ast, t_pipe **pipes) */
 
-/* char *enum_to_string(t_type enumValue) */
-/* { */
-/* 	char *s; */
-/**/
-/*   if (enumValue == CMD) */
-/*       s = ft_strdup("CMD"); */
-/*   else if (enumValue == BUILT_IN) */
-/*       s = ft_strdup("BUILT_IN"); */
-/*   else if (enumValue == APPEND) */
-/*       s = ft_strdup("APPEND"); */
-/*   else if (enumValue == D_QUOTE) */
-/*       s = ft_strdup("D_QUOTE"); */
-/*   else if (enumValue == HD) */
-/*       s = ft_strdup("HD"); */
-/*   else if (enumValue == LIM) */
-/*       s = ft_strdup("LIM"); */
-/*   else if (enumValue == O_AND) */
-/*       s = ft_strdup("O_AND"); */
-/*   else if (enumValue == O_OR) */
-/*       s = ft_strdup("O_OR"); */
-/*   else if (enumValue == PIPE) */
-/*       s = ft_strdup("PIPE"); */
-/*   else if (enumValue == R_IN) */
-/*       s = ft_strdup("R_IN"); */
-/*   else if (enumValue == S_QUOTE) */
-/*       s = ft_strdup("S_QUOTE"); */
-/*   else if (enumValue == TRUNC) */
-/*       s = ft_strdup("TRUNC"); */
-/*   else if (enumValue == WILDCARD) */
-/*       s = ft_strdup("WILDCARD"); */
-/*   else */
-/*       s = ft_strdup("UNKNOWN"); */
-/*   return (s); */
-/* } */
-/**/

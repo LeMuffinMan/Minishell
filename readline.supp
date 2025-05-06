@@ -4,3 +4,10 @@
   ...
   obj:*/libreadline.so*
 }
+
+{
+  Grep_All_Functions
+  Memcheck:Leak
+  ...
+  obj:*/usr/bin/grep
+}

@@ -32,7 +32,7 @@ t_tree	*parse(char *line, char **envp)
 	parse_line(line, &lexer);
 	if (!lexer)
 		return (NULL);
-	/* display_lexer(lexer); */
+	display_lexer(lexer);
 	while (lexer->next)
 	{
 		add_back(&token, lexer->arg);
@@ -45,7 +45,6 @@ t_tree	*parse(char *line, char **envp)
 	if (!handle_here_doc(&token))
 		free_parse(token, "Problem with here_doc creation", MEM_ALLOC);
 	add_to_root(token, &root, true);
-	 display_list(token);
-	 display_ast(root);
-	return (root);
+	display_list(token);
+	display_ast(root);
 }

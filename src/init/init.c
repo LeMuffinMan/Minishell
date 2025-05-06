@@ -11,9 +11,8 @@
 /* ************************************************************************** */
 
 #include "structs.h"
-#include "utils.h"
+#include "env_utils.h"
 #include "libft.h"
-#include <stdlib.h>
 #include <limits.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -22,15 +21,18 @@
 int	init_last_cmd_var(char *name, t_var **env)
 {
 	char	*s;
+	char	buf[PATH_MAX];
 
-	s = NULL;
-	s = ft_strjoin("_=/usr/bin/./", name);
+	if (getcwd(buf, sizeof(buf)) != NULL)
+		s = ft_strjoin(buf, name);
+	else
+		s = ft_strdup(name);
 	add_back_var(env, s, 1);
 	free(s);
 	return (0);
 }
 
-int	build_minimal_env(t_var **env, char **arg)
+int	build_minimal_env(t_var **env, char *arg)
 {
 	char	*s;
 	char	buf[PATH_MAX];
@@ -55,12 +57,12 @@ int	build_minimal_env(t_var **env, char **arg)
 	s = ft_strdup("OLDPWD="); // updated in CD seulement ?
 	add_back_var(env, s, 1);
 	free(s);
-	init_last_cmd_var(arg[0], env);
+	init_last_cmd_var(arg, env);
+	add_back_var(env, "_=env", 0);
 	return (0);
 }
 
 // a tester
-// des char chelou avant le SHLVL
 int	init_and_incremente_shlvl(char *s, t_var **env)
 {
 	int		n;
@@ -96,21 +98,21 @@ int	init_and_incremente_shlvl(char *s, t_var **env)
 }
 
 //revoir la variable _
-int	init_env(t_var **new_env, char **env, char **arg)
+int	init_env(t_var **new_env, char **env, char *program_name)
 {
 	int	i;
 
 	if (!*env)
-		return (build_minimal_env(new_env, arg));
+		return (build_minimal_env(new_env, program_name));
 	i = 0;
 	while (env[i])
 	{
-		// des choses a revoir sur le shell level !
-		// on doit gerer SHLVL+=1 ?
+		if (!ft_strncmp("_=", env[i], 2))
+			i++;
+		if (!env[i])
+			break ;
 		if (!ft_strncmp("SHLVL=", env[i], 6))
 			init_and_incremente_shlvl(env[i], new_env);
-		/* else if (!ft_strncmp("_=", env[i], 2)) */
-		/* 	init_last_cmd_var("_=", new_env); */
 		else
 			add_back_var(new_env, env[i], 3); // pas sur
 		/* t_var *tmp; */
@@ -121,7 +123,8 @@ int	init_env(t_var **new_env, char **env, char **arg)
 		/* printf("%s=%s\n", tmp->key, tmp->value); */
 		i++;
 	}
-	init_last_cmd_var(arg[0], new_env);
+	init_last_cmd_var(program_name, new_env);
+	add_back_var(new_env, "?=0", 0);
 	return (0);
 }
 
