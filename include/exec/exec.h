@@ -6,11 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 14:31:45 by oelleaum          #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2025/05/04 19:21:50 by oelleaum         ###   ########lyon.fr   */
-=======
 /*   Updated: 2025/04/29 18:50:48 by asinsard         ###   ########lyon.fr   */
->>>>>>> origin/expand
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +39,6 @@ int		error_cmd(char *cmd, int error_code);
 int		print_error_file_opening(char *file, char *error);
 int		error_not_valid_identifier(char *s);
 
-t_tree	*parse(char *line, char **envp);
+t_tree	*parse(char *line, char **envp, t_var *new_env);
 
 #endif

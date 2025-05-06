@@ -261,7 +261,7 @@ int	exec_ast(t_tree **ast, t_var **env, int origin_fds[2])
   	ft_putendl_fd((*ast)->token->content[0], 2);
   	return ((*ast)->token->error);
   }
-	if ((*ast)->token->token == R_IN || (*ast)->token->token == APPEND
+	if ((*ast)->token->token == R_IN || (*ast)->token->token == APPEND)
 		return(redirect_stdio(ast, env, origin_fds));
 	if ((*ast)->token->token == PIPE)
 		return (exec_pipe(ast, env, &pipes, origin_fds));
