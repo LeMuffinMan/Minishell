@@ -12,6 +12,7 @@
 
 #include "structs.h"
 #include "libft.h"
+#include "utils.h"
 #include <stdlib.h>
 
 char **lst_to_array(t_var **env)
@@ -55,6 +56,57 @@ char **lst_to_array(t_var **env)
     }
     array[i] = NULL;
     return array;
+}
+
+int	compare_keys(char *key1, char *key2)
+{
+	char	*longest_key;
+
+	if (ft_strlen(key1) > ft_strlen(key2))
+		longest_key = key1;
+	else
+		longest_key = key2;
+	return (ft_strncmp(key1, key2, ft_strlen(longest_key)));
+}
+
+int	sort_list(t_var **l)
+{
+	t_var	*tmp;
+	int		sorted;
+
+	sorted = 0;
+	tmp = *l;
+	if (!tmp)
+		return (1);
+	while (sorted == 0)
+	{
+		sorted = 1;
+		tmp = *l;
+		while (tmp->next)
+		{
+			if (compare_keys(tmp->key, tmp->next->key) > 0)
+			{
+				sorted = 0;
+				swap_nodes(tmp, tmp->next);
+			}
+			tmp = tmp->next;
+		}
+	}
+	return (0);
+}
+
+int	free_array(char **array)
+{
+	int	i;
+
+	i = 0;
+	while (array[i])
+	{
+		free(array[i]);
+		i++;
+	}
+	free(array);
+	return (0);
 }
 
 /* int exec_here_docs(t_tree *ast) */

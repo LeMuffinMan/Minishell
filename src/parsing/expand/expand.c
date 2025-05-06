@@ -12,7 +12,7 @@
 
 #include "expand.h"
 #include "list.h"
-#include "exec.h"
+#include "env_utils.h"
 #include "libft.h"
 #include <stdlib.h>
 

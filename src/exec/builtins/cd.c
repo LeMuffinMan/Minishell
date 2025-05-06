@@ -6,17 +6,15 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 17:36:27 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/20 17:32:57 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/04 19:22:45 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "exec.h"
+#include "builtins.h"
+#include "env_utils.h"
 #include "libft.h"
 #include "structs.h"
-#include <limits.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <sys/stat.h>
 #include <unistd.h>
 
 /* DECIDER : */
@@ -127,6 +125,27 @@ int	builtin_cd_without_arg(t_var **env)
 	return (0);
 }
 
+int builtin_cd_with_arg(char **arg, t_var **env, char *path)
+{
+	if (!ft_strncmp(arg[1], "-", 2))
+		path = ft_strdup(get_value(env, "OLDPWD"));
+	else
+		path = ft_strdup(arg[1]);
+	if (!change_directory(path))
+		update_env(env);
+	else
+	{
+		if (path)
+			free(path);
+		return (1);
+	}
+	if (!ft_strncmp(arg[1], "-", 2))
+		builtin_pwd();
+	if (path && *path)
+		free(path);
+	return (0);
+}
+
 /* printf("hello !\n"); */
 /* printf("%s | %s\n", arg[0], arg[1]); */
 /* print_var(env); */
@@ -141,25 +160,8 @@ int	builtin_cd(char **arg, t_var **env)
 		return (1);
 	}
 	if (array_size(arg) == 1)
-		builtin_cd_without_arg(env);
+		return(builtin_cd_without_arg(env));
 	if (array_size(arg) == 2)
-	{
-		if (!ft_strncmp(arg[1], "-", 2))
-			path = ft_strdup(get_value(env, "OLDPWD"));
-		else
-			path = ft_strdup(arg[1]);
-		if (!change_directory(path))
-			update_env(env);
-		else
-		{
-			if (path)
-				free(path);
-			return (1);
-		}
-		if (!ft_strncmp(arg[1], "-", 2))
-			builtin_pwd();
-		if (path && *path)
-			free(path);
-	}
+		return (builtin_cd_with_arg(arg, env, path));
 	return (0);
 }

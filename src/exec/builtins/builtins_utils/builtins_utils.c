@@ -6,11 +6,10 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 17:27:22 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/20 17:27:51 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/04 19:22:26 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "exec.h"
 #include "libft.h"
 #include "structs.h"
 #include <stdlib.h>
@@ -37,8 +36,18 @@ int	swap_nodes(t_var *n1, t_var *n2)
 	return (0);
 }
 
+int copy_node(t_var **new_node, t_var **tmp)
+{
+	(*new_node)->key = ft_strdup((*tmp)->key);
+	(*new_node)->value = ft_strdup((*tmp)->value);
+	(*new_node)->exported = (*tmp)->exported;
+	(*new_node)->env = (*tmp)->env;
+	(*new_node)->alias = (*tmp)->alias;
+	(*new_node)->shell_fct = (*tmp)->shell_fct;
+	(*new_node)->next = NULL;
+	return (0);
+}
 
-// proteger mieux l'erreur de malloc
 t_var	*copy_list(t_var **env)
 {
 	t_var	*tmp;
@@ -53,10 +62,8 @@ t_var	*copy_list(t_var **env)
 	{
 		new_node = malloc(sizeof(t_var));
 		if (!new_node)
-			exit(1);
-		new_node->key = ft_strdup(tmp->key);
-		new_node->value = ft_strdup(tmp->value);
-		new_node->next = NULL;
+			return (NULL);
+		copy_node(&new_node, &tmp);
 		if (last)
 			last->next = new_node;
 		else

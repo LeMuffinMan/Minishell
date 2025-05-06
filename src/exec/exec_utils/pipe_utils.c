@@ -14,7 +14,6 @@
 #include "structs.h"
 #include <unistd.h>
 
-	// ici on free la liste des pids
 int	wait_children(pid_t last_child, pid_t first_child)
 {
 	int		status;
@@ -31,6 +30,8 @@ int	wait_children(pid_t last_child, pid_t first_child)
 		exit_code = WEXITSTATUS(status);
 	else if (exit_code == EXIT_SUCCESS && WIFSIGNALED(status))
 		exit_code = 128 + WTERMSIG(status);
+  else if (WTERMSIG(status) == SIGINT)
+      write(STDOUT_FILENO, "\n", 1);
 	return (exit_code);
 }
 
@@ -71,5 +72,14 @@ int	free_pipes(t_pipe **pipes)
 	}
 	free(*pipes);
 	*pipes = NULL;
+	return (0);
+}
+
+int close_origin_fds(int origin_fds[2])
+{
+	close(origin_fds[0]);
+	origin_fds[0] = -1;
+	close(origin_fds[1]);
+	origin_fds[1] = -1;
 	return (0);
 }

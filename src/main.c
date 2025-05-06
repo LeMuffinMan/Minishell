@@ -11,84 +11,144 @@
 /* ************************************************************************** */
 
 #include "libft.h"
-#include "get_prompt.h"
+#include "get_prompt.h" // A VIRER !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #include "tree.h"
 #include "exec.h"
+#include "utils.h"
+#include "env_utils.h"
 #include <stdio.h>
 #include <readline/readline.h> // compiler avec -l readline
+#include <readline/history.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include "display.h"
 #include "prints.h"
+#include "signals.h"
+#include "minishellrc.h"
 
-/* typedef struct s_seq */
+/* int exec_sequence(char *sequence, t_var **env) */
 /* { */
-/*     enum t_type token; // && || et SEQ  */
-/*     char *sequence; // ls -l | cat > file1 > file2 | echo "hello '$HOME'" > file3     (NULL si pas en bas d'une branche) */
-/*     struct *s_seq left; //comme on a deja pour les ET OU, les parentheses pour changer l'ordre dans l'arbre */
-/*     struct *s_seq right; */
-/* } t_seq; */
-/**/
-/**/
-/* int exec_seq(t_ast **seq, t_var **env) */
-/* { */
-/*     t_tree *ast; */
-/**/
-/*     ast = NULL; */
-/*     //tant qu'on a pas la premiere sequence (le node le plus en bas a gauche), on execute de maniere recursive */
-/*     if ((*seq)->token == O_AND || (*seq)->token == O_OR) */
-/*     { */
-/*         //a chaque node && || on fait la comparaison pour continuer a droite ou break et revenir au node parent */
-/*         exit_code = exec_seq((*seq)->left) */
-/*         if((exit_code != 0 && (*seq)->token == O_AND) || (exit_code == 0 && (*seq)->token == O_OR)) */
-/*             return (exit_code); */
-/*         else */
-/*             return(exec_seq((*seq)->right)); */
-/*     } */
-/*     if ((*seq)->token == SEQ) */
-/*     { */
-/*         //une fois en bas de l'arbre, on trouve une seq, on l'envoie a notre parser actuel */
-/*         //cette fois on a une line sans aucune parenthese ni && || */
-/*         ast = parse((*seq)->sequence); */
-/*         exit_code = exec_ast(ast, env); */
-/*         //free_tree */
-/*     } */
-/*     return(exit_code)); */
-/* } */
-/**/
-/* int  new_exec(char *line) */
-/* { */
-/*     t_seq *seq; */
+/*     t_tree *seq; */
 /*     int exit_code; */
+/* 	int origin_fds[2]; */
 /**/
-/*     line = readline(prompt); */
+/* 	origin_fds[0] = dup(STDIN_FILENO); */
+/* 	origin_fds[1] = dup(STDOUT_FILENO); */
 /*     seq = NULL; */
-/*     //on recupere un premiere arbre pour connaitre l'ordre des sequences  */
-/*     seq = get_sequence_order(line); */
-/*     //notre premiere exec cherche la premiere sequence a executer : en bas a gauche */
-/*     exit_code = exec_seq(&seq, env); */
+/*     strings_env = lst_to_array(&new_env); */
+/*     seq = parse(sequence, strings_env); */
+/*     free_array(strings_env); */
+/*     strings_env = NULL; */
+/*     exit_code = exec_seq(&seq, env, origin_fds); */
+/*     //update la variable exit_code dans l'environnement ! */
+/*     //ici on update tout l'environnement ? */
+/*     dup2(origin_fds[0], STDIN_FILENO); */
+/*     dup2(origin_fds[1], STDOUT_FILENO); */
+/*     close(origin_fds[0]); */
+/*     close(origin_fds[1]); */
+/*     if (seq) */
+/*     { */
+/*         free_parse(seq->token, NULL, 0); */
+/*         free_tree(&seq); */
+/*     } */
+/*     return(exit_code) */
+/* } */
+/**/
+/* int get_subshell(t_tree **left, t_tree **right, t_var **env) */
+/* { */
+/*     pid_t pid; */
+/**/
+/*     pid = fork(); */
+/*     if (pid == -1) */
+/*         return(-1); */
+/*     if (pid == 0) */
+/*     { */
+/*         //sur un maillon () la suite est a droite ou a gauche ou les deux ??? */
+/*         if (left) */
+/*             exit(exec_line(left, env)); */
+/*         if (right) */
+/*             exit(exec_line(right, env)); */
+/*     } */
+/*     else */
+/*     { */
+/*         exit_code = wait_childen(pid, pid); */
+/*         return (exit_code); */
+/*     } */
+/* } */
+/**/
+/* int exec_line(t_tree **seq_order, t_var **env) */
+/* { */
+/*     int exit_code; */
+/*     t_tree **left; */
+/*     t_tree **right; */
+/**/
+/**/
+/*     left = (*seq_order)->left; */
+/*     right = (*seq_order)->right; */
+/*     exit_code = exec_line(&left, env); */
+/*     if ((*seq_order)->token->token == O_AND && exit_code == 0) */
+/*         return (exec_line(&right, env)); */
+/*     if ((*seq_order)->token->token == O_OR && exit_code != 0) */
+/*         return(exec_line(&right, env)); */
+/*     if ((*seq_order)->token->token == PARENTHESIS) */
+/*         return (get_subshell(&left, &right, env)); */
+/*     if (!(*seq_order)->token->token) //si on n'a pas de token : on doit executer */
+/*         return (exec_sequence((*seq_order)->token->content[0], env)); //penser aux erreurs de syntaxe avec rien apres ou avant un && ou un || ou deux && || colles */
+/*     else //cas ou la porte n'est pas franchie et ou on n'est pas sur un node parenthesis */
+/*         return(exit_code); */
 /* } */
 
-//TODO ENV
-//
-//revoir les booleens env | export
-//exit code $?
-//variable _ a gerer dans la liste et pour les echo $_
-//verifier PWD et OLDPWD
-//verifier le unset d'une liste vide
-//verifier export / export arg args
-//verifier env 
-//
+//TODO
+//Mardi : merge 
+//tester : 
+    //pipeline + redirs : fixer leak
+    //expands + quotes :
+    //builtins (env et export surtout)
+    //signaux
+
+//pour le merge suivant (vendredi 9 mai ?):
+    //ast pour les && || ()
+    //signaux dans les pipes
+    //builtins fixed in pipe   
+    //here_docs ?
+    //echo et export avec expands
+    //export VAR="a b"  des cas de con de ouf a gerer export A="    b . bb    .   "
+    //normer et securiser tout
+
+//Debuggage industriel (1 semaine ?)
+
+//overkill time + On clean, on norme, on securise TOUT
+//final merge sur master pour vendredi 16 mai / semaine du 20 mai ?
+
+//ultrabonus :
+    //tester load minishellrc avec le parsing fini
+    //proteger get_prompt
+    //alias : 
+        //tester exec
+        //decla d'alias au parsing ?
+        //token d'alias au parsing ?
+    //shell_fct :
+        //decla shlfct au parsing ?
+        //token shlfct au parsing ?
+    //substitution cmd :
+        //exception dans les expands 
+        //fct pour executer la cmd_s
+    //faire l'historique a la main ?
+        //charger au demarrage un .minishell_history
+        //save l'historique a la fin, meme avec un ctrl c 
+        //limite l'historique a une size (on ecrase la plus ancienne entree)
+        //un builtin history qui affiche le contenu du fichier avec le numerotage des lignes 
+        //ajouter !! et !-x 
+
+//Tests de cons :
 //CTRL V + Tab : fait un tab dans le minishell a gerer !
+
 
 int main(int ac, char **av, char **env)
 {
     char    *line;
     char    *prompt;
-    // char    **arg;
-    int        error_code;
-    /* int         stdin_fd; */
-    /* int         stdout_fd; */
+    int        exit_code;
     t_var    *new_env;
     t_tree *ast;
     char **strings_env;
@@ -102,29 +162,27 @@ int main(int ac, char **av, char **env)
     // pour ac et av : est-ce qu'on veut accepter des demarrages custom ?
     (void)ac;
     (void)av;
-    error_code = 1;
+    exit_code = 0;
     new_env = NULL;
     ast = NULL;
     /* utiliser getenv ?
         * Si on n'a pas d'env uniquement ?*/
-    init_env(&new_env, env, av);
+    init_env(&new_env, env, av[0]);
+    /* print_all_variables(&new_env); */
     /* print_env(&new_env); */
-    /* if (find_minishellrc) */
-    /*     load_minishell_rc(&new_env); */
 
-	/* dprintf(2, "origin_fds[0] = %d\n", origin_fds[0]); */
-	/* dprintf(2, "origin_fds[1] = %d\n", origin_fds[1]); */
+    if (find_minishellrc(&new_env, NULL))
+        load_minishellrc(&new_env, NULL);
     while (1)
     {
-        //update env variables !!! si on a un && ou un || on DOIT update l'env entre les deux !!!
-        //update prompt
+        set_signals(0);
         prompt = NULL;
-        /* if (isatty(0) && *env) */
-        /* { */
-        /*     if (prompt) */
-        /*         free(prompt); */
-        /*     prompt = get_prompt(&new_env); */
-        /* } */
+        if (isatty(0) && *env)
+        {
+            if (prompt)
+                free(prompt);
+            prompt = get_prompt(&new_env);
+        }
         if (!prompt)
             prompt = "[Minishell]$ ";
         line = ft_strdup("");
@@ -135,38 +193,63 @@ int main(int ac, char **av, char **env)
             line = readline(prompt);
             if (!line)
             {
-                free_tree(&ast);
+                if (isatty(0) && *env)
+                    free(prompt);
+                if (ast)
+                    free_tree(&ast); // pas de free parse ici ?
                 free_list(&new_env);
-                exit (error_code);
+                exit (exit_code);
             }
+            add_history(line);
+            //A gerer avec les signaux correctement !
+            //pour avoir un historique complet on est suppose l'enregistrer dans un fichier a la sortie
+            //et charger ce fichier au demarrage si il existe
+            //on peut fixer une limite a l'historique des commandes 
         }
 	    origin_fds[0] = dup(STDIN_FILENO);
 	    origin_fds[1] = dup(STDOUT_FILENO);
-        /* if (isatty(0) && *env) */
-        /* { */
-        /*     free(prompt); */
-        /*     prompt = NULL; */
-        /* } */
+        if (isatty(0) && *env)
+        {
+            free(prompt);
+            prompt = NULL;
+        }
 
-        /* new_exec(line); */
+        /* t_tree *seq_order; */
+        /**/
+        /* seq_order = NULL; */
+        /* seq_order = get_sequence_order(line); */
+        /* exit_code = exec_line(&seq_order); */
+        /* if (seq_order) // a revoir */
+        /* { */
+        /*     free_parse(seq_order->token, NULL, 0); */
+        /*     free_tree(&seq_order); */
+        /* } */
+        //
+        //
+        //
         strings_env = lst_to_array(&new_env);
         ast = parse(line, strings_env, new_env);
         free_array(strings_env);
         strings_env = NULL;
-        error_code = exec_ast(&ast, &new_env, origin_fds);
+        exit_code = exec_ast(&ast, &new_env, origin_fds);
+        update_exit_code_var(&new_env, exit_code);
+        //update la variable exit_code dans l'environnement !
         dup2(origin_fds[0], STDIN_FILENO);
         dup2(origin_fds[1], STDOUT_FILENO);
         close(origin_fds[0]);
         close(origin_fds[1]);
         if (ast)
         {
-            free_parse(ast->token, NULL, 0);
             free_tree(&ast);
+            ast = NULL;
         }
+        //
+        //
+        //
         free(line);
         line = NULL;
     }
     free_list(&new_env);
-    exit(error_code);
+    exit(exit_code);
 }
 

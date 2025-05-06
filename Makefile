@@ -57,11 +57,10 @@ SRC					=	main.c \
 						lexer.c \
 						lexer_utils.c \
 						parser.c \
-						init.c \
+						init/init.c \
+						exec/signals.c \
 						exec/exec.c \
 						exec/errors.c \
-						exec/redirections_stdio.c \
-						exec/pipe.c \
     				exec/builtins/echo.c \
     				exec/builtins/cd.c \
     				exec/builtins/pwd.c \
@@ -69,22 +68,28 @@ SRC					=	main.c \
     				exec/builtins/export.c \
     				exec/builtins/env.c \
     				exec/builtins/exit.c \
-						utils/builtins_utils.c \
-						utils/env_utils.c \
-						utils/init_utils.c \
-						utils/prints.c \
-						utils/misc.c \
+						exec/exec_utils/redirections_stdio_utils.c \
+						exec/exec_utils/pipe_utils.c \
+						exec/builtins/builtins_utils/export_utils.c \
+						exec/builtins/builtins_utils/builtins_utils.c \
+						exec/builtins/builtins_utils/env_utils.c \
+						init/init_utils.c \
+						misc/prints.c \
+						misc/misc.c \
+						ultrabonus/source.c \
 						ultrabonus/get_prompt/get_prompt.c \
 						ultrabonus/get_prompt/get_prompt_free.c \
 						ultrabonus/get_prompt/git_branch_utils.c \
+						ultrabonus/load_minishellrc.c \
 						ultrabonus/get_prompt/prompt_gets_fcts.c \
-						ultrabonus/get_prompt/prompt_gets_fcts_utils.c  
+						ultrabonus/get_prompt/prompt_gets_fcts_utils.c 
 
 
 DEPS				=	$(SRC:%.c=$(OBJ_DIR)%.d)
 OBJ					=	$(SRC:%.c=$(OBJ_DIR)%.o)
 OBJ_DIR				=	.objs/
 
+#le makefile relink pas si on touch un des header ?
 $(OBJ_DIR)%.o:%.c $(HEAD) $(LIBFT_HEAD) Makefile $(LIBFT_DIR)/Makefile
 	@mkdir -p $(@D) 
 	@echo "$(BOLD_PURPLE)"
@@ -96,9 +101,6 @@ all: lib $(NAME)
 debug:
 	make re FLAGS="$(FLAGS) -DDEBUG=1"
 
-release:
-	make re FLAGS="$(FLAGS) -DDEBUG=0"
-
 lib:
 	@echo "$(BOLD_BLUE)Compilling Libft...$(STOP_COLOR)"
 	@make -C $(LIBFT_DIR)
@@ -106,7 +108,7 @@ lib:
 
 $(NAME): $(OBJ) $(LIB_LIBFT)
 	@echo "$(BOLD_BLUE)Creating executable $(NAME)...$(BOLD_PURPLE)"
-	$(CC) $(OBJ) $(PIPEX_FLAG) $(LIBFT_FLAG) -l readline -o $(NAME)
+	$(CC) $(OBJ) $(PIPEX_FLAG) "-DDEBUG=0" $(LIBFT_FLAG) -l readline -o $(NAME) 
 	@echo "$(STOP_COLOR)$(BOLD_GREEN)SUCCESS !!!$(STOP_COLOR)"
 
 clean:
