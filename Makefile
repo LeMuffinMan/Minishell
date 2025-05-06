@@ -101,9 +101,6 @@ all: lib $(NAME)
 debug:
 	make re FLAGS="$(FLAGS) -DDEBUG=1"
 
-release:
-	make re FLAGS="$(FLAGS) -DDEBUG=0"
-
 lib:
 	@echo "$(BOLD_BLUE)Compilling Libft...$(STOP_COLOR)"
 	@make -C $(LIBFT_DIR)
@@ -111,7 +108,7 @@ lib:
 
 $(NAME): $(OBJ) $(LIB_LIBFT)
 	@echo "$(BOLD_BLUE)Creating executable $(NAME)...$(BOLD_PURPLE)"
-	$(CC) $(OBJ) $(PIPEX_FLAG) $(LIBFT_FLAG) -l readline -o $(NAME)
+	$(CC) $(OBJ) $(PIPEX_FLAG) "-DDEBUG=0" $(LIBFT_FLAG) -l readline -o $(NAME) 
 	@echo "$(STOP_COLOR)$(BOLD_GREEN)SUCCESS !!!$(STOP_COLOR)"
 
 clean:
