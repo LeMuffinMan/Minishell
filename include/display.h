@@ -21,6 +21,10 @@
 # define BOLD_CYAN "\e[1;36m"
 # define STOP_COLOR "\e[0m"
 
+# ifndef DEBUG
+#  define DEBUG 0
+# endif
+
 # include "list.h"
 # include "lexer.h"
 # include "tree.h"
@@ -31,8 +35,8 @@ typedef struct s_token	t_token;
 struct					s_lexer;
 typedef struct s_lexer	t_lexer;
 
-void					display_list(t_token *head);
-void					display_lexer(t_lexer *head);
-void					display_ast(t_tree *root);
+void					display_list(t_token *head, int debug);
+void					display_lexer(t_lexer *head, int debug);
+void					display_ast(t_tree *root, int debug);
 
 #endif

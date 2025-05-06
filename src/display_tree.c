@@ -50,8 +50,11 @@ void	print_ast(t_tree *node, int indent)
 	}
 }
 
-void	display_ast(t_tree *root)
+void	display_ast(t_tree *root, int debug)
 {
-	print_ast(root, 20);
-	printf("\n------------------------------\n");
+	if (debug)
+	{
+		print_ast(root, 20);
+		printf("\n------------------------------\n");
+	}
 }
