@@ -239,7 +239,10 @@ int main(int ac, char **av, char **env)
         close(origin_fds[0]);
         close(origin_fds[1]);
         if (ast)
+        {
             free_tree(&ast);
+            ast = NULL;
+        }
         //
         //
         //

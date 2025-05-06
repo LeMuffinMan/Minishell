@@ -74,7 +74,7 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, int origin_fds[2])
 		free_pipes(pipes);
 		exit_code = exec_ast(&((*ast)->left), env, origin_fds);
 		free_list(env);
-		printf("exec : %p\n", (*ast)->head);
+		/* printf("exec : %p\n", (*ast)->head); */
 		free_tree(&((*ast)->head));
 		exit(exit_code);
 	}
@@ -193,6 +193,8 @@ int	exec_cmd(t_tree **ast, t_var **env, int origin_fds[2])
 			return(-1);
 		if (pid == 0)
 		{
+			if (origin_fds[0] > 2 || origin_fds[1] > 2)
+				close_origin_fds(origin_fds);
 			strings_env = lst_to_array(env);
 			execve((*ast)->token->content[0], (*ast)->token->content,
 				strings_env);
