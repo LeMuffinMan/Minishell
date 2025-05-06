@@ -6,7 +6,7 @@
 #    By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/05/04 19:23:42 by oelleaum         ###   ########lyon.fr    #
+#    Updated: 2025/04/30 20:50:06 by asinsard         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,7 +21,7 @@ STOP_COLOR			=	\e[0m
 -include $(DEPS) $(DEPS_BONUS)
 # vpath %.c src/parsing/token:src/parsing/lexer:src/parsing/tree:src/builtins:src/utils:src/parsing:src/parsing/handle_quote:src/exec:src/ultrabonus:src
 # vpath %.h include:src/libft/include
-vpath %.c src/parsing/token:src/parsing/lexer:src/parsing/tree:src/builtins:src/utils:src/parsing:src/parsing/handle_quote:src/exec:src:src/ultrabonus:src/parsing/here_doc
+vpath %.c src/parsing/token:src/parsing/lexer:src/parsing/tree:src/builtins:src/utils:src/parsing:src/parsing/handle_quote:src/exec:src:src/ultrabonus:src/parsing/here_doc:src/parsing/expand
 vpath %.h include:include/parsing:include/exec:src/libft/include
 vpath %.a src/libft/obj
 
@@ -46,6 +46,8 @@ SRC					=	main.c \
 						create_tree.c \
 						display_list.c \
 						display_tree.c \
+						expand_utils.c \
+						expand.c \
 						handle_cmd_and_path_utils.c \
 						handle_cmd_and_path.c \
 						quote.c \

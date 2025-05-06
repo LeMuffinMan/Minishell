@@ -3,10 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   exec.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 14:31:45 by oelleaum          #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2025/05/04 19:21:50 by oelleaum         ###   ########lyon.fr   */
+=======
+/*   Updated: 2025/04/29 18:50:48 by asinsard         ###   ########lyon.fr   */
+>>>>>>> origin/expand
 /*                                                                            */
 /* ************************************************************************** */
 

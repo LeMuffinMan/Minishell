@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 02:24:25 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/27 17:21:33 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/30 15:11:34 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ t_token	*add_new_token(char *str, int error_code)
 		return (NULL);
 	new_node->next = NULL;
 	new_node->prev = NULL;
-	new_node->token = -1;
+	new_node->token = NO_TOKEN;
 	new_node->error = error_code;
 	new_node->content = alloc_tab(str);
 	new_node->priority = 10;

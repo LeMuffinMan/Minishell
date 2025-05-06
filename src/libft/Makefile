@@ -25,6 +25,8 @@ SRCMANDATORY	=	free_tab.c \
 					ft_isascii.c \
 					ft_isdigit.c \
 					ft_isprint.c \
+					ft_isslash.c \
+					ft_isspace.c \
 					ft_itoa.c \
 					ft_memchr.c \
 					ft_memcmp.c \
@@ -36,6 +38,7 @@ SRCMANDATORY	=	free_tab.c \
 					ft_putnbr_fd.c \
 					ft_putstr_fd.c \
 					ft_split.c \
+					ft_str_isspace.c \
 					ft_strchr.c \
 					ft_strdup.c \
 					ft_striteri.c \

@@ -6,29 +6,87 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 19:51:51 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/15 23:54:20 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/02 23:56:33 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "token.h"
 #include "list.h"
 #include "libft.h"
+#include "expand.h"
 #include <stdlib.h>
+
+void	handle_cmd(t_token **node, char **envp, bool flag)
+{
+	if ((*node)->token == D_QUOTE || (*node)->token == S_QUOTE
+		|| (*node)->token == EXPAND
+		|| !(*node)->prev || ((*node)->prev->token != CMD
+			&& (*node)->prev->token != BUILT_IN))
+	{
+		is_command_whithout_env(node, envp);
+		if (flag || (*node)->token == NO_TOKEN || (*node)->token == APPEND
+			|| (*node)->token == D_QUOTE || (*node)->token == S_QUOTE)
+			is_command(node, envp);
+	}
+	else
+		(*node)->error = PERMISSION_DENIED;
+}
+
+void	is_quote(t_token **node)
+{
+	int	len;
+
+	len = ft_strlen((*node)->content[0]);
+	if (((*node)->content[0][0] == '"')
+			&& (*node)->content[0][len - 1] == '"')
+	{
+		(*node)->token = D_QUOTE;
+		(*node)->error = QUOTE;
+	}
+	else if (((*node)->content[0][0] == '\'')
+			&& (*node)->content[0][len - 1] == '\'')
+	{
+		(*node)->token = S_QUOTE;
+		(*node)->error = QUOTE;
+	}
+}
+
+static void	case_of_cmd_quote(t_token *node, char **cmd_in_quote)
+{
+	if (node->token == D_QUOTE || node->token == S_QUOTE)
+	{
+		*cmd_in_quote = ft_strndup(&node->content[0][1],
+				ft_strlen(node->content[0]) - 2);
+		if (!*cmd_in_quote)
+			free_parse(node,
+				"Malloc failed in function 'case_of_cmd_quote'", MEM_ALLOC);
+	}
+}
 
 char	*verif_command(t_token **node, char *tmp, char **path, char **envp)
 {
+	char	*cmd_in_quote;
+
+	cmd_in_quote = NULL;
+	case_of_cmd_quote(*node, &cmd_in_quote);
 	tmp = extract_path(envp);
 	if (!tmp)
-		free_parse(*node, "Malloc failed in function 'is_command'", MEM_ALLOC);
+		free_parse(*node,
+			"Malloc failed in function 'extract_path'", MEM_ALLOC);
 	path = split_the_path(tmp);
 	free(tmp);
 	tmp = NULL;
 	if (!path)
 		free_parse(*node,
 			"Malloc failed in function 'split_the_path'", MEM_ALLOC);
-	tmp = parse_cmd((*node)->content[0], path, &(*node)->error);
+	if ((*node)->token == D_QUOTE || (*node)->token == S_QUOTE)
+		tmp = parse_cmd(cmd_in_quote, path, &(*node)->error, false);
+	else
+		tmp = parse_cmd((*node)->content[0], path, &(*node)->error, true);
 	if ((*node)->error == CMD_NOT_FOUND || (*node)->error == PERMISSION_DENIED)
 		return (NULL);
+	if (cmd_in_quote)
+		free(cmd_in_quote);
 	if (!tmp)
 		free_parse(*node, "Malloc failed in function 'parse_cmd'", MEM_ALLOC);
 	return (tmp);

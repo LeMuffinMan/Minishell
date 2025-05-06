@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 19:15:40 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/27 17:41:22 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/30 15:12:58 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,9 +53,9 @@ void	display_list(t_token *head)
 {
 	t_token				*tmp;
 	int					i;
-	static const char	*tab[15] = {"Append", "Built_in", "CMD",
-		"Double quote", "Here_doc", "Limiter", "And", "Or", "Left_Par", "Right_Par",
-		"Pipe", "Redir in", "Simple quote", "Truncate", "Wildcard"};
+	static const char	*tab[18] = {"No_Token", "Append", "Built_in", "CMD",
+		"D_quote", "Expand", "Group_Par", "HD", "And", "Or", "L_Par", "R_Par",
+		"Pipe", "Redir in", "S_quote", "Space", "Truncate", "Wildcard"};
 
 	i = 1;
 	tmp = head;
@@ -64,14 +64,14 @@ void	display_list(t_token *head)
 	printf("%sNULL\n ^\n |\n%s", BOLD_BLUE, STOP_COLOR);
 	while (tmp->next)
 	{
-		if ((int)tmp->token >= 0)
+		if ((int)tmp->token != 0)
 			display_valid(tmp, i, tmp->content, tab);
 		else
 			display_unvalid(i, tmp);
 		tmp = tmp->next;
 		i++;
 	}
-	if ((int)tmp->token >= 0)
+	if ((int)tmp->token != 0)
 		display_valid(tmp, i, tmp->content, tab);
 	else
 		display_unvalid(i, tmp);

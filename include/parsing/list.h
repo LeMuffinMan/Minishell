@@ -32,7 +32,7 @@ typedef struct s_token
 	bool			seq;
 }	t_token;
 
-void	add_back(t_token **head, char *str);
-void	free_parse(t_token *list, const char *str, int error);
+void					add_back(t_token **head, char *str);
+void					free_parse(t_token *list, const char *str, int error);
 
 #endif

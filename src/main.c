@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:21:52 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/04 20:50:22 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/04/29 18:48:03 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -227,7 +227,7 @@ int main(int ac, char **av, char **env)
         //
         //
         strings_env = lst_to_array(&new_env);
-        ast = parse(line, strings_env);
+        ast = parse(line, strings_env, new_env);
         free_array(strings_env);
         strings_env = NULL;
         exit_code = exec_ast(&ast, &new_env, origin_fds);

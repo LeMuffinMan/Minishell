@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 18:24:06 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/09 05:31:43 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/04/30 22:35:41 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@ int					ft_isalpha(int c);
 int					ft_isascii(int c);
 int					ft_isdigit(int c);
 int					ft_isprint(int c);
+int					ft_isslash(const char *str);
+int					ft_isspace(int c);
 char				*ft_itoa(int n);
 void				*ft_memchr(const void *s, int c, size_t n);
 int					ft_memcmp(const void *s1, const void *s2, size_t n);
@@ -42,6 +44,7 @@ void				ft_putendl_fd(const char *s, int fd);
 void				ft_putnbr_fd(int n, int fd);
 void				ft_putstr_fd(const char *s, int fd);
 char				**ft_split(const char *s, char c);
+int					ft_str_isspace(char *str);
 char				*ft_strchr(const char *s, int c);
 char				*ft_strdup(const char *s);
 void				ft_striteri(char *s, void (*f)(unsigned int, char *));
