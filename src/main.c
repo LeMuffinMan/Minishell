@@ -102,9 +102,9 @@
 //Mardi : merge 
 //tester : 
     //pipeline + redirs : fixer leak
+    //signaux
     //expands + quotes :
     //builtins (env et export surtout)
-    //signaux
 
 //pour le merge suivant (vendredi 9 mai ?):
     //ast pour les && || ()
