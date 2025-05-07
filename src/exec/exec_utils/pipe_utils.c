@@ -14,25 +14,66 @@
 #include "structs.h"
 #include <unistd.h>
 
+/* int	wait_children(pid_t last_child, pid_t first_child) */
+/* { */
+/* 	int		status; */
+/* 	int		exit_code; */
+/**/
+/* 	exit_code = EXIT_SUCCESS; */
+/* 	waitpid(first_child, &status, 0); */
+/* 	waitpid(last_child, &status, 0); */
+/* 	if (WIFEXITED(status)) */
+/* 		exit_code = WEXITSTATUS(status); */
+/* 	else if (WIFSIGNALED(status)) */
+/* 		exit_code = 128 + WTERMSIG(status); */
+/* 	if (exit_code == EXIT_SUCCESS && WIFEXITED(status)) */
+/* 		exit_code = WEXITSTATUS(status); */
+/* 	else if (exit_code == EXIT_SUCCESS && WIFSIGNALED(status)) */
+/* 		exit_code = 128 + WTERMSIG(status); */
+/*   else if (WTERMSIG(status) == SIGINT) */
+/*       write(STDOUT_FILENO, "\n", 1); */
+/* 	return (exit_code); */
+/* } */
+/**/
 int	wait_children(pid_t last_child, pid_t first_child)
 {
 	int		status;
-	int		exit_code;
+	int		last_status;
+	int		first_status;
+	pid_t	wpid;
+	int	last_child_done;
+	int	first_child_done;
 
-	exit_code = EXIT_SUCCESS;
-	waitpid(first_child, &status, 0);
-	waitpid(last_child, &status, 0);
-	if (WIFEXITED(status))
-		exit_code = WEXITSTATUS(status);
-	else if (WIFSIGNALED(status))
-		exit_code = 128 + WTERMSIG(status);
-	if (exit_code == EXIT_SUCCESS && WIFEXITED(status))
-		exit_code = WEXITSTATUS(status);
-	else if (exit_code == EXIT_SUCCESS && WIFSIGNALED(status))
-		exit_code = 128 + WTERMSIG(status);
-  else if (WTERMSIG(status) == SIGINT)
-      write(STDOUT_FILENO, "\n", 1);
-	return (exit_code);
+	last_status = 0;
+	first_status = 0;
+	last_child_done = 0;
+	first_child_done = 0;
+	while ((wpid = waitpid(-1, &status, 0)) > 0)
+	{
+		if (wpid == last_child)
+		{
+			last_child_done = 1;
+			if (WIFEXITED(status))
+				last_status = WEXITSTATUS(status);
+			else if (WIFSIGNALED(status))
+			{
+				last_status = 128 + WTERMSIG(status);
+				if (WTERMSIG(status) == SIGINT)
+					write(STDOUT_FILENO, "\n", 1);
+				if (WTERMSIG(status) == SIGQUIT)
+					write(STDOUT_FILENO, "Quit (core dumped)\n", 19);
+			}
+		}
+		else if (wpid == first_child)
+		{
+			first_child_done = 1;
+			if (WIFEXITED(status))
+				first_status = WEXITSTATUS(status);
+			else if (WIFSIGNALED(status))
+				first_status = 128 + WTERMSIG(status);
+		}
+	}
+	return (last_status);
 }
 
 int	add_pipe(int fd[2], t_pipe **pipes)
@@ -44,7 +85,7 @@ int	add_pipe(int fd[2], t_pipe **pipes)
 	new_pipe = malloc(sizeof(t_pipe));
 	if (!new_pipe)
 	{
-		//error
+		// error
 	}
 	if (pipes && *pipes)
 		new_pipe->next = *pipes;
@@ -75,7 +116,7 @@ int	free_pipes(t_pipe **pipes)
 	return (0);
 }
 
-int close_origin_fds(int origin_fds[2])
+int	close_origin_fds(int origin_fds[2])
 {
 	close(origin_fds[0]);
 	origin_fds[0] = -1;

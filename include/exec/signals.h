@@ -21,5 +21,9 @@ extern volatile sig_atomic_t g_signal;
 void	handle_sig(int sig);
 void do_nothing_sig(int sig);
 int		set_signals(int mode);
+void	setup_child_signals(void);
+void handle_child_sigint(int sig);
+void	setup_child_signals(void);
+void	setup_parent_signals(void);
 
 #endif

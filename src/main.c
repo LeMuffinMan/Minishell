@@ -151,6 +151,7 @@ int main(int ac, char **av, char **env)
     int        exit_code;
     t_var    *new_env;
     t_tree *ast;
+    t_pipe *pipes;
     char **strings_env;
 	int origin_fds[2];
 
@@ -165,6 +166,7 @@ int main(int ac, char **av, char **env)
     exit_code = 0;
     new_env = NULL;
     ast = NULL;
+    pipes = NULL;
     /* utiliser getenv ?
         * Si on n'a pas d'env uniquement ?*/
     init_env(&new_env, env, av[0]);
@@ -175,7 +177,7 @@ int main(int ac, char **av, char **env)
         load_minishellrc(&new_env, NULL);
     while (1)
     {
-        set_signals(0);
+        setup_parent_signals();
         prompt = NULL;
         if (isatty(0) && *env)
         {
@@ -231,7 +233,7 @@ int main(int ac, char **av, char **env)
         ast = parse(line, strings_env, new_env);
         free_array(strings_env);
         strings_env = NULL;
-        exit_code = exec_ast(&ast, &new_env, origin_fds);
+        exit_code = exec_ast(&ast, &new_env, origin_fds, &pipes);
         update_exit_code_var(&new_env, exit_code);
         //update la variable exit_code dans l'environnement !
         dup2(origin_fds[0], STDIN_FILENO);
