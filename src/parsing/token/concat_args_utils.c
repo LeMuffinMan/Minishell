@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:44:43 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/02 19:22:11 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/07 16:52:35 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ void	delete_space_node(t_token **head)
 	tmp = *head;
 	while (tmp)
 	{
-		if (tmp->token == SPACE)
+		if (tmp->token == SPACE || !tmp->content[0][0])
 		{
 			old_node = tmp;
 			if (tmp->next)

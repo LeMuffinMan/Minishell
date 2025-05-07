@@ -6,7 +6,7 @@
 #    By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/05/07 15:03:08 by asinsard         ###   ########lyon.fr    #
+#    Updated: 2025/05/07 16:20:24 by asinsard         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -118,7 +118,9 @@ $(OBJ_DIR)%.o:%.c $(LIB_LIBFT) Makefile
 all: lib $(NAME)
 
 debug:
-	make re FLAGS="$(FLAGS) -DDEBUG=1"
+	@echo "				$(BOLD_BLUE)DEBUG"
+	@echo "$(STOP_COLOR)"
+	@make re --no-print-directory FLAGS="$(FLAGS) -DDEBUG=1"
 
 lib:
 	@echo "$(BOLD_BLUE)Compilling Libft...$(STOP_COLOR)"

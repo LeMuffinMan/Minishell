@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:49:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/07 12:11:01 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/07 16:47:08 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,8 @@ static int	expand_node_content(t_token **node, t_var *list_env, int j)
 	(*node)->content[0] = new_content;
 	(*node)->token = EXPAND;
 	(*node)->error = SUCCESS;
+	if (index >= j - 1)
+		index -= j;
 	return (index);
 }
 
