@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:49:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/02 23:54:50 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/07 12:11:01 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,11 +85,13 @@ static int	expand_node_content(t_token **node, t_var *list_env, int j)
 	return (index);
 }
 
-void	to_expand(t_token **node, t_var *list_env)
+static bool	to_expand(t_token **node, t_var *list_env)
 {
-	int	j;
+	int		j;
+	bool	flag;
 
 	j = 0;
+	flag = false;
 	while ((*node)->content[0][j])
 	{
 		if ((*node)->content[0][j] == '$')
@@ -99,10 +101,14 @@ void	to_expand(t_token **node, t_var *list_env)
 				&& ft_isspace((*node)->content[0][j + 1])))
 				j++;
 			else
+			{
 				j += expand_node_content(node, list_env, j + 1);
+				flag = true;
+			}
 		}
 		j++;
 	}
+	return (flag);
 }
 
 bool	init_expand(t_token **head, t_var *list_env)
@@ -117,10 +123,7 @@ bool	init_expand(t_token **head, t_var *list_env)
 	while (tmp)
 	{
 		if (tmp->error != 0 || tmp->token == D_QUOTE)
-		{
-			to_expand(&tmp, list_env);
-			flag = true;
-		}
+			flag = to_expand(&tmp, list_env);
 		tmp = tmp->next;
 	}
 	tmp = *head;

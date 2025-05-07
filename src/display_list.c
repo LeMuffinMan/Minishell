@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 19:15:40 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/30 15:12:58 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/07 13:36:30 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ void	display_list(t_token *head, int debug)
 	i = 1;
 	if (!head)
 		return ;
-	if  (debug)
+	if (debug)
 		print_token(head, tab, i);
 }
 

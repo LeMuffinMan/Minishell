@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 03:09:12 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/02 23:51:13 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/07 12:04:13 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,6 @@ t_tree	*parse(char *line, char **envp, t_var *list_env)
 	lexer = NULL;
 	root = NULL;
 	parse_line(line, &lexer);
-	if (!lexer)
-		return (NULL);
 	display_lexer(lexer, DEBUG);
 	while (lexer->next)
 	{

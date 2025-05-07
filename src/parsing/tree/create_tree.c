@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 21:12:15 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/30 16:53:13 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/07 13:37:40 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 #include <stdlib.h>
 #include "libft.h"
 
-static void assign_head(t_tree **root, t_tree *head)
+static void	assign_head(t_tree **root, t_tree *head)
 {
-	t_tree *tmp;
-	
+	t_tree	*tmp;
+
 	tmp = *root;
 	tmp->head = head;
 	if (!tmp)
@@ -92,8 +92,8 @@ void	free_tree(t_tree **head)
 {
 	t_tree	*left;
 	t_tree	*right;
-	t_token *tmp_token;
-	t_tree *tmp_head;
+	t_token	*tmp_token;
+	t_tree	*tmp_head;
 
 	tmp_head = *head;
 	left = (*head)->left;
