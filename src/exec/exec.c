@@ -58,7 +58,6 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, int origin_fds[2])
 	sa_ignore.sa_handler = SIG_IGN;
 	sa_ignore.sa_flags = 0;
 	sigaction(SIGINT, &sa_ignore, &sa_orig);
-
 	add_pipe(pipefd, pipes);
 	left_pid = fork();
 	if (left_pid < 0)
@@ -206,6 +205,34 @@ int	exec_cmd(t_tree **ast, t_var **env, int origin_fds[2], t_pipe **pipes)
 	return (1); //on ne devrait pas arriver ici
 }
 
+int print_error_is_a_directory(char *file)
+{
+	char *s;
+	char *tmp;
+
+	s = ft_strjoin("minishell: ", file);
+	tmp = s;
+	s = ft_strjoin(s, ": Is a directory\n");
+	free(tmp);
+	ft_putstr_fd(s, 2);
+	free(s);
+	return (1);
+}
+
+int print_perm_error(char *file)
+{
+	char *s;
+	char *tmp;
+
+	s = ft_strjoin("minishell: ", file);
+	tmp = s;
+	s = ft_strjoin(s, ": Permission denied\n");
+	free(tmp);
+	ft_putstr_fd(s, 2);
+	free(s);
+	return (1);
+}
+
 int redirect_stdio(t_tree **ast, t_var **env, int origin_fds[2], t_pipe **pipes)
 {
 	t_tree *left;
@@ -247,7 +274,7 @@ int	exec_ast(t_tree **ast, t_var **env, int origin_fds[2], t_pipe **pipes)
   	ft_putendl_fd((*ast)->token->content[0], 2);
   	return ((*ast)->token->error);
   }
-	if ((*ast)->token->token == R_IN || (*ast)->token->token == APPEND)
+	if ((*ast)->token->token == R_IN || (*ast)->token->token == APPEND || (*ast)->token->token == TRUNC)
 		return(redirect_stdio(ast, env, origin_fds, pipes));
 	if ((*ast)->token->token == PIPE)
 		return (exec_pipe(ast, env, pipes, origin_fds));

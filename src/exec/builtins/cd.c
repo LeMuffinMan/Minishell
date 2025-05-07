@@ -125,8 +125,10 @@ int	builtin_cd_without_arg(t_var **env)
 	return (0);
 }
 
-int builtin_cd_with_arg(char **arg, t_var **env, char *path)
+int builtin_cd_with_arg(char **arg, t_var **env)
 {
+	char *path;
+
 	if (!ft_strncmp(arg[1], "-", 2))
 		path = ft_strdup(get_value(env, "OLDPWD"));
 	else
@@ -151,9 +153,6 @@ int builtin_cd_with_arg(char **arg, t_var **env, char *path)
 /* print_var(env); */
 int	builtin_cd(char **arg, t_var **env)
 {
-	char	*path;
-
-	path = NULL;
 	if (array_size(arg) > 2)
 	{
 		ft_putstr_fd("minishell: cd: too many arguments\n", 2);
@@ -162,6 +161,6 @@ int	builtin_cd(char **arg, t_var **env)
 	if (array_size(arg) == 1)
 		return(builtin_cd_without_arg(env));
 	if (array_size(arg) == 2)
-		return (builtin_cd_with_arg(arg, env, path));
+		return (builtin_cd_with_arg(arg, env));
 	return (0);
 }
