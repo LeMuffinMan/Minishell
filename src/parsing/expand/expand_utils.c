@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 20:47:42 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/02 19:01:56 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/07 19:21:19 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,21 +39,17 @@ void	copy_value(t_token *node, char *value, char **value_cpy)
 
 char	*alloc_first_expand(char *value, char *str_to_expand, int index)
 {
-	char	*value_cpy;
 	char	*next;
 	char	*res;
 
-	value_cpy = ft_strdup(value);
-	if (!value_cpy)
-		return (NULL);
 	next = ft_strdup(&str_to_expand[index]);
 	if (!next)
 	{
-		free(value_cpy);
+		free(value);
 		return (NULL);
 	}
-	res = ft_strjoin(value_cpy, next);
-	free(value_cpy);
+	res = ft_strjoin(value, next);
+	free(value);
 	free(next);
 	if (!res)
 		return (NULL);

@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:49:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/07 16:47:08 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/07 19:24:13 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ static char	*alloc_new_expand(t_token **node, char *value,
 	if ((*node)->content[0][0] == '$')
 	{
 		res = alloc_first_expand(value_cpy, (*node)->content[0], index + 1);
-		free(value_cpy);
 		if (!res)
 			free_parse(*node, "Malloc failed in expand'", MEM_ALLOC);
 	}
@@ -35,10 +34,8 @@ static char	*alloc_new_expand(t_token **node, char *value,
 		if (value)
 			res = ft_strjoin3((*node)->content[0], value, j, index);
 		else
-		{
 			res = ft_strjoin3((*node)->content[0], value_cpy, j, index);
-			free(value_cpy);
-		}
+		free(value_cpy);
 		if (!res)
 			free_parse(*node, "Malloc failed in expand'", MEM_ALLOC);
 	}
@@ -61,7 +58,7 @@ static int	export_value(char *str, char **value)
 	return (index);
 }
 
-static int	expand_node_content(t_token **node, t_var *list_env, int j)
+static void	expand_node_content(t_token **node, t_var *list_env, int j)
 {
 	char	*res;
 	char	*value;
@@ -82,9 +79,6 @@ static int	expand_node_content(t_token **node, t_var *list_env, int j)
 	(*node)->content[0] = new_content;
 	(*node)->token = EXPAND;
 	(*node)->error = SUCCESS;
-	if (index >= j - 1)
-		index -= j;
-	return (index);
 }
 
 static bool	to_expand(t_token **node, t_var *list_env)
@@ -104,8 +98,9 @@ static bool	to_expand(t_token **node, t_var *list_env)
 				j++;
 			else
 			{
-				j += expand_node_content(node, list_env, j + 1);
+				expand_node_content(node, list_env, j + 1);
 				flag = true;
+				j = -1;
 			}
 		}
 		j++;
