@@ -6,7 +6,7 @@
 #    By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/05/07 14:12:25 by asinsard         ###   ########lyon.fr    #
+#    Updated: 2025/05/07 14:55:51 by asinsard         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,6 +26,7 @@ DIR_EXEC			=	src \
 						src/exec/exec_utils \
 						src/init \
 						src/misc
+
 DIR_PARSING			=	src/parsing \
 						src/parsing/expand \
 						src/parsing/handle_quote \
@@ -33,10 +34,10 @@ DIR_PARSING			=	src/parsing \
 						src/parsing/lexer \
 						src/parsing/token \
 						src/parsing/tree
+
 DIR_ULTRABONUS		=	src/ultrabonus \
 						src/ultrabonus/get_prompt 
 
--include $(DEPS) $(DEPS_BONUS)
 vpath %.c $(DIR_EXEC) $(DIR_PARSING) $(DIR_ULTRABONUS)
 vpath %.h include:include/parsing:include/exec:src/libft/include
 vpath %.a src/libft/obj
@@ -44,8 +45,11 @@ vpath %.a src/libft/obj
 CC					=	cc
 FLAGS				=	-Wall -Wextra -Werror -g3 -MMD -MP -I$(LIBFT_HEAD_DIR) $(INC_HEAD)
 NAME				=	minishell
-HEAD				=	here_doc.h lexer.h list.h quote.h token.h tree.h 
+
+HEAD				=	display.h $(HEAD_EXEC)
+
 HEAD_DIR			=	include
+
 INC_HEAD			=	-I$(HEAD_DIR) -I$(HEAD_DIR)/parsing -I$(HEAD_DIR)/exec
 
 LIBFT_DIR			=	src/libft
@@ -106,7 +110,7 @@ OBJ					=	$(SRC:%.c=$(OBJ_DIR)%.o)
 OBJ_DIR				=	.objs/
 
 #le makefile relink pas si on touch un des header ?
-$(OBJ_DIR)%.o:%.c $(HEAD) $(LIBFT_HEAD) Makefile $(LIBFT_DIR)/Makefile
+$(OBJ_DIR)%.o:%.c $(LIB_LIBFT) Makefile
 	@mkdir -p $(@D) 
 	@echo "$(BOLD_YELLOW)Compilling" $@ "$(BOLD_PURPLE)"
 	@$(CC) $(FLAGS) -c $< -o $@
@@ -126,6 +130,8 @@ $(NAME): $(OBJ) $(LIB_LIBFT)
 	@echo "$(BOLD_BLUE)Creating executable $(NAME)...$(BOLD_PURPLE)"
 	$(CC) $(OBJ) $(PIPEX_FLAG) "-DDEBUG=0" $(LIBFT_FLAG) -l readline -o $(NAME) 
 	@echo "$(STOP_COLOR)$(BOLD_GREEN)SUCCESS !!!$(STOP_COLOR)"
+
+-include $(DEPS) $(DEPS_BONUS)
 
 clean:
 	@echo "$(BOLD_BLUE)Delete obj...$(STOP_COLOR)"
