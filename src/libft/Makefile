@@ -90,7 +90,7 @@ $(NAME): $(OBJ)
 	@echo -n "$(STOP_COLOR)"
 
 bonus:
-	$(MAKE) SRCMANDATORY="$(SRCMANDATORY) $(SRCBONUS)"
+	$(MAKE) --no-print-directory SRCMANDATORY="$(SRCMANDATORY) $(SRCBONUS)"
 
 -include $(DEPS)
 

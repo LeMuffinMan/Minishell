@@ -6,7 +6,7 @@
 #    By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/05/07 14:55:51 by asinsard         ###   ########lyon.fr    #
+#    Updated: 2025/05/07 15:03:08 by asinsard         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -109,7 +109,6 @@ DEPS				=	$(SRC:%.c=$(OBJ_DIR)%.d)
 OBJ					=	$(SRC:%.c=$(OBJ_DIR)%.o)
 OBJ_DIR				=	.objs/
 
-#le makefile relink pas si on touch un des header ?
 $(OBJ_DIR)%.o:%.c $(LIB_LIBFT) Makefile
 	@mkdir -p $(@D) 
 	@echo "$(BOLD_YELLOW)Compilling" $@ "$(BOLD_PURPLE)"
@@ -123,19 +122,19 @@ debug:
 
 lib:
 	@echo "$(BOLD_BLUE)Compilling Libft...$(STOP_COLOR)"
-	@make -C $(LIBFT_DIR)
+	@make --no-print-directory -C $(LIBFT_DIR)
 	@echo "$(BOLD_GREEN)SUCCESS !!!$(STOP_COLOR)"
 
 $(NAME): $(OBJ) $(LIB_LIBFT)
 	@echo "$(BOLD_BLUE)Creating executable $(NAME)...$(BOLD_PURPLE)"
-	$(CC) $(OBJ) $(PIPEX_FLAG) "-DDEBUG=0" $(LIBFT_FLAG) -l readline -o $(NAME) 
+	$(CC) $(OBJ) "-DDEBUG=0" $(LIBFT_FLAG) -l readline -o $(NAME) 
 	@echo "$(STOP_COLOR)$(BOLD_GREEN)SUCCESS !!!$(STOP_COLOR)"
 
--include $(DEPS) $(DEPS_BONUS)
+-include $(DEPS)
 
 clean:
 	@echo "$(BOLD_BLUE)Delete obj...$(STOP_COLOR)"
-	@make clean -sC $(LIBFT_DIR)
+	@make clean --no-print-directory -sC $(LIBFT_DIR)
 	@rm -rf $(OBJ_DIR)
 	@echo "$(BOLD_RED)SUCCESS !!!$(STOP_COLOR)"
 
