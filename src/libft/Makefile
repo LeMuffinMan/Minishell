@@ -9,9 +9,7 @@ STOP_COLOR		=	\e[0m
 CC 				=	cc
 CFLAGS 			=	-Wall -Wextra -Werror -g -MMD -MP -Iinclude
 NAME			=	$(OBJ_DIR)libft.a
-HEAD			=	libft.h
 
--include $(DEPS)
 vpath %.h include
 vpath %.c src:src/get_next_line:src/ft_printf
 
@@ -78,7 +76,7 @@ OBJ_DIR 		=	obj/
 OBJ				=	$(SRCMANDATORY:%.c=$(OBJ_DIR)%.o)
 DEPS			=	$(SRCMANDATORY:%.c=$(OBJ_DIR)%.d)
 
-$(OBJ_DIR)%.o:%.c $(HEAD) Makefile
+$(OBJ_DIR)%.o:%.c Makefile
 	@mkdir -p $(OBJ_DIR)
 	@echo "$(BOLD_CYAN)" $@ " $(PURPLE)"
 	@$(CC) $(CFLAGS) -c $< -o $@
@@ -87,10 +85,14 @@ $(OBJ_DIR)%.o:%.c $(HEAD) Makefile
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	@ar -rcs $(NAME) $(OBJ)
+	@echo "$(BOLD_BLUE) Compiling" $(NAME) " $(PURPLE)"
+	ar -rcs $(NAME) $(OBJ)
+	@echo -n "$(STOP_COLOR)"
 
 bonus:
-	$(MAKE) SRCMANDATORY="$(SRCMANDATORY) $(SRCBONUS)"
+	$(MAKE) --no-print-directory SRCMANDATORY="$(SRCMANDATORY) $(SRCBONUS)"
+
+-include $(DEPS)
 
 clean:
 	@rm -rf $(OBJ_DIR)
