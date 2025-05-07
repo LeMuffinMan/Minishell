@@ -6,7 +6,7 @@
 #    By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/05/07 11:58:53 by asinsard         ###   ########lyon.fr    #
+#    Updated: 2025/05/07 14:12:25 by asinsard         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,10 +18,26 @@ BOLD_PURPLE			=	\e[1;35m
 BOLD_CYAN			=	\e[1;36m
 STOP_COLOR			=	\e[0m
 
+
+DIR_EXEC			=	src \
+						src/exec \
+						src/exec/builtins \
+						src/exec/builtins/builtins_utils \
+						src/exec/exec_utils \
+						src/init \
+						src/misc
+DIR_PARSING			=	src/parsing \
+						src/parsing/expand \
+						src/parsing/handle_quote \
+						src/parsing/here_doc \
+						src/parsing/lexer \
+						src/parsing/token \
+						src/parsing/tree
+DIR_ULTRABONUS		=	src/ultrabonus \
+						src/ultrabonus/get_prompt 
+
 -include $(DEPS) $(DEPS_BONUS)
-# vpath %.c src/parsing/token:src/parsing/lexer:src/parsing/tree:src/builtins:src/utils:src/parsing:src/parsing/handle_quote:src/exec:src/ultrabonus:src
-# vpath %.h include:src/libft/include
-vpath %.c src/parsing/token:src/parsing/lexer:src/parsing/tree:src/builtins:src/utils:src/parsing:src/parsing/handle_quote:src/exec:src:src/ultrabonus:src/parsing/here_doc:src/parsing/expand
+vpath %.c $(DIR_EXEC) $(DIR_PARSING) $(DIR_ULTRABONUS)
 vpath %.h include:include/parsing:include/exec:src/libft/include
 vpath %.a src/libft/obj
 
@@ -58,31 +74,31 @@ SRC					=	main.c \
 						lexer_utils.c \
 						parser.c \
 						init/init.c \
-						exec/signals.c \
-						exec/exec.c \
-						exec/errors.c \
-    				exec/builtins/echo.c \
-    				exec/builtins/cd.c \
-    				exec/builtins/pwd.c \
-    				exec/builtins/unset.c \
-    				exec/builtins/export.c \
-    				exec/builtins/env.c \
-    				exec/builtins/exit.c \
-						exec/exec_utils/redirections_stdio_utils.c \
-						exec/exec_utils/pipe_utils.c \
-						exec/builtins/builtins_utils/export_utils.c \
-						exec/builtins/builtins_utils/builtins_utils.c \
-						exec/builtins/builtins_utils/env_utils.c \
-						init/init_utils.c \
-						misc/prints.c \
-						misc/misc.c \
-						ultrabonus/source.c \
-						ultrabonus/get_prompt/get_prompt.c \
-						ultrabonus/get_prompt/get_prompt_free.c \
-						ultrabonus/get_prompt/git_branch_utils.c \
-						ultrabonus/load_minishellrc.c \
-						ultrabonus/get_prompt/prompt_gets_fcts.c \
-						ultrabonus/get_prompt/prompt_gets_fcts_utils.c 
+					signals.c \
+					exec.c \
+					errors.c \
+    				echo.c \
+    				cd.c \
+    				pwd.c \
+    				unset.c \
+    				export.c \
+    				env.c \
+    				exit.c \
+					redirections_stdio_utils.c \
+					pipe_utils.c \
+					export_utils.c \
+					builtins_utils.c \
+					env_utils.c \
+					init_utils.c \
+					prints.c \
+					misc.c \
+					source.c \
+					get_prompt.c \
+					get_prompt_free.c \
+					git_branch_utils.c \
+					load_minishellrc.c \
+					prompt_gets_fcts.c \
+					prompt_gets_fcts_utils.c 
 
 
 DEPS				=	$(SRC:%.c=$(OBJ_DIR)%.d)
@@ -92,9 +108,9 @@ OBJ_DIR				=	.objs/
 #le makefile relink pas si on touch un des header ?
 $(OBJ_DIR)%.o:%.c $(HEAD) $(LIBFT_HEAD) Makefile $(LIBFT_DIR)/Makefile
 	@mkdir -p $(@D) 
-	@echo "$(BOLD_PURPLE)"
-	$(CC) $(FLAGS) -c $< -o $@
-	@echo "$(STOP_COLOR)"
+	@echo "$(BOLD_YELLOW)Compilling" $@ "$(BOLD_PURPLE)"
+	@$(CC) $(FLAGS) -c $< -o $@
+	@echo -n "$(STOP_COLOR)"
 
 all: lib $(NAME)
 

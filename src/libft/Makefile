@@ -80,9 +80,9 @@ DEPS			=	$(SRCMANDATORY:%.c=$(OBJ_DIR)%.d)
 
 $(OBJ_DIR)%.o:%.c $(HEAD) Makefile
 	@mkdir -p $(OBJ_DIR)
-	@echo "$(PURPLE)"
-	$(CC) $(CFLAGS) -c $< -o $@
-	@echo "$(STOP_COLOR)"
+	@echo "$(BOLD_CYAN)" $@ " $(PURPLE)"
+	@$(CC) $(CFLAGS) -c $< -o $@
+	@echo -n "$(STOP_COLOR)"
 
 all: $(NAME)
 
