@@ -101,14 +101,12 @@
 //TODO
 //Mardi : merge 
 //tester : 
-    //pipeline + redirs : fixer leak
-    //signaux
-    //expands + quotes :
+    //signaux : revoir avec builtins ?
+    //expands + quotes : echo et export 
     //builtins (env et export surtout)
 
 //pour le merge suivant (vendredi 9 mai ?):
     //ast pour les && || ()
-    //signaux dans les pipes
     //builtins fixed in pipe   
     //here_docs ?
     //echo et export avec expands

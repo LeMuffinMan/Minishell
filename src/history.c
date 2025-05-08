@@ -93,6 +93,7 @@ char *get_history_path(t_var **env)
   node = get_value(env, "HOME");
   if (node)
     file = node->value;
+/*       HISTFILE : Chemin , du fichier sauvegardant l'historique (par défaut ~/.bash_history). */
   node = get_value(env, "HISTFILE");
   if (node)
     file = node->value;
@@ -165,6 +166,7 @@ int save_history(t_var **env, t_hist **history)
     //open erro
   }
   tmp = *history; 
+/*     HISTFILESIZE : Nombre maximal de commandes conservées dans le fichier d'historique. */
   //on check la variable histfilesize
   //si la tailel de history est plus grande
   //on avance en decrecmentant sa taille jusqu'a ce quelle soit egale a histfilesize
@@ -237,29 +239,6 @@ int print_n_last_cmds(t_var **history, int n)
 
 
 
-  //on open le fichier history et on affiche chaque ligne avec un numerottage au debut 
-  //history N : Affiche les N dernières commandes (ex: history 10).
-
-/**/
-/**/
-/*     !N : Exécute la commande avec le numéro N dans l'historique (ex: !42). */
-/**/
-/*     !! : Répète la dernière commande. */
-/**/
-/*     !-N : Exécute la commande qui était il y a N commandes (ex: !-2 pour l'avant-dernière). */
-/**/
-/*     !string : Exécute la dernière commande commençant par string (ex: !git). */
-/**/
-/*     !?string? : Exécute la dernière commande contenant string. */
-/*       HISTFILE : Chemin , du fichier sauvegardant l'historique (par défaut ~/.bash_history). */
-/**/
-/*     HISTSIZE : Nombre maximal de commandes conservées en mémoire pour la session courante. */
-/**/
-/*     HISTFILESIZE : Nombre maximal de commandes conservées dans le fichier d'historique. */
-/**/
-/*     HISTIGNORE : Permet de définir un motif pour exclure des commandes de l'historique (ex: export HISTIGNORE="ls:cd:exit"). */
-
-
 int delete_n_history_node(t_hist **history, char *options)
 {
   char *splitted;
@@ -324,6 +303,7 @@ int execute_history_options(t_var **env, t_hist **history, char *options)
   return (1); // on devrait pas arriver la
 }
 
+  //history N : Affiche les N dernières commandes (ex: history 10).
 int builtin_history(t_hist **history, char *cmd_line, char **arg)
 {
   if (arg[0] && !arg[1])
@@ -332,6 +312,127 @@ int builtin_history(t_hist **history, char *cmd_line, char **arg)
     return (print_n_last_cmds(history, ft_atoi(arg[1])));
   return (execute_history_options(hist, arg[1]));
 }
+
+int execute_history_cmd(t_hist **history, char *line)
+{
+  char *cmd_line;
+  t_hist *tmp;
+  int n;
+
+  if (is_valid_history_cmd(line))
+  {
+    //syntax error 
+    return (1);
+  }
+/*     !! : Répète la dernière commande. */
+  if (line[1] == '!')
+  {
+    cmd_line = (*history)->prev;
+    //on remplace le prompt par la derniere commande
+    return (0);
+  }
+/*     !N : Exécute la commande avec le numéro N dans l'historique (ex: !42). */
+  if (ft_is_numeric_only(line + 1))
+  {
+    n = ft_atoi(line + 1);
+    tmp = *history; 
+    while(n > 0)
+    {
+      tmp = tmp->next;
+      n--;
+    }
+    cmd_line = tmp->cmd_line;
+    //on remplace le prompt ou on execute direct ?
+    return (0);
+  }
+/*     !-N : Exécute la commande qui était il y a N commandes (ex: !-2 pour l'avant-dernière). */
+  if (line[1] == '-' && ft_is_numeric_only(line + 2))
+  {
+    n = ft_atoi(line + 2);
+    if (is_out_of_history(history, n))
+    {
+      //erobash: !1: event not found
+      return (128);
+    }
+    tmp = *history;
+    while (n > 0)
+    {
+      tmp = (*history)->prev;
+      n--;
+    }
+    cmd_line = tmp->cmd_line;
+    //on execute direct ou on remplace le prompt
+    return (0);
+  }
+  if (is_only_alpha(line + 1))
+  {
+    tmp = (*history->prev);
+    while (tmp->prev != *history)
+    {
+      if(ft_strchr((line + 1), tmp->cmd_line))
+      {
+        cmd_line = tmp->cmd_line;
+      //on execute direct ou on remplace le prompt
+        return (0);
+      }
+    }
+    //bash: !ierugberuogerbniogergaaegrgaeg: event not found
+    return (0);
+  }
+/*     !?string? : Exécute la dernière commande contenant string. */
+  if (line[1] == '?', is_only_alpha(line + 1)) // pas bon
+  {
+    if (!is_valid_string(line))
+    {
+      //syntax error 
+      return (1);
+    }
+    tmp = (*history)->prev;
+    while (tmp->prev != *history)
+    {
+      if(ft_strchr((line + 1), tmp->cmd_line))
+      {
+        cmd_line = tmp->cmd_line;
+      //on execute direct ou on remplace le prompt
+        return (0);
+      }
+      s = ft_strnstr(tmp->cmd_line, (line + 1), ft_strlen(line + 1) - 1);
+      if (ft_strncmp(s, tmp->cmd_line, ft_strlen(tmp->cmd_line)))
+      {
+        cmd_line = tmp->cmd_line;
+        free(s);
+      //on execute direct ou on remplace le prompt
+        return (0);
+      }
+        free(s);
+      s = NULL;
+      tmp = tmp->prev;
+    }
+  //bash: !ierugberuogerbniogergaaegrgaeg: event not found
+  }
+  return (1); // on devrait pas arriver la
+}
+
+/**/
+
+int ft_add_history(char *line, t_hist **history)
+{
+  char *s;
+  int size;
+
+  s = ft_get_value(env, "HISTSIZE");
+/*     HISTSIZE : Nombre maximal de commandes conservées en mémoire pour la session courante. */
+  if (s)
+  {
+    size = ft_atoi(s->value); 
+    if (history <= size)
+      return (add_history(line));
+    return (0);
+  }
+/*     HISTIGNORE : Permet de définir un motif pour exclure des commandes de l'historique (ex: export HISTIGNORE="ls:cd:exit"). */
+}
+/**/
+/**/
 
 
 int main (void)
