@@ -25,6 +25,7 @@
 #include "prints.h"
 #include "signals.h"
 #include "minishellrc.h"
+#include "history.h"
 
 /* int exec_sequence(char *sequence, t_var **env) */
 /* { */
@@ -101,14 +102,12 @@
 //TODO
 //Mardi : merge 
 //tester : 
-    //pipeline + redirs : fixer leak
-    //expands + quotes :
+    //signaux : revoir avec builtins ?
+    //expands + quotes : echo et export 
     //builtins (env et export surtout)
-    //signaux
 
 //pour le merge suivant (vendredi 9 mai ?):
     //ast pour les && || ()
-    //signaux dans les pipes
     //builtins fixed in pipe   
     //here_docs ?
     //echo et export avec expands
@@ -134,11 +133,8 @@
         //exception dans les expands 
         //fct pour executer la cmd_s
     //faire l'historique a la main ?
-        //charger au demarrage un .minishell_history
-        //save l'historique a la fin, meme avec un ctrl c 
-        //limite l'historique a une size (on ecrase la plus ancienne entree)
-        //un builtin history qui affiche le contenu du fichier avec le numerotage des lignes 
-        //ajouter !! et !-x 
+        //utils a finir
+        //a tester
 
 //Tests de cons :
 //CTRL V + Tab : fait un tab dans le minishell a gerer !
@@ -151,6 +147,8 @@ int main(int ac, char **av, char **env)
     int        exit_code;
     t_var    *new_env;
     t_tree *ast;
+    t_pipe *pipes;
+    t_hist *history;
     char **strings_env;
 	int origin_fds[2];
 
@@ -165,17 +163,23 @@ int main(int ac, char **av, char **env)
     exit_code = 0;
     new_env = NULL;
     ast = NULL;
+    pipes = NULL;
+    history = NULL;
     /* utiliser getenv ?
         * Si on n'a pas d'env uniquement ?*/
     init_env(&new_env, env, av[0]);
     /* print_all_variables(&new_env); */
     /* print_env(&new_env); */
 
-    if (find_minishellrc(&new_env, NULL))
+    //revoir retour d'erreur
+    if (isatty(0) && *env && find_minishellrc(&new_env, NULL))
         load_minishellrc(&new_env, NULL);
+    /* if (isatty(0) && *env) */
+    /*     load_history(&new_env, &history); */
+    //ici on charge l'historique si le fichier existe 
     while (1)
     {
-        set_signals(0);
+        setup_parent_signals();
         prompt = NULL;
         if (isatty(0) && *env)
         {
@@ -194,13 +198,21 @@ int main(int ac, char **av, char **env)
             if (!line)
             {
                 if (isatty(0) && *env)
-                    free(prompt);
+                {
+                    if (prompt)
+                        free(prompt);
+                    /* if (history) */
+                    /*     free_history(&history); */
+                }
                 if (ast)
                     free_tree(&ast); // pas de free parse ici ?
                 free_list(&new_env);
                 exit (exit_code);
             }
-            add_history(line);
+            /* if (isatty(0) && *env) */
+            /*     ft_add_history(&new_env, &history, line); */
+            /* else */
+                add_history(line);
             //A gerer avec les signaux correctement !
             //pour avoir un historique complet on est suppose l'enregistrer dans un fichier a la sortie
             //et charger ce fichier au demarrage si il existe
@@ -231,7 +243,7 @@ int main(int ac, char **av, char **env)
         ast = parse(line, strings_env, new_env);
         free_array(strings_env);
         strings_env = NULL;
-        exit_code = exec_ast(&ast, &new_env, origin_fds);
+        exit_code = exec_ast(&ast, &new_env, origin_fds, &pipes);
         update_exit_code_var(&new_env, exit_code);
         //update la variable exit_code dans l'environnement !
         dup2(origin_fds[0], STDIN_FILENO);

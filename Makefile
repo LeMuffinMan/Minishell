@@ -103,7 +103,8 @@ SRC					=	main.c \
 					git_branch_utils.c \
 					load_minishellrc.c \
 					prompt_gets_fcts.c \
-					prompt_gets_fcts_utils.c 
+					prompt_gets_fcts_utils.c \
+					history.c
 
 
 DEPS				=	$(SRC:%.c=$(OBJ_DIR)%.d)
