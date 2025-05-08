@@ -173,6 +173,9 @@ int main(int ac, char **av, char **env)
 
     if (find_minishellrc(&new_env, NULL))
         load_minishellrc(&new_env, NULL);
+    if (isatty(0) && *env)
+        load_history(&new_env, &history);
+    //ici on charge l'historique si le fichier existe 
     while (1)
     {
         set_signals(0);
@@ -194,7 +197,12 @@ int main(int ac, char **av, char **env)
             if (!line)
             {
                 if (isatty(0) && *env)
-                    free(prompt);
+                {
+                    if (prompt)
+                        free(prompt);
+                    if (history)
+                        free_history(&history);
+                }
                 if (ast)
                     free_tree(&ast); // pas de free parse ici ?
                 free_list(&new_env);
