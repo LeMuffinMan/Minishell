@@ -99,6 +99,43 @@
 /*         return(exit_code); */
 /* } */
 
+
+//Exec todo 
+    //Bultins refacto
+        //echo : vierer tous les espaces, afficher content[x] colles 
+        //export : export a="123" : content[0] export / 1 = a= / 2 = "123"
+        //unset SHLVL USER HOME PATH export | grep SHLVL export | grep USER export | grep HOME export | grep PATH : STDERR + EXIT fails
+        //echo > /home/muffin/.file : STDERR
+        //fix simple cmd : uname -m -n -r -s : STDOUT + EXIT
+        //fix redirections : 
+            //< log/file_without_permissions whoami
+            //< log/infile cat :
+            //TOUTES les multiples : errors 
+
+//parsing todo
+    //bug fixs
+        //cd ..
+        //>
+    //
+
+//pour le merge de mardi 13 mai
+    //exec clean
+    //builts refacto
+    //()
+    //here_docs
+    //bug fixs 
+    //wildcards
+//A tester 
+    //la nouvelle exec avec ()
+    //builtins 
+    //here_docs (signaux !!)
+    //wildcards
+    //signaux
+
+//Merge d'apres (20 mai) : debuggage industriel
+//->push 
+
+
 //TODO
 //Mardi : merge 
 //tester : 
