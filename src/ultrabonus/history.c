@@ -6,18 +6,22 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/04 20:47:32 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/04 21:00:16 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/08 17:01:21 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-typedef strcut s_hist
-{
-  char *cmd_line;
-  struct s_hist *next;
-  struct s_hist *prev;
-} t_hist;
+#include <stdlib.h>
+#include "libft.h"
+#include "utils.h"
+#include "history.h"
+#include "env_utils.h"
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <readline/readline.h> // compiler avec -l readline
+#include <readline/history.h>
 
-int add_node_to_history(char *cmd_line, t_hist **history, int index)
+int add_node_to_history(char *cmd_line, t_hist **history)
 {
   t_hist *node;
   t_hist *tmp;
@@ -48,7 +52,7 @@ int add_node_to_history(char *cmd_line, t_hist **history, int index)
   return (0);
 }
 
-t_hist **get_history(char *file)
+t_hist *get_history(char *file)
 {
   int fd;
   char buffer[4096];
@@ -70,12 +74,10 @@ t_hist **get_history(char *file)
   buffer[bytes_read] = '\0';
   line_start = buffer;
   line_end = ft_strchr(line_start, '\n');
-  index = get_index(buffer);
   while (line_end)
   {
     *line_end = '\0';
-    add_node_to_history(line_start, &history, index);
-    index--;
+    add_node_to_history(line_start, &history);
     line_start = line_end + 1;
     line_end = ft_strchr(line_start, '\n');
     if (!line_start)
@@ -86,21 +88,41 @@ t_hist **get_history(char *file)
 
 char *get_history_path(t_var **env)
 {
-  t_var *node;
+  char *s;
   char *file;
 
   file = NULL;
-  node = get_value(env, "HOME");
-  if (node)
-    file = node->value;
+  s = get_value(env, "HOME");
+  if (s)
+    file = s;
 /*       HISTFILE : Chemin , du fichier sauvegardant l'historique (par défaut ~/.bash_history). */
-  node = get_value(env, "HISTFILE");
-  if (node)
-    file = node->value;
+  s = get_value(env, "HISTFILE");
+  if (s)
+    file = s;
   return (file);
 }
 
-int read_history(t_var **env, t_hist *history)
+int is_file_empty(const char *filename) {
+    struct stat st;
+
+    if (stat(filename, &st) != 0)
+        return (-1);
+    if (st.st_size == 0)
+      return (0);
+    else 
+      return (1);
+}
+
+int is_valid_history_file(char *file)
+{
+  if (access(file, O_RDONLY | 644) != 0)
+    return (0);
+  if (is_file_empty(file))
+    return (0);
+  return (1);
+}
+
+int load_history(t_var **env, t_hist **history)
 {
   char *file;
 
@@ -110,7 +132,7 @@ int read_history(t_var **env, t_hist *history)
     return (1);
   if (is_valid_history_file(file)) //checker si fichier vide
     return (1);
-  history = get_history(file);
+  *history = get_history(file);
   if (!history)
   {
     //si il y a eu un probleme de malloc
@@ -127,6 +149,8 @@ int free_history(t_hist **history)
   t_hist *tmp;
 
   tmp = *history;
+  if (!*history)
+    return (0);
   if (tmp->next == tmp)
   {
     free(tmp->cmd_line);
@@ -154,6 +178,7 @@ int save_history(t_var **env, t_hist **history)
 {
   int fd;
   t_hist *tmp;
+  char *file;
 
   if (!history)
     return (1);
@@ -170,7 +195,7 @@ int save_history(t_var **env, t_hist **history)
   //on check la variable histfilesize
   //si la tailel de history est plus grande
   //on avance en decrecmentant sa taille jusqu'a ce quelle soit egale a histfilesize
-  while (1);
+  while (1)
   {
     write(fd, tmp->cmd_line, ft_strlen(tmp->cmd_line));
     write(fd, "\n", 1);
@@ -195,7 +220,7 @@ int print_history(t_hist **history)
   tmp = *history;
   if (tmp == *history)
   {
-    s = ft_strjoin(' ', tmp->cmd_line); //printf padding ?
+    s = ft_strjoin(" ", tmp->cmd_line); //printf padding ?
     ft_putstr_fd(s, 1);
     free(s);
     s = NULL;
@@ -203,7 +228,7 @@ int print_history(t_hist **history)
   }
   while(1)
   {
-    s = ft_strjoin(' ', tmp->cmd_line); //printf padding ?
+    s = ft_strjoin(" ", tmp->cmd_line); //printf padding ?
     ft_putstr_fd(s, 1);
     free(s);
     s = NULL;
@@ -214,7 +239,7 @@ int print_history(t_hist **history)
   return (0);
 }
 
-int print_n_last_cmds(t_var **history, int n)
+int print_n_last_cmds(t_hist **history, int n)
 {
   t_hist *tmp;
   char *s;
@@ -225,7 +250,7 @@ int print_n_last_cmds(t_var **history, int n)
   tmp = (*history)->prev;
   while(1)
   {
-    s = ft_strjoin(' ', tmp->cmd_line); //printf padding ?
+    s = ft_strjoin(" ", tmp->cmd_line); //printf padding ?
     ft_putstr_fd(s, 1);
     free(s);
     s = NULL;
@@ -237,25 +262,47 @@ int print_n_last_cmds(t_var **history, int n)
   return (0);
 }
 
+int get_history_size(t_hist **history)
+{
+  t_hist *tmp;
+  int i;
+
+  if (!*history)
+    return (0);
+  if ((*history)->next == *history)
+    return (1);
+  i = 0;
+  tmp = *history;
+  while(1)
+  {
+    i++;
+    if (tmp->next == *history)
+      break ;
+    tmp = tmp->next;
+  }
+  return (i);
+}
+
 
 
 int delete_n_history_node(t_hist **history, char *options)
 {
-  char *splitted;
+  char **splitted;
   t_hist *tmp;
+  int n;
 
-  splitted = ft_split(optionsm, ' ');
+  splitted = ft_split(options, ' ');
   if (!splitted)
     return (-1);
-  if (splitted[0] && splitted[1] && is_valid_n(history, ft_atoi(splitted[1])))
+  if (splitted[0] && splitted[1] && get_history_size(history) <= ft_atoi(splitted[1]))
   {
     n = ft_atoi(splitted[1]);
-    if (n == 0))
+    if (n == 0)
     {
       free_array(splitted);
       return (0); // 0 ?
     }
-    tmp = *history
+    tmp = *history;
     while (n > 0)
     {
       tmp = tmp->next;
@@ -271,7 +318,15 @@ int delete_n_history_node(t_hist **history, char *options)
   {
     //syntax error ?
   }
+  return (1); // on ne devrait pas arriver la 
 }
+
+int is_valid_option(char *options)
+{
+  (void)options;
+  return (1); // a revoir
+}
+
 
   //    history -c : Efface tout l'historique en mémoire (mais pas le fichier ~/.bash_history).
 /*     history -d N : Supprime la commande à la ligne N de l'historique. */
@@ -281,36 +336,128 @@ int delete_n_history_node(t_hist **history, char *options)
 //si retourne 2 : on change le bouleen dans main
 int execute_history_options(t_var **env, t_hist **history, char *options)
 {
-  if (is_valid_option)
+  if (is_valid_option(options))
   {
     //usage
     return (1);
   }
-  if (ft_strchr(options, "c"))
+  if (ft_strchr(options, 'c'))
     return (free_history(history));
-  else if (ft_strchr(options, "d"))
+  else if (ft_strchr(options, 'd'))
     return (delete_n_history_node(history, options));
-  else if (ft_strchr("a"))
+  else if (ft_strchr(options, 'a'))
     return (2);
-  else if (ft_strchr("w"))
-    return (save_history(history, env));
-  else if (ft_strchr("r"))
+  else if (ft_strchr(options, 'w'))
+    return (save_history(env, history));
+  else if (ft_strchr(options, 'r'))
   {
     if (history)
       free_history(history);
-    return (read_history(env, history));
+    return (load_history(env, history));
   }
   return (1); // on devrait pas arriver la
 }
 
+int is_numeric_only(char *s)
+{
+  int i;
+
+  i = 0;
+  while (s[i])
+  {
+    if (!ft_isdigit(s[i]))
+      return (0);
+    i++;
+  }
+  return (1);
+}
   //history N : Affiche les N dernières commandes (ex: history 10).
-int builtin_history(t_hist **history, char *cmd_line, char **arg)
+int builtin_history(t_var **env, t_hist **history, char **arg)
 {
   if (arg[0] && !arg[1])
-    return (print_history(history);
-  if (is_integer(arg[1]))
+    return (print_history(history));
+  if (is_numeric_only(arg[1]))
     return (print_n_last_cmds(history, ft_atoi(arg[1])));
-  return (execute_history_options(hist, arg[1]));
+  return (execute_history_options(env, history, arg[1]));
+}
+
+int is_valid_string(char *line)
+{
+  int i;
+
+  if (!line)
+    return (0);
+  if (line[0] != '!')
+    return (0);
+  if (line[1] != '?')
+    return (0);
+  i = 2;
+  while (line[i] && line[i] != '?')
+  {
+    if (!ft_isalpha(line[i]) || ft_isdigit(line[i]))
+      return (0);
+    i++;
+  }
+  if (line[i] == '?' && !line[i + 1])
+    return (1);
+  return (0);
+}
+
+int is_only_alpha(char *line)
+{
+  int i;
+
+  i = 0;
+  while(line[i])
+  {
+    if (!ft_isalpha(line[i]))
+      return (0);
+    i++;
+  }
+  return (1);
+}
+
+
+int is_valid_history_cmd(char *line)
+{
+  if (line[0] != '!')
+    return (0);
+  //!!
+  if (line[1] == '!' && !line[2])
+    return (1);
+  //!42
+  else if (is_numeric_only(line + 1))
+    return (1);
+  //!git
+  else if (is_only_alpha(line + 1))
+    return (1);
+  //!?git?
+  else if (line[1] == '?')
+  {
+    if (line[ft_strlen(line) - 1] == '?')
+    {
+      line[ft_strlen(line) - 1] = '\0';
+      if (is_only_alpha(line + 2))
+      {
+        line[ft_strlen(line) - 1] = '?';
+        return (1);
+      }
+      else
+      {
+        line[ft_strlen(line) - 1] = '?';
+        return (0);
+      }
+    }
+  }
+  else if (line[1] == '-')
+  {
+    //!-2
+    if (is_numeric_only(line + 2))
+      return (1);
+    else 
+      return (0);
+  }
+  return (0);
 }
 
 int execute_history_cmd(t_hist **history, char *line)
@@ -318,6 +465,7 @@ int execute_history_cmd(t_hist **history, char *line)
   char *cmd_line;
   t_hist *tmp;
   int n;
+  char *s;
 
   if (is_valid_history_cmd(line))
   {
@@ -327,12 +475,12 @@ int execute_history_cmd(t_hist **history, char *line)
 /*     !! : Répète la dernière commande. */
   if (line[1] == '!')
   {
-    cmd_line = (*history)->prev;
+    cmd_line = (*history)->prev->cmd_line;
     //on remplace le prompt par la derniere commande
     return (0);
   }
 /*     !N : Exécute la commande avec le numéro N dans l'historique (ex: !42). */
-  if (ft_is_numeric_only(line + 1))
+  if (is_numeric_only(line + 1))
   {
     n = ft_atoi(line + 1);
     tmp = *history; 
@@ -346,10 +494,10 @@ int execute_history_cmd(t_hist **history, char *line)
     return (0);
   }
 /*     !-N : Exécute la commande qui était il y a N commandes (ex: !-2 pour l'avant-dernière). */
-  if (line[1] == '-' && ft_is_numeric_only(line + 2))
+  if (line[1] == '-' && is_numeric_only(line + 2))
   {
     n = ft_atoi(line + 2);
-    if (is_out_of_history(history, n))
+    if (get_history_size(history) < n)
     {
       //erobash: !1: event not found
       return (128);
@@ -366,10 +514,10 @@ int execute_history_cmd(t_hist **history, char *line)
   }
   if (is_only_alpha(line + 1))
   {
-    tmp = (*history->prev);
+    tmp = (*history)->prev;
     while (tmp->prev != *history)
     {
-      if(ft_strchr((line + 1), tmp->cmd_line))
+      if(ft_strnstr((line + 1), tmp->cmd_line, ft_strlen(line + 1)))
       {
         cmd_line = tmp->cmd_line;
       //on execute direct ou on remplace le prompt
@@ -380,7 +528,7 @@ int execute_history_cmd(t_hist **history, char *line)
     return (0);
   }
 /*     !?string? : Exécute la dernière commande contenant string. */
-  if (line[1] == '?', is_only_alpha(line + 1)) // pas bon
+  if (line[1] == '?') // pas bon
   {
     if (!is_valid_string(line))
     {
@@ -390,7 +538,7 @@ int execute_history_cmd(t_hist **history, char *line)
     tmp = (*history)->prev;
     while (tmp->prev != *history)
     {
-      if(ft_strchr((line + 1), tmp->cmd_line))
+      if(ft_strnstr((line + 1), tmp->cmd_line, ft_strlen(line + 1) - 2)) // -2 ?
       {
         cmd_line = tmp->cmd_line;
       //on execute direct ou on remplace le prompt
@@ -413,53 +561,103 @@ int execute_history_cmd(t_hist **history, char *line)
   return (1); // on devrait pas arriver la
 }
 
-/**/
+/*     HISTIGNORE : Permet de définir un motif pour exclure des commandes de l'historique (ex: export HISTIGNORE="ls:cd:exit"). */
+int is_an_ignored_pattern(t_var **env, char *line)
+{
+  char *s;
+  char **patterns_to_ignore;
+  int i;
 
-int ft_add_history(char *line, t_hist **history)
+  s = get_value(env, "HISTIGNORE");
+  if (!s)
+    return (0);
+  patterns_to_ignore = ft_split(s, ':');
+  if (!patterns_to_ignore)
+  {
+    //malloc error 
+  }
+  i = 0;
+  while(patterns_to_ignore[i])
+  {
+    if (ft_strnstr(line, patterns_to_ignore[i], ft_strlen(patterns_to_ignore[i])))
+    {
+      free_array(patterns_to_ignore);
+      return (1);
+    }
+    i++;
+  }
+  free_array(patterns_to_ignore);
+  return (0);
+}
+
+
+
+int is_valid_history_size(char *value)
+{
+  int i;
+
+  i = 0;
+  while(value[i])
+  {
+    if (!ft_isdigit(value[1]))
+      return (0);
+    i++;
+  }
+  return (1);
+}
+
+int ft_add_history(t_var **env, t_hist **history, char *line)
 {
   char *s;
   int size;
+  t_hist *tmp;
+  int history_size;
 
-  s = ft_get_value(env, "HISTSIZE");
+  if (is_an_ignored_pattern(env, line))
+    return (1);
+  s = get_value(env, "HISTSIZE");
 /*     HISTSIZE : Nombre maximal de commandes conservées en mémoire pour la session courante. */
   if (s)
   {
-    size = ft_atoi(s->value); 
-    if (history <= size)
-      return (add_history(line));
-    return (0);
+    if (!is_valid_history_size(s))
+    {
+      //la var est corrompue
+      return (1);
+    }
+    size = ft_atoi(s); 
+    history_size = get_history_size(history);
+    if (history_size <= size)
+    {
+      if (add_node_to_history(line, history) == -1)
+      {
+        //malloc error 
+      }
+      add_history(line);
+      return (0);
+    }
+    else 
+    {
+      tmp = *history;
+      *history = tmp->next;
+      tmp->prev->next = tmp->next;
+      tmp->next->prev = tmp->prev;
+      free(tmp->cmd_line);
+      free(tmp);
+      if (add_node_to_history(line, history) == -1)
+      {
+        //malloc error 
+      }
+      add_history(line);
+      return (0);
+    }
   }
-/*     HISTIGNORE : Permet de définir un motif pour exclure des commandes de l'historique (ex: export HISTIGNORE="ls:cd:exit"). */
+  if (add_node_to_history(line, history) == -1)
+  {
+    //malloc error 
+  }
+  add_history(line);
+  return (0);
 }
 /**/
 /**/
 
-
-int main (void)
-{
-  t_hist *history;
-  exit_code;
-
-  history = NULL;
-  exit_code = read_history(&history);
-  if (exit_code < 0)
-  {
-    //malloc
-  }
-  if (exit_code == 1)
-  {
-    //fichier sans perm ou erreur ouverture
-  }
-  //si non on a un historique
-  //readline
-  //if (is_an_historique_cmd)
-  //  {
-    //  expand history
-  //  }
-  //  ici on split et on check si on a une cmd history
-  // if (!ft_strcmp(line, "history", 8))
-  // {
-  //    exit_code = builtin_history(&history, arg);
-  // }
-  // //on retourne a readline
-}

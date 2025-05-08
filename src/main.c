@@ -25,6 +25,7 @@
 #include "prints.h"
 #include "signals.h"
 #include "minishellrc.h"
+#include "history.h"
 
 /* int exec_sequence(char *sequence, t_var **env) */
 /* { */
@@ -147,6 +148,7 @@ int main(int ac, char **av, char **env)
     t_var    *new_env;
     t_tree *ast;
     t_pipe *pipes;
+    t_hist *history;
     char **strings_env;
 	int origin_fds[2];
 
@@ -162,14 +164,19 @@ int main(int ac, char **av, char **env)
     new_env = NULL;
     ast = NULL;
     pipes = NULL;
+    history = NULL;
     /* utiliser getenv ?
         * Si on n'a pas d'env uniquement ?*/
     init_env(&new_env, env, av[0]);
     /* print_all_variables(&new_env); */
     /* print_env(&new_env); */
 
-    if (find_minishellrc(&new_env, NULL))
+    //revoir retour d'erreur
+    if (isatty(0) && *env && find_minishellrc(&new_env, NULL))
         load_minishellrc(&new_env, NULL);
+    /* if (isatty(0) && *env) */
+    /*     load_history(&new_env, &history); */
+    //ici on charge l'historique si le fichier existe 
     while (1)
     {
         setup_parent_signals();
@@ -191,13 +198,21 @@ int main(int ac, char **av, char **env)
             if (!line)
             {
                 if (isatty(0) && *env)
-                    free(prompt);
+                {
+                    if (prompt)
+                        free(prompt);
+                    /* if (history) */
+                    /*     free_history(&history); */
+                }
                 if (ast)
                     free_tree(&ast); // pas de free parse ici ?
                 free_list(&new_env);
                 exit (exit_code);
             }
-            add_history(line);
+            /* if (isatty(0) && *env) */
+            /*     ft_add_history(&new_env, &history, line); */
+            /* else */
+                add_history(line);
             //A gerer avec les signaux correctement !
             //pour avoir un historique complet on est suppose l'enregistrer dans un fichier a la sortie
             //et charger ce fichier au demarrage si il existe
