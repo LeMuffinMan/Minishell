@@ -6,7 +6,7 @@
 #    By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/05/07 16:20:24 by asinsard         ###   ########lyon.fr    #
+#    Updated: 2025/05/08 16:07:38 by asinsard         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -70,6 +70,7 @@ SRC					=	main.c \
 						expand.c \
 						handle_cmd_and_path_utils.c \
 						handle_cmd_and_path.c \
+						handle_space.c \
 						quote.c \
 						tokenize_utils.c \
 						tokenize.c \
@@ -132,7 +133,6 @@ $(NAME): $(OBJ) $(LIB_LIBFT)
 	$(CC) $(OBJ) "-DDEBUG=0" $(LIBFT_FLAG) -l readline -o $(NAME) 
 	@echo "$(STOP_COLOR)$(BOLD_GREEN)SUCCESS !!!$(STOP_COLOR)"
 
--include $(DEPS)
 
 clean:
 	@echo "$(BOLD_BLUE)Delete obj...$(STOP_COLOR)"
@@ -147,4 +147,6 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re bonus
+-include $(DEPS)
+
+.PHONY: all clean fclean re bonus debug

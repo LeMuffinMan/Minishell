@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:44:43 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/07 19:17:28 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/08 16:10:46 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,33 +57,6 @@ void	check_syntax_error(t_token **head)
 		{
 			*head = set_syntax_error(tmp);
 			return ;
-		}
-		else
-			tmp = tmp->next;
-	}
-}
-
-void	delete_space_node(t_token **head)
-{
-	t_token	*tmp;
-	t_token	*old_node;
-
-	if (!*head)
-		return ;
-	tmp = *head;
-	while (tmp)
-	{
-		if ((tmp->next || tmp->prev) 
-			&& (tmp->token == SPACE || !tmp->content[0][0]))
-		{
-			old_node = tmp;
-			if (tmp->next)
-				tmp->next->prev = tmp->prev;
-			if (tmp->prev)
-				tmp->prev->next = tmp->next;
-			tmp = tmp->next;
-			free_tab(old_node->content);
-			free(old_node);
 		}
 		else
 			tmp = tmp->next;

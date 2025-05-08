@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 00:13:42 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/30 17:10:11 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/08 14:47:09 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ void					alloc_operator_to_lexer(char *str, int i, t_lexer **list);
 void					alloc_word_to_lexer(char *str, int *i, t_lexer **list);
 int						alloc_space_to_lexer(char *str, t_lexer **list);
 int						alloc_quote_to_lexer(char *str, char c, t_lexer **list);
-int						ft_is_operator(int c);
 
 
 #endif

@@ -11,3 +11,10 @@
   ...
   obj:*/usr/bin/grep
 }
+
+{
+  Grep_All_Functions
+  Memcheck:Leak
+  ...
+  obj:*/usr/bin/ls
+}

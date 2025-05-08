@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:49:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/07 19:24:13 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/08 16:01:03 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,23 +113,18 @@ bool	init_expand(t_token **head, t_var *list_env)
 	t_token	*tmp;
 	bool	flag;
 
-	if (!head || !*head)
-		return (false);
 	tmp = *head;
 	flag = false;
 	while (tmp)
 	{
-		if (tmp->error != 0 || tmp->token == D_QUOTE)
+		if (tmp->token == S_QUOTE)
+			tmp = tmp->next;
+		else
+		{
 			flag = to_expand(&tmp, list_env);
-		tmp = tmp->next;
+			tmp = tmp->next;
+		}
 	}
-	tmp = *head;
-	while (tmp)
-	{
-		if (tmp->token == EXPAND && (tmp->next && tmp->next->token == SPACE)
-			&& (tmp->next->next && tmp->next->next->token == EXPAND))
-			add_space(&tmp);
-		tmp = tmp->next;
-	}
+	handle_space(head);
 	return (flag);
 }

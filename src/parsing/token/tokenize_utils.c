@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 19:51:51 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/02 23:56:33 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/08 15:22:04 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,16 @@
 
 void	handle_cmd(t_token **node, char **envp, bool flag)
 {
-	if ((*node)->token == D_QUOTE || (*node)->token == S_QUOTE
-		|| (*node)->token == EXPAND
-		|| !(*node)->prev || ((*node)->prev->token != CMD
-			&& (*node)->prev->token != BUILT_IN))
+	if ((*node)->token == D_QUOTE
+	|| (*node)->token == S_QUOTE
+	|| (*node)->token == EXPAND
+	|| !(*node)->prev
+	|| ((*node)->prev->token != CMD &&
+		(*node)->prev->token != BUILT_IN &&
+		!((*node)->prev->token == SPACE &&
+		(*node)->prev->prev &&
+		((*node)->prev->prev->token == CMD ||
+		(*node)->prev->prev->token == BUILT_IN))))
 	{
 		is_command_whithout_env(node, envp);
 		if (flag || (*node)->token == NO_TOKEN || (*node)->token == APPEND
@@ -83,10 +89,10 @@ char	*verif_command(t_token **node, char *tmp, char **path, char **envp)
 		tmp = parse_cmd(cmd_in_quote, path, &(*node)->error, false);
 	else
 		tmp = parse_cmd((*node)->content[0], path, &(*node)->error, true);
-	if ((*node)->error == CMD_NOT_FOUND || (*node)->error == PERMISSION_DENIED)
-		return (NULL);
 	if (cmd_in_quote)
 		free(cmd_in_quote);
+	if ((*node)->error == CMD_NOT_FOUND || (*node)->error == PERMISSION_DENIED)
+		return (NULL);
 	if (!tmp)
 		free_parse(*node, "Malloc failed in function 'parse_cmd'", MEM_ALLOC);
 	return (tmp);

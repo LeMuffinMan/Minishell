@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 01:45:03 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/30 17:07:02 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/08 14:50:39 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,6 @@
 #include "libft.h"
 #include <stdlib.h>
 #include <stdbool.h>
-
-int	ft_is_operator(int c)
-{
-	if (c == '|' || c == '&'
-		|| c == '<' || c == '>'
-		|| c == '(' || c == ')')
-		return (1);
-	return (0);
-}
 
 void	alloc_operator_to_lexer(char *str, int i, t_lexer **list)
 {

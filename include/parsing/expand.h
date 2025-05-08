@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:28:16 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/07 12:08:52 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/08 16:07:03 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,6 @@ char					*alloc_first_expand(char *value, char *str_to_expand, int index);
 char					*ft_strjoin3(char *str_node, char *value, int j, int index);
 void					copy_value(t_token *node, char *value, char **value_cpy);
 bool					init_expand(t_token **head, t_var *list_env);
-void					add_space(t_token **node);
+void					handle_space(t_token **head);
 
 #endif
