@@ -132,11 +132,8 @@
         //exception dans les expands 
         //fct pour executer la cmd_s
     //faire l'historique a la main ?
-        //charger au demarrage un .minishell_history
-        //save l'historique a la fin, meme avec un ctrl c 
-        //limite l'historique a une size (on ecrase la plus ancienne entree)
-        //un builtin history qui affiche le contenu du fichier avec le numerotage des lignes 
-        //ajouter !! et !-x 
+        //utils a finir
+        //a tester
 
 //Tests de cons :
 //CTRL V + Tab : fait un tab dans le minishell a gerer !
