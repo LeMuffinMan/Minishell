@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 00:19:05 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/08 12:31:35 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/08 19:48:33 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,8 +95,7 @@ static int	parse_operator(char *str, char c, t_lexer **list)
 		if (str[i - 1] != '\\' && ((str[i - 1] == '|' && str[i] != '|')
 				|| (str[i - 1] == '<' && str[i] != '<')
 				|| (str[i - 1] == '>' && str[i] != '>')
-				|| ((str[i - 1] == '(' && str[i] != '('))
-				|| (str[i - 1] == ')' && str[i] != ')')))
+				|| ((str[i - 1] == '(')) || (str[i - 1] == ')')))
 		{
 			i -= 1;
 			break ;
@@ -109,6 +108,8 @@ static int	parse_operator(char *str, char c, t_lexer **list)
 	}
 	i++;
 	alloc_operator_to_lexer(str, i, list);
+	if (ft_strlen(str) < (size_t)i)
+		i--;
 	return (i);
 }
 
