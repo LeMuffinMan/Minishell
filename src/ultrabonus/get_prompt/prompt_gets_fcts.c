@@ -88,17 +88,18 @@ char *get_uidline()
   int fd;
   char buffer[4096];
   ssize_t bytes_read;
-  char *uid_line = NULL;
+  char *uid_line;
   char *line_start;
   char *line_end;
 
+  uid_line = NULL;
   fd = open("/proc/self/status", O_RDONLY);
   if (fd == -1)
-      return NULL;
+      return (NULL);
   bytes_read = read(fd, buffer, sizeof(buffer) - 1);
   close(fd);
   if (bytes_read <= 0)
-      return NULL;
+      return (NULL);
   buffer[bytes_read] = '\0';
   line_start = buffer;
   line_end = ft_strchr(line_start, '\n');
@@ -123,7 +124,7 @@ char *ft_getuid()
   int i;
   int j;
 
-  uid = NULL;
+  uid = (NULL);
   line = get_uidline();
   if (line && !ft_strncmp("Uid:", line, 4))
   {
