@@ -6,7 +6,7 @@
 #    By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/05/08 16:07:38 by asinsard         ###   ########lyon.fr    #
+#    Updated: 2025/05/09 14:11:44 by asinsard         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -71,6 +71,7 @@ SRC					=	main.c \
 						handle_cmd_and_path_utils.c \
 						handle_cmd_and_path.c \
 						handle_space.c \
+						handle_utils.c \
 						quote.c \
 						tokenize_utils.c \
 						tokenize.c \

@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 21:44:17 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/08 15:48:58 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/09 15:14:31 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,12 @@
 #include "list.h"
 #include "libft.h"
 #include "ft_printf.h"
+#include "quote.h"
 
 static void	is_operand_or_quote(t_token **node)
 {
-	is_quote(node);
+	if (is_quote(node))
+		return ;
 	if (!ft_strcmp((*node)->content[0], "&&"))
 		(*node)->token = O_AND;
 	else if (!ft_strcmp((*node)->content[0], "||"))
@@ -104,7 +106,8 @@ void	assign_token(t_token **head, char **envp, t_var *list_env, bool flag)
 		if (tmp->token == NO_TOKEN)
 			is_operand_or_quote(&tmp);
 		if (tmp->token == NO_TOKEN
-			|| tmp->token == D_QUOTE || tmp->token == S_QUOTE
+			|| (tmp->token == D_QUOTE && tmp->content[0][0]) 
+			|| (tmp->token == D_QUOTE && tmp->content[0][0])
 			|| tmp->token == EXPAND)
 			handle_cmd(&tmp, envp, flag);
 		tmp = tmp->next;

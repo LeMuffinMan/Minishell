@@ -6,13 +6,33 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 16:01:39 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/02 23:55:14 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/09 15:12:46 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "list.h"
 #include "libft.h"
 #include "quote.h"
+
+static bool	case_only_quote(t_token **node)
+{
+	char	*res;
+
+	res = NULL;
+	if (((*node)->content[0][0] == '\'' && (*node)->content[0][1] == '\'')
+		|| ((*node)->content[0][0] == '"' && (*node)->content[0][1] == '"'))
+	{
+		res = ft_strdup("");
+		if (!res)
+			free_parse(*node,
+			"Malloc failed in function 'case_only_quote'", MEM_ALLOC);
+		free((*node)->content[0]);
+		(*node)->content[0] = res;
+		return (true);
+	}
+	return (false);
+}
+
 
 static bool	is_one_quote(char **content, char c)
 {
@@ -46,6 +66,8 @@ static void	del_quote_char(t_token **node)
 	char	*end;
 	int		len;
 
+	if (case_only_quote(node))
+		return ;
 	if ((*node)->content[0][0] == '"' || (*node)->content[0][0] == '\'')
 	{
 		start = ft_strdup(&(*node)->content[0][1]);
@@ -69,18 +91,52 @@ static void	del_quote_char(t_token **node)
 
 void	parse_quote(t_token **head)
 {
-	t_token	*tmp;
+	// t_token	*tmp;
 
-	tmp = *head;
-	if (!tmp)
-		return ;
-	while (tmp)
+	// tmp = *head;
+	// if (!tmp)
+	// 	return ;
+	// while (tmp)
+	// {
+	// 	if (is_one_quote(tmp->content, '\''))
+	// 		tmp->error = PB_QUOTE;
+	// 	if (is_one_quote(tmp->content, '"'))
+	// 		tmp->error = PB_QUOTE;
+	// 	del_quote_char(&tmp);
+	// 	tmp = tmp->next;
+	// }
+	if (is_one_quote((*head)->content, '\''))
+		(*head)->error = PB_QUOTE;
+	if (is_one_quote((*head)->content, '"'))
+		(*head)->error = PB_QUOTE;
+	del_quote_char(&(*head));
+}
+
+bool	is_quote(t_token **node)
+{
+	int		len;
+	bool	flag;
+
+	len = ft_strlen((*node)->content[0]);
+	flag = false;
+	if (((*node)->content[0][0] == '"')
+			&& (*node)->content[0][len - 1] == '"')
 	{
-		if (is_one_quote(tmp->content, '\''))
-			tmp->error = PB_QUOTE;
-		if (is_one_quote(tmp->content, '"'))
-			tmp->error = PB_QUOTE;
-		del_quote_char(&tmp);
-		tmp = tmp->next;
+		(*node)->token = D_QUOTE;
+		(*node)->error = QUOTE;
+		flag = true;
 	}
+	else if (((*node)->content[0][0] == '\'')
+			&& (*node)->content[0][len - 1] == '\'')
+	{
+		(*node)->token = S_QUOTE;
+		(*node)->error = QUOTE;
+		flag = true;
+	}
+	if (flag)
+	{
+		parse_quote(node);
+		return (true);
+	}
+	return (false);
 }
