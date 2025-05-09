@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:44:43 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/09 18:27:21 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/09 18:32:53 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ void	check_syntax_error(t_token **head)
 {
 	t_token	*tmp;
 
-	if (!head | !*head)
+	if (!head || !*head)
 		return ;
 	tmp = *head;
 	while (tmp)
@@ -69,8 +69,11 @@ void	check_syntax_error(t_token **head)
 			*head = set_syntax_error(tmp);
 			return ;
 		}
-		if (tmp->token == DIREC)
+		else if (tmp->token == DIREC)
+		{
 			case_of_directory_error(&tmp);
+			return ;
+		}
 		else
 			tmp = tmp->next;
 	}
