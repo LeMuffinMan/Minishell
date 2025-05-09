@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:44:43 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/09 20:04:40 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/09 20:58:28 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,9 @@ static int	is_valid_prev(t_token *prev)
 		|| prev->token == O_OR
 		|| prev->token == O_AND
 		|| prev->token == R_PARENTHESIS
-		|| prev->token == L_PARENTHESIS))
+		|| prev->token == L_PARENTHESIS
+		|| prev->token == DIREC
+		|| prev->token == FLE))
 		return (1);
 	return (0);
 }
