@@ -6,13 +6,50 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:44:43 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/09 18:27:21 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/09 20:04:40 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "list.h"
 #include "libft.h"
 #include <stdlib.h>
+
+static int	is_valid_prev(t_token *prev)
+{
+	if (!prev)
+		return (1);
+	if (prev->token == SPACE)
+		return(is_valid_prev(prev->prev));
+	if ((prev->token == PIPE
+		|| prev->token == O_OR
+		|| prev->token == O_AND
+		|| prev->token == R_PARENTHESIS
+		|| prev->token == L_PARENTHESIS))
+		return (1);
+	return (0);
+}
+
+void	handle_is_command(t_token *node, char *cmd_w_path)
+{
+	if (cmd_w_path && (node->error == SUCCESS || node->error == QUOTE))
+	{
+		if (node->prev && (node->prev->token == R_IN
+				|| node->prev->token == HD
+				|| node->prev->token == APPEND
+				|| node->prev->token == TRUNC))
+		{
+			free(cmd_w_path);
+			return ;
+		}
+		if (!is_valid_prev(node->prev))
+		{
+			node->error = CMD_NOT_FOUND;
+			return ;
+		}
+		replace_tab(&node, cmd_w_path); //exec : fix l'absence de path
+		node->token = CMD;
+	}	
+}
 
 static void	case_of_directory_error(t_token **node)
 {
@@ -55,7 +92,7 @@ void	check_syntax_error(t_token **head)
 {
 	t_token	*tmp;
 
-	if (!head | !*head)
+	if (!head || !*head)
 		return ;
 	tmp = *head;
 	while (tmp)
@@ -69,8 +106,11 @@ void	check_syntax_error(t_token **head)
 			*head = set_syntax_error(tmp);
 			return ;
 		}
-		if (tmp->token == DIREC)
+		else if (tmp->token == DIREC)
+		{
 			case_of_directory_error(&tmp);
+			return ;
+		}
 		else
 			tmp = tmp->next;
 	}

@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 21:44:17 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/09 17:27:39 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/09 19:48:09 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,19 +91,7 @@ void	is_command(t_token **node, char **envp)
 	if ((*node)->token == NO_TOKEN || (*node)->token == EXPAND
 		|| (*node)->token == D_QUOTE || (*node)->token == S_QUOTE)
 		cmd_w_path = verif_command(node, tmp, path, envp);
-	if (cmd_w_path && ((*node)->error == SUCCESS || (*node)->error == QUOTE))
-	{
-		if ((*node)->prev && ((*node)->prev->token == R_IN
-				|| (*node)->prev->token == HD
-				|| (*node)->prev->token == APPEND
-				|| (*node)->prev->token == TRUNC))
-		{
-			free(cmd_w_path);
-			return ;
-		}
-		replace_tab(node, cmd_w_path); //exec : fix l'absence de path
-		(*node)->token = CMD;
-	}
+	handle_is_command(*node, cmd_w_path);
 	free(cmd_w_path);
 }
 
