@@ -21,6 +21,24 @@
 #include <readline/readline.h> // compiler avec -l readline
 #include <readline/history.h>
 
+int print_history(t_hist **history)
+{
+  t_hist *tmp;
+  
+  if (!history || !*history)
+    return (0);
+  
+  tmp = *history;
+  do {
+    ft_putstr_fd(" ", 1);
+    ft_putstr_fd(tmp->cmd_line, 1);
+    ft_putstr_fd("\n", 1);
+    tmp = tmp->next;
+  } while (tmp != *history);
+  
+  return (0);
+}
+
 int add_node_to_history(char *cmd_line, t_hist **history)
 {
   t_hist *node;
@@ -30,12 +48,13 @@ int add_node_to_history(char *cmd_line, t_hist **history)
   if (!node)
     return (-1);
   node->cmd_line = ft_strdup(cmd_line);
+  printf("%s\n", node->cmd_line);
   if (!node->cmd_line)
   {
     //free node 
     return (-1);
   }
-  if (!*history)
+  if (!history || !*history)
   {
     node->next = node;
     node->prev = node;
@@ -61,9 +80,7 @@ t_hist *get_history(char *file)
   char *line_end;
   t_hist *history;
 
-  history = malloc(sizeof(t_hist));
-  if (!history)
-    return (NULL);
+  history = NULL;
   fd = open(file, O_RDONLY);
   if (fd == -1)
       return (NULL);
@@ -73,16 +90,15 @@ t_hist *get_history(char *file)
       return (NULL);
   buffer[bytes_read] = '\0';
   line_start = buffer;
-  line_end = ft_strchr(line_start, '\n');
-  while (line_end)
+  while ((line_end = ft_strchr(line_start, '\n')))
   {
     *line_end = '\0';
     add_node_to_history(line_start, &history);
     line_start = line_end + 1;
-    line_end = ft_strchr(line_start, '\n');
-    if (!line_start)
-      break;
   }
+  if (*line_start != '\0')
+    add_node_to_history(line_start, &history);
+  /* print_history(&history); */
   return (history);
 }
 
@@ -122,14 +138,36 @@ int is_valid_history_file(char *file)
   return (1);
 }
 
+
+
+
 int load_history(t_var **env, t_hist **history)
 {
   char *file;
+  char *tmp;
 
+  tmp = NULL;
   file = NULL;
   file = get_history_path(env);
   if (!file)
-    return (1);
+  {
+    file = get_value(env, "HOME");
+    if (!file)
+    {
+      file = get_value(env, "USER");
+      if (file)
+      {
+        file = ft_strjoin("/home/", file);
+        tmp = file;
+      }
+    }
+  } 
+  if (file)
+    file = ft_strjoin(file, "/.minishell_history");
+  else
+    file = ft_strjoin(file, ".minishell_history");
+  if (tmp)
+    free(tmp);
   if (is_valid_history_file(file)) //checker si fichier vide
     return (1);
   *history = get_history(file);
@@ -185,7 +223,7 @@ int save_history(t_var **env, t_hist **history)
   file = get_history_path(env);
   if (!file)
     return (2);
-  fd = open(file, O_WRONLY | O_TRUNC, 644);
+  fd = open(file, O_WRONLY | O_TRUNC | O_CREAT, 644);
   if (fd == -1)
   {
     //open erro
@@ -207,36 +245,6 @@ int save_history(t_var **env, t_hist **history)
   //normal et avec signaux !
   //a l'arret :
   //on copie en trunc sur le fichier d'historique toute la liste chainee de la fin au debut jusqu'a la limite HIST_SIZE ou une limite par defaut
-}
-
-int print_history(t_hist **history)
-{
-  t_hist *tmp;
-  char *s;
-
-  s = NULL;
-  if (!*history)
-    return (0);
-  tmp = *history;
-  if (tmp == *history)
-  {
-    s = ft_strjoin(" ", tmp->cmd_line); //printf padding ?
-    ft_putstr_fd(s, 1);
-    free(s);
-    s = NULL;
-    return (0);
-  }
-  while(1)
-  {
-    s = ft_strjoin(" ", tmp->cmd_line); //printf padding ?
-    ft_putstr_fd(s, 1);
-    free(s);
-    s = NULL;
-    if (tmp->next == *history)
-      break ;
-    tmp = tmp->next;
-  }
-  return (0);
 }
 
 int print_n_last_cmds(t_hist **history, int n)

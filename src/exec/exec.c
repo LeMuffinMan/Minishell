@@ -153,16 +153,16 @@ int	exec_cmd(t_tree **ast, t_var **env, int origin_fds[2], t_pipe **pipes)
 	}
 	if (is_a_directory((*ast)->token->content[0]))
 	{
-		if (!ft_strncmp((*ast)->token->content[0], ".", 2))
-		{
-			ft_putstr_fd("minishell: .: filename argument required\n.: usage: . filename [arguments]\n", 2);
-			return(2);
-		}
-		if (!ft_strncmp((*ast)->token->content[0], "..", 3))
-		{
-			ft_putstr_fd("minishell: ..: command not found\n", 2);
-			return(127);
-		}
+		/* if (!ft_strncmp((*ast)->token->content[0], ".", 2)) */
+		/* { */
+		/* 	ft_putstr_fd("minishell: .: filename argument required\n.: usage: . filename [arguments]\n", 2); */
+		/* 	return(2); */
+		/* } */
+		/* if (!ft_strncmp((*ast)->token->content[0], "..", 3)) */
+		/* { */
+		/* 	ft_putstr_fd("minishell: ..: command not found\n", 2); */
+		/* 	return(127); */
+		/* } */
 		s = ft_strjoin("minishell: ", (*ast)->token->content[0]);
 		tmp = s;
 		s = ft_strjoin(s, ": Is a directory\n");

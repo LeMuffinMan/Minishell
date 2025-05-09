@@ -103,6 +103,7 @@ int update_var(t_var **node, char **key_value, int inc)
 	char *s;
 	char *tmp;
 
+
 	if (inc == 1)
 	{
 		s = ft_strdup((*node)->value);
@@ -141,7 +142,7 @@ t_var *is_known_exported_key(t_var **env, char *key)
 	while(tmp)
 	{
 		if ((!ft_strncmp(tmp->key, key, ft_strlen(tmp->key) + 1) && tmp->exported == 1) ||
-		(!ft_strncmp(tmp->key, "PS1", ft_strlen(tmp->key) + 1)))
+		(!ft_strncmp(tmp->key, "PS1", ft_strlen(tmp->key) + 1 && !ft_strncmp(key, "PS1", ft_strlen(key)))))
 			return (tmp);
 		tmp = tmp->next;
 	}
@@ -162,7 +163,7 @@ int add_or_update_var(t_var **env, char *arg)
 		return (-1);
 	/* if (!key_value[1]) // pas du tout sur de ce fix ! */
 	/* 	key_value[1] = ft_strdup(""); */
-	if (key_value [0] && key_value[1] && key_value[2]) // si on a 3 words : on concatene les derniers mots
+	if (key_value [0] && key_value[1]) // si on a 3 words : on concatene les derniers mots
 		key_value = concat_var(key_value);
 	if (is_increment_operator(key_value[0]))
 	{
@@ -197,6 +198,7 @@ int add_or_update_var(t_var **env, char *arg)
 int	builtin_export(t_var **env, char **arg)
 {
 	int i;
+	char *s;
 
 	if (!arg[1])
 		return(export_without_argument(env));
@@ -208,7 +210,15 @@ int	builtin_export(t_var **env, char **arg)
 			if (is_valid_identifier(arg[i]))
 				error_not_valid_identifier(arg[i]);
 			else
-				add_or_update_var(env, arg[i]);
+			{
+				if (arg[i + 1])
+					s = ft_strjoin(arg[i], arg[i + 1]);
+				else
+					s = ft_strjoin(arg[i], "");
+
+				add_or_update_var(env, s);
+				free(s);
+			}
 			i++;
 		}
 	}
