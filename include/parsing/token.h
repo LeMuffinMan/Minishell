@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 01:26:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/09 17:28:08 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/09 19:26:13 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ void					is_command(t_token **node, char **envp);
 void					handle_cmd(t_token **node, char **envp, bool flag);
 bool					is_valid_argcmd(t_token *node);
 void					del_last_space_for_arg(t_token **node, char **tmp);
+void					handle_is_command(t_token *node, char *cmd_w_path);
 
 
 int						env_is_alive(char **envp);
