@@ -14,6 +14,7 @@
 #include "libft.h"
 #include "builtins.h"
 #include "utils.h"
+#include "env_utils.h"
 
 // DECIDER
 // CAR=CAR
@@ -143,12 +144,8 @@ t_var *is_known_exported_key(t_var **env, char *key)
 	tmp = *env;
 	while(tmp)
 	{
-		if ((!ft_strncmp(tmp->key, key, ft_strlen(tmp->key) + 1) && tmp->exported == 1) 
-
-		/* 	|| */
-		/* (!ft_strncmp(tmp->key, "PS1", ft_strlen(tmp->key) + 1 && !ft_strncmp(key, "PS1=", ft_strlen(key)))) */
-
-		)
+		if ((!ft_strncmp(tmp->key, key, ft_strlen(tmp->key) + 1) && tmp->exported == 1) ||
+			  (!ft_strncmp(tmp->key, "PS1", ft_strlen(tmp->key) + 1) && !ft_strncmp(key, tmp->key, ft_strlen(tmp->key))))
 			return (tmp);
 		tmp = tmp->next;
 	}
@@ -167,9 +164,9 @@ int add_or_update_var(t_var **env, char *arg)
 	key_value = ft_split(arg, '='); // marche pas, je dois split au 1er egal seuelement
 	if (!key_value)
 		return (-1);
-	/* if (!key_value[1]) // pas du tout sur de ce fix ! */
-	/* 	key_value[1] = ft_strdup(""); */
-	if (key_value [0] && key_value[1]) // si on a 3 words : on concatene les derniers mots
+	if (!key_value[1]) // pas du tout sur de ce fix !
+		key_value[1] = ft_strdup("");
+	if (key_value [0] && key_value[1])
 		key_value = concat_var(key_value);
 	if (is_increment_operator(key_value[0]))
 	{
@@ -187,6 +184,12 @@ int add_or_update_var(t_var **env, char *arg)
 	/* 	#include <stdio.h> */
 	/* 	printf("%s=%s | exported = %d | env = %d\n", node->key, node->value, node->exported, node->env); */
 	/* } */
+	/* if (node) */
+	/* { */
+	/**/
+	/* 	#include <stdio.h> */
+	/* 	printf("%s\n", node->value); */
+	/* } */
 	if (!node)
 		add_new_var(env, key_value);
 	else
@@ -194,6 +197,9 @@ int add_or_update_var(t_var **env, char *arg)
 	free_array(key_value);
 	return (0);
 }
+
+
+/* int add_or_update_var() */
 
 // Si on a deja la cle dans les variables non visibles,
 /* on la rend visible */
@@ -205,7 +211,10 @@ int	builtin_export(t_var **env, char **arg)
 {
 	int i;
 	char *s;
+	t_var *node;
 
+	//1 : VAR=VAR
+	//2 : VAR=     VAR
 	/* #include <stdio.h> */
 	/* i = 0; */
 	/* while (arg[i]) */
@@ -213,27 +222,73 @@ int	builtin_export(t_var **env, char **arg)
 	/* 	printf("%s\n", arg[i]); */
 	/* 	i++; */
 	/* } */
-	if (!arg[1])
+	i = 1;
+	if (!arg[i])
 		return(export_without_argument(env));
-	else
+	while (arg[i])
 	{
-		i = 1;
-		while(arg[i])
+		if (ft_strchr(arg[i], '='))
 		{
-			if (is_valid_identifier(arg[i]))
-				error_not_valid_identifier(arg[i]);
-			else
+			if (arg[i][ft_strlen(arg[i]) - 1] == '=') 
 			{
-				if (arg[i + 1])
-					s = ft_strjoin(arg[i], arg[i + 1]);
+
+				/* #include <stdio.h> */
+				/* printf("%s", arg[i]); */
+				arg[i][ft_strlen(arg[i]) - 1] = '\0';
+				node = is_known_exported_key(env, arg[i]);
+				if (node)
+				{
+					node->exported = 1;
+					if (node->value)
+						free(node->value);
+					if (arg[i + 1] && !ft_strchr(arg[i + 1], '='))
+					{
+						node->value = ft_strdup(arg[i + 1]);
+						i++;
+					}
+					else
+						node->value = ft_strdup("");
+				}
 				else
-					s = ft_strjoin(arg[i], "");
-				//A REVOIR !!!
-				add_or_update_var(env, s);
-				free(s);
+				{
+					arg[i][ft_strlen(arg[i])] = '=';
+					if(arg[i + 1] && !ft_strchr(arg[i + 1], '=')) 
+					{
+						/* printf("%s", arg[i]); */
+						s = ft_strjoin(arg[i], arg[i + 1]);	
+						i++;
+					}
+					else
+						s = ft_strjoin(arg[i], "");
+					add_back_var(env, s, 3);
+					free(s);
+				}
 			}
-			i++;
+			else
+				add_or_update_var(env, arg[i]);
 		}
+		i++;
 	}
+	/* else */
+	/* { */
+	/* 	i = 1; */
+	/* 	while(arg[i]) */
+	/* 	{ */
+	/* 		if (is_valid_identifier(arg[i])) */
+	/* 			error_not_valid_identifier(arg[i]); */
+	/* 		else */
+	/* 		{ */
+				
+				/* if (arg[i + 1]) */
+				/* 	s = ft_strjoin(arg[i], arg[i + 1]); */
+				/* else */
+				/* 	s = ft_strjoin(arg[i], ""); */
+				/* //A REVOIR !!! */
+				/* add_or_update_var(env, s); */
+				/* free(s); */
+		/* 	} */
+		/* 	i++; */
+		/* } */
+	/* } */
 	return (0);
 }

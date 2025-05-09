@@ -108,5 +108,7 @@ void	add_back_var(t_var **lst, char *s, int mode)
 			new->value = ft_strdup(key_value[1]);
 		free_array(key_value);
 		set_node(&new, mode);
+		/* #include <stdio.h> */
+		/* printf("%s=%s\n", new->key, new->value); */
 	}
 }

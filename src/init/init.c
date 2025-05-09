@@ -116,11 +116,14 @@ int	init_env(t_var **new_env, char **env, char *program_name)
 		else
 			add_back_var(new_env, env[i], 3); // pas sur
 		/* t_var *tmp; */
-		/**/
+
 		/* tmp = *new_env; */
-		/* while(tmp) */
+		/* while(tmp->next) */
+		/* { */
+		/* 	printf("%s=%s\n", tmp->key, tmp->value); */
 		/* 	tmp = tmp->next; */
-		/* printf("%s=%s\n", tmp->key, tmp->value); */
+		/* } */
+		/* printf("%s\n", env[i]); */
 		i++;
 	}
 	init_last_cmd_var(program_name, new_env);

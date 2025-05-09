@@ -185,7 +185,7 @@ int main(int ac, char **av, char **env)
     t_var    *new_env;
     t_tree *ast;
     t_pipe *pipes;
-    t_hist *history;
+    /* t_hist *history; */
     char **strings_env;
 	int origin_fds[2];
 
@@ -201,7 +201,7 @@ int main(int ac, char **av, char **env)
     new_env = NULL;
     ast = NULL;
     pipes = NULL;
-    history = NULL;
+    /* history = NULL; */
     /* utiliser getenv ?
         * Si on n'a pas d'env uniquement ?*/
     init_env(&new_env, env, av[0]);

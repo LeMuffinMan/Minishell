@@ -44,6 +44,10 @@ int	wait_children(pid_t last_child, pid_t first_child)
 	int	last_child_done;
 	int	first_child_done;
 
+(void)last_child_done;
+(void)first_child_done;
+(void)first_status;
+
 	last_status = 0;
 	first_status = 0;
 	last_child_done = 0;

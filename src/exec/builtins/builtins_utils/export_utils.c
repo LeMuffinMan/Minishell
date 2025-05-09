@@ -51,8 +51,10 @@ char	**concat_var(char **arg)
 	if (!key_value)
 		return (NULL);
 	key_value[0] = ft_strdup(arg[0]);
-	i = 1;
 	key_value[1] = ft_strdup("");
+	if (!arg[0])
+		return (key_value);
+	i = 1;
 	while (arg[i])
 	{
 		tmp = key_value[1];

@@ -18,6 +18,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <stdio.h>
 #include <readline/readline.h> // compiler avec -l readline
 #include <readline/history.h>
 
@@ -48,7 +49,7 @@ int add_node_to_history(char *cmd_line, t_hist **history)
   if (!node)
     return (-1);
   node->cmd_line = ft_strdup(cmd_line);
-  printf("%s\n", node->cmd_line);
+  /* printf("%s\n", node->cmd_line); */
   if (!node->cmd_line)
   {
     //free node 
@@ -474,6 +475,8 @@ int execute_history_cmd(t_hist **history, char *line)
   t_hist *tmp;
   int n;
   char *s;
+
+(void)cmd_line;
 
   if (is_valid_history_cmd(line))
   {

@@ -85,6 +85,8 @@ char	*get_value(t_var **env, char *key)
 		}
 		tmp = tmp->next;
 	}
+	/* if (tmp) */
+		/* printf("returned node : %p : %s=%s\n", tmp, tmp->key, tmp->value); */
 	return (value);
 }
 
