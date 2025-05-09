@@ -116,6 +116,8 @@ int update_var(t_var **node, char **key_value, int inc)
 	else
 	{
 		free((*node)->value);
+		if (!key_value[1])
+			key_value[1] = ft_strdup("");
 		(*node)->value = ft_strdup(key_value[1]);
 	}
 	(*node)->exported = 1;
@@ -141,8 +143,12 @@ t_var *is_known_exported_key(t_var **env, char *key)
 	tmp = *env;
 	while(tmp)
 	{
-		if ((!ft_strncmp(tmp->key, key, ft_strlen(tmp->key) + 1) && tmp->exported == 1) ||
-		(!ft_strncmp(tmp->key, "PS1", ft_strlen(tmp->key) + 1 && !ft_strncmp(key, "PS1", ft_strlen(key)))))
+		if ((!ft_strncmp(tmp->key, key, ft_strlen(tmp->key) + 1) && tmp->exported == 1) 
+
+		/* 	|| */
+		/* (!ft_strncmp(tmp->key, "PS1", ft_strlen(tmp->key) + 1 && !ft_strncmp(key, "PS1=", ft_strlen(key)))) */
+
+		)
 			return (tmp);
 		tmp = tmp->next;
 	}
@@ -200,6 +206,13 @@ int	builtin_export(t_var **env, char **arg)
 	int i;
 	char *s;
 
+	/* #include <stdio.h> */
+	/* i = 0; */
+	/* while (arg[i]) */
+	/* { */
+	/* 	printf("%s\n", arg[i]); */
+	/* 	i++; */
+	/* } */
 	if (!arg[1])
 		return(export_without_argument(env));
 	else
@@ -215,7 +228,7 @@ int	builtin_export(t_var **env, char **arg)
 					s = ft_strjoin(arg[i], arg[i + 1]);
 				else
 					s = ft_strjoin(arg[i], "");
-
+				//A REVOIR !!!
 				add_or_update_var(env, s);
 				free(s);
 			}

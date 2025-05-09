@@ -249,6 +249,7 @@ int main(int ac, char **av, char **env)
             /* if (isatty(0) && *env) */
             /*     ft_add_history(&new_env, &history, line); */
             /* else */
+            if (ft_strlen(line) > 0)
                 add_history(line);
             //A gerer avec les signaux correctement !
             //pour avoir un historique complet on est suppose l'enregistrer dans un fichier a la sortie

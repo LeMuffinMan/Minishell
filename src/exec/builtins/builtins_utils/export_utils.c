@@ -95,7 +95,6 @@ int	add_new_var(t_var **env, char **key_value)
 	char	*s;
 	char	*tmp;
 
-
 	// si ce n'est pas une variable protegee !
 	s = ft_strjoin(key_value[0], "=");
 	tmp = s;

@@ -167,6 +167,7 @@ char *read_ps1(t_var **env)
   char *new_ps1;
 
   ps1 = ft_strdup(get_value(env, "PS1"));
+  /* printf("%s\n", ps1); */
   if ((ps1 && ps1[0] == '\'' && ps1[ft_strlen(ps1) - 1] == '\'') || 
     (ps1 && ps1[0] == '\"' && ps1[ft_strlen(ps1) - 1] == '\"')) 
   {
