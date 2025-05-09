@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:44:43 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/09 20:58:28 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/09 22:45:26 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,19 +14,19 @@
 #include "libft.h"
 #include <stdlib.h>
 
-static int	is_valid_prev(t_token *prev)
+int	is_valid_prev(t_token *prev)
 {
 	if (!prev)
 		return (1);
 	if (prev->token == SPACE)
-		return(is_valid_prev(prev->prev));
+		return (is_valid_prev(prev->prev));
 	if ((prev->token == PIPE
-		|| prev->token == O_OR
-		|| prev->token == O_AND
-		|| prev->token == R_PARENTHESIS
-		|| prev->token == L_PARENTHESIS
-		|| prev->token == DIREC
-		|| prev->token == FLE))
+			|| prev->token == O_OR
+			|| prev->token == O_AND
+			|| prev->token == R_PARENTHESIS
+			|| prev->token == L_PARENTHESIS
+			|| prev->token == DIREC
+			|| prev->token == FLE))
 		return (1);
 	return (0);
 }
@@ -50,7 +50,7 @@ void	handle_is_command(t_token *node, char *cmd_w_path)
 		}
 		replace_tab(&node, cmd_w_path); //exec : fix l'absence de path
 		node->token = CMD;
-	}	
+	}
 }
 
 static void	case_of_directory_error(t_token **node)

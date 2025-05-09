@@ -1,25 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   quote.h                                            :+:      :+:    :+:   */
+/*   quote_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/14 17:49:15 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/09 21:49:10 by asinsard         ###   ########lyon.fr   */
+/*   Created: 2025/05/09 21:46:52 by asinsard          #+#    #+#             */
+/*   Updated: 2025/05/09 21:48:43 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef QUOTE_H
-# define QUOTE_H
+#include <quote.h>
 
-# include "list.h"
+bool	is_to_expand(char *str)
+{
+	int	i;
 
-# define PB_QUOTE 128
-
-void					parse_quote(t_token **node);
-bool					is_quote(t_token **node);
-bool					is_to_expand(char *str);
-
-
-#endif
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == '$')
+			return (true);
+		i++;
+	}
+	return (false);
+}

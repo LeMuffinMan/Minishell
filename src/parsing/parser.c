@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 03:09:12 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/09 13:49:52 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/09 21:13:59 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@
 #include "structs.h"
 #include <unistd.h>
 #include <stdio.h>
-#include <readline/readline.h>
 
 t_tree	*parse(char *line, char **envp, t_var *list_env)
 {

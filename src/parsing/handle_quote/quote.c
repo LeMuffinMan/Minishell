@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 16:01:39 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/09 15:12:46 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/09 22:42:43 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,14 +25,13 @@ static bool	case_only_quote(t_token **node)
 		res = ft_strdup("");
 		if (!res)
 			free_parse(*node,
-			"Malloc failed in function 'case_only_quote'", MEM_ALLOC);
+				"Malloc failed in function 'case_only_quote'", MEM_ALLOC);
 		free((*node)->content[0]);
 		(*node)->content[0] = res;
 		return (true);
 	}
 	return (false);
 }
-
 
 static bool	is_one_quote(char **content, char c)
 {
@@ -89,27 +88,17 @@ static void	del_quote_char(t_token **node)
 	}
 }
 
-void	parse_quote(t_token **head)
+void	parse_quote(t_token **node)
 {
-	// t_token	*tmp;
-
-	// tmp = *head;
-	// if (!tmp)
-	// 	return ;
-	// while (tmp)
-	// {
-	// 	if (is_one_quote(tmp->content, '\''))
-	// 		tmp->error = PB_QUOTE;
-	// 	if (is_one_quote(tmp->content, '"'))
-	// 		tmp->error = PB_QUOTE;
-	// 	del_quote_char(&tmp);
-	// 	tmp = tmp->next;
-	// }
-	if (is_one_quote((*head)->content, '\''))
-		(*head)->error = PB_QUOTE;
-	if (is_one_quote((*head)->content, '"'))
-		(*head)->error = PB_QUOTE;
-	del_quote_char(&(*head));
+	if (is_one_quote((*node)->content, '\''))
+		(*node)->error = PB_QUOTE;
+	if (is_one_quote((*node)->content, '"'))
+		(*node)->error = PB_QUOTE;
+	if (((*node)->token == D_QUOTE || (*node)->token == D_QUOTE
+			|| (*node)->error == QUOTE)
+		&& is_to_expand((*node)->content[0]))
+		(*node)->error = LITERAL_EXPAND;
+	del_quote_char(&(*node));
 }
 
 bool	is_quote(t_token **node)

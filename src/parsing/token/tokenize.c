@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 21:44:17 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/09 20:17:28 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/09 22:44:21 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,8 @@ void	is_command_whithout_env(t_token **node, char **envp)
 	is_built_in(node);
 	if ((*node)->token == BUILT_IN)
 		(*node)->error = SUCCESS;
+	if (!is_valid_prev((*node)->prev))
+		return ;
 	else if (ft_isslash((*node)->content[0]) || !env_is_alive(envp))
 	{
 		if (!parse_path_without_env(*node))
@@ -84,15 +86,21 @@ void	is_command(t_token **node, char **envp)
 	char	*tmp;
 	char	**path;
 	char	*cmd_w_path;
+	bool	flag;
 
 	tmp = NULL;
 	path = NULL;
 	cmd_w_path = NULL;
+	flag = false;
+	if ((*node)->error == LITERAL_EXPAND)
+		flag = true;
 	if ((*node)->token == NO_TOKEN || (*node)->token == EXPAND
 		|| (*node)->token == D_QUOTE || (*node)->token == S_QUOTE)
 		cmd_w_path = verif_command(node, tmp, path, envp);
 	handle_is_command(*node, cmd_w_path);
 	free(cmd_w_path);
+	if (flag && (*node)->error != 0)
+		(*node)->error = LITERAL_EXPAND;
 }
 
 void	assign_token(t_token **head, char **envp, t_var *list_env, bool flag)
@@ -113,6 +121,10 @@ void	assign_token(t_token **head, char **envp, t_var *list_env, bool flag)
 			|| (tmp->token == D_QUOTE && tmp->content[0][0])
 			|| tmp->token == EXPAND)
 			handle_cmd(&tmp, envp, flag);
+		if ((tmp->token == D_QUOTE || tmp->token == D_QUOTE
+				|| tmp->error == QUOTE)
+			&& is_to_expand(tmp->content[0]))
+			tmp->error = LITERAL_EXPAND;
 		tmp = tmp->next;
 	}
 }

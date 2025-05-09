@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 19:51:51 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/09 20:16:47 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/09 22:44:05 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,19 +31,26 @@ void	del_last_space_for_arg(t_token **node, char **tmp)
 		*tmp = ft_strndup((*node)->content[0], i);
 		if (!*tmp)
 			free_parse(*node,
-				"Malloc failed in function 'del_last_space_for_arg'", MEM_ALLOC);
+				"Malloc failed in function 'del_last_space_for_arg'",
+				MEM_ALLOC);
 	}
 	else
 	{
 		*tmp = ft_strdup((*node)->content[0]);
 		if (!*tmp)
 			free_parse(*node,
-				"Malloc failed in function 'del_last_space_for_arg'", MEM_ALLOC);
+				"Malloc failed in function 'del_last_space_for_arg'",
+				MEM_ALLOC);
 	}
 }
 
 void	handle_cmd(t_token **node, char **envp, bool flag)
 {
+	bool	is_lit_expand;
+
+	is_lit_expand = false;
+	if ((*node)->error == LITERAL_EXPAND)
+		is_lit_expand = true;
 	if ((*node)->content[0][0] != '\0' || (*node)->token == D_QUOTE
 	|| (*node)->token == S_QUOTE
 	|| (*node)->token == EXPAND
@@ -55,13 +62,14 @@ void	handle_cmd(t_token **node, char **envp, bool flag)
 		((*node)->prev->prev->token == CMD ||
 		(*node)->prev->prev->token == BUILT_IN))))
 	{
-		// is_command_whithout_env(node, envp);
 		if (flag || (*node)->token == NO_TOKEN || (*node)->token == APPEND
 			|| (*node)->token == D_QUOTE || (*node)->token == S_QUOTE)
 			is_command(node, envp);
 	}
 	else
 		(*node)->error = PERMISSION_DENIED;
+	if (is_lit_expand && (*node)->error != 0)
+		(*node)->error = LITERAL_EXPAND;
 }
 
 static void	case_of_cmd_quote(t_token *node, char **cmd_in_quote)

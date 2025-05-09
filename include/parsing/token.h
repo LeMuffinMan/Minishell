@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 01:26:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/09 19:26:13 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/09 21:46:14 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # define PERMISSION_DENIED 126
 # define CMD_NOT_FOUND 127
 # define QUOTE 130
+# define LITERAL_EXPAND 200
 
 # include <stdbool.h>
 
@@ -72,7 +73,7 @@ void					handle_cmd(t_token **node, char **envp, bool flag);
 bool					is_valid_argcmd(t_token *node);
 void					del_last_space_for_arg(t_token **node, char **tmp);
 void					handle_is_command(t_token *node, char *cmd_w_path);
-
+int						is_valid_prev(t_token *prev);
 
 int						env_is_alive(char **envp);
 void					replace_tab(t_token **node, char *str);
