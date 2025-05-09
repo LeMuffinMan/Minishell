@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 21:44:17 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/09 19:48:09 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/09 20:17:28 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,9 @@ void	assign_token(t_token **head, char **envp, t_var *list_env, bool flag)
 	(void)list_env;
 	while (tmp)
 	{
-		is_redirection_or_f_or_d(&tmp);
+		is_command_whithout_env(&tmp, envp);
+		if (tmp->token == NO_TOKEN)
+			is_redirection_or_f_or_d(&tmp);
 		if (tmp->token == NO_TOKEN)
 			is_operand_or_quote(&tmp);
 		if (tmp->token == NO_TOKEN

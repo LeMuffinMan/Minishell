@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 19:51:51 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/09 17:27:52 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/09 20:16:47 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ void	handle_cmd(t_token **node, char **envp, bool flag)
 		((*node)->prev->prev->token == CMD ||
 		(*node)->prev->prev->token == BUILT_IN))))
 	{
-		is_command_whithout_env(node, envp);
+		// is_command_whithout_env(node, envp);
 		if (flag || (*node)->token == NO_TOKEN || (*node)->token == APPEND
 			|| (*node)->token == D_QUOTE || (*node)->token == S_QUOTE)
 			is_command(node, envp);
