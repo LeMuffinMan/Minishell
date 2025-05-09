@@ -125,11 +125,30 @@ int is_valid_history_file(char *file)
 int load_history(t_var **env, t_hist **history)
 {
   char *file;
+  char *tmp;
 
+  tmp = NULL;
   file = NULL;
   file = get_history_path(env);
   if (!file)
-    return (1);
+  {
+    file = get_value(env, "HOME");
+    if (!file)
+    {
+      file = get_value(env, "USER");
+      if (file)
+      {
+        file = ft_strjoin("/home/", file);
+        tmp = file;
+      }
+    }
+    if (file)
+      file = ft_strjoin(file, "/.minishell_history");
+    else
+      file = ft_strjoin(file, ".minishell_history");
+    if (tmp)
+      free(tmp);
+  } 
   if (is_valid_history_file(file)) //checker si fichier vide
     return (1);
   *history = get_history(file);
@@ -185,7 +204,7 @@ int save_history(t_var **env, t_hist **history)
   file = get_history_path(env);
   if (!file)
     return (2);
-  fd = open(file, O_WRONLY | O_TRUNC, 644);
+  fd = open(file, O_WRONLY | O_TRUNC | O_CREAT, 644);
   if (fd == -1)
   {
     //open erro
