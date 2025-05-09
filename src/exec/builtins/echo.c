@@ -23,7 +23,14 @@ int	builtin_echo(char **arg)
 	char	*s;
 	char	*tmp;
 
+	/* i = 0; */
+	/* while (arg[i]) */
+	/* { */
+	/* 	printf("[%s]\n", arg[i]); */
+	/* 	i++; */
+	/* } */
 	option = 0;
+	s = NULL;
 	if (!arg[1])
 	{
 		ft_putstr_fd("\n", 1);
@@ -31,27 +38,23 @@ int	builtin_echo(char **arg)
 	}
 	s = ft_strdup("");
 	i = 1;
-	if (!ft_strncmp(arg[i], "-n", 2) && ft_strlen(arg[i]) == 2)
+	if ((!ft_strncmp(arg[i], "-n", 3) && ft_strlen(arg[i]) == 2) || (!ft_strncmp(arg[i], "-n ", 4) && ft_strlen(arg[i]) == 3 )) // 2 avant : -n a un espace apres donc 3
 	{
 		option = 1;
 		i++;
 	}
 	if (option == 1)
 	{
-		while (arg[i] && !ft_strncmp(arg[i], "-n", 2) && ft_strlen(arg[1]) == 2)
+		while (arg[i] && ((!ft_strncmp(arg[i], "-n", 3) && ft_strlen(arg[1]) == 2)  || (!ft_strncmp(arg[i], "-n ", 4) && ft_strlen(arg[i]) == 3 )))
 			i++;
+		/* printf("i = %d\n", i); */
 	}
 	while (arg[i])
 	{
+		/* printf("ici arg[%d] = %s\n", i, arg[i]); */
 		tmp = s;
 		s = ft_strjoin(s, arg[i]);
 		free(tmp);
-		if (arg[i + 1])
-		{
-			tmp = s;
-			s = ft_strjoin(s, " ");
-			free(tmp);
-		}
 		i++;
 	}
 	if (option == 0)
@@ -67,3 +70,12 @@ int	builtin_echo(char **arg)
 	}
 	return (0);
 }
+
+/* int builtin_echo(char **arg) */
+/* { */
+/* 	int option; */
+/* 	int i; */
+/**/
+/* 	option = 0; */
+/* 	if (!arg) */
+/* } */

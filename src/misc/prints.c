@@ -59,7 +59,7 @@ int	print_sorted_env(t_var **env)
 			}
 			else 
 			{
-				s = ft_strjoin(s, "\n");
+				s = ft_strjoin(s, "=\"\"\n");
 				free(temp);
 			}
 			ft_putstr_fd(s, 1);

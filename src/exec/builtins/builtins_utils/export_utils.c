@@ -58,12 +58,12 @@ char	**concat_var(char **arg)
 		tmp = key_value[1];
 		key_value[1] = ft_strjoin(key_value[1], arg[i]);
 		free(tmp);
-		if (arg[i + 1])
-		{
-			tmp = key_value[1];
-			key_value[1] = ft_strjoin(key_value[1], "=");
-			free(tmp);
-		}
+		/* if (arg[i + 1]) */
+		/* { */
+		/* 	tmp = key_value[1]; */
+		/* 	key_value[1] = ft_strjoin(key_value[1], "="); */
+		/* 	free(tmp); */
+		/* } */
 		i++;
 	}
 	key_value[2] = NULL;
@@ -95,11 +95,13 @@ int	add_new_var(t_var **env, char **key_value)
 	char	*s;
 	char	*tmp;
 
+
 	// si ce n'est pas une variable protegee !
 	s = ft_strjoin(key_value[0], "=");
 	tmp = s;
 	s = ft_strjoin(s, key_value[1]);
 	free(tmp);
+
 	add_back_var(env, s, 3);
 	free(s);
 	return (0);
