@@ -18,6 +18,21 @@ int error_cmd(char *cmd, int error_code)
 	char *s;
 	char *tmp;
 
+	if (!ft_strncmp(cmd, ".", 2) && ft_strlen(cmd) == 1)
+	{
+		ft_putstr_fd("minishell: .: filename argument required\n.: usage: . filename [arguments]\n", 1);
+		return (2);
+	}
+	if (error_code == 21)
+	{
+		s = ft_strjoin("minishell: ", cmd);	
+		tmp = s;
+		s = ft_strjoin(s, ": Is a directory\n");	
+		free(tmp);
+		ft_putstr_fd(s, 1);
+		free(s);
+		return (126);
+	}
 	s = ft_strjoin("minishell: ", cmd);	
 	tmp = s;
 	if (error_code == 126)

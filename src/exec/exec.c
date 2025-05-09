@@ -286,7 +286,7 @@ int	exec_ast(t_tree **ast, t_var **env, int origin_fds[2], t_pipe **pipes)
 	//errors
 	/* if (!ft_strncmp((*ast)->token->content[0], ":", 2)) */
 	/* 		return(0); */
-	if ((*ast)->token->error == 127 || (*ast)->token->error == 126)
+	if ((*ast)->token->error == 127 || (*ast)->token->error == 126 || (*ast)->token->error == 21)
 		return (error_cmd((*ast)->token->content[0], (*ast)->token->error));
 	//Ultrabonus
 		//un token Alias
