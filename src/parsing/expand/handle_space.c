@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 15:58:38 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/08 16:09:50 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/09 16:07:53 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,29 @@ static void	add_space(t_token **node)
 	(*node)->content[0] = res;
 }
 
+static void	handle_space_for_echo(t_token *node)
+{
+	while (node && (node->token == S_QUOTE || node->token == D_QUOTE 
+				|| node->token == SPACE || node->token == EXPAND || node->token == NO_TOKEN))
+	{
+		if ((node->token == S_QUOTE || node->token == EXPAND 
+			|| node->error != 0)
+				&& (node->next && node->next->token == SPACE 
+				&& ft_strncmp(node->content[0], "-n", 3)))
+		{
+			if (node->next->next && (node->next->next->token != R_IN 
+				&& node->next->next->token != HD 
+				&& node->next->next->token != TRUNC 
+				&& node->next->next->token != APPEND 
+				&& node->next->next->token != O_AND 
+				&& node->next->next->token != O_OR 
+				&& node->next->next->token != PIPE))
+				add_space(&node);
+		}
+		node = node->next;
+	}
+}
+
 void	handle_space(t_token **head)
 {
 	t_token	*tmp;
@@ -62,18 +85,12 @@ void	handle_space(t_token **head)
 	tmp = *head;
 	while (tmp)
 	{
-		if ((tmp->token == S_QUOTE || tmp->token == EXPAND || tmp->error != 0)
-			&& (tmp->next && tmp->next->token == SPACE))
+		if (tmp->token == BUILT_IN && !ft_strncmp(tmp->content[0], "echo", 5))
 		{
-			if (tmp->next->next && (tmp->next->next->token != R_IN 
-				&& tmp->next->next->token != HD 
-				&& tmp->next->next->token != TRUNC 
-				&& tmp->next->next->token != APPEND 
-				&& tmp->next->next->token != O_AND 
-				&& tmp->next->next->token != O_OR 
-				&& tmp->next->next->token != PIPE))
-				add_space(&tmp);
+			tmp = tmp->next;
+			handle_space_for_echo(tmp);
 		}
-		tmp = tmp->next;
+		else
+			tmp = tmp->next;
 	}
 }
