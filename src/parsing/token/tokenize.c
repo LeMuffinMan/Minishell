@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 21:44:17 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/09 15:14:31 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/09 17:27:39 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "libft.h"
 #include "ft_printf.h"
 #include "quote.h"
+#include <sys/stat.h>
 
 static void	is_operand_or_quote(t_token **node)
 {
@@ -36,9 +37,20 @@ static void	is_operand_or_quote(t_token **node)
 		(*node)->token = SPACE;
 }
 
-static void	is_redirection(t_token **node)
+static void	is_redirection_or_f_or_d(t_token **node)
 {
-	if (!ft_strcmp((*node)->content[0], ">>"))
+	struct stat	status;
+	char		*tmp;
+
+	del_last_space_for_arg(node, &tmp);
+	if (stat(tmp, &status) == 0)
+	{
+		if (S_ISREG(status.st_mode))
+			(*node)->token = FLE;
+		if (S_ISDIR(status.st_mode))
+			(*node)->token = DIREC;
+	}
+	else if (!ft_strcmp((*node)->content[0], ">>"))
 		(*node)->token = APPEND;
 	else if (!ft_strcmp((*node)->content[0], "<<"))
 		(*node)->token = HD;
@@ -46,6 +58,7 @@ static void	is_redirection(t_token **node)
 		(*node)->token = R_IN;
 	else if (!ft_strcmp((*node)->content[0], ">"))
 		(*node)->token = TRUNC;
+	free(tmp);
 }
 
 void	is_command_whithout_env(t_token **node, char **envp)
@@ -102,11 +115,11 @@ void	assign_token(t_token **head, char **envp, t_var *list_env, bool flag)
 	(void)list_env;
 	while (tmp)
 	{
-		is_redirection(&tmp);
+		is_redirection_or_f_or_d(&tmp);
 		if (tmp->token == NO_TOKEN)
 			is_operand_or_quote(&tmp);
 		if (tmp->token == NO_TOKEN
-			|| (tmp->token == D_QUOTE && tmp->content[0][0]) 
+			|| (tmp->token == D_QUOTE && tmp->content[0][0])
 			|| (tmp->token == D_QUOTE && tmp->content[0][0])
 			|| tmp->token == EXPAND)
 			handle_cmd(&tmp, envp, flag);

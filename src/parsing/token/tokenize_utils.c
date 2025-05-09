@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 19:51:51 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/09 14:41:28 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/09 17:27:52 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,34 @@
 #include "quote.h"
 #include <stdlib.h>
 
+void	del_last_space_for_arg(t_token **node, char **tmp)
+{
+	int		len;
+	int		i;
+
+	i = 0;
+	len = ft_strlen((*node)->content[0]);
+	if ((*node)->content[0][len - 1] == ' ')
+	{
+		while ((*node)->content[0][i] && (*node)->content[0][i] != ' ')
+			i++;
+		*tmp = ft_strndup((*node)->content[0], i);
+		if (!*tmp)
+			free_parse(*node,
+				"Malloc failed in function 'del_last_space_for_arg'", MEM_ALLOC);
+	}
+	else
+	{
+		*tmp = ft_strdup((*node)->content[0]);
+		if (!*tmp)
+			free_parse(*node,
+				"Malloc failed in function 'del_last_space_for_arg'", MEM_ALLOC);
+	}
+}
+
 void	handle_cmd(t_token **node, char **envp, bool flag)
 {
-	if (is_valid_argcmd(*node) || (*node)->token == D_QUOTE
+	if ((*node)->content[0][0] != '\0' || (*node)->token == D_QUOTE
 	|| (*node)->token == S_QUOTE
 	|| (*node)->token == EXPAND
 	|| !(*node)->prev

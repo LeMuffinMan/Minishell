@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 15:58:38 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/09 16:07:53 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/09 16:49:44 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,9 @@ static void	add_space(t_token **node)
 static void	handle_space_for_echo(t_token *node)
 {
 	while (node && (node->token == S_QUOTE || node->token == D_QUOTE 
-				|| node->token == SPACE || node->token == EXPAND || node->token == NO_TOKEN))
+				|| node->token == SPACE || node->token == EXPAND || node->token == NO_TOKEN
+				|| node->token == DIREC || node->token == FLE
+				|| node->error != 0))
 	{
 		if ((node->token == S_QUOTE || node->token == EXPAND 
 			|| node->error != 0)
@@ -72,7 +74,7 @@ static void	handle_space_for_echo(t_token *node)
 				&& node->next->next->token != O_AND 
 				&& node->next->next->token != O_OR 
 				&& node->next->next->token != PIPE))
-				add_space(&node);
+				add_space(&node);				
 		}
 		node = node->next;
 	}

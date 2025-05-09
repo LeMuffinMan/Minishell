@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 01:26:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/09 14:42:11 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/09 17:28:08 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,10 @@ typedef enum e_type
 	APPEND,
 	BUILT_IN,
 	CMD,
+	DIREC,
 	D_QUOTE,
 	EXPAND,
+	FLE,
 	GROUP_PARENTHESIS,
 	HD,
 	O_AND,
@@ -68,6 +70,7 @@ void					is_command_whithout_env(t_token **node, char **envp);
 void					is_command(t_token **node, char **envp);
 void					handle_cmd(t_token **node, char **envp, bool flag);
 bool					is_valid_argcmd(t_token *node);
+void					del_last_space_for_arg(t_token **node, char **tmp);
 
 
 int						env_is_alive(char **envp);
