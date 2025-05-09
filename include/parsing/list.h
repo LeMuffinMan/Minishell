@@ -17,6 +17,7 @@
 
 # define E_IO 5
 # define MEM_ALLOC 12
+# define IS_A_DIR 21
 
 enum				e_type;
 typedef enum e_type	t_type;

@@ -6,13 +6,24 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:44:43 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/08 16:10:46 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/09 18:27:21 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "list.h"
 #include "libft.h"
 #include <stdlib.h>
+
+static void	case_of_directory_error(t_token **node)
+{
+	int	len;
+
+	len = ft_strlen((*node)->content[0]);
+	if ((*node)->content[0][len - 1] == '/')
+		(*node)->error = IS_A_DIR;
+	else
+		(*node)->error = CMD_NOT_FOUND;
+}
 
 static t_token	*set_syntax_error(t_token *node)
 {
@@ -58,6 +69,8 @@ void	check_syntax_error(t_token **head)
 			*head = set_syntax_error(tmp);
 			return ;
 		}
+		if (tmp->token == DIREC)
+			case_of_directory_error(&tmp);
 		else
 			tmp = tmp->next;
 	}
