@@ -482,13 +482,14 @@ char *find_minishellrc(t_var **env, char *path)
         path = get_default_minishellrc_path(env);
     if (access(path, F_OK) == -1)
     {
-        print_error_file_opening(path, "No such file or directory\n");
+        print_error_file_opening(path, "No such file or directory\n", 1);
         return (NULL);
     }
     if (access(path, R_OK) == 0)
         return (path);
     else 
     {
+        //integrer dans les error.c
         ft_putstr_fd("minishell: .minishellrc: Permission denied\n", 2);
         return (NULL);
     }

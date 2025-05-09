@@ -25,7 +25,7 @@ int		exec_cmd(t_tree **ast, t_var **env, int origin_fds[2], t_pipe **pipes);
 // int	builtins(char **arg, t_var **env, t_tree **ast, int origin_fds[2]);
 
 // redirect_stdio_utils
-int		file_check(char *file, t_type type);
+int		file_check(char *file, t_type type, int error_code);
 int		is_a_directory(char *name);
 int		open_dup2_close(char *file, t_type type);
 
@@ -36,7 +36,7 @@ int		wait_children(pid_t last_child, pid_t first_child);
 
 // errors.c
 int		error_cmd(char *cmd, int error_code);
-int		print_error_file_opening(char *file, char *error);
+int		print_error_file_opening(char *file, char *error, int error_code);
 int		error_not_valid_identifier(char *s);
 
 t_tree	*parse(char *line, char **envp, t_var *new_env);

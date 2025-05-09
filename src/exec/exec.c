@@ -244,8 +244,8 @@ int redirect_stdio(t_tree **ast, t_var **env, int origin_fds[2], t_pipe **pipes)
 	//doute pour ce if, on devrait le faire au parsing ?
 	//dans tous les cas, avec juste un input "<" je trouve un synbole aleatoire dans content[1]
 	if (!(*ast)->token->content[1])
-		return(print_error_file_opening("", "syntax error\n"));
-	exit_code = file_check((*ast)->token->content[1], (*ast)->token->token);
+		return(print_error_file_opening("", "syntax error\n", 2));
+	exit_code = file_check((*ast)->token->content[1], (*ast)->token->token, (*ast)->token->error);
 	if (exit_code != 0)
 		return(exit_code);
 	exit_code = open_dup2_close((*ast)->token->content[1], (*ast)->token->token);
