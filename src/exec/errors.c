@@ -20,7 +20,7 @@ int error_cmd(char *cmd, int error_code)
 
 	if (!ft_strncmp(cmd, ".", 2) && ft_strlen(cmd) == 1)
 	{
-		ft_putstr_fd("minishell: .: filename argument required\n.: usage: . filename [arguments]\n", 1);
+		ft_putstr_fd("minishell: .: filename argument required\n.: usage: . filename [arguments]\n", 2);
 		return (2);
 	}
 	if (error_code == 21)
@@ -29,7 +29,7 @@ int error_cmd(char *cmd, int error_code)
 		tmp = s;
 		s = ft_strjoin(s, ": Is a directory\n");	
 		free(tmp);
-		ft_putstr_fd(s, 1);
+		ft_putstr_fd(s, 2);
 		free(s);
 		return (126);
 	}
@@ -47,7 +47,7 @@ int error_cmd(char *cmd, int error_code)
 	return (127);
 }
 
-int print_error_file_opening(char *file, char *error)
+int print_error_file_opening(char *file, char *error, int error_code)
 {
 	char *s;
 	char *tmp;
@@ -58,7 +58,7 @@ int print_error_file_opening(char *file, char *error)
 	free(tmp);
 	ft_putstr_fd(s, 2);
 	free(s);
-	return (1);
+	return (error_code);
 }
 
 int error_not_valid_identifier(char *s)
