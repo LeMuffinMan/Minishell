@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 19:51:51 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/08 15:22:04 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/09 14:41:28 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,12 @@
 #include "list.h"
 #include "libft.h"
 #include "expand.h"
+#include "quote.h"
 #include <stdlib.h>
 
 void	handle_cmd(t_token **node, char **envp, bool flag)
 {
-	if ((*node)->token == D_QUOTE
+	if (is_valid_argcmd(*node) || (*node)->token == D_QUOTE
 	|| (*node)->token == S_QUOTE
 	|| (*node)->token == EXPAND
 	|| !(*node)->prev
@@ -36,25 +37,6 @@ void	handle_cmd(t_token **node, char **envp, bool flag)
 	}
 	else
 		(*node)->error = PERMISSION_DENIED;
-}
-
-void	is_quote(t_token **node)
-{
-	int	len;
-
-	len = ft_strlen((*node)->content[0]);
-	if (((*node)->content[0][0] == '"')
-			&& (*node)->content[0][len - 1] == '"')
-	{
-		(*node)->token = D_QUOTE;
-		(*node)->error = QUOTE;
-	}
-	else if (((*node)->content[0][0] == '\'')
-			&& (*node)->content[0][len - 1] == '\'')
-	{
-		(*node)->token = S_QUOTE;
-		(*node)->error = QUOTE;
-	}
 }
 
 static void	case_of_cmd_quote(t_token *node, char **cmd_in_quote)

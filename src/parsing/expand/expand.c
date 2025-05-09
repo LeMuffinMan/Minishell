@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:49:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/08 16:01:03 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/09 13:49:08 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,8 @@ static bool	to_expand(t_token **node, t_var *list_env)
 			else
 			{
 				expand_node_content(node, list_env, j + 1);
-				flag = true;
+				if ((*node)->content[0][0])
+					flag = true;
 				j = -1;
 			}
 		}
