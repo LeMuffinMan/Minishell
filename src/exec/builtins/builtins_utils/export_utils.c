@@ -41,36 +41,41 @@ int	is_valid_identifier(char *var)
 	return (0);
 }
 
-char	**concat_var(char **arg)
+char **concat_var(char **arg)
 {
-	char	**key_value;
-	char	*tmp;
-	int		i;
+    char **key_value;
+    char *tmp;
+    int i;
 
-	key_value = malloc(sizeof(char *) * 3);
-	if (!key_value)
-		return (NULL);
-	key_value[0] = ft_strdup(arg[0]);
-	key_value[1] = ft_strdup("");
-	if (!arg[0])
-		return (key_value);
-	i = 1;
-	while (arg[i])
-	{
-		tmp = key_value[1];
-		key_value[1] = ft_strjoin(key_value[1], arg[i]);
-		free(tmp);
-		/* if (arg[i + 1]) */
-		/* { */
-		/* 	tmp = key_value[1]; */
-		/* 	key_value[1] = ft_strjoin(key_value[1], "="); */
-		/* 	free(tmp); */
-		/* } */
-		i++;
-	}
-	key_value[2] = NULL;
-	free_array(arg);
-	return (key_value);
+    if (arg[0] && arg[1] && !arg[2])
+    {
+        key_value = malloc(sizeof(char *) * 3);
+        if (!key_value)
+            return (NULL);
+        key_value[0] = ft_strdup(arg[0]);
+        key_value[1] = ft_strdup(arg[1]);
+        key_value[2] = NULL;
+        free_array(arg);
+        return (key_value);
+    }
+    key_value = malloc(sizeof(char *) * 3);
+    if (!key_value)
+        return (NULL);
+    key_value[0] = ft_strdup(arg[0]);
+    key_value[1] = ft_strdup("");
+    if (!arg[0])
+        return (key_value);
+    i = 1;
+    while (arg[i])
+    {
+        tmp = key_value[1];
+        key_value[1] = ft_strjoin(key_value[1], arg[i]);
+        free(tmp);
+        i++;
+    }
+    key_value[2] = NULL;
+    free_array(arg);
+    return (key_value);
 }
 
 int	is_increment_operator(char *s)

@@ -152,143 +152,164 @@ t_var *is_known_exported_key(t_var **env, char *key)
 	return (NULL);
 }
 
-int add_or_update_var(t_var **env, char *arg)
+int is_var_declaration(char *arg)
 {
-	t_var *node;
-	int inc;
-	char **key_value;
-	char *tmp;
+	int i;
 
-	inc = 0;
-	node = NULL;
-	key_value = ft_split(arg, '='); // marche pas, je dois split au 1er egal seuelement
-	if (!key_value)
-		return (-1);
-	if (!key_value[1]) // pas du tout sur de ce fix !
-		key_value[1] = ft_strdup("");
-	if (key_value [0] && key_value[1])
-		key_value = concat_var(key_value);
-	if (is_increment_operator(key_value[0]))
+	i = 0;
+	if (arg[i] == '=')
+		return (0);
+	while (arg[i])
 	{
-		inc = 1; 
-		key_value[0] = trim_operator(key_value[0]);
-		tmp = key_value[1];
-		key_value[1] = ft_strjoin("", arg + ft_strlen(key_value[0]) + 2);
-		/* printf("key_value[1] = %s\n", key_value[1]); */
-		free(tmp);
+		if (!ft_isalnum(arg[i]))
+		{
+			if ((arg[i] == '=') || (arg[i] == '+' && arg[i + 1] == '='))
+				return (1);
+			else
+				return (0);
+		}
+		i++;
 	}
-	//il me faudrait un is_known_key specifique aux variables exported pour pas override _ ou ?
-	node = is_known_exported_key(env, key_value[0]);
-	/* if (node) */
-	/* { */
-	/* 	#include <stdio.h> */
-	/* 	printf("%s=%s | exported = %d | env = %d\n", node->key, node->value, node->exported, node->env); */
-	/* } */
-	/* if (node) */
-	/* { */
-	/**/
-	/* 	#include <stdio.h> */
-	/* 	printf("%s\n", node->value); */
-	/* } */
-	if (!node)
-		add_new_var(env, key_value);
-	else
-		update_var(&node, key_value, inc);
-	free_array(key_value);
 	return (0);
 }
 
+int is_an_incrementation(char *arg)
+{
+	int i;
 
-/* int add_or_update_var() */
+	i = 0;
+	while (arg[i])
+	{
+		if (arg[i] == '=' && arg[i - 1] == '+')
+			return (1);
+		i++;
+	}
+	return (0);
+}
 
-// Si on a deja la cle dans les variables non visibles,
-/* on la rend visible */
-// pas suuuur (le strdup"")
-// pas toujours exportee en 1 pour les deux !
-// sinon on l'ajoute et on la rend visible
-//  // changer le systene de mode ?
+char *clean_inc_operator(char *arg)
+{
+	int i;
+	int j;
+	char *s;
+
+	s = malloc(sizeof(char) * ft_strlen(arg) - 1);
+	if (!s)
+	{
+		//malloc error
+	}
+	i = 0;
+	while (arg[i] && arg[i] != '+')
+	{
+		s[i] = arg[i];
+		i++;
+	}
+	s[i] = '=';
+	j = i + 1;
+	i+=2;
+	if (arg[i])
+	{
+		while(arg[i])
+		{
+			s[j] = arg[i];
+			j++;
+			i++;
+		}
+	}
+	s[i] = '\0';
+	return (s);
+}
+
+
+char *get_full_variable_declaration(char **arg, int i)
+{
+	char *s;
+
+	if (arg[i][ft_strlen(arg[i]) - 1] == '=') //si s finit par = 
+	{
+		if (arg[i + 1] && !is_var_declaration(arg[i + 1])) //et que content[i + 1] est sa valeur
+			s = ft_strjoin(arg[i], arg[i + 1]);
+		else
+			s = ft_strdup(arg[i]); //si on a une declaration de var en content[i + 1]
+	}
+	else //si on a un cas classique
+		s = ft_strdup(arg[i]);
+	return (s);
+}
+
+int add_or_update_var(t_var **env, char *var)
+{
+	int inc;
+	char *s;
+	char *tmp;
+	char *value;
+	char **key;
+	t_var *node;
+
+	inc = 0;
+	if (is_an_incrementation(var))
+	{
+		s = clean_inc_operator(var);
+		inc = 1;
+	}
+	else
+		s = ft_strdup(var);
+	//ici on sait si on doit incrementer et tout est pret 
+	key = ft_split(s, '='); //surement qu'on peut faire plus simple au'un split
+	node = is_known_exported_key(env, key[0]);
+	free_array(key);
+	if (node) // si on l'a deja
+	{
+		value = ft_strchr(var, '=');
+		if (inc)
+		{
+			tmp = node->value;
+			node->value = ft_strjoin(node->value, value + 1);
+			free(tmp);
+		}
+		else
+		{
+			free(node->value);
+			node->value = ft_strdup(value);
+		}
+	}
+	else // si on l'a pas 
+		add_back_var(env, s, 3);
+	if (s)
+		free(s);
+	return (0);
+}
+
 int	builtin_export(t_var **env, char **arg)
 {
 	int i;
 	char *s;
-	t_var *node;
+	int inc;
+	int exit_code;
 
-	//1 : VAR=VAR
-	//2 : VAR=     VAR
-	/* #include <stdio.h> */
-	/* i = 0; */
-	/* while (arg[i]) */
-	/* { */
-	/* 	printf("%s\n", arg[i]); */
-	/* 	i++; */
-	/* } */
 	i = 1;
 	if (!arg[i])
 		return(export_without_argument(env));
-	while (arg[i])
+	while(arg[i])
 	{
-		if (ft_strchr(arg[i], '='))
+		exit_code = 0;
+		inc = 0;
+		if (is_var_declaration(arg[i])) //si la declaration de variable est vlaide
 		{
-			if (arg[i][ft_strlen(arg[i]) - 1] == '=') 
-			{
-
-				/* #include <stdio.h> */
-				/* printf("%s", arg[i]); */
-				arg[i][ft_strlen(arg[i]) - 1] = '\0';
-				node = is_known_exported_key(env, arg[i]);
-				if (node)
-				{
-					node->exported = 1;
-					if (node->value)
-						free(node->value);
-					if (arg[i + 1] && !ft_strchr(arg[i + 1], '='))
-					{
-						node->value = ft_strdup(arg[i + 1]);
-						i++;
-					}
-					else
-						node->value = ft_strdup("");
-				}
-				else
-				{
-					arg[i][ft_strlen(arg[i])] = '=';
-					if(arg[i + 1] && !ft_strchr(arg[i + 1], '=')) 
-					{
-						/* printf("%s", arg[i]); */
-						s = ft_strjoin(arg[i], arg[i + 1]);	
-						i++;
-					}
-					else
-						s = ft_strjoin(arg[i], "");
-					add_back_var(env, s, 3);
-					free(s);
-				}
-			}
-			else
-				add_or_update_var(env, arg[i]);
+			s = get_full_variable_declaration(arg, i);
+			add_or_update_var(env, s);
+			free(s);
+		}
+		else
+		{
+			exit_code = 1;
+			/* s = "minishell: export: not a valid identifier\n";  //revoir pour mettre la var qui a merder ? */
+			ft_putstr_fd("minishell: export: not a valid identifier\n", 2);
+			/* free(s); */
 		}
 		i++;
+		while (arg[i] && !ft_strchr(arg[i], '='))
+			i++;
 	}
-	/* else */
-	/* { */
-	/* 	i = 1; */
-	/* 	while(arg[i]) */
-	/* 	{ */
-	/* 		if (is_valid_identifier(arg[i])) */
-	/* 			error_not_valid_identifier(arg[i]); */
-	/* 		else */
-	/* 		{ */
-				
-				/* if (arg[i + 1]) */
-				/* 	s = ft_strjoin(arg[i], arg[i + 1]); */
-				/* else */
-				/* 	s = ft_strjoin(arg[i], ""); */
-				/* //A REVOIR !!! */
-				/* add_or_update_var(env, s); */
-				/* free(s); */
-		/* 	} */
-		/* 	i++; */
-		/* } */
-	/* } */
-	return (0);
+	return (exit_code);
 }
