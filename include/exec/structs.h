@@ -15,6 +15,7 @@
 
 # include <sys/wait.h>
 
+
 typedef struct s_var
 {
 	char			*key;
@@ -33,6 +34,15 @@ typedef struct s_pipe
 	struct s_pipe	*next;
 	struct s_pipe	*prev;
 }					t_pipe;
+
+typedef struct s_lists
+{
+	t_var **env;
+	t_pipe **pipes;
+	t_hist **history;
+	t_alias **aliases
+	t_shell_fct **shell_fcts;
+} t_lists
 
 // ultrabonus
 // typedef struct s_shell_fct

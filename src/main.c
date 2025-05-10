@@ -176,12 +176,25 @@
 //Tests de cons :
 //CTRL V + Tab : fait un tab dans le minishell a gerer !
 
+int init_lists(t_lists **lists)
+{
+   *lists = malloc(sizeof(lists));
+    if (!*lists)
+        return (-1);
+    (*lists)->env = NULL;
+    (*lists)->pipes = NULL;
+    (*lists)->history = NULL;
+    (*lists)->aliases = NULL;
+    (*lists)->shell_fcts = NULL;
+    return (0);
+}
 
 int main(int ac, char **av, char **env)
 {
     char    *line;
     char    *prompt;
     int        exit_code;
+    t_lists *lists;
     t_var    *new_env;
     t_tree *ast;
     t_pipe *pipes;
@@ -197,6 +210,9 @@ int main(int ac, char **av, char **env)
     // pour ac et av : est-ce qu'on veut accepter des demarrages custom ?
     (void)ac;
     (void)av;
+    lists = NULL;
+    init_lists(&lists);
+
     exit_code = 0;
     new_env = NULL;
     ast = NULL;
