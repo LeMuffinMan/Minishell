@@ -90,7 +90,7 @@ void	add_back_var(t_var **lst, char *s, int mode)
 	{
 		exit(139);
 	}
-	if (*lst == NULL)
+	if (!lst || *lst == NULL)
 		add_first_node(lst, &new, s, mode);
 	else
 	{

@@ -36,7 +36,7 @@
 /* 	origin_fds[0] = dup(STDIN_FILENO); */
 /* 	origin_fds[1] = dup(STDOUT_FILENO); */
 /*     seq = NULL; */
-/*     strings_env = lst_to_array(&new_env); */
+/*     strings_env = lst_to_array(lists->env); */
 /*     seq = parse(sequence, strings_env); */
 /*     free_array(strings_env); */
 /*     strings_env = NULL; */
@@ -178,15 +178,81 @@
 
 int init_lists(t_lists **lists)
 {
-   *lists = malloc(sizeof(lists));
+    *lists = malloc(sizeof(t_lists));
     if (!*lists)
         return (-1);
+    
     (*lists)->env = NULL;
+    (*lists)->ast = NULL;
     (*lists)->pipes = NULL;
     (*lists)->history = NULL;
     (*lists)->aliases = NULL;
     (*lists)->shell_fcts = NULL;
+    (*lists)->env = malloc(sizeof(t_var*));
+    if (!(*lists)->env)
+    {
+        free(*lists);
+        return (-1);
+    }
+    *(*lists)->env = NULL;
+    (*lists)->ast = malloc(sizeof(t_tree*));
+    if (!(*lists)->ast)
+    {
+        free((*lists)->env);
+        free(*lists);
+        return (-1);
+    }
+    *(*lists)->ast = NULL;
+    (*lists)->pipes = malloc(sizeof(t_pipe*));
+    if (!(*lists)->pipes)
+    {
+        free((*lists)->ast);
+        free((*lists)->env);
+        free(*lists);
+        return (-1);
+    }
+    *(*lists)->pipes = NULL;
+    (*lists)->history = malloc(sizeof(t_hist*));
+    if (!(*lists)->history)
+    {
+        free((*lists)->pipes);
+        free((*lists)->ast);
+        free((*lists)->env);
+        free(*lists);
+        return (-1);
+    }
+    *(*lists)->history = NULL;
     return (0);
+}
+
+void free_lists(t_lists *lists)
+{
+    if (!lists)
+        return;
+
+    if (lists->env)
+    {
+        free_list(lists->env);
+        free(lists->env);
+    }
+
+    if (lists->history)
+    {
+        free_history(lists->history);
+        free(lists->history);
+    }
+
+    if (lists->ast && *lists->ast)
+    {
+        t_tree *tree_to_free = *lists->ast;
+        free_tree(&tree_to_free);
+        free(lists->ast);
+    }
+
+    if (lists->pipes)
+        free(lists->pipes);
+
+    free(lists);
 }
 
 int main(int ac, char **av, char **env)
@@ -195,10 +261,11 @@ int main(int ac, char **av, char **env)
     char    *prompt;
     int        exit_code;
     t_lists *lists;
-    t_var    *new_env;
-    t_tree *ast;
-    t_pipe *pipes;
-    t_hist *history;
+    t_var *new_env;
+    t_tree *tree_to_free; 
+    /* t_tree *ast; */
+    /* t_pipe *pipes; */
+    /* t_hist *history; */
     char **strings_env;
 	int origin_fds[2];
 
@@ -211,24 +278,22 @@ int main(int ac, char **av, char **env)
     (void)ac;
     (void)av;
     lists = NULL;
-    init_lists(&lists);
-
-    exit_code = 0;
-    new_env = NULL;
-    ast = NULL;
-    pipes = NULL;
-    history = NULL;
+    if (init_lists(&lists) == -1)
+    {
+        //malloc error 
+    }
+    exit_code = 0; //on ajoute l'exit code a la megastruct ou on la laisse dans env ?
     /* utiliser getenv ?
         * Si on n'a pas d'env uniquement ?*/
-    init_env(&new_env, env, av[0]);
-    /* print_all_variables(&new_env); */
-    /* print_env(&new_env); */
+    init_env(lists->env, env, av[0]);
+    /* print_all_variables(lists->env); */
+    /* print_env(lists->env); */
 
     //revoir retour d'erreur
-    if (isatty(0) && *env && find_minishellrc(&new_env, NULL))
-        load_minishellrc(&new_env, NULL);
+    if (isatty(0) && *env && find_minishellrc(lists->env, NULL))
+        load_minishellrc(lists->env, NULL);
     if (isatty(0) && *env)
-        load_history(&new_env, &history);
+        load_history(lists->env, lists->history);
     while (1)
     {
         setup_parent_signals();
@@ -237,7 +302,7 @@ int main(int ac, char **av, char **env)
         {
             if (prompt)
                 free(prompt);
-            prompt = get_prompt(&new_env);
+            prompt = get_prompt(lists->env);
         }
         if (!prompt)
             prompt = "[Minishell]$ ";
@@ -249,27 +314,32 @@ int main(int ac, char **av, char **env)
             line = readline(prompt);
             if (!line)
             {
-                if (isatty(0) && *env)
+                if (isatty(0) && env && *env)
                 {
                     if (prompt)
                         free(prompt);
-                    if (history)
-                    {
-                        save_history(&new_env, &history);
-                        free_history(&history);
-                    }
+                    if (lists->history)
+                        save_history(lists->env, lists->history);
                 }
-                if (ast)
-                    free_tree(&ast); // pas de free parse ici ?
-                free_list(&new_env);
-                exit (exit_code);
+
+                free_lists(lists);
+                exit(exit_code);
+            }           
+            if (ft_strlen(line) > 0)
+            {
+                if (!lists->history && isatty(0) && *env)
+                    ft_add_history(lists->env, lists->history, line);
+                else if (isatty(0) && *env && lists->history && *lists->history)
+                {
+                    if ((*lists->history)->prev == NULL || 
+                        ft_strncmp(line, (*lists->history)->prev->cmd_line, ft_strlen(line) + 1))
+                        ft_add_history(lists->env, lists->history, line);
+                }
+                else if (lists->history && *lists->history && 
+                        (*lists->history)->prev && 
+                        ft_strncmp(line, (*lists->history)->prev->cmd_line, ft_strlen(line) + 1))
+                    add_history(line);
             }
-            if (!history && (isatty(0) && *env && ft_strlen(line) > 0)) // si on n'a pas pu charge de fichier au demarrage
-                ft_add_history(&new_env, &history, line);
-            else if (isatty(0) && *env && ft_strlen(line) > 0 && ft_strncmp(line, history->prev->cmd_line, ft_strlen(line) + 1))
-                ft_add_history(&new_env, &history, line);
-            else if (ft_strlen(line) > 0 && ft_strncmp(line, history->prev->cmd_line, ft_strlen(line) + 1)) //pour ne pas ajouter les doublons / les prompts vides
-                add_history(line);
             //A gerer avec les signaux correctement !
             //pour avoir un historique complet on est suppose l'enregistrer dans un fichier a la sortie
             //et charger ce fichier au demarrage si il existe
@@ -296,21 +366,23 @@ int main(int ac, char **av, char **env)
         //
         //
         //
-        strings_env = lst_to_array(&new_env);
-        ast = parse(line, strings_env, new_env);
+        new_env = *lists->env;
+        strings_env = lst_to_array(lists->env);
+        *lists->ast = parse(line, strings_env, *lists->env);
         free_array(strings_env);
         strings_env = NULL;
-        exit_code = exec_ast(&ast, &new_env, origin_fds, &pipes);
-        update_exit_code_var(&new_env, exit_code);
+        exit_code = exec_ast(lists->ast, lists->env, origin_fds, lists->pipes);
+        update_exit_code_var(lists->env, exit_code);
         //update la variable exit_code dans l'environnement !
         dup2(origin_fds[0], STDIN_FILENO);
         dup2(origin_fds[1], STDOUT_FILENO);
         close(origin_fds[0]);
         close(origin_fds[1]);
-        if (ast)
+        if (lists->ast && *lists->ast) 
         {
-            free_tree(&ast);
-            ast = NULL;
+            tree_to_free = *lists->ast; 
+            free_tree(&tree_to_free); 
+            *lists->ast = NULL;
         }
         //
         //
@@ -318,7 +390,7 @@ int main(int ac, char **av, char **env)
         free(line);
         line = NULL;
     }
-    free_list(&new_env);
+    free_list(lists->env);
     exit(exit_code);
 }
 

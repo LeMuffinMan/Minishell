@@ -14,7 +14,26 @@
 # define STRUCTS_H
 
 # include <sys/wait.h>
+# include "tree.h"
 
+
+//
+# include "history.h"
+//
+
+typedef struct s_alias
+{
+	char *name;
+	char *content;
+	struct s_alias *next;
+} t_alias;
+
+typedef struct s_shell_fct
+{
+	char *name;
+	char **content;
+	struct s_shell_fcts *next;
+} t_shell_fct;
 
 typedef struct s_var
 {
@@ -38,11 +57,12 @@ typedef struct s_pipe
 typedef struct s_lists
 {
 	t_var **env;
+	t_tree **ast;
 	t_pipe **pipes;
 	t_hist **history;
-	t_alias **aliases
+	t_alias **aliases;
 	t_shell_fct **shell_fcts;
-} t_lists
+} t_lists;
 
 // ultrabonus
 // typedef struct s_shell_fct
