@@ -25,5 +25,6 @@ char	**lst_to_array(t_var **env);
 int		free_pipes(t_pipe **pipes);
 int		swap_nodes(t_var *n1, t_var *n2);
 int close_origin_fds(int origin_fds[2]);
+void free_lists(t_lists *lists);
 
 #endif

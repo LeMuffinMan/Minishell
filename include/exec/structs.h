@@ -62,6 +62,7 @@ typedef struct s_lists
 	t_hist **history;
 	t_alias **aliases;
 	t_shell_fct **shell_fcts;
+	int origin_fds[2];
 } t_lists;
 
 // ultrabonus

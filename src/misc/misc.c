@@ -109,6 +109,45 @@ int	free_array(char **array)
 	return (0);
 }
 
+void free_lists(t_lists *lists)
+{
+    if (!lists)
+        return;
+
+    if (lists->env)
+    {
+        free_list(lists->env);
+        free(lists->env);
+    }
+
+    if (lists->history)
+    {
+        free_history(lists->history);
+        free(lists->history);
+    }
+
+    if (lists->ast)
+    {
+        if (*lists->ast)
+        {
+            t_tree *tree_to_free = *lists->ast;
+            free_tree(&tree_to_free);
+        }
+        free(lists->ast);
+    }
+
+    if (lists->pipes)
+        free(lists->pipes);
+
+    if (lists->aliases)
+        free(lists->aliases);
+
+    if (lists->shell_fcts)
+        free(lists->shell_fcts);
+
+    free(lists);
+}
+
 /* int exec_here_docs(t_tree *ast) */
 /* { */
 /*     (void)ast; */

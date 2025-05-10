@@ -21,8 +21,13 @@
 #include <unistd.h>
 #include <readline/readline.h> // compiler avec -l readline
 
-int	builtins(char **arg, t_var **env, t_tree **ast, int origin_fds[2])
+int	builtins(char **arg, t_lists **lists)
 {
+	t_var **env;
+	t_tree **ast;
+
+	ast = (*lists)->ast;
+	env = (*lists)->env;
 	if (!*arg)
 		return (1);
 	else if (!ft_strncmp(arg[0], "echo", 5))
@@ -38,7 +43,7 @@ int	builtins(char **arg, t_var **env, t_tree **ast, int origin_fds[2])
 	else if (!ft_strncmp(arg[0], "env", 4))
 		return (builtin_env(env, arg));
 	else if (!ft_strncmp(arg[0], "exit", 5))
-		return (builtin_exit(arg, env, ast, origin_fds));
+		return (builtin_exit(arg, env, ast, lists));
 	else if (!ft_strncmp(arg[0], "source", 7))
 		return (builtin_source((*ast)->right->token->content[0], env));
 	else
@@ -46,18 +51,24 @@ int	builtins(char **arg, t_var **env, t_tree **ast, int origin_fds[2])
 }
 
 
-int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, int origin_fds[2])
+int	exec_pipe(t_tree **ast, t_lists **lists)
 {
 	pid_t left_pid;
 	pid_t right_pid;
 	int		pipefd[2];
 	int exit_code;
+	t_pipe **pipes;
+	t_var **env;
 
+	//
 	struct sigaction sa_ignore, sa_orig;
 	sigemptyset(&sa_ignore.sa_mask);
 	sa_ignore.sa_handler = SIG_IGN;
 	sa_ignore.sa_flags = 0;
 	sigaction(SIGINT, &sa_ignore, &sa_orig);
+	//
+	pipes = (*lists)->pipes;
+	env = (*lists)->env;
 	add_pipe(pipefd, pipes);
 	left_pid = fork();
 	if (left_pid < 0)
@@ -66,7 +77,7 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, int origin_fds[2])
 	}
 	if (left_pid == 0)
 	{
-		close_origin_fds(origin_fds);
+		close_origin_fds((*lists)->origin_fds);
 		close(pipefd[0]);
 		if ((*pipes)->next)
 		{
@@ -78,7 +89,7 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, int origin_fds[2])
 		dup2(pipefd[1], STDOUT_FILENO);
 		close(pipefd[1]);
 		free_pipes(pipes);
-		exit_code = exec_ast(&((*ast)->left), env, origin_fds, pipes);
+		exit_code = exec_ast(&(*ast)->left, lists);
 		free_list(env);
 		/* printf("exec : %p\n", (*ast)->head); */
 		free_tree(&((*ast)->head));
@@ -97,7 +108,7 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, int origin_fds[2])
 	if ((*ast)->right && (*ast)->right->token->token == PIPE)
 	{
 		//attendre avant ?
-		exit_code = exec_pipe(&((*ast)->right), env, pipes, origin_fds);
+		exit_code = exec_pipe(&((*ast)->right), lists);
 		exit_code = wait_children(left_pid, left_pid);
 		return (exit_code);
 	}
@@ -110,11 +121,11 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, int origin_fds[2])
 		}
 		if (right_pid == 0)
 		{
-			close_origin_fds(origin_fds);
+			close_origin_fds((*lists)->origin_fds);
 			dup2(pipefd[0], STDIN_FILENO);
 			close(pipefd[0]);
 			free_pipes(pipes);
-			exit_code = exec_ast(&((*ast)->right), env, origin_fds, pipes);
+			exit_code = exec_ast(&((*ast)->right), lists);
 			free_list(env);
 			free_tree(&((*ast)->head));
 			exit(exit_code);
@@ -135,20 +146,21 @@ int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, int origin_fds[2])
 /* #include <stdio.h> */
 //BUILT_IN : PARENT
 //CMD : CHILD
-int	exec_cmd(t_tree **ast, t_var **env, int origin_fds[2], t_pipe **pipes)
+int	exec_cmd(t_tree **ast, t_lists **lists)
 {
 	char	**strings_env;
 	pid_t	pid;
 	int exit_code;
 	char *s;
 	char *tmp;
+	t_var **env;
 
-	(void)pipes;
+	env = (*lists)->env;
 	/* expand_cmd_sub((*ast)->token->content, env); */
 	//les builtins ne mettent pas a jour la variable _ !!
 	if ((*ast)->token->token == BUILT_IN  || !ft_strncmp((*ast)->token->content[0], "source", 7))
 	{
-		exit_code = builtins((*ast)->token->content, env, ast, origin_fds);
+		exit_code = builtins((*ast)->token->content, lists);
 		return (exit_code);
 	}
 	if (is_a_directory((*ast)->token->content[0]))
@@ -180,8 +192,8 @@ int	exec_cmd(t_tree **ast, t_var **env, int origin_fds[2], t_pipe **pipes)
 		if (pid == 0)
 		{
     	setup_child_signals();
-			if (origin_fds[0] > 2 || origin_fds[1] > 2)
-				close_origin_fds(origin_fds);
+			if ((*lists)->origin_fds[0] > 2 || (*lists)->origin_fds[1] > 2)
+				close_origin_fds((*lists)->origin_fds);
 			strings_env = lst_to_array(env);
 			execve((*ast)->token->content[0], (*ast)->token->content,
 				strings_env);
@@ -233,7 +245,7 @@ int print_perm_error(char *file)
 	return (1);
 }
 
-int redirect_stdio(t_tree **ast, t_var **env, int origin_fds[2], t_pipe **pipes)
+int redirect_stdio(t_tree **ast, t_lists **lists)
 {
 	t_tree *left;
 	t_tree *right;
@@ -252,17 +264,17 @@ int redirect_stdio(t_tree **ast, t_var **env, int origin_fds[2], t_pipe **pipes)
 	if (exit_code == -1)
 		return (-1);//on stop la chaine de redirections
 	if (left && (left->token->token == R_IN || left->token->token == APPEND || left->token->token == TRUNC || left->token->token == HD))
-		exit_code = redirect_stdio(&left, env, origin_fds, pipes);
+		exit_code = redirect_stdio(&left, lists);
 	if (exit_code == 0 && right && (right->token->token == R_IN || right->token->token == APPEND || right->token->token == TRUNC || right->token->token == HD))
-		exit_code = redirect_stdio(&right, env, origin_fds, pipes);
+		exit_code = redirect_stdio(&right, lists);
 	if (exit_code == 0 && left && (left->token->token == CMD || left->token->token == BUILT_IN))
-		exit_code = exec_cmd(&left, env, origin_fds, pipes);
+		exit_code = exec_cmd(&left, lists);
 	if (exit_code == 0 && right && (right->token->token == CMD || right->token->token == BUILT_IN))
-		exit_code = exec_cmd(&right, env, origin_fds, pipes);
+		exit_code = exec_cmd(&right, lists);
 	return (exit_code);
 }
 
-int	exec_ast(t_tree **ast, t_var **env, int origin_fds[2], t_pipe **pipes)
+int	exec_ast(t_tree **ast, t_lists **lists)
 {
   int exit_code;
 
@@ -275,12 +287,12 @@ int	exec_ast(t_tree **ast, t_var **env, int origin_fds[2], t_pipe **pipes)
   	return ((*ast)->token->error);
   }
 	if ((*ast)->token->token == R_IN || (*ast)->token->token == APPEND || (*ast)->token->token == TRUNC)
-		return(redirect_stdio(ast, env, origin_fds, pipes));
+		return(redirect_stdio(ast, lists));
 	if ((*ast)->token->token == PIPE)
-		return (exec_pipe(ast, env, pipes, origin_fds));
+		return (exec_pipe(ast, lists));
 	if ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD  || !ft_strncmp((*ast)->token->content[0], "source", 7))
 	{
-		exit_code = exec_cmd(ast, env, origin_fds, pipes);
+		exit_code = exec_cmd(ast, lists);
 		return (exit_code);
 	}
 	//errors
@@ -351,8 +363,8 @@ int	exec_ast(t_tree **ast, t_var **env, int origin_fds[2], t_pipe **pipes)
 /* mimishell: oelleaum: command not found */
 /* [Minishell]$ 2004h[Minishell]$ */
 
-// exec_ast.c
-/* int exec_ast(t_tree **ast, t_var **env, t_pipe **pipes); */
+// .c
+/* int (t_tree **ast, t_var **env, t_pipe **pipes); */
 /* int boolean_operators(t_tree **ast, t_var **env, t_pipe **pipes); */
 /* int redirect_stdio(t_tree **ast, t_var **env, t_pipe **pipes); */
 /* int exec_cmd(t_tree **ast, t_var **env, t_pipe **pipes); */

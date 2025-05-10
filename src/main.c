@@ -31,22 +31,22 @@
 /* { */
 /*     t_tree *seq; */
 /*     int exit_code; */
-/* 	int origin_fds[2]; */
+/* 	int lists->origin_fds[2]; */
 /**/
-/* 	origin_fds[0] = dup(STDIN_FILENO); */
-/* 	origin_fds[1] = dup(STDOUT_FILENO); */
+/* 	lists->origin_fds[0] = dup(STDIN_FILENO); */
+/* 	lists->origin_fds[1] = dup(STDOUT_FILENO); */
 /*     seq = NULL; */
 /*     strings_env = lst_to_array(lists->env); */
 /*     seq = parse(sequence, strings_env); */
 /*     free_array(strings_env); */
 /*     strings_env = NULL; */
-/*     exit_code = exec_seq(&seq, env, origin_fds); */
+/*     exit_code = exec_seq(&seq, env, lists->origin_fds); */
 /*     //update la variable exit_code dans l'environnement ! */
 /*     //ici on update tout l'environnement ? */
-/*     dup2(origin_fds[0], STDIN_FILENO); */
-/*     dup2(origin_fds[1], STDOUT_FILENO); */
-/*     close(origin_fds[0]); */
-/*     close(origin_fds[1]); */
+/*     dup2(lists->origin_fds[0], STDIN_FILENO); */
+/*     dup2(lists->origin_fds[1], STDOUT_FILENO); */
+/*     close(lists->origin_fds[0]); */
+/*     close(lists->origin_fds[1]); */
 /*     if (seq) */
 /*     { */
 /*         free_parse(seq->token, NULL, 0); */
@@ -225,35 +225,7 @@ int init_lists(t_lists **lists)
     return (0);
 }
 
-void free_lists(t_lists *lists)
-{
-    if (!lists)
-        return;
 
-    if (lists->env)
-    {
-        free_list(lists->env);
-        free(lists->env);
-    }
-
-    if (lists->history)
-    {
-        free_history(lists->history);
-        free(lists->history);
-    }
-
-    if (lists->ast && *lists->ast)
-    {
-        t_tree *tree_to_free = *lists->ast;
-        free_tree(&tree_to_free);
-        free(lists->ast);
-    }
-
-    if (lists->pipes)
-        free(lists->pipes);
-
-    free(lists);
-}
 
 int main(int ac, char **av, char **env)
 {
@@ -267,7 +239,7 @@ int main(int ac, char **av, char **env)
     /* t_pipe *pipes; */
     /* t_hist *history; */
     char **strings_env;
-	int origin_fds[2];
+	/* int lists->origin_fds[2]; */
 
     /* if (isatty(1)) */
     /* { */
@@ -321,7 +293,6 @@ int main(int ac, char **av, char **env)
                     if (lists->history)
                         save_history(lists->env, lists->history);
                 }
-
                 free_lists(lists);
                 exit(exit_code);
             }           
@@ -345,8 +316,8 @@ int main(int ac, char **av, char **env)
             //et charger ce fichier au demarrage si il existe
             //on peut fixer une limite a l'historique des commandes 
         }
-	    origin_fds[0] = dup(STDIN_FILENO);
-	    origin_fds[1] = dup(STDOUT_FILENO);
+	    lists->origin_fds[0] = dup(STDIN_FILENO);
+	    lists->origin_fds[1] = dup(STDOUT_FILENO);
         if (isatty(0) && *env)
         {
             free(prompt);
@@ -371,13 +342,13 @@ int main(int ac, char **av, char **env)
         *lists->ast = parse(line, strings_env, *lists->env);
         free_array(strings_env);
         strings_env = NULL;
-        exit_code = exec_ast(lists->ast, lists->env, origin_fds, lists->pipes);
+        exit_code = exec_ast(lists->ast, &lists);
         update_exit_code_var(lists->env, exit_code);
         //update la variable exit_code dans l'environnement !
-        dup2(origin_fds[0], STDIN_FILENO);
-        dup2(origin_fds[1], STDOUT_FILENO);
-        close(origin_fds[0]);
-        close(origin_fds[1]);
+        dup2(lists->origin_fds[0], STDIN_FILENO);
+        dup2(lists->origin_fds[1], STDOUT_FILENO);
+        close(lists->origin_fds[0]);
+        close(lists->origin_fds[1]);
         if (lists->ast && *lists->ast) 
         {
             tree_to_free = *lists->ast; 

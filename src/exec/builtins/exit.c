@@ -38,6 +38,7 @@ int exit_no_arg(t_var **env, t_tree **ast, int origin_fds[2])
   /* free_history(history); */
 	ft_putstr_fd("exit\n", 1);
 	close_origin_fds(origin_fds);
+	free_lists(lists);
 	exit(0);
 }
 
@@ -68,6 +69,7 @@ int exit_numeric_argument_required_error(char **arg, t_var **env, t_tree **ast, 
 	free(s);
 	free_list(env);
 	free_tree(&(*ast)->head);
+	free_lists(lists);
 	//free le prompt ici ?
   /* free_history(history); */
 	close_origin_fds(origin_fds);
@@ -86,6 +88,7 @@ int exit_with_valid_arg(char **arg, t_var **env, t_tree **ast, int origin_fds[2]
 	//free le prompt ici ?
   /* free_history(history); */
 	close_origin_fds(origin_fds);
+	free_lists(lists);
 	exit(n);
 }
 

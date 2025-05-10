@@ -36,7 +36,7 @@ int		builtin_echo(char **arg);
 int		builtin_env(t_var **env, char **arg);
 
 // builtins/exit
-int		builtin_exit(char **arg, t_var **env, t_tree **ast, int origin_fds[2]);
+int		builtin_exit(char **arg, t_var **env, t_tree **ast, t_lists **lists);
 
 // builtins/pwd
 int		builtin_pwd(void);
