@@ -94,14 +94,14 @@ static bool	to_expand(t_token **node, t_var *list_env)
 		if ((*node)->content[0][j] == '$')
 		{
 			if ((j > 0 && (*node)->content[0][j - 1] == '\\')
-				|| ((*node)->content[0][j + 1]
-				&& ft_isspace((*node)->content[0][j + 1])))
-				j++;
+			|| ((*node)->content[0][j + 1]
+			&& ft_isspace((*node)->content[0][j + 1])))
+			j++;
 			else
 			{
 				expand_node_content(node, list_env, j + 1);
 				if ((*node)->content[0][0])
-					flag = true;
+				flag = true;
 				j = -1;
 			}
 		}

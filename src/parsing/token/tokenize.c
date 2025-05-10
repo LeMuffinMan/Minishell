@@ -92,11 +92,13 @@ void	is_command(t_token **node, char **envp)
 	path = NULL;
 	cmd_w_path = NULL;
 	flag = false;
+	if (!(*node)->content[0][0])
+		return ;
 	if ((*node)->error == LITERAL_EXPAND)
 		flag = true;
 	if ((*node)->token == NO_TOKEN || (*node)->token == EXPAND
 		|| (*node)->token == D_QUOTE || (*node)->token == S_QUOTE)
-		cmd_w_path = verif_command(node, tmp, path, envp);
+		cmd_w_path = verif_command(node, tmp, path, envp);	
 	handle_is_command(*node, cmd_w_path);
 	free(cmd_w_path);
 	if (flag && (*node)->error != 0)

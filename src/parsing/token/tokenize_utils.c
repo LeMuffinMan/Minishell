@@ -76,8 +76,7 @@ static void	case_of_cmd_quote(t_token *node, char **cmd_in_quote)
 {
 	if (node->token == D_QUOTE || node->token == S_QUOTE)
 	{
-		*cmd_in_quote = ft_strndup(&node->content[0][1],
-				ft_strlen(node->content[0]) - 2);
+		*cmd_in_quote = ft_strdup(node->content[0]);
 		if (!*cmd_in_quote)
 			free_parse(node,
 				"Malloc failed in function 'case_of_cmd_quote'", MEM_ALLOC);

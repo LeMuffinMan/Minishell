@@ -30,7 +30,7 @@ static char	*ft_allword(const char *str, int start, int end)
 	return (word);
 }
 
-static size_t	ft_countword(const char *str, char c)
+static size_t	count_word(const char *str, char c)
 {
 	int	i;
 	int	count;
@@ -86,7 +86,7 @@ char	**ft_split(const char *s, char c)
 	i = 0;
 	j = 0;
 	word = -1;
-	str = ft_allcalloc((ft_countword(s, c) + 1), sizeof(char *));
+	str = ft_allcalloc((count_word(s, c) + 1), sizeof(char *));
 	while (str != NULL && i <= ft_strlen(s))
 	{
 		if (s[i] != c && word < 0)

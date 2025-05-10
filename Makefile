@@ -71,6 +71,7 @@ SRC					=	main.c \
 						handle_cmd_and_path_utils.c \
 						handle_cmd_and_path.c \
 						handle_space.c \
+						handle_space_utils.c \
 						handle_utils.c \
 						quote.c \
 						quote_utils.c \

@@ -87,6 +87,8 @@ void	handle_space(t_token **head)
 	tmp = *head;
 	while (tmp)
 	{
+		if (tmp->token == EXPAND && tmp->error != 200)
+			delete_space_content(&tmp);
 		if (tmp->token == BUILT_IN && !ft_strncmp(tmp->content[0], "echo", 5))
 		{
 			tmp = tmp->next;

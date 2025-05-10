@@ -26,5 +26,6 @@ char					*ft_strjoin3(char *str_node, char *value, int j, int index);
 void					copy_value(t_token *node, char *value, char **value_cpy);
 bool					init_expand(t_token **head, t_var *list_env);
 void					handle_space(t_token **head);
+void					delete_space_content(t_token **node);
 
 #endif
