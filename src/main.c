@@ -185,7 +185,7 @@ int main(int ac, char **av, char **env)
     t_var    *new_env;
     t_tree *ast;
     t_pipe *pipes;
-    /* t_hist *history; */
+    t_hist *history;
     char **strings_env;
 	int origin_fds[2];
 
@@ -201,7 +201,7 @@ int main(int ac, char **av, char **env)
     new_env = NULL;
     ast = NULL;
     pipes = NULL;
-    /* history = NULL; */
+    history = NULL;
     /* utiliser getenv ?
         * Si on n'a pas d'env uniquement ?*/
     init_env(&new_env, env, av[0]);
@@ -211,9 +211,8 @@ int main(int ac, char **av, char **env)
     //revoir retour d'erreur
     if (isatty(0) && *env && find_minishellrc(&new_env, NULL))
         load_minishellrc(&new_env, NULL);
-    /* if (isatty(0) && *env) */
-    /*     load_history(&new_env, &history); */
-    //ici on charge l'historique si le fichier existe 
+    if (isatty(0) && *env)
+        load_history(&new_env, &history);
     while (1)
     {
         setup_parent_signals();
@@ -238,18 +237,22 @@ int main(int ac, char **av, char **env)
                 {
                     if (prompt)
                         free(prompt);
-                    /* if (history) */
-                    /*     free_history(&history); */
+                    if (history)
+                    {
+                        save_history(&new_env, &history);
+                        free_history(&history);
+                    }
                 }
                 if (ast)
                     free_tree(&ast); // pas de free parse ici ?
                 free_list(&new_env);
                 exit (exit_code);
             }
-            /* if (isatty(0) && *env) */
-            /*     ft_add_history(&new_env, &history, line); */
-            /* else */
-            if (ft_strlen(line) > 0)
+            if (!history && (isatty(0) && *env && ft_strlen(line) > 0)) // si on n'a pas pu charge de fichier au demarrage
+                ft_add_history(&new_env, &history, line);
+            else if (isatty(0) && *env && ft_strlen(line) > 0 && ft_strncmp(line, history->prev->cmd_line, ft_strlen(line) + 1))
+                ft_add_history(&new_env, &history, line);
+            else if (ft_strlen(line) > 0 && ft_strncmp(line, history->prev->cmd_line, ft_strlen(line) + 1)) //pour ne pas ajouter les doublons / les prompts vides
                 add_history(line);
             //A gerer avec les signaux correctement !
             //pour avoir un historique complet on est suppose l'enregistrer dans un fichier a la sortie

@@ -25,6 +25,7 @@ typedef struct s_hist
 int ft_add_history(t_var **env, t_hist **history, char *line);
 int load_history(t_var **env, t_hist **history);
 int free_history(t_hist **history);
+int save_history(t_var **env, t_hist **history);
 
 
 #endif

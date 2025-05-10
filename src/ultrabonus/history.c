@@ -140,7 +140,22 @@ int is_valid_history_file(char *file)
 }
 
 
+int add_loaded_history(t_hist **history)
+{
+  t_hist *tmp;
 
+  if (!history || !*history)
+    return (1);
+  tmp = *history;
+  while (1)
+  {
+    add_history(tmp->cmd_line); //gerer l'erreur
+    tmp = tmp->next;
+    if (tmp == *history)
+      break ;
+  }
+  return (0);
+}
 
 int load_history(t_var **env, t_hist **history)
 {
@@ -172,6 +187,7 @@ int load_history(t_var **env, t_hist **history)
   if (is_valid_history_file(file)) //checker si fichier vide
     return (1);
   *history = get_history(file);
+  free(file);
   if (!history)
   {
     //si il y a eu un probleme de malloc
@@ -179,56 +195,69 @@ int load_history(t_var **env, t_hist **history)
     ///
     return (-1);
   }
+  if (add_loaded_history(history))
+  {
+    //la fonction add_history a merde
+    return (1);
+  }
   //on a pu remplir un historique
   return (0);
 }
 
 int free_history(t_hist **history)
 {
-  t_hist *tmp;
+    t_hist *current;
+    t_hist *next;
 
-  tmp = *history;
-  if (!*history)
-    return (0);
-  if (tmp->next == tmp)
-  {
-    free(tmp->cmd_line);
-    free(tmp);
-    return (0);
-  }
-  while (1)
-  {
-    free(tmp->prev->cmd_line);
-    free(tmp->prev);
-    if (!tmp->next)
+    if (!history || !*history)
+        return (0);
+    current = *history;
+    next = current->next;
+    while (current != *history || next != *history)
     {
-      free(tmp->cmd_line);
-      free(tmp);
-      return (0);
+        free(current->cmd_line);
+        free(current);
+        current = next;
+        if (current != *history)
+            next = current->next;
     }
-    tmp = tmp->next;
-  }
-  history = NULL;
-  return (0);
+    *history = NULL;
+    return (0);
 }
                  
-
 int save_history(t_var **env, t_hist **history)
 {
   int fd;
   t_hist *tmp;
   char *file;
+  char *temp;
 
   if (!history)
     return (1);
   file = get_history_path(env);
   if (!file)
-    return (2);
-  fd = open(file, O_WRONLY | O_TRUNC | O_CREAT, 644);
+  {
+    file = get_value(env, "HOME");
+    if (!file)
+    {
+      file = get_value(env, "USER");
+      if (file)
+      {
+        file = ft_strjoin("/home/", file);
+        temp = file;
+      }
+    }
+  } 
+  if (file)
+    file = ft_strjoin(file, "/.minishell_history");
+  else
+    file = ft_strjoin(file, ".minishell_history");
+  fd = open(file, O_WRONLY | O_TRUNC | O_CREAT, 0644);
   if (fd == -1)
   {
     //open erro
   }
+  free(file);
   tmp = *history; 
 /*     HISTFILESIZE : Nombre maximal de commandes conservées dans le fichier d'historique. */
   //on check la variable histfilesize
@@ -242,6 +271,7 @@ int save_history(t_var **env, t_hist **history)
     if (tmp == *history)
       break;
   }
+  close(fd);
   return (0);
   //normal et avec signaux !
   //a l'arret :
