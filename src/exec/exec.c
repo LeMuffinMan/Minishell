@@ -43,14 +43,14 @@ int	builtins(char **arg, t_lists **lists)
 	else if (!ft_strncmp(arg[0], "env", 4))
 		return (builtin_env(env, arg));
 	else if (!ft_strncmp(arg[0], "exit", 5))
-		return (builtin_exit(arg, env, ast, lists));
+		return (builtin_exit(arg, lists));
 	else if (!ft_strncmp(arg[0], "source", 7))
 		return (builtin_source((*ast)->right->token->content[0], env));
 	else
 		return (1);
 }
 
-
+//DEFINE UN MAX PIPEFD ?
 int	exec_pipe(t_tree **ast, t_lists **lists)
 {
 	pid_t left_pid;
@@ -90,9 +90,10 @@ int	exec_pipe(t_tree **ast, t_lists **lists)
 		close(pipefd[1]);
 		free_pipes(pipes);
 		exit_code = exec_ast(&(*ast)->left, lists);
-		free_list(env);
+		/* free_list(env); */
 		/* printf("exec : %p\n", (*ast)->head); */
-		free_tree(&((*ast)->head));
+		/* free_tree(&((*ast)->head)); */
+		free_lists(*lists);
 		exit(exit_code);
 	}
 	else
@@ -126,8 +127,9 @@ int	exec_pipe(t_tree **ast, t_lists **lists)
 			close(pipefd[0]);
 			free_pipes(pipes);
 			exit_code = exec_ast(&((*ast)->right), lists);
-			free_list(env);
-			free_tree(&((*ast)->head));
+			/* free_list(env); */
+			/* free_tree(&((*ast)->head)); */
+			free_lists(*lists);
 			exit(exit_code);
 		}
 		else
@@ -165,16 +167,6 @@ int	exec_cmd(t_tree **ast, t_lists **lists)
 	}
 	if (is_a_directory((*ast)->token->content[0]))
 	{
-		/* if (!ft_strncmp((*ast)->token->content[0], ".", 2)) */
-		/* { */
-		/* 	ft_putstr_fd("minishell: .: filename argument required\n.: usage: . filename [arguments]\n", 2); */
-		/* 	return(2); */
-		/* } */
-		/* if (!ft_strncmp((*ast)->token->content[0], "..", 3)) */
-		/* { */
-		/* 	ft_putstr_fd("minishell: ..: command not found\n", 2); */
-		/* 	return(127); */
-		/* } */
 		s = ft_strjoin("minishell: ", (*ast)->token->content[0]);
 		tmp = s;
 		s = ft_strjoin(s, ": Is a directory\n");

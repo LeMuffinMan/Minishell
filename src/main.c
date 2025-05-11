@@ -233,7 +233,7 @@ int main(int ac, char **av, char **env)
     char    *prompt;
     int        exit_code;
     t_lists *lists;
-    t_var *new_env;
+    /* t_var *new_env; */
     t_tree *tree_to_free; 
     /* t_tree *ast; */
     /* t_pipe *pipes; */
@@ -286,7 +286,7 @@ int main(int ac, char **av, char **env)
             line = readline(prompt);
             if (!line)
             {
-                if (isatty(0) && env && *env)
+                if (isatty(0) && *env)
                 {
                     if (prompt)
                         free(prompt);
@@ -296,20 +296,24 @@ int main(int ac, char **av, char **env)
                 free_lists(lists);
                 exit(exit_code);
             }           
-            if (ft_strlen(line) > 0)
+            if (ft_strlen(line) > 0 && !is_duplicated_hist_entry(lists->history, line))
             {
-                if (!lists->history && isatty(0) && *env)
+                if (isatty(0) && *env)
                     ft_add_history(lists->env, lists->history, line);
-                else if (isatty(0) && *env && lists->history && *lists->history)
-                {
-                    if ((*lists->history)->prev == NULL || 
-                        ft_strncmp(line, (*lists->history)->prev->cmd_line, ft_strlen(line) + 1))
-                        ft_add_history(lists->env, lists->history, line);
-                }
-                else if (lists->history && *lists->history && 
-                        (*lists->history)->prev && 
-                        ft_strncmp(line, (*lists->history)->prev->cmd_line, ft_strlen(line) + 1))
+                else
                     add_history(line);
+                /* if (!lists->history && isatty(0) && *env) */
+                /*     ft_add_history(lists->env, lists->history, line); */
+                /* else if (isatty(0) && *env && lists->history && *lists->history) */
+                /* { */
+                /*     if ((*lists->history)->prev == NULL ||  */
+                /*         ft_strncmp(line, (*lists->history)->prev->cmd_line, ft_strlen(line) + 1)) */
+                /*         ft_add_history(lists->env, lists->history, line); */
+                /* } */
+                /* else if (lists->history && *lists->history &&  */
+                /*         (*lists->history)->prev &&  */
+                /*         ft_strncmp(line, (*lists->history)->prev->cmd_line, ft_strlen(line) + 1)) */
+                /*     add_history(line); */
             }
             //A gerer avec les signaux correctement !
             //pour avoir un historique complet on est suppose l'enregistrer dans un fichier a la sortie
@@ -337,7 +341,7 @@ int main(int ac, char **av, char **env)
         //
         //
         //
-        new_env = *lists->env;
+        /* new_env = *lists->env; */
         strings_env = lst_to_array(lists->env);
         *lists->ast = parse(line, strings_env, *lists->env);
         free_array(strings_env);

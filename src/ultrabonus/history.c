@@ -206,25 +206,27 @@ int load_history(t_var **env, t_hist **history)
 
 int free_history(t_hist **history)
 {
-    t_hist *current;
-    t_hist *next;
+  t_hist *tmp;
 
-    if (!history || !*history)
-        return (0);
-    current = *history;
-    next = current->next;
-    while (current != *history || next != *history)
+  if (!history || !*history)
+      return (0);
+  tmp = *history;
+  tmp->prev->next = NULL;
+  while(1)
+  {
+    if (!tmp->next)
     {
-        free(current->cmd_line);
-        free(current);
-        current = next;
-        if (current != *history)
-            next = current->next;
+      free(tmp->cmd_line);
+      free(tmp);
+      return (0);
     }
-    *history = NULL;
-    return (0);
+    tmp = tmp->next;
+    free(tmp->prev->cmd_line);
+    free(tmp->prev);
+  }
+  return (1); 
 }
-                 
+
 int save_history(t_var **env, t_hist **history)
 {
   int fd;
@@ -232,7 +234,8 @@ int save_history(t_var **env, t_hist **history)
   char *file;
   char *temp;
 
-  if (!history)
+  temp = NULL;
+  if (!history || !*history)
     return (1);
   file = get_history_path(env);
   if (!file)
@@ -252,6 +255,8 @@ int save_history(t_var **env, t_hist **history)
     file = ft_strjoin(file, "/.minishell_history");
   else
     file = ft_strjoin(file, ".minishell_history");
+  if (temp)
+    free(temp);
   fd = open(file, O_WRONLY | O_TRUNC | O_CREAT, 0644);
   if (fd == -1)
   {
@@ -645,6 +650,15 @@ int is_valid_history_size(char *value)
     i++;
   }
   return (1);
+}
+
+int is_duplicated_hist_entry(t_hist **history, char *line)
+{
+  if (!history || !*history || !(*history)->prev || !(*history)->prev->cmd_line)
+    return (0);
+  if (!ft_strncmp((*history)->prev->cmd_line, line, ft_strlen(line) + 1))
+    return (1);
+  return (0);
 }
 
 int ft_add_history(t_var **env, t_hist **history, char *line)

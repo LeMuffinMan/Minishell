@@ -30,15 +30,16 @@ int	is_only_numeric_argument(char *s)
 	return (1);
 }
 
-int exit_no_arg(t_var **env, t_tree **ast, int origin_fds[2])
+int exit_no_arg(t_tree **ast, t_lists **lists)
 {
-	free_list(env);
-	free_tree(&(*ast)->head);
+	/* free_list(lists->env); */
+	/* free_tree(&(*ast)->head); */
 	//free le prompt ici ?
   /* free_history(history); */
+  (void)ast;
 	ft_putstr_fd("exit\n", 1);
-	close_origin_fds(origin_fds);
-	free_lists(lists);
+	close_origin_fds((*lists)->origin_fds);
+	free_lists(*lists);
 	exit(0);
 }
 
@@ -56,7 +57,7 @@ int exit_overflow_error(char **arg)
 	return (2);
 }
 
-int exit_numeric_argument_required_error(char **arg, t_var **env, t_tree **ast, int origin_fds[2])
+int exit_numeric_argument_required_error(char **arg, t_tree **ast, t_lists **lists)
 {
 	char *s;
 	char *tmp;
@@ -67,38 +68,39 @@ int exit_numeric_argument_required_error(char **arg, t_var **env, t_tree **ast, 
 	free(tmp);
 	ft_putstr_fd(s, 2);
 	free(s);
-	free_list(env);
-	free_tree(&(*ast)->head);
-	free_lists(lists);
-	//free le prompt ici ?
+	/* free_list(env); */
+	/* free_tree(&(*ast)->head); */
+	free_lists(*lists);
   /* free_history(history); */
-	close_origin_fds(origin_fds);
+	close_origin_fds((*lists)->origin_fds);
+  (void)ast;
 	exit(2);
 }
 
-int exit_with_valid_arg(char **arg, t_var **env, t_tree **ast, int origin_fds[2])
+int exit_with_valid_arg(char **arg, t_tree **ast, t_lists **lists)
 {
 	int n;
 
 	n = ft_atoi(arg[1]);
 	if (n > 255)
 		n = n % 256;
-	free_list(env);
-	free_tree(&(*ast)->head);
+	/* free_list(env); */
+	/* free_tree(&(*ast)->head); */
 	//free le prompt ici ?
   /* free_history(history); */
-	close_origin_fds(origin_fds);
-	free_lists(lists);
+	close_origin_fds((*lists)->origin_fds);
+	free_lists(*lists);
+  (void)ast;
 	exit(n);
 }
 
 // a voir
 // des fuites et des exits a des moments ou ils doivent pas
 // a tester : is only numeric arg
-int	builtin_exit(char **arg, t_var **env, t_tree **ast, int origin_fds[2])
+int	builtin_exit(char **arg, t_tree **ast, t_lists **lists)
 {
 	if (!arg[1])
-		exit_no_arg(env, ast, origin_fds);
+		exit_no_arg(ast, lists);
 	if (ft_strlen(arg[1]) > 18)
 		return (exit_overflow_error(arg));
 	if (arg[2])
@@ -107,8 +109,8 @@ int	builtin_exit(char **arg, t_var **env, t_tree **ast, int origin_fds[2])
 		return (1);
 	}
 	if (!is_only_numeric_argument(arg[1]))
-		return(exit_numeric_argument_required_error(arg, env, ast, origin_fds));
-	exit_with_valid_arg(arg, env, ast, origin_fds);
+		return(exit_numeric_argument_required_error(arg, ast, lists));
+	exit_with_valid_arg(arg, ast, lists);
 	return (0);
 }
 /* Exit status: */

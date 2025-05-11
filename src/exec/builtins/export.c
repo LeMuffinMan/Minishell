@@ -193,7 +193,7 @@ char *clean_inc_operator(char *arg)
 	int j;
 	char *s;
 
-	s = malloc(sizeof(char) * ft_strlen(arg) - 1);
+	s = malloc(sizeof(char) * (ft_strlen(arg)));
 	if (!s)
 	{
 		//malloc error
@@ -207,16 +207,13 @@ char *clean_inc_operator(char *arg)
 	s[i] = '=';
 	j = i + 1;
 	i+=2;
-	if (arg[i])
+	while(arg[i])
 	{
-		while(arg[i])
-		{
-			s[j] = arg[i];
-			j++;
-			i++;
-		}
+		s[j] = arg[i];
+		j++;
+		i++;
 	}
-	s[i] = '\0';
+	s[j] = '\0';
 	return (s);
 }
 
@@ -260,7 +257,7 @@ int add_or_update_var(t_var **env, char *var)
 	free_array(key);
 	if (node) // si on l'a deja
 	{
-		value = ft_strchr(var, '=');
+		value = ft_strchr(var, '=') + 1;
 		if (inc)
 		{
 			tmp = node->value;
@@ -284,7 +281,6 @@ int	builtin_export(t_var **env, char **arg)
 {
 	int i;
 	char *s;
-	int inc;
 	int exit_code;
 
 	i = 1;
@@ -293,7 +289,6 @@ int	builtin_export(t_var **env, char **arg)
 	while(arg[i])
 	{
 		exit_code = 0;
-		inc = 0;
 		if (is_var_declaration(arg[i])) //si la declaration de variable est vlaide
 		{
 			s = get_full_variable_declaration(arg, i);

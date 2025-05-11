@@ -71,7 +71,7 @@ int copy_end_prompt(t_prompt *prompt, int i, int j, int len)
       prompt->prompt[j++] = prompt->ps1[i];
   /* if (prompt->user_type) */
   /*   prompt->prompt[j++] = prompt->user_type[0]; */
-  prompt->prompt[j++] = ' ';
+  /* prompt->prompt[j++] = ' '; */
   prompt->prompt[j] = '\0';
   return (0);
 }
