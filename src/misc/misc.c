@@ -148,6 +148,17 @@ void free_lists(t_lists *lists)
     free(lists);
 }
 
+
+int array_size(char **array)
+{
+  int i;
+
+  i = 0;
+  while (array && array[i])
+    i++;
+  return (i);
+
+}
 /* int exec_here_docs(t_tree *ast) */
 /* { */
 /*     (void)ast; */

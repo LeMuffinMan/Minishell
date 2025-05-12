@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "aliases.h"
 #include "exec.h"
 #include "builtins.h"
 #include "env_utils.h"
@@ -255,6 +256,10 @@ int redirect_stdio(t_tree **ast, t_lists **lists)
 	exit_code = open_dup2_close((*ast)->token->content[1], (*ast)->token->token);
 	if (exit_code == -1)
 		return (-1);//on stop la chaine de redirections
+	if (left && (left->token->token == DIREC && left->token->error == 127))
+		exit_code = error_cmd(left->token->content[0], 127);
+	if (right && (right->token->token == DIREC && right->token->error == 127))
+		exit_code = error_cmd(right->token->content[0], 127);
 	if (left && (left->token->token == R_IN || left->token->token == APPEND || left->token->token == TRUNC || left->token->token == HD))
 		exit_code = redirect_stdio(&left, lists);
 	if (exit_code == 0 && right && (right->token->token == R_IN || right->token->token == APPEND || right->token->token == TRUNC || right->token->token == HD))
@@ -269,6 +274,10 @@ int redirect_stdio(t_tree **ast, t_lists **lists)
 int	exec_ast(t_tree **ast, t_lists **lists)
 {
   int exit_code;
+  t_alias *alias;
+  t_tree *parse_alias;
+  char *line;
+  char **strings_env;
 
   exit_code = 0;
   if (!*ast)
@@ -287,9 +296,17 @@ int	exec_ast(t_tree **ast, t_lists **lists)
 		exit_code = exec_cmd(ast, lists);
 		return (exit_code);
 	}
-	//errors
-	/* if (!ft_strncmp((*ast)->token->content[0], ":", 2)) */
-	/* 		return(0); */
+		alias = is_a_known_alias((*ast)->token->content[0], (*lists)->aliases);
+	if ((*ast)->token->error == 127 && alias) 
+	{
+		/* printf("content[0] = %s\n", (*ast)->token->content[0]); */
+		line = expand_alias((*ast)->token->content, &alias);	
+		parse_alias = NULL;
+		strings_env = lst_to_array((*lists)->env);
+		parse_alias = parse(line, strings_env, *(*lists)->env);
+		//concatener la ligne avec content[i] et la renvoyer au parsing
+		return (exec_ast(&parse_alias, lists));
+	}
 	if ((*ast)->token->error == 127 || (*ast)->token->error == 126 || (*ast)->token->error == 21)
 		return (error_cmd((*ast)->token->content[0], (*ast)->token->error));
 	//Ultrabonus

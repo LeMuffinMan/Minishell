@@ -222,6 +222,28 @@ int init_lists(t_lists **lists)
         return (-1);
     }
     *(*lists)->history = NULL;
+    (*lists)->aliases = malloc(sizeof(t_alias*));
+    if (!(*lists)->aliases)
+    {
+        free((*lists)->history);
+        free((*lists)->pipes);
+        free((*lists)->ast);
+        free((*lists)->env);
+        free(*lists);
+        return (-1);
+    }
+    *(*lists)->aliases = NULL;
+    (*lists)->shell_fcts = malloc(sizeof(t_shell_fct*));
+    if (!(*lists)->shell_fcts)
+    {
+        free((*lists)->history);
+        free((*lists)->pipes);
+        free((*lists)->ast);
+        free((*lists)->env);
+        free(*lists);
+        return (-1);
+    }
+    *(*lists)->shell_fcts = NULL;
     return (0);
 }
 
@@ -239,6 +261,7 @@ int main(int ac, char **av, char **env)
     /* t_pipe *pipes; */
     /* t_hist *history; */
     char **strings_env;
+    char *file;
 	/* int lists->origin_fds[2]; */
 
     /* if (isatty(1)) */
@@ -262,8 +285,9 @@ int main(int ac, char **av, char **env)
     /* print_env(lists->env); */
 
     //revoir retour d'erreur
-    if (isatty(0) && *env && find_minishellrc(lists->env, NULL))
-        load_minishellrc(lists->env, NULL);
+    file = find_minishellrc(lists->env, NULL);
+    if (isatty(0) && *env && file)
+        load_minishellrc(lists->env, lists->aliases, lists->shell_fcts, file);
     if (isatty(0) && *env)
         load_history(lists->env, lists->history);
     while (1)

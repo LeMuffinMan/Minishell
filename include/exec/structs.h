@@ -32,7 +32,7 @@ typedef struct s_shell_fct
 {
 	char *name;
 	char **content;
-	struct s_shell_fcts *next;
+	struct s_shell_fct *next;
 } t_shell_fct;
 
 typedef struct s_var
@@ -41,9 +41,7 @@ typedef struct s_var
 	char			*value;
 	int				exported;
 	int				env;
-	int				alias;
-	int				shell_fct;
-	int 			loaded;
+	int loaded;
 	struct s_var	*next;
 }					t_var;
 

@@ -193,6 +193,8 @@ char *clean_inc_operator(char *arg)
 	int j;
 	char *s;
 
+	/* #include <stdio.h> */
+	/* printf("arg = %s\n", arg); */
 	s = malloc(sizeof(char) * (ft_strlen(arg)));
 	if (!s)
 	{
@@ -204,9 +206,17 @@ char *clean_inc_operator(char *arg)
 		s[i] = arg[i];
 		i++;
 	}
-	s[i] = '=';
-	j = i + 1;
-	i+=2;
+	if (arg[i] == '+')
+	{
+		s[i] = '=';
+		j = i + 1;
+		i+=2;
+	}
+	else
+	{
+		s[i] = '\0';
+		return (s);
+	}
 	while(arg[i])
 	{
 		s[j] = arg[i];
@@ -214,6 +224,7 @@ char *clean_inc_operator(char *arg)
 		i++;
 	}
 	s[j] = '\0';
+	/* printf("s = %s\n", s); */
 	return (s);
 }
 
@@ -257,7 +268,7 @@ int add_or_update_var(t_var **env, char *var)
 	free_array(key);
 	if (node) // si on l'a deja
 	{
-		value = ft_strchr(var, '=') + 1;
+		value = ft_strchr(var, '=');
 		if (inc)
 		{
 			tmp = node->value;

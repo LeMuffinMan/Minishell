@@ -125,6 +125,7 @@ int	builtin_cd_without_arg(t_var **env)
 	return (0);
 }
 
+//proteger si on fait rm -rf du dernier repertoire
 int builtin_cd_with_arg(char **arg, t_var **env)
 {
 	char *path;
@@ -137,9 +138,10 @@ int builtin_cd_with_arg(char **arg, t_var **env)
 		update_env(env);
 	else
 	{
+		perror("change_directory");
 		if (path)
 			free(path);
-		return (1);
+		return (0); // pas sur
 	}
 	if (!ft_strncmp(arg[1], "-", 2))
 		builtin_pwd();

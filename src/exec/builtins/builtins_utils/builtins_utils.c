@@ -42,8 +42,6 @@ int copy_node(t_var **new_node, t_var **tmp)
 	(*new_node)->value = ft_strdup((*tmp)->value);
 	(*new_node)->exported = (*tmp)->exported;
 	(*new_node)->env = (*tmp)->env;
-	(*new_node)->alias = (*tmp)->alias;
-	(*new_node)->shell_fct = (*tmp)->shell_fct;
 	(*new_node)->next = NULL;
 	return (0);
 }
@@ -72,14 +70,4 @@ t_var	*copy_list(t_var **env)
 		tmp = tmp->next;
 	}
 	return (copy);
-}
-
-int	array_size(char **array)
-{
-	int	i;
-
-	i = 0;
-	while (array[i])
-		i++;
-	return (i);
 }

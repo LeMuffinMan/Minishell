@@ -28,24 +28,24 @@ int print_source_error_message()
   return (2);
 }
 
-int builtin_source(char *arg, t_var **env)
+int builtin_source(char *arg, t_lists **lists)
 {
   t_var *tmp;
   t_var *last;
 
   /* if (!arg[1]) */
   /*   return (print_source_error_message()); */
-  tmp = *env;
+  tmp = *((*lists)->env);
   last = NULL;
   while (tmp)
   {
-    if (tmp->loaded == 1)
+    if (ft_strncmp("PS1", tmp->key, 4))
     {
       if (!last)
       {
-        *env = tmp->next;
+        *((*lists)->env) = tmp->next;
         delete_loaded_variables(&tmp, &free);
-        tmp = *env;
+        tmp = *((*lists)->env);
       }
       else
       {
@@ -60,6 +60,6 @@ int builtin_source(char *arg, t_var **env)
       tmp = tmp->next;
     }
   }
-  load_minishellrc(env, arg/* [1] */);
+  load_minishellrc((*lists)->env, (*lists)->aliases, (*lists)->shell_fcts, arg);
   return (0);
 }

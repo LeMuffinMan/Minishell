@@ -19,6 +19,7 @@
 // tester en unsetant PWD ...
 // tester un unset avec un env vide
 		//  1 ou errno ?
+//  si on est dans un dossier supprimer proteger !
 int	builtin_pwd(char **content)
 {
 	char	buf[PATH_MAX];

@@ -38,8 +38,6 @@ void    set_node(t_var **node, int mode)
 {
     (*node)->env = 0;
     (*node)->exported = 0;
-    (*node)->alias = 0;
-    (*node)->shell_fct = 0;
     (*node)->loaded = 0;
 
     if (mode == 1)

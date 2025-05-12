@@ -10,20 +10,23 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "structs.h"
+#include "utils.h"
+#include "libft.h"
+#include <stdlib.h>
+
 char **build_new_array(char **array_to_update, char *alias_value, int alias_size, int line_size)
 {
   char **new_array;
   char **alias_array;
   int i;
+  int j;
 
-  new_array = malloc(sizeof(char *) * (alias_size + line_size);
+  new_array = malloc(sizeof(char *) * (alias_size + line_size + 1));
   if (!new_array)
-  {
-
-  }
-  new_array[0] = ft_strdup(array_to_update[0]);
+    return (NULL);
   alias_array = ft_split(alias_value, ' ');
-  i = 1;
+  i = 0;
   while (alias_array[i])
   {
     new_array[i] = alias_array[i];
@@ -37,6 +40,13 @@ char **build_new_array(char **array_to_update, char *alias_value, int alias_size
     j++;
   }
   new_array[i] = NULL;
+  /* i = 0; */
+  /* #include <stdio.h> */
+  /* while (new_array[i]) */
+  /* { */
+  /*   printf("%s\n", new_array[i]); */
+  /*   i++; */
+  /* } */
   return (new_array);
 }
 
@@ -63,58 +73,71 @@ int count_words(char *s, char sep)
   return (words);
 }
 
-int array_size(char **array)
+/* char *get_alias_value(char *line, t_var **aliases) */
+/* { */
+/*   t_var *tmp; */
+/**/
+/*   tmp = *aliases; */
+/*   while(tmp) */
+/*   { */
+/*     if (!ft_strncmp(line, tmp->value, ft_strlen(tmp->value) + 1)) */
+/*       return (tmp->value); */
+/*     tmp = tmp->next; */
+/*   } */
+/*   return(NULL); */
+/* } */
+
+char *join_new_line(char **array)
 {
   int i;
+  char *s;
+  char *tmp;
 
   i = 0;
-  while (array && array[i])
-    i++;
-  return (i);
-}
-
-char *get_alias_value(char *line, t_var **aliases)
-{
-  t_var *tmp;
-
-  tmp = *aliases;
-  while(tmp)
+  s = NULL;
+  while(array[i])
   {
-    if (!ft_strncmp(line, tmp->value, ft_strlen(tmp->value) + 1))
-      return (tmp->value);
-    tmp = tmp->next;
-  }
-  return(NULL);
-}
-
-
-char **expand_alias(char **content, t_var **aliases)
-{
-  char **new_array;
-  char *alias_value;
-  int alias_size;
-  int line_size;
-
-  alias_size = 0;
-  line_size = 0;
-  new_array = NULL;
-  if (*content && content[0])
-  {
-    if (is_known_alias(content[0]))
+    tmp = s;
+    s = ft_strjoin(s, array[i]);
+    free(tmp);
+    if (array[i + 1])
     {
-      alias_value = get_alias_value(content[0], aliases);
-      line_size = array_size(content);
-      alias_size = count_words(alias_value, ' ');
-      new_array = build_new_array(content, alias_value, alias_size, line_size)
+      tmp = s;
+      s = ft_strjoin(s, " ");
+      free(tmp);
     }
+    i++;
   }
-  return (new_array);
+  return (s);
 }
 
-int main(char **argv, char **env)
+char *expand_alias(char **content, t_alias **alias)
 {
+  int line_size;
+  char *line;
+  int alias_size;
   char **new_array;
-  new_array = expand_alias(argv, env); 
 
-  return (0);
+  line_size = array_size(content);
+  alias_size = count_words((*alias)->content, ' ');
+  new_array = build_new_array(content, (*alias)->content, alias_size, line_size);
+  line = join_new_line(new_array);
+  return (line);
 }
+
+t_alias *is_a_known_alias(char *word, t_alias **aliases)
+{
+    t_alias *tmp;
+    
+    tmp = *aliases;
+    if (!aliases || !*aliases)
+      return (NULL);
+    while (tmp)
+    {
+        if (!ft_strncmp(word, tmp->name, ft_strlen(word) + 1))
+            return (tmp);
+        tmp = tmp->next;
+    }
+    return (NULL);
+}
+

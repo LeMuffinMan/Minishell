@@ -69,109 +69,117 @@ int find_quotes(char *s)
         return (0);
 }
 
-
-
-char **split_alias(char *s)
+char *get_alias_name(char *s)
 {
     char **splitted;
+    char *name;
 
     splitted = ft_split(s, '=');
     if (!splitted)
         return(NULL);
-    if (!splitted[1] || !splitted[0])
+    if (!splitted[0] || !splitted[1])
     {
         free_array(splitted);
         return (NULL);
     }
-    //si on a des espaces, on veut verifier qu'ils soient bien quoted
-    if (ft_strchr(splitted[1], ' '))
-    {
-        if (find_quotes(splitted[1]) && !splitted[2])
-            return(splitted);
-        else
-        {
-            free_array(splitted);
-            return (NULL);
-        }
-    }
-    else
-    {
-        if (!splitted[2])
-            return(splitted);
-        else
-        {
-            free_array(splitted);
-            return (NULL);
-        }
-    }
+    name = ft_strdup(splitted[0]);
+    return (name);
 }
 
-
-int add_alias(char *line, t_var **env)
+char *trim_quotes(char *str)
 {
-    t_var *new_alias;
-    t_var *tmp;
-    char *s;
-    char **key_value;
+    int len;
+    char *trimmed;
+    int i;
 
-    s = line + 6;
-    key_value = split_alias(s);
-    if (!key_value)
+    len = ft_strlen(str);
+    if (len < 2 ||
+        !( (str[0] == '\'' && str[len - 1] == '\'') ||
+           (str[0] == '\"' && str[len - 1] == '\"') ) )
+        return (str);
+    trimmed = malloc(sizeof(char) * (len - 1));
+    if (!trimmed) 
+        return (NULL);
+    i = 0;
+    while (i < len - 2)
     {
-        return (-1);
-        //error
+        trimmed[i] = str[i + 1];
+        i++;
     }
-    new_alias = malloc(sizeof(t_var));
+    trimmed[i] = '\0';
+    return (trimmed);
+}
+
+char *trim_quotes_alias(char *s)
+{
+    int j;
+    char *trimmed;
+    int i;
+    int count;
+
+    i = 0;
+    count = 0;
+    while(s[i])
+    {
+        if (s[i] == '\'' || s[i] == '\"')
+            count++;
+        i++;
+    }
+    trimmed = malloc(sizeof(char) * (ft_strlen(s) + 1 - count));
+    i = 0;
+    j = 0;
+    while (s[i])
+    {
+        while (s[i] && (s[i] == '\'' || s[i] == '\"'))
+            i++;
+        if (s[i])
+        {
+            trimmed[j] = s[i];
+            i++;
+            j++;
+        }
+    }
+    trimmed[j] = '\0';
+    return (trimmed);
+}
+
+int add_alias(char *src, t_alias **aliases)
+{
+    t_alias *new_alias;
+    t_alias *tmp;
+    char *s;
+    char *line;
+
+    s = src + 6;
+    line = trim_quotes_alias(s);
+    new_alias = malloc(sizeof(t_alias));
     if (!new_alias)
         return (-1);
-    new_alias->key = ft_strdup(key_value[0]);
-    new_alias->value = ft_strdup(key_value[1]);
-    free_array(key_value);
+    new_alias->name = get_alias_name(line);
+    printf("new_alias->name = %s\n", new_alias->name);
+    new_alias->content = ft_strdup(ft_strchr(line, '=') + 1);
+    printf("new_alias->content = %s\n", new_alias->content);
     new_alias->next = NULL;
-    new_alias->exported = 0;
-    new_alias->env = 0;
-    new_alias->shell_fct = 0;
-    new_alias->alias = 1;
-    new_alias->loaded = 1;
-    tmp = *env;
-    while (tmp->next)
-        tmp = tmp->next;
-    tmp->next = new_alias;
+    tmp = *aliases;
+    if (!tmp)
+        *aliases = new_alias;
+    else
+    {
+        while (tmp->next)
+            tmp = tmp->next;
+        tmp->next = new_alias;
+
+    }
+    /* printf("added alias : %s | content : %s\n", new_alias->name, new_alias->content); */
     return (0);
 }
 
 
-char *join_fct_content(char **lines, int i, int closed_bracket_index)
-{
-    char *s;
-    char *tmp;
-
-    s = ft_strdup("");
-    while(i < closed_bracket_index)
-    {
-        if (s)
-            tmp = s;
-        s = ft_strjoin(s, lines[i]);
-        if (tmp)
-            free(tmp);
-        tmp = s;
-        s = ft_strjoin(s, "\n");
-        free(tmp);
-        i++;
-    }
-    return (s);
-}
-
-int setup_fct_node(t_var **new_node, char *line)
+int setup_fct_node(t_shell_fct **new_node, char *line)
 {
     (*new_node)->next = NULL;
-    (*new_node)->exported = 0;
-    (*new_node)->env = 0;
-    (*new_node)->alias = 0;
-    (*new_node)->shell_fct = 1;
-    (*new_node)->loaded = 1;
-    (*new_node)->key = ft_strdup(line);
-    if (!(*new_node)->key)
+    (*new_node)->name = ft_strdup(line);
+    if (!(*new_node)->name)
     {
         free((*new_node));
         return (-1);
@@ -179,28 +187,36 @@ int setup_fct_node(t_var **new_node, char *line)
     return (0);
 }
 
-int add_shell_fct(char **lines, t_var **env, int i, int closed_bracket_index)
+int add_shell_fct(char **lines, t_shell_fct **shell_fcts, int i, int closed_bracket_index)
 {
-    t_var *tmp;
-    t_var *new_fct;
-    
-    new_fct = malloc(sizeof(t_var));
+    t_shell_fct *tmp;
+    t_shell_fct *new_fct;
+    int j;
+
+    new_fct = malloc(sizeof(t_shell_fct));
     if (!new_fct)
         return (-1);
     if (setup_fct_node(&new_fct, lines[i]) == -1)
         return (-1);
     i+=2;
-    new_fct->value = join_fct_content(lines, i, closed_bracket_index);
-    if (!new_fct->value)
+    new_fct->content = malloc(sizeof(char *) * (closed_bracket_index - i + 1));
+    j = 0;
+    while(i < closed_bracket_index)
     {
-        free(new_fct->key);
-        free(new_fct);
-        return (-1);
+        new_fct->content[j] = ft_strdup(lines[i]);
+        i++;
+        j++;
     }
-    tmp = *env;
-    while(tmp->next)
-        tmp = tmp->next;
-    tmp->next = new_fct;
+    new_fct->content[j] = NULL;
+    tmp = *shell_fcts;
+    if (!tmp)
+        *shell_fcts = new_fct;
+    else
+    {
+        while(tmp->next)
+            tmp = tmp->next;
+        tmp->next = new_fct;
+    }
     return (0); 
 }
 
@@ -303,28 +319,6 @@ char **read_minishell_rc(char *path)
     return (lines);
 }
 
-char *trim_quotes(char *str)
-{
-    int len = ft_strlen(str);
-    char *trimmed;
-    int i;
-
-    if (len < 2 ||
-        !( (str[0] == '\'' && str[len - 1] == '\'') ||
-           (str[0] == '\"' && str[len - 1] == '\"') ) )
-        return (str);
-    trimmed = malloc(sizeof(char) * (len - 1));
-    if (!trimmed) 
-        return (NULL);
-    i = 0;
-    while (i < len - 2)
-    {
-        trimmed[i] = str[i + 1];
-        i++;
-    }
-    trimmed[i] = '\0';
-    return trimmed;
-}
 
 int is_a_segfault_trap(char *line, char *file_path)
 {
@@ -384,7 +378,7 @@ int add_or_update_last_rc_file_var(t_var **env, char *path)
 }
 
 //on accepte un .minishellrc de 4096 octets max
-int load_minishellrc(t_var **env, char *path)
+int load_minishellrc(t_var **env, t_alias **aliases, t_shell_fct **shell_fcts, char *path)
 {
     char **lines;
     int i;
@@ -398,13 +392,13 @@ int load_minishellrc(t_var **env, char *path)
     i = 0;
     while (lines[i])
     {
-        /* printf("%s\n", lines[i]); */
+        /* printf("line[%d] = %s\n", i, lines[i]); */
         closed_bracket_index = is_a_shell_function(lines, i);
         if (closed_bracket_index < 0)
             return (-1);
         if (closed_bracket_index > 2)
         {
-            add_shell_fct(lines, env, i, closed_bracket_index);
+            add_shell_fct(lines, shell_fcts, i, closed_bracket_index);
             /* printf("shell fct name: %s\n", lines[i]); */
             /* print_fct_content(lines[i], env); */
             i = closed_bracket_index;
@@ -415,7 +409,8 @@ int load_minishellrc(t_var **env, char *path)
         /* } */
         else if (!ft_strncmp("alias ", lines[i], 6))
         {
-            add_alias(lines[i], env);
+            /* printf("ici\n"); */
+            add_alias(lines[i], aliases);
             tmp = *env;
             while(tmp->next)
                 tmp = tmp->next;
@@ -472,6 +467,8 @@ char *get_default_minishellrc_path(t_var **env)
         s = ft_strjoin("/home/", s);
         free(tmp);
     }
+    tmp = s;
+    s = ft_strjoin(s, "/.minishellrc");
     return(s);
 }
 
@@ -480,6 +477,8 @@ char *find_minishellrc(t_var **env, char *path)
 
     if (!path)
         path = get_default_minishellrc_path(env);
+    if (!path)
+        path = ft_strdup("./.minishellrc");
     if (access(path, F_OK) == -1)
     {
         print_error_file_opening(path, "No such file or directory\n", 1);

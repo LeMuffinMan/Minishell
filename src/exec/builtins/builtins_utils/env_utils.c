@@ -56,7 +56,8 @@ int	update_env(t_var **env)
 		pwd->value = ft_strdup(buf);
 	else
 	{
-		perror("pwd");
+			//on arrive ici si on a rm le dossier ou on est
+		/* perror("pwd"); */
 		return (1);
 	}
 	return (0);
