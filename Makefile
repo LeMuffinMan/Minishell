@@ -94,7 +94,7 @@ SRC					=	main.c \
 					pipe_utils.c \
 					export_utils.c \
 					builtins_utils.c \
-					env_utils.c \
+					exec/env_utils.c \
 					init_utils.c \
 					prints.c \
 					misc.c \

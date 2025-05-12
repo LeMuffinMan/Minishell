@@ -108,3 +108,18 @@ int print_env(t_var **env)
     }
     return (0);
 }
+
+
+int	print_all_variables(t_var **env)
+{
+	t_var	*tmp;
+
+	tmp = *env;
+	while (tmp)
+	{
+		printf("key = %s | value = %s | exported = %d | env = %d\n", tmp->key,
+			tmp->value, tmp->exported, tmp->env);
+		tmp = tmp->next;
+	}
+	return (0);
+}

@@ -112,24 +112,20 @@ int	free_array(char **array)
 int free_aliases(t_alias **aliases)
 {
     t_alias *tmp;
-    t_alias *last;
-    
+    t_alias *next;
+
+    if (!aliases || !*aliases)
+        return (0);
+        
     tmp = *aliases;
-    last = NULL;
     while (tmp)
     {
-        if (last)
-        {
-            free(last->name);
-            free(last->content);
-            free(last);
-        }
-        last = tmp;
-        tmp = tmp->next;
+        next = tmp->next;
+        free(tmp->name);
+        free(tmp->content);
+        free(tmp);
+        tmp = next;
     }
-    free(last->name);
-    free(last->content);
-    free(last);
     *aliases = NULL;
     return (0);
 }
@@ -139,6 +135,8 @@ int free_shell_fcts(t_shell_fct **shell_fcts)
     t_shell_fct *tmp;
     t_shell_fct *last;
     
+    if (!shell_fcts || !*shell_fcts)
+        return (0);
     tmp = *shell_fcts;
     last = NULL;
     while (tmp)
@@ -152,9 +150,12 @@ int free_shell_fcts(t_shell_fct **shell_fcts)
         last = tmp;
         tmp = tmp->next;
     }
-    free(last->name);
-    free_array(last->content);
-    free(last);
+    if (last)
+    {
+        free(last->name);
+        free_array(last->content);
+        free(last);
+    }
     *shell_fcts = NULL;
     return (0);
 }
@@ -184,14 +185,22 @@ void free_lists(t_lists *lists)
     }
     if (lists->pipes)
         free(lists->pipes);
-    if (lists->aliases)
+    if (lists->aliases && *lists->aliases)  // Vérifier à la fois le pointeur et son contenu
     {
         free_aliases(lists->aliases);
         free(lists->aliases);
     }
-    if (lists->shell_fcts)
+    else if (lists->aliases)  // Si seul le pointeur existe
+    {
+        free(lists->aliases);
+    }
+    if (lists->shell_fcts && *lists->shell_fcts)
     {
         free_shell_fcts(lists->shell_fcts);
+        free(lists->shell_fcts);
+    }
+    else if (lists->shell_fcts)
+    {
         free(lists->shell_fcts);
     }
     free(lists);

@@ -22,37 +22,6 @@
 #include <fcntl.h>
 #include <env_utils.h>
 
-/* #define BUFFER_SIZE 1024 */
-
-/* typedef struct s_var */
-/* { */
-/*   char *key; */
-/*   char *value; */
-/*     int exported; */
-/*     int env; */
-/*     int alias; */
-/*     int shell_fct; */
-/*   struct s_var *next; */
-/* } t_var; */
-/**/
-/* typedef struct s_shell_fct */
-/* { */
-/* 	char *name; */
-/* 	char **content; */
-/* 	struct s_shell_fct *next; */
-/* } t_shell_fct; */
-
-/* typedef struct s_env */
-/* { */
-/*   t_var **heritated_variables; */
-/*   t_var **exported_variables; */
-/*   t_var **aliases; */
-/*   t_shell_fct **shell_fcts; */
-/*   struct s_env *next; */
-/* } t_env; */
-
-
-
 int find_quotes(char *s)
 {
     int i;
@@ -370,7 +339,7 @@ int add_or_update_last_rc_file_var(t_var **env, char *path)
     }
     else
     {
-        node = get_key_node(env, "last_rc_file");
+        node = is_known_key(env, "last_rc_file");
         free(node->value);
         node->value = ft_strdup(path);
         return (0);

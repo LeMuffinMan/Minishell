@@ -33,24 +33,6 @@ t_shell_fct *is_a_known_shell_fct(char *word, t_shell_fct **shell_functions)
   return (NULL);
 }
 
-/* int exec_expanded_content(char **expanded_fct_content, t_var **env, t_shell_fct **shell_functions) */
-/* { */
-/*   int i; */
-/*   t_tree *command_line; */
-/**/
-/*   i = 0; */
-/*   while(expanded_fct_content[i]) */
-/*   { */
-/*     command_line = parse(expanded_fct_content[i]); */
-/*     exec_ast(&command_line, env, shell_functions); */
-/*     //free_tree(command_line); */
-/*     command_line = NULL; */
-/*     i++; */
-/*   } */
-/*   return (0); */
-/* } */
-/**/
-
 char *expand_var(int start, char *line, char *value)
 {
   char *new_line;
@@ -162,32 +144,4 @@ char **gather_function_args(t_tree **ast, char **content)
   new_array[i] = NULL;
   return (new_array);
 }
-
-/* int exec_shell_fct(t_tree **ast, t_var **env, t_shell_fct **shell_functions) */
-/* { */
-/*   int i; */
-/*   t_shell_fct *tmp; */
-/*   char **expanded_fct_content; */
-/**/
-/*   command_line = NULL; */
-/*   tmp = *shell_functions; */
-/*   while (tmp) */
-/*   { */
-/*     if (ft_strncmp((*ast)->token->content[0], tmp->name)) */
-/*       break; */
-/*     tmp = tmp->next; */
-/*   } */
-/*   expanded_fct_content = expand_functions_args(tmp->token->content, tmp->content); */
-/*   return (0); */
-/* } */
-
-/* int main (void) */
-/* { */
-/*   char **is_shell_function; */
-/*   is_shell_function = is_a_known_shell_fct((*ast)->token->token->content[0]) */
-/*   if (!is_shell_function) */
-/*     return (1);  */
-/*   return (0); */
-/* } */
-
 

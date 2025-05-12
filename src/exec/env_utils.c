@@ -17,20 +17,34 @@
 #include <stdio.h>
 #include <unistd.h>
 
-t_var	*get_key_node(t_var **env, char *key)
+/* t_var	*is_known_key(t_var **env, char *key) */
+/* { */
+/* 	t_var	*tmp; */
+/**/
+/* 	tmp = *env; */
+/* 	if (!key) */
+/* 		return (NULL); */
+/* 	while (tmp) */
+/* 	{ */
+/* 		if (!ft_strncmp(tmp->key, key, (ft_strlen(key) + 1))) */
+/* 			break ; */
+/* 		tmp = tmp->next; */
+/* 	} */
+/* 	return (tmp); */
+/* } */
+
+t_var	*is_known_key(t_var **env, char *key)
 {
 	t_var	*tmp;
 
 	tmp = *env;
-	if (!key)
-		return (NULL);
 	while (tmp)
 	{
-		if (!ft_strncmp(tmp->key, key, (ft_strlen(key) + 1)))
-			break ;
+		if (!ft_strncmp(key, tmp->key, ft_strlen(tmp->key) + 1))
+			return (tmp);
 		tmp = tmp->next;
 	}
-	return (tmp);
+	return (NULL);
 }
 
 //  return (1) ou errno ?
@@ -41,12 +55,12 @@ int	update_env(t_var **env)
 	char	buf[PATH_MAX];
 
 	(void)buf;
-	old_pwd = get_key_node(env, "OLDPWD");
+	old_pwd = is_known_key(env, "OLDPWD");
 	if (!old_pwd)
 	{
 		// ajouter le old_pwd a l'env
 	}
-	pwd = get_key_node(env, "PWD");
+	pwd = is_known_key(env, "PWD");
 	if (old_pwd->value)
 		free(old_pwd->value);
 	old_pwd->value = ft_strdup(pwd->value);
@@ -145,33 +159,6 @@ int	update_last_arg_var(t_var **env, char **content)
 	return (1);
 }
 
-t_var	*is_known_key(t_var **env, char *key)
-{
-	t_var	*tmp;
-
-	tmp = *env;
-	while (tmp)
-	{
-		if (!ft_strncmp(key, tmp->key, ft_strlen(tmp->key) + 1))
-			return (tmp);
-		tmp = tmp->next;
-	}
-	return (NULL);
-}
-
-int	print_all_variables(t_var **env)
-{
-	t_var	*tmp;
-
-	tmp = *env;
-	while (tmp)
-	{
-		printf("key = %s | value = %s | exported = %d | env = %d\n", tmp->key,
-			tmp->value, tmp->exported, tmp->env);
-		tmp = tmp->next;
-	}
-	return (0);
-}
 
 int	update_exit_code_var(t_var **env, int exit_code)
 {

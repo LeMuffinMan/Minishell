@@ -316,8 +316,8 @@ int main(int ac, char **av, char **env)
                 {
                     if (prompt)
                         free(prompt);
-                    if (lists->history)
-                        save_history(lists->env, lists->history);
+                    /* if (lists->history) */
+                    /*     save_history(lists->env, lists->history); */
                 }
                 free_lists(lists);
                 exit(exit_code);
