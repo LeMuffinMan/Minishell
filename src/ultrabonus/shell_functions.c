@@ -10,71 +10,100 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-char **get_shell_function(char *word, t_fct **shell_functions)
-{
-  t_fct *tmp;
+#include "structs.h"
+#include "libft.h"
+#include "utils.h"
 
-  tmp = *shell_functions
+t_shell_fct *is_a_known_shell_fct(char *word, t_shell_fct **shell_functions)
+{
+  t_shell_fct *tmp;
+
+  tmp = *shell_functions;
   while(tmp)
   {
+    tmp->name[ft_strlen(tmp->name) - 2] = '\0';
     if (!ft_strncmp(word, tmp->name, ft_strlen(tmp->name) + 1))
-      return (tmp->content);
+    {
+      tmp->name[ft_strlen(tmp->name) - 2] = ')';
+      return (tmp);
+    }
+    tmp->name[ft_strlen(tmp->name) - 2] = ')';
     tmp = tmp->next;
   }
   return (NULL);
 }
 
-int exec_expanded_content(char **expanded_fct_content, t_var **env, t_fct **shell_functions)
-{
-  int i;
-  t_tree *command_line;
-
-  i = 0;
-  while(expanded_fct_content[i])
-  {
-    command_line = parse(expanded_fct_content[i]);
-    exec_ast(&command_line, env, shell_functions);
-    //free_tree(command_line);
-    command_line = NULL;
-    i++;
-  }
-  return (0);
-}
+/* int exec_expanded_content(char **expanded_fct_content, t_var **env, t_shell_fct **shell_functions) */
+/* { */
+/*   int i; */
+/*   t_tree *command_line; */
+/**/
+/*   i = 0; */
+/*   while(expanded_fct_content[i]) */
+/*   { */
+/*     command_line = parse(expanded_fct_content[i]); */
+/*     exec_ast(&command_line, env, shell_functions); */
+/*     //free_tree(command_line); */
+/*     command_line = NULL; */
+/*     i++; */
+/*   } */
+/*   return (0); */
+/* } */
+/**/
 
 char *expand_var(int start, char *line, char *value)
 {
-  //si arg[0] : retourner quoi ? ? a gerer avant
   char *new_line;
-  int i;
+  int value_len;
+  int line_len;
+  int total_len;
 
-  new_line = malloc(sizeof(char) * ft_strlen(line) - 1 + value);
+  line_len = ft_strlen(line);
+  value_len = ft_strlen(value);
+  total_len = line_len - 2 + value_len; 
+  new_line = malloc(total_len + 1);
   if (!new_line)
-  {
-
-  }
-  ft_strlcpy(new_line, line, start);
-  ft_strlcpy((*new_line + start), value, ft_strlen(value)); //possible qu'il faille mettre un +1 pour le \0
-  ft_strlcpy((*new_line + start + ft_strlen(value), *line + start)); //meme chose, et est-ce que la valeur de retour de ft_strlcpy permet de faire plus propre ?
-  return (new_line); //le pointeur aura avance ?
+      return (NULL);
+  ft_strlcpy(new_line, line, start + 1); 
+  ft_strlcpy(new_line + start, value, value_len + 1); 
+  ft_strlcpy(new_line + start + value_len, line + start + 2, line_len - start - 1);
+  return (new_line);
 }
 
-char *expand_line(char *args, char *line)
+
+int no_arg_to_expand(int j, char **args)
 {
   int i;
+
+  i = 0;
+  while (args[i] && i < j)
+    i++;
+  if (i == j && args[i])
+    return (0);
+  return (1);
+}
+
+char *expand_line(char **args, char *line)
+{
+  int i;
+  int j;
   char *new_line;
   char *tmp;
 
   i = 0;
-  while (line[i])
+  new_line = ft_strdup(line);
+  while (new_line[i])
   {
-    if (line[i] == '$')
+    if (new_line[i] == '$' && ft_isdigit(new_line[i + 1]))
     {
-      if (isalnum(line[i + 1]))
-      {
-        tmp = new_line;
-        new_line = expand_var(i, line, args[line[i + 1] - '0']);
-        free(tmp);
-      }
+      j = new_line[i + 1] - '0';
+      if (no_arg_to_expand(j, args))
+        tmp = expand_var(i, new_line, "  ");
+      else
+        tmp = expand_var(i, new_line, args[j]);
+      free(new_line);
+      new_line = tmp;
+      i = -1;
     }
     i++;
   }
@@ -86,43 +115,79 @@ char **expand_functions_args(char **args, char **shell_fct_content)
   char **expanded_fct_content;
   int i;
 
-  expanded_fct_content = malloc(sizeof(char *) * array_size(shell_fct_content) + 1);
+  expanded_fct_content = malloc(sizeof(char *) * (array_size(shell_fct_content) + 1));
   i = 0;
   while (shell_fct_content[i])
   {
     expanded_fct_content[i] = expand_line(args, shell_fct_content[i]);
     i++;
   }
-  expanded_fct_content[i] = '\0';
+  expanded_fct_content[i] = NULL;
+
   return (expanded_fct_content);
 }
 
-int exec_shell_fct(t_tree **ast, t_var **env, t_fct **shell_functions)
+int get_array_size(t_tree **ast, int i)
 {
+  if ((*ast)->left)
+    i += get_array_size(&((*ast)->left), i);
+  else if ((*ast)->right)
+    i += get_array_size(&((*ast)->right), i);
+  return (i + 1);
+}
+
+int get_args(t_tree **ast, char **content, int i)
+{
+  if (i != 0)
+    content[i] = ft_strdup((*ast)->token->content[0]); 
+  i++;
+  if ((*ast)->left)
+    return (get_args(&((*ast)->left), content, i));
+  if ((*ast)->right)
+    return (get_args(&((*ast)->right), content, i));
+  return (i);
+}
+
+char **gather_function_args(t_tree **ast, char **content)
+{
+  char **new_array;
   int i;
-  t_fct *tmp;
-  char **expanded_fct_content;
 
-  command_line = NULL;
-  tmp = *shell_functions;
-  while (tmp)
-  {
-    if (ft_strncmp((*ast)->token->content[0], tmp->name))
-      break;
-    tmp = tmp->next;
-  }
-  expanded_fct_content = expand_functions_args(tmp->token->content, tmp->content);
-  return (0);
+  i = 0;
+  i = get_array_size(ast, i);
+  new_array = malloc(sizeof(char *) * (i + 2));
+  new_array[0] = ft_strdup(content[0]);
+  i = 0;
+  i = get_args(ast, new_array, i);
+  new_array[i] = NULL;
+  return (new_array);
 }
 
-int main (void)
-{
-  char **is_shell_function;
+/* int exec_shell_fct(t_tree **ast, t_var **env, t_shell_fct **shell_functions) */
+/* { */
+/*   int i; */
+/*   t_shell_fct *tmp; */
+/*   char **expanded_fct_content; */
+/**/
+/*   command_line = NULL; */
+/*   tmp = *shell_functions; */
+/*   while (tmp) */
+/*   { */
+/*     if (ft_strncmp((*ast)->token->content[0], tmp->name)) */
+/*       break; */
+/*     tmp = tmp->next; */
+/*   } */
+/*   expanded_fct_content = expand_functions_args(tmp->token->content, tmp->content); */
+/*   return (0); */
+/* } */
 
-  is_shell_function = get_shell_function((*ast)->token->token->content[0])
-  if (!is_shell_function)
-    return (1); 
-  return (0);
-}
+/* int main (void) */
+/* { */
+/*   char **is_shell_function; */
+/*   is_shell_function = is_a_known_shell_fct((*ast)->token->token->content[0]) */
+/*   if (!is_shell_function) */
+/*     return (1);  */
+/*   return (0); */
+/* } */
 
 

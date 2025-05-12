@@ -106,7 +106,8 @@ SRC					=	main.c \
 					prompt_gets_fcts.c \
 					prompt_gets_fcts_utils.c \
 					history.c \
-					aliases.c
+					aliases.c \
+					shell_functions.c
 
 
 DEPS				=	$(SRC:%.c=$(OBJ_DIR)%.d)

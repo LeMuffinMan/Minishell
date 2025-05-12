@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "aliases.h"
+#include "shell_fct.h"
 #include "exec.h"
 #include "builtins.h"
 #include "env_utils.h"
@@ -275,11 +276,15 @@ int	exec_ast(t_tree **ast, t_lists **lists)
 {
   int exit_code;
   t_alias *alias;
-  t_tree *parse_alias;
+  t_shell_fct *shell_fct;
   t_tree *tree_to_free;
   char *line;
   char **strings_env;
+  char **expanded_fct_content;
+  char **fct_content;
+  int i;
 
+	tree_to_free = NULL;
   exit_code = 0;
   if (!*ast)
   	return(127);
@@ -302,16 +307,35 @@ int	exec_ast(t_tree **ast, t_lists **lists)
 	if ((*ast)->token->error == 127 && alias) 
 	{
 		line = expand_alias((*ast)->token->content, &alias);	
-		parse_alias = NULL;
 		strings_env = lst_to_array((*lists)->env);
-		parse_alias = parse(line, strings_env, *(*lists)->env);
-		exit_code = exec_ast(&parse_alias, lists);
-    tree_to_free = parse_alias; 
+		tree_to_free = parse(line, strings_env, *(*lists)->env);
+		exit_code = exec_ast(&tree_to_free, lists);
     free_tree(&tree_to_free); 
     free_array(strings_env);
     free(line);
-    parse_alias = NULL;
+    tree_to_free = NULL;
     return (exit_code);
+	}
+	shell_fct = is_a_known_shell_fct((*ast)->token->content[0], (*lists)->shell_fcts);
+	if ((*ast)->token->error == 127 && shell_fct)
+	{
+		fct_content = gather_function_args(ast, (*ast)->token->content);
+		expanded_fct_content = expand_functions_args(fct_content, shell_fct->content);	
+
+		i = 0;
+		while (expanded_fct_content[i])
+		{
+			strings_env = lst_to_array((*lists)->env);	
+			tree_to_free = parse(expanded_fct_content[i], strings_env, *(*lists)->env);
+			exit_code = exec_ast(&tree_to_free, lists);
+			free_tree(&tree_to_free);
+			tree_to_free = NULL;
+			free_array(strings_env);
+			i++;
+		}
+		free_array(expanded_fct_content);
+		free_array(fct_content);
+		return (exit_code);
 	}
 	//
 	if ((*ast)->token->error == 127 || (*ast)->token->error == 126 || (*ast)->token->error == 21)
