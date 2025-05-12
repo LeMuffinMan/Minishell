@@ -109,23 +109,70 @@ int	free_array(char **array)
 	return (0);
 }
 
+int free_aliases(t_alias **aliases)
+{
+    t_alias *tmp;
+    t_alias *last;
+    
+    tmp = *aliases;
+    last = NULL;
+    while (tmp)
+    {
+        if (last)
+        {
+            free(last->name);
+            free(last->content);
+            free(last);
+        }
+        last = tmp;
+        tmp = tmp->next;
+    }
+    free(last->name);
+    free(last->content);
+    free(last);
+    *aliases = NULL;
+    return (0);
+}
+
+int free_shell_fcts(t_shell_fct **shell_fcts)
+{
+    t_shell_fct *tmp;
+    t_shell_fct *last;
+    
+    tmp = *shell_fcts;
+    last = NULL;
+    while (tmp)
+    {
+        if (last)
+        {
+            free(last->name);
+            free_array(last->content);
+            free(last);
+        }
+        last = tmp;
+        tmp = tmp->next;
+    }
+    free(last->name);
+    free_array(last->content);
+    free(last);
+    *shell_fcts = NULL;
+    return (0);
+}
+
 void free_lists(t_lists *lists)
 {
     if (!lists)
         return;
-
     if (lists->env)
     {
         free_list(lists->env);
         free(lists->env);
     }
-
     if (lists->history)
     {
         free_history(lists->history);
         free(lists->history);
     }
-
     if (lists->ast)
     {
         if (*lists->ast)
@@ -135,16 +182,18 @@ void free_lists(t_lists *lists)
         }
         free(lists->ast);
     }
-
     if (lists->pipes)
         free(lists->pipes);
-
     if (lists->aliases)
+    {
+        free_aliases(lists->aliases);
         free(lists->aliases);
-
+    }
     if (lists->shell_fcts)
+    {
+        free_shell_fcts(lists->shell_fcts);
         free(lists->shell_fcts);
-
+    }
     free(lists);
 }
 

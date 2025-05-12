@@ -276,6 +276,7 @@ int	exec_ast(t_tree **ast, t_lists **lists)
   int exit_code;
   t_alias *alias;
   t_tree *parse_alias;
+  t_tree *tree_to_free;
   char *line;
   char **strings_env;
 
@@ -296,17 +297,23 @@ int	exec_ast(t_tree **ast, t_lists **lists)
 		exit_code = exec_cmd(ast, lists);
 		return (exit_code);
 	}
-		alias = is_a_known_alias((*ast)->token->content[0], (*lists)->aliases);
+	//
+	alias = is_a_known_alias((*ast)->token->content[0], (*lists)->aliases);
 	if ((*ast)->token->error == 127 && alias) 
 	{
-		/* printf("content[0] = %s\n", (*ast)->token->content[0]); */
 		line = expand_alias((*ast)->token->content, &alias);	
 		parse_alias = NULL;
 		strings_env = lst_to_array((*lists)->env);
 		parse_alias = parse(line, strings_env, *(*lists)->env);
-		//concatener la ligne avec content[i] et la renvoyer au parsing
-		return (exec_ast(&parse_alias, lists));
+		exit_code = exec_ast(&parse_alias, lists);
+    tree_to_free = parse_alias; 
+    free_tree(&tree_to_free); 
+    free_array(strings_env);
+    free(line);
+    parse_alias = NULL;
+    return (exit_code);
 	}
+	//
 	if ((*ast)->token->error == 127 || (*ast)->token->error == 126 || (*ast)->token->error == 21)
 		return (error_cmd((*ast)->token->content[0], (*ast)->token->error));
 	//Ultrabonus

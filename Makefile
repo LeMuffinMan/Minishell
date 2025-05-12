@@ -50,7 +50,7 @@ HEAD				=	display.h $(HEAD_EXEC)
 
 HEAD_DIR			=	include
 
-INC_HEAD			=	-I$(HEAD_DIR) -I$(HEAD_DIR)/parsing -I$(HEAD_DIR)/exec
+INC_HEAD			=	-I$(HEAD_DIR) -I$(HEAD_DIR)/parsing -I$(HEAD_DIR)/exec -I$(HEAD_DIR)/ultrabonus
 
 LIBFT_DIR			=	src/libft
 LIBFT_HEAD_DIR		=	src/libft/include
@@ -105,7 +105,8 @@ SRC					=	main.c \
 					load_minishellrc.c \
 					prompt_gets_fcts.c \
 					prompt_gets_fcts_utils.c \
-					history.c
+					history.c \
+					aliases.c
 
 
 DEPS				=	$(SRC:%.c=$(OBJ_DIR)%.d)

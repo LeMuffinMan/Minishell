@@ -288,6 +288,8 @@ int main(int ac, char **av, char **env)
     file = find_minishellrc(lists->env, NULL);
     if (isatty(0) && *env && file)
         load_minishellrc(lists->env, lists->aliases, lists->shell_fcts, file);
+    if (file)
+        free(file);
     if (isatty(0) && *env)
         load_history(lists->env, lists->history);
     while (1)

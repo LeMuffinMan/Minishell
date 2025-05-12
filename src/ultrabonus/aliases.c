@@ -29,7 +29,7 @@ char **build_new_array(char **array_to_update, char *alias_value, int alias_size
   i = 0;
   while (alias_array[i])
   {
-    new_array[i] = alias_array[i];
+    new_array[i] = ft_strdup(alias_array[i]);
     i++;
   }
   j = 1;
@@ -47,6 +47,7 @@ char **build_new_array(char **array_to_update, char *alias_value, int alias_size
   /*   printf("%s\n", new_array[i]); */
   /*   i++; */
   /* } */
+  free_array(alias_array);
   return (new_array);
 }
 
@@ -122,6 +123,7 @@ char *expand_alias(char **content, t_alias **alias)
   alias_size = count_words((*alias)->content, ' ');
   new_array = build_new_array(content, (*alias)->content, alias_size, line_size);
   line = join_new_line(new_array);
+  free_array(new_array);
   return (line);
 }
 

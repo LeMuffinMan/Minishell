@@ -83,6 +83,7 @@ char *get_alias_name(char *s)
         return (NULL);
     }
     name = ft_strdup(splitted[0]);
+    free_array(splitted);
     return (name);
 }
 
@@ -156,9 +157,7 @@ int add_alias(char *src, t_alias **aliases)
     if (!new_alias)
         return (-1);
     new_alias->name = get_alias_name(line);
-    printf("new_alias->name = %s\n", new_alias->name);
     new_alias->content = ft_strdup(ft_strchr(line, '=') + 1);
-    printf("new_alias->content = %s\n", new_alias->content);
     new_alias->next = NULL;
     tmp = *aliases;
     if (!tmp)
@@ -170,6 +169,7 @@ int add_alias(char *src, t_alias **aliases)
         tmp->next = new_alias;
 
     }
+    free(line);
     /* printf("added alias : %s | content : %s\n", new_alias->name, new_alias->content); */
     return (0);
 }
@@ -482,6 +482,7 @@ char *find_minishellrc(t_var **env, char *path)
     if (access(path, F_OK) == -1)
     {
         print_error_file_opening(path, "No such file or directory\n", 1);
+        free(path);
         return (NULL);
     }
     if (access(path, R_OK) == 0)
@@ -490,6 +491,7 @@ char *find_minishellrc(t_var **env, char *path)
     {
         //integrer dans les error.c
         ft_putstr_fd("minishell: .minishellrc: Permission denied\n", 2);
+        free(path);
         return (NULL);
     }
 }
