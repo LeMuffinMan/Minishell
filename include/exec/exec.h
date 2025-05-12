@@ -38,6 +38,8 @@ int		wait_children(pid_t last_child, pid_t first_child);
 int		error_cmd(char *cmd, int error_code);
 int		print_error_file_opening(char *file, char *error, int error_code);
 int		error_not_valid_identifier(char *s);
+int print_error_is_a_directory(char *file);
+int print_perm_error(char *file);
 
 t_tree	*parse(char *line, char **envp, t_var *new_env);
 

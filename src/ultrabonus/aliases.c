@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "structs.h"
+#include "exec.h"
 #include "utils.h"
 #include "libft.h"
 #include <stdlib.h>
@@ -129,17 +130,35 @@ char *expand_alias(char **content, t_alias **alias)
 
 t_alias *is_a_known_alias(char *word, t_alias **aliases)
 {
-    t_alias *tmp;
-    
-    tmp = *aliases;
-    if (!aliases || !*aliases)
-      return (NULL);
-    while (tmp)
-    {
-        if (!ft_strncmp(word, tmp->name, ft_strlen(word) + 1))
-            return (tmp);
-        tmp = tmp->next;
-    }
+  t_alias *tmp;
+  
+  tmp = *aliases;
+  if (!aliases || !*aliases)
     return (NULL);
+  while (tmp)
+  {
+    if (!ft_strncmp(word, tmp->name, ft_strlen(word) + 1))
+      return (tmp);
+    tmp = tmp->next;
+  }
+  return (NULL);
+}
+
+int exec_alias(t_tree **ast, t_lists **lists, t_alias *alias)
+{
+  char *line;
+  char **strings_env;
+  t_tree *tree_to_free;
+  int exit_code;
+
+	line = expand_alias((*ast)->token->content, &alias);	
+	strings_env = lst_to_array((*lists)->env);
+	tree_to_free = parse(line, strings_env, *(*lists)->env);
+	exit_code = exec_ast(&tree_to_free, lists);
+  free_tree(&tree_to_free); 
+  free_array(strings_env);
+  free(line);
+  tree_to_free = NULL;
+  return (exit_code);
 }
 

@@ -17,22 +17,6 @@
 #include <stdio.h>
 #include <unistd.h>
 
-/* t_var	*is_known_key(t_var **env, char *key) */
-/* { */
-/* 	t_var	*tmp; */
-/**/
-/* 	tmp = *env; */
-/* 	if (!key) */
-/* 		return (NULL); */
-/* 	while (tmp) */
-/* 	{ */
-/* 		if (!ft_strncmp(tmp->key, key, (ft_strlen(key) + 1))) */
-/* 			break ; */
-/* 		tmp = tmp->next; */
-/* 	} */
-/* 	return (tmp); */
-/* } */
-
 t_var	*is_known_key(t_var **env, char *key)
 {
 	t_var	*tmp;
