@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:49:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/09 22:36:34 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/13 15:39:24 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,12 +96,12 @@ static bool	to_expand(t_token **node, t_var *list_env)
 			if ((j > 0 && (*node)->content[0][j - 1] == '\\')
 			|| ((*node)->content[0][j + 1]
 			&& ft_isspace((*node)->content[0][j + 1])))
-			j++;
+				j++;
 			else
 			{
 				expand_node_content(node, list_env, j + 1);
 				if ((*node)->content[0][0])
-				flag = true;
+					flag = true;
 				j = -1;
 			}
 		}

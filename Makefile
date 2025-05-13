@@ -6,7 +6,7 @@
 #    By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/05/09 21:52:51 by asinsard         ###   ########lyon.fr    #
+#    Updated: 2025/05/13 16:05:00 by asinsard         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -59,29 +59,30 @@ LIBFT_FLAG			=	-L$(LIBFT_DIR)/src/ $(LIB_LIBFT)
 LIBFT_HEAD			=	libft.h get_next_line.h ft_printf.h
 
 SRC					=	main.c \
-						concat_args.c \
-						concat_args_utils.c \
-						create_here_doc.c \
-						create_tokenize_list.c \
-						create_tree.c \
-						display_list.c \
-						display_tree.c \
 						expand_utils.c \
 						expand.c \
-						handle_cmd_and_path_utils.c \
-						handle_cmd_and_path.c \
 						handle_space.c \
 						handle_space_utils.c \
-						handle_utils.c \
-						quote.c \
 						quote_utils.c \
+						quote.c \
+						create_here_doc.c \
+						lexer_utils.c \
+						lexer.c \
+						concat_args_utils.c \
+						concat_args.c \
+						handle_cmd_and_path_utils.c \
+						handle_cmd_and_path.c \
+						handle_utils.c \
 						tokenize_utils.c \
 						tokenize.c \
+						create_tokenize_list.c \
+						create_tree.c \
+						handle_parenthesis.c \
 						tree_utils.c \
-						lexer.c \
-						lexer_utils.c \
+						display_list.c \
+						display_tree.c \
 						parser.c \
-						init/init.c \
+					init.c \
 					signals.c \
 					exec.c \
 					errors.c \

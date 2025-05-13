@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 01:26:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/09 21:46:14 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/13 15:41:52 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,10 @@ typedef enum e_type
 }	t_type;
 
 /* ----------------------Token---------------------- */
-void					assign_token(t_token **head, char **envp, t_var *list_env, bool flag);
-void					concat_args(t_token **head, t_var *list_env, char **envp);
+void					assign_token(t_token **head, char **envp,
+							t_var *list_env, bool flag);
+void					concat_args(t_token **head, t_var *list_env,
+							char **envp);
 void					delete_space_node(t_token **head);
 void					delete_space_node(t_token **head);
 
@@ -63,10 +65,13 @@ bool					parse_path_without_env(t_token *node);
 char					*extract_path(char **envp);
 bool					verif_access_exec(char *tmp_cmd, int *error);
 char					**split_the_path(char *path);
-char					*parse_cmd(char *arg, char **path, int *error, bool flag);
-char					*verif_command(t_token **node, char *tmp, char **path, char **envp);
+char					*parse_cmd(char *arg, char **path,
+							int *error, bool flag);
+char					*verif_command(t_token **node, char *tmp,
+							char **path, char **envp);
 void					is_built_in(t_token **node);
-void					alloc_cmd_split(char ***split_cmd, char **path, char *arg, int *error);
+void					alloc_cmd_split(char ***split_cmd, char **path,
+							char *arg, int *error);
 void					is_command_whithout_env(t_token **node, char **envp);
 void					is_command(t_token **node, char **envp);
 void					handle_cmd(t_token **node, char **envp, bool flag);

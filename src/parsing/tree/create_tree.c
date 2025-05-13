@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 21:12:15 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/07 13:37:40 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/13 20:14:29 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static t_tree	*add_new_node(t_token *token, t_tree *left,
 	if (right)
 		new_node->right = right;
 	new_node->token = token;
-	new_node->priority = 10;
+	new_node->priority = PRIO_IGNORE;
 	return (new_node);
 }
 
@@ -76,8 +76,12 @@ void	add_to_root(t_token *node, t_tree **root, bool flag)
 	t_token	*end;
 	t_token	*start;
 
+	if (!node)
+		return ;
 	end = node;
 	start = node;
+	if (!flag)
+		handle_parenthesis(&node);
 	assign_priority(&node, flag);
 	last_node(&end, flag);
 	if (flag && start->prev)

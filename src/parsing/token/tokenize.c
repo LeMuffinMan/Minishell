@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 21:44:17 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/09 22:44:21 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/13 15:39:00 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ void	is_command(t_token **node, char **envp)
 		flag = true;
 	if ((*node)->token == NO_TOKEN || (*node)->token == EXPAND
 		|| (*node)->token == D_QUOTE || (*node)->token == S_QUOTE)
-		cmd_w_path = verif_command(node, tmp, path, envp);	
+		cmd_w_path = verif_command(node, tmp, path, envp);
 	handle_is_command(*node, cmd_w_path);
 	free(cmd_w_path);
 	if (flag && (*node)->error != 0)

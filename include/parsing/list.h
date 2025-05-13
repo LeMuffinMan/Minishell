@@ -27,6 +27,7 @@ typedef struct s_token
 	int				error;
 	struct s_token	*next;
 	struct s_token	*prev;
+	struct s_token	*group;
 	char			**content;
 	enum e_type		token;
 	int				priority;

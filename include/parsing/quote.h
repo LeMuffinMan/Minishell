@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 17:49:15 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/09 21:49:10 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/13 15:42:05 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,5 @@
 void					parse_quote(t_token **node);
 bool					is_quote(t_token **node);
 bool					is_to_expand(char *str);
-
 
 #endif

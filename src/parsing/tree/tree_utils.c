@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 16:03:15 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/27 17:18:39 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/13 20:11:24 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,27 +18,24 @@ static void	cost_priority(t_token **node, bool flag)
 {
 	if (!flag)
 	{
-		if (((*node)->token == L_PARENTHESIS)
-			|| ((*node)->token == R_PARENTHESIS))
-			(*node)->priority = 0;
+		if ((*node)->token == GROUP_PARENTHESIS)
+			(*node)->priority = PRIO_PARENTHESIS;
 		else if ((*node)->token == O_OR)
-			(*node)->priority = 1;
+			(*node)->priority = PRIO_O_OR;
 		else if ((*node)->token == O_AND)
-			(*node)->priority = 2;
+			(*node)->priority = PRIO_O_AND;
 	}
 	else
 	{
-		if ((*node)->token == O_OR)
-			(*node)->priority = 10;
-		else if ((*node)->token == O_AND)
-			(*node)->priority = 10;
+		if ((*node)->token == GROUP_PARENTHESIS)
+			(*node)->priority = PRIO_IGNORE;
 		else if ((*node)->token == PIPE)
-			(*node)->priority = 3;
+			(*node)->priority = PRIO_PIPE;
 		else if (((*node)->token == R_IN) || ((*node)->token == HD)
 			|| ((*node)->token == APPEND) || ((*node)->token == TRUNC))
-			(*node)->priority = 4;
+			(*node)->priority = PRIO_REDIR;
 		else if ((*node)->token == CMD || ((*node)->token == BUILT_IN))
-			(*node)->priority = 5;
+			(*node)->priority = PRIO_CMD;
 	}
 }
 

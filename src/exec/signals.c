@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signals.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/04 19:23:22 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/04 19:39:02 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/13 14:12:48 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ void	setup_child_signals(void)
 {
 	struct sigaction	sa;
 
-	sa.sa_handler = handle_child_sigint; 
+	// sa.sa_handler = handle_child_sigint; ne veut pas compiler
 	// SIGINT par défaut dans les enfants
 	sa.sa_flags = 0;
 	sigemptyset(&sa.sa_mask);
