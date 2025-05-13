@@ -176,6 +176,7 @@
 //Tests de cons :
 //CTRL V + Tab : fait un tab dans le minishell a gerer !
 
+//revoir les frees !
 int init_lists(t_lists **lists)
 {
     *lists = malloc(sizeof(t_lists));
@@ -276,11 +277,17 @@ int main(int ac, char **av, char **env)
     if (init_lists(&lists) == -1)
     {
         //malloc error 
+        return (-1);
     }
     exit_code = 0; //on ajoute l'exit code a la megastruct ou on la laisse dans env ?
     /* utiliser getenv ?
         * Si on n'a pas d'env uniquement ?*/
-    init_env(lists->env, env, av[0]);
+    if (init_env(lists->env, env, av[0]) == -1)
+    {
+        free_lists(lists);
+        return (-1);
+        //malloc error
+    }
     /* print_all_variables(lists->env); */
     /* print_env(lists->env); */
 

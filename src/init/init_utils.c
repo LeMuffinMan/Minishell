@@ -34,50 +34,72 @@ void	free_list(t_var **l)
 	*l = NULL;
 }
 
-void    set_node(t_var **node, int mode)
+int    set_node(t_var **node, int mode)
 {
-    (*node)->env = 0;
-    (*node)->exported = 0;
-    (*node)->loaded = 0;
+  (*node)->env = 0;
+  (*node)->exported = 0;
+  (*node)->loaded = 0;
 
-    if (mode == 1)
-    {
-        (*node)->env = 1;
-    }
-    else if (mode == 2)
-    {
-        (*node)->exported = 1;
-    }
-    else if (mode == 3)
-    {
-        (*node)->env = 1;
-        (*node)->exported = 1;
-    }
-    else if (mode == 4)
-    {
-        (*node)->loaded = 1;
-    }
+  if (mode == 1)
+  {
+      (*node)->env = 1;
+  }
+  else if (mode == 2)
+  {
+      (*node)->exported = 1;
+  }
+  else if (mode == 3)
+  {
+      (*node)->env = 1;
+      (*node)->exported = 1;
+  }
+  else if (mode == 4)
+  {
+      (*node)->loaded = 1;
+  }
+  return (0);
 }
 
-void	add_first_node(t_var **lst, t_var **new, char *s, int mode)
+int free_node_var(t_var *node, char **array)
+{
+	if (array)
+		free_array(array);
+	if (node->key)
+		free(node->key);
+	if (node->value)
+		free(node->value);
+	free(node);
+	return (-1);
+}
+
+int	add_first_node(t_var **lst, t_var **new, char *s, int mode)
 {
 	char	**key_value;
 
 	(*new)->key = NULL;
 	(*new)->value = NULL;
 	key_value = ft_split(s, '=');
+	if (!key_value)
+		return (free_node_var(*new, NULL));
 	(*new)->key = ft_strdup(key_value[0]);
+	if (!(*new)->key)
+		return (free_node_var(*new, key_value));
 	if (key_value[1])
+	{
 		(*new)->value = ft_strdup(key_value[1]);
+		if (!(*new)->value)
+			return (free_node_var(*new, key_value));
+	}
 	free_array(key_value);
 	*lst = *new;
 	(*new)->next = NULL;
-	set_node(new, mode);
+	return (set_node(new, mode));
 }
+
 
 // 0 = aucun des deux / 1 = env / 2 = export / 3 = env + export
 // revoir le retour d'erreur
-void	add_back_var(t_var **lst, char *s, int mode)
+int	add_back_var(t_var **lst, char *s, int mode)
 {
 	t_var	*ptr;
 	t_var	*new;
@@ -85,28 +107,28 @@ void	add_back_var(t_var **lst, char *s, int mode)
 
 	new = malloc(sizeof(t_var));
 	if (new == NULL)
-	{
-		exit(139);
-	}
+		return (-1);
 	if (!lst || *lst == NULL)
-		add_first_node(lst, &new, s, mode);
-	else
+		return (add_first_node(lst, &new, s, mode));
+	ptr = *lst;
+	while (ptr->next)
+		ptr = ptr->next;
+	ptr->next = new;
+	new->next = NULL;
+	new->value = NULL;
+	new->key = NULL;
+	key_value = ft_split(s, '=');
+	if (!key_value)
+		return (free_node_var(new, NULL));
+	new->key = ft_strdup(key_value[0]);
+	if (!new->key)
+		return (free_node_var(new, key_value));
+	if (key_value && key_value[1])
 	{
-		ptr = *lst;
-		while (ptr->next)
-			ptr = ptr->next;
-		ptr->next = new;
-		new->next = NULL;
-		/* Value non init avant */
-		new->value = NULL;
-		new->key = NULL;
-		key_value = ft_split(s, '=');
-		new->key = ft_strdup(key_value[0]);
-		if (key_value && key_value[1])
-			new->value = ft_strdup(key_value[1]);
-		free_array(key_value);
-		set_node(&new, mode);
-		/* #include <stdio.h> */
-		/* printf("%s=%s\n", new->key, new->value); */
+		new->value = ft_strdup(key_value[1]);
+		if (!new->value)
+			return (free_node_var(new, key_value));
 	}
+	free_array(key_value);
+	return (set_node(&new, mode));
 }

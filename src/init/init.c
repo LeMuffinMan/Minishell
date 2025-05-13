@@ -26,16 +26,56 @@ int	init_last_cmd_var(char *name, t_var **env)
 	if (getcwd(buf, sizeof(buf)) != NULL)
 		s = ft_strjoin(buf, name);
 	else
+	{
+		//gerer l'erreur d'un getcwd qui a echoue
 		s = ft_strdup(name);
-	add_back_var(env, s, 1);
+	}
+	if (!s)
+		return (-1);
+	if (add_back_var(env, s, 1) == -1)
+	{
+		free(s);
+		return (-1);
+	}
 	free(s);
 	return (0);
 }
 
-int	build_minimal_env(t_var **env, char *arg)
+int add_default_shell_vars(t_var **env)
 {
 	char	*s;
+
+	s = ft_strdup("SHLVL=1"); // si le SHLVL est negatif il met SHLVL = 0
+	if (!s)
+	{
+		free(s);
+		return (-1);
+	}
+	if (add_back_var(env, s, 3) == -1)
+	{
+		free(s);
+		return (-1);
+	}
+	free(s);
+	s = ft_strdup("OLDPWD="); // updated in CD seulement ?
+	if (!s)
+	{
+		free(s);
+		return (-1);
+	}
+	if (add_back_var(env, s, 1) == -1)
+	{
+		free(s);
+		return (-1);
+	}
+	free(s);
+	return(0);
+}
+
+int	build_minimal_env(t_var **env, char *arg)
+{
 	char	buf[PATH_MAX];
+	char *s;
 
 	s = NULL;
 	if (getcwd(buf, sizeof(buf)) != NULL)
@@ -48,18 +88,25 @@ int	build_minimal_env(t_var **env, char *arg)
 		//  free avant !
 		return (1);
 	}
+	if (!s)
+		return (-1);
 	s = ft_strjoin("PWD=", s);
-	add_back_var(env, s, 3);
+	if (!s)
+	{
+		free(s);
+		return (-1);
+	}
+	if (add_back_var(env, s, 3) == -1)
+	{
+		free(s);
+		return (-1);
+	}
 	free(s);
-	s = ft_strdup("SHLVL=1"); // si le SHLVL est negatif il met SHLVL = 0
-	add_back_var(env, s, 3);
-	free(s);
-	s = ft_strdup("OLDPWD="); // updated in CD seulement ?
-	add_back_var(env, s, 1);
-	free(s);
-	init_last_cmd_var(arg, env);
-	add_back_var(env, "_=env", 0);
-	return (0);
+	if(add_default_shell_vars(env) == -1)
+		return (-1);
+	if (init_last_cmd_var(arg, env) == -1)
+		return (-1);
+	return (add_back_var(env, "_=env", 0));
 }
 
 // a tester
@@ -112,22 +159,19 @@ int	init_env(t_var **new_env, char **env, char *program_name)
 		if (!env[i])
 			break ;
 		if (!ft_strncmp("SHLVL=", env[i], 6))
-			init_and_incremente_shlvl(env[i], new_env);
+		{
+			if (init_and_incremente_shlvl(env[i], new_env) == -1)
+				return (-1);
+		}
 		else
-			add_back_var(new_env, env[i], 3); // pas sur
-		/* t_var *tmp; */
-
-		/* tmp = *new_env; */
-		/* while(tmp->next) */
-		/* { */
-		/* 	printf("%s=%s\n", tmp->key, tmp->value); */
-		/* 	tmp = tmp->next; */
-		/* } */
-		/* printf("%s\n", env[i]); */
+		{
+			if (add_back_var(new_env, env[i], 3) == -1) // pas sur
+				return (-1);
+		}
 		i++;
 	}
-	init_last_cmd_var(program_name, new_env);
-	add_back_var(new_env, "?=0", 0);
-	return (0);
+	if (init_last_cmd_var(program_name, new_env) == -1)
+		return (-1);
+	return (add_back_var(new_env, "?=0", 0));
 }
 
