@@ -19,7 +19,7 @@ static void	assign_head(t_tree **root, t_tree *head)
 {
 	t_tree	*tmp;
 
-	if (!*root || !head)
+	if (!root || !*root || !head)
 		return ;
 	tmp = *root;
 	tmp->head = head;
