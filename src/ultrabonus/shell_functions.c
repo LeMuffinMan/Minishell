@@ -25,10 +25,9 @@ t_shell_fct *is_a_known_shell_fct(char *word, t_shell_fct **shell_functions)
     tmp->name[ft_strlen(tmp->name) - 2] = '\0';
     if (!ft_strncmp(word, tmp->name, ft_strlen(tmp->name) + 1))
     {
-      tmp->name[ft_strlen(tmp->name) - 2] = ')';
+      tmp->name[ft_strlen(tmp->name)] = '(';
       return (tmp);
     }
-    tmp->name[ft_strlen(tmp->name) - 2] = ')';
     tmp = tmp->next;
   }
   return (NULL);
