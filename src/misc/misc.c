@@ -6,7 +6,7 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 17:58:12 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/14 15:58:51 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/14 17:39:02 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "libft.h"
 #include "utils.h"
 #include <stdlib.h>
+#include <unistd.h>
 
 char **lst_to_array(t_var **env)
 {
@@ -225,6 +226,18 @@ int malloc_free_string(char *s)
 		free(s);
 	return (-1);
 }
+
+int is_interactive_mode(void)
+{
+    if (isatty(1))
+    {
+        ft_putstr_fd("Minishell does not support non-interactive mode\n", 2);
+        exit(0);
+    }
+    return (0);
+}
+
+
 /* int exec_here_docs(t_tree *ast) */
 /* { */
 /*     (void)ast; */

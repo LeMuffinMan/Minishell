@@ -1,23 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   shell_fct.h                                        :+:      :+:    :+:   */
+/*   init.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/14 17:34:04 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/14 17:34:05 by oelleaum         ###   ########lyon.fr   */
+/*   Created: 2025/05/14 17:30:41 by oelleaum          #+#    #+#             */
+/*   Updated: 2025/05/14 17:33:30 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SHELL_FCT_H
-# define SHELL_FCT_H
+#ifndef INIT_H
+# define INIT_H
 
 #include "structs.h"
 
-t_shell_fct *is_a_known_shell_fct(char *word, t_shell_fct **shell_functions);
-char **expand_functions_args(char **args, char **shell_fct_content);
-char **gather_function_args(t_tree **ast, char **content);
-int exec_shell_fct(t_tree **ast, t_lists **lists, t_shell_fct *shell_fct);
+//init.c
+int init(t_lists **lists, char **av, char **env);
+
+//init_lists.c
+int init_lists(t_lists **lists);
+
+//init_utils.c
+int	init_and_incremente_shlvl(char *s, t_var **env);
+int incremente_shlvl(char *s, char *line);
+int get_cwd_init(char *s);
+
+//misc.c
+void free_lists(t_lists *lists);
 
 #endif
+  

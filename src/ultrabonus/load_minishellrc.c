@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exec_minishellrc.c                                 :+:      :+:    :+:   */
+/*   load_minishellrc.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:02 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/24 16:28:04 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/14 17:35:39 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -465,6 +465,22 @@ char *find_minishellrc(t_var **env, char *path)
         return (NULL);
     }
 }
+
+int find_and_load_startup_files(t_lists **lists, char **env)
+{
+    char *file;
+
+    file = find_minishellrc((*lists)->env, NULL);
+    if (isatty(0) && env && *env && file)
+        load_minishellrc((*lists)->env, (*lists)->aliases, (*lists)->shell_fcts, file);
+    if (file)
+        free(file);
+    if (isatty(0) && env && *env)
+        load_history((*lists)->env, (*lists)->history);
+    return (0);
+}
+
+
 
 /**/
 /* int main(void) */

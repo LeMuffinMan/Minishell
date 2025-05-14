@@ -6,12 +6,12 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:21:52 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/29 18:48:03 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/14 17:37:06 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-#include "init_lists.h"
+#include "init.h"
 #include "get_prompt.h" // A VIRER !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #include "tree.h"
 #include "exec.h"
@@ -148,57 +148,7 @@
 
 
 
-int is_interactive_mode(void)
-{
-    if (isatty(1))
-    {
-        ft_putstr_fd("Minishell does not support non-interactive mode\n", 2);
-        exit(0);
-    }
-    return (0);
-}
 
-int find_and_load_startup_files(t_lists **lists, char **env)
-{
-    char *file;
-
-    file = find_minishellrc((*lists)->env, NULL);
-    if (isatty(0) && env && *env && file)
-        load_minishellrc((*lists)->env, (*lists)->aliases, (*lists)->shell_fcts, file);
-    if (file)
-        free(file);
-    if (isatty(0) && env && *env)
-        load_history((*lists)->env, (*lists)->history);
-    return (0);
-}
-
-int init(t_lists **lists, char **av, char **env)
-{
-    //revoir retour d'erreur
-    if (init_lists(lists) == -1)
-    {
-        return (-1);
-    }
-    /* utiliser getenv ?
-        * Si on n'a pas d'env uniquement ?*/
-    if (init_env((*lists)->env, env, av[0]) == -1)
-    {
-        free_lists(*lists);
-        return (-1);
-    }
-    /* print_all_variables(lists->env); */
-    /* print_env(lists->env); */
-    //
-    //ULTRABONUS
-    if (find_and_load_startup_files(lists, env) == -1)
-    {
-        free_lists(*lists);
-        return (-1);
-    }
-    //ULTRABONUS
-    //
-    return (0);
-}
 
 //est-ce qu'on garde ac ?
 int main(int ac, char **av, char **env)
