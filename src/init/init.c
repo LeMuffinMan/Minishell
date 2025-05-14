@@ -175,3 +175,4 @@ int	init_env(t_var **new_env, char **env, char *program_name)
 	return (add_back_var(new_env, "?=0", 0));
 }
 
+

@@ -39,7 +39,7 @@ DIR_ULTRABONUS		=	src/ultrabonus \
 						src/ultrabonus/get_prompt 
 
 vpath %.c $(DIR_EXEC) $(DIR_PARSING) $(DIR_ULTRABONUS)
-vpath %.h include:include/parsing:include/exec:src/libft/include
+vpath %.h include:include/parsing:include/exec:include/init:src/libft/include
 vpath %.a src/libft/obj
 
 CC					=	cc
@@ -50,7 +50,7 @@ HEAD				=	display.h $(HEAD_EXEC)
 
 HEAD_DIR			=	include
 
-INC_HEAD			=	-I$(HEAD_DIR) -I$(HEAD_DIR)/parsing -I$(HEAD_DIR)/exec -I$(HEAD_DIR)/ultrabonus
+INC_HEAD			=	-I$(HEAD_DIR) -I$(HEAD_DIR)/parsing -I$(HEAD_DIR)/exec -I$(HEAD_DIR)/init -I$(HEAD_DIR)/ultrabonus
 
 LIBFT_DIR			=	src/libft
 LIBFT_HEAD_DIR		=	src/libft/include
@@ -96,6 +96,7 @@ SRC					=	main.c \
 					builtins_utils.c \
 					exec/env_utils.c \
 					init_utils.c \
+					init_lists.c \
 					prints.c \
 					misc.c \
 					source.c \

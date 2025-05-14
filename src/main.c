@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "libft.h"
+#include "init_lists.h"
 #include "get_prompt.h" // A VIRER !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #include "tree.h"
 #include "exec.h"
@@ -102,25 +103,11 @@
 
 //Exec todo 
     //Bultins refacto
-        //echo : vierer tous les espaces, afficher content[x] colles 
-        //export : export a="123" : content[0] export / 1 = a= / 2 = "123"
         //unset SHLVL USER HOME PATH export | grep SHLVL export | grep USER export | grep HOME export | grep PATH : STDERR + EXIT fails
-        //echo > /home/muffin/.file : STDERR
-        //fix simple cmd : uname -m -n -r -s : STDOUT + EXIT
-        //fix redirections : 
-            //< log/file_without_permissions whoami
-            //< log/infile cat :
-            //TOUTES les multiples : errors 
-
-//parsing todo
-    //bug fixs
-        //cd ..
-        //>
-    //
 
 //pour le merge de mardi 13 mai
     //exec clean
-    //builts refacto
+    //builtins refacto
     //()
     //here_docs
     //bug fixs 
@@ -132,173 +119,106 @@
     //wildcards
     //signaux
 
-//Merge d'apres (20 mai) : debuggage industriel
-//->push 
+//Merge d'apres (20 mai) 
+    //cd + pwd builtin error to fix
+    //debuggage nouvelle exec + ()
+    //debuggage Here_docs + quotes + expands
+    //debuggage wildcard
+    //exec malloc protection
+    //normed
 
+//debuggage 1 semaine ?
 
-//TODO
-//Mardi : merge 
-//tester : 
-    //signaux : revoir avec builtins ?
-    //expands + quotes : echo et export 
-    //builtins (env et export surtout)
+//Push autour du 26 mai ?
 
-//pour le merge suivant (vendredi 9 mai ?):
-    //ast pour les && || ()
-    //builtins fixed in pipe   
-    //here_docs ?
-    //echo et export avec expands
-    //export VAR="a b"  des cas de con de ouf a gerer export A="    b . bb    .   "
-    //normer et securiser tout
-
-//Debuggage industriel (1 semaine ?)
-
-//overkill time + On clean, on norme, on securise TOUT
-//final merge sur master pour vendredi 16 mai / semaine du 20 mai ?
 
 //ultrabonus :
     //tester load minishellrc avec le parsing fini
     //proteger get_prompt
     //alias : 
-        //tester exec
-        //decla d'alias au parsing ?
         //token d'alias au parsing ?
     //shell_fct :
-        //decla shlfct au parsing ?
         //token shlfct au parsing ?
-    //substitution cmd :
-        //exception dans les expands 
-        //fct pour executer la cmd_s
-    //faire l'historique a la main ?
-        //utils a finir
-        //a tester
+    //history
+        //tester builtin
+        //tester ! cmds
 
 //Tests de cons :
 //CTRL V + Tab : fait un tab dans le minishell a gerer !
 
-//revoir les frees !
-int init_lists(t_lists **lists)
+
+
+int is_interactive_mode(void)
 {
-    *lists = malloc(sizeof(t_lists));
-    if (!*lists)
-        return (-1);
-    
-    (*lists)->env = NULL;
-    (*lists)->ast = NULL;
-    (*lists)->pipes = NULL;
-    (*lists)->history = NULL;
-    (*lists)->aliases = NULL;
-    (*lists)->shell_fcts = NULL;
-    (*lists)->env = malloc(sizeof(t_var*));
-    if (!(*lists)->env)
+    if (isatty(1))
     {
-        free(*lists);
-        return (-1);
+        ft_putstr_fd("Minishell does not support non-interactive mode\n", 2);
+        exit(0);
     }
-    *(*lists)->env = NULL;
-    (*lists)->ast = malloc(sizeof(t_tree*));
-    if (!(*lists)->ast)
-    {
-        free((*lists)->env);
-        free(*lists);
-        return (-1);
-    }
-    *(*lists)->ast = NULL;
-    (*lists)->pipes = malloc(sizeof(t_pipe*));
-    if (!(*lists)->pipes)
-    {
-        free((*lists)->ast);
-        free((*lists)->env);
-        free(*lists);
-        return (-1);
-    }
-    *(*lists)->pipes = NULL;
-    (*lists)->history = malloc(sizeof(t_hist*));
-    if (!(*lists)->history)
-    {
-        free((*lists)->pipes);
-        free((*lists)->ast);
-        free((*lists)->env);
-        free(*lists);
-        return (-1);
-    }
-    *(*lists)->history = NULL;
-    (*lists)->aliases = malloc(sizeof(t_alias*));
-    if (!(*lists)->aliases)
-    {
-        free((*lists)->history);
-        free((*lists)->pipes);
-        free((*lists)->ast);
-        free((*lists)->env);
-        free(*lists);
-        return (-1);
-    }
-    *(*lists)->aliases = NULL;
-    (*lists)->shell_fcts = malloc(sizeof(t_shell_fct*));
-    if (!(*lists)->shell_fcts)
-    {
-        free((*lists)->history);
-        free((*lists)->pipes);
-        free((*lists)->ast);
-        free((*lists)->env);
-        free(*lists);
-        return (-1);
-    }
-    *(*lists)->shell_fcts = NULL;
     return (0);
 }
 
+int find_and_load_startup_files(t_lists **lists, char **env)
+{
+    char *file;
 
+    file = find_minishellrc((*lists)->env, NULL);
+    if (isatty(0) && env && *env && file)
+        load_minishellrc((*lists)->env, (*lists)->aliases, (*lists)->shell_fcts, file);
+    if (file)
+        free(file);
+    if (isatty(0) && env && *env)
+        load_history((*lists)->env, (*lists)->history);
+    return (0);
+}
 
+int init(t_lists **lists, char **av, char **env)
+{
+    //revoir retour d'erreur
+    if (init_lists(lists) == -1)
+    {
+        return (-1);
+    }
+    /* utiliser getenv ?
+        * Si on n'a pas d'env uniquement ?*/
+    if (init_env((*lists)->env, env, av[0]) == -1)
+    {
+        free_lists(*lists);
+        return (-1);
+    }
+    /* print_all_variables(lists->env); */
+    /* print_env(lists->env); */
+    //
+    //ULTRABONUS
+    if (find_and_load_startup_files(lists, env) == -1)
+    {
+        free_lists(*lists);
+        return (-1);
+    }
+    //ULTRABONUS
+    //
+    return (0);
+}
+
+//est-ce qu'on garde ac ?
 int main(int ac, char **av, char **env)
 {
     char    *line;
     char    *prompt;
     int        exit_code;
     t_lists *lists;
-    /* t_var *new_env; */
     t_tree *tree_to_free; 
-    /* t_tree *ast; */
-    /* t_pipe *pipes; */
-    /* t_hist *history; */
     char **strings_env;
-    char *file;
-	/* int lists->origin_fds[2]; */
 
-    /* if (isatty(1)) */
-    /* { */
-    /*     ft_putstr_fd("Minishell does not support non-interactive mode\n"); */
-    /*     exit(0); */
-    /* } */
-    // pour ac et av : est-ce qu'on veut accepter des demarrages custom ?
     (void)ac;
-    (void)av;
-    lists = NULL;
-    if (init_lists(&lists) == -1)
-    {
-        //malloc error 
-        return (-1);
-    }
+    is_interactive_mode();
     exit_code = 0; //on ajoute l'exit code a la megastruct ou on la laisse dans env ?
-    /* utiliser getenv ?
-        * Si on n'a pas d'env uniquement ?*/
-    if (init_env(lists->env, env, av[0]) == -1)
+    lists = NULL;
+    if (init(&lists, av, env) == -1)
     {
-        free_lists(lists);
-        return (-1);
         //malloc error
+        return (-1);
     }
-    /* print_all_variables(lists->env); */
-    /* print_env(lists->env); */
-
-    //revoir retour d'erreur
-    file = find_minishellrc(lists->env, NULL);
-    if (isatty(0) && *env && file)
-        load_minishellrc(lists->env, lists->aliases, lists->shell_fcts, file);
-    if (file)
-        free(file);
-    if (isatty(0) && *env)
-        load_history(lists->env, lists->history);
     while (1)
     {
         setup_parent_signals();
@@ -323,8 +243,9 @@ int main(int ac, char **av, char **env)
                 {
                     if (prompt)
                         free(prompt);
-                    /* if (lists->history) */
-                    /*     save_history(lists->env, lists->history); */
+                    //A gerer avec les signaux correctement !
+                    if (lists->history)
+                        save_history(lists->env, lists->history);
                 }
                 free_lists(lists);
                 exit(exit_code);
@@ -335,23 +256,7 @@ int main(int ac, char **av, char **env)
                     ft_add_history(lists->env, lists->history, line);
                 else
                     add_history(line);
-                /* if (!lists->history && isatty(0) && *env) */
-                /*     ft_add_history(lists->env, lists->history, line); */
-                /* else if (isatty(0) && *env && lists->history && *lists->history) */
-                /* { */
-                /*     if ((*lists->history)->prev == NULL ||  */
-                /*         ft_strncmp(line, (*lists->history)->prev->cmd_line, ft_strlen(line) + 1)) */
-                /*         ft_add_history(lists->env, lists->history, line); */
-                /* } */
-                /* else if (lists->history && *lists->history &&  */
-                /*         (*lists->history)->prev &&  */
-                /*         ft_strncmp(line, (*lists->history)->prev->cmd_line, ft_strlen(line) + 1)) */
-                /*     add_history(line); */
             }
-            //A gerer avec les signaux correctement !
-            //pour avoir un historique complet on est suppose l'enregistrer dans un fichier a la sortie
-            //et charger ce fichier au demarrage si il existe
-            //on peut fixer une limite a l'historique des commandes 
         }
 	    lists->origin_fds[0] = dup(STDIN_FILENO);
 	    lists->origin_fds[1] = dup(STDOUT_FILENO);
