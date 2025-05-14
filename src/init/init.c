@@ -6,18 +6,24 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 17:02:11 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/14 16:06:27 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/14 16:11:44 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "env_utils.h"
 #include "init_utils.h"
-#include "malloc_error_handlers.h" //pour le malloc error 
 #include "libft.h"
+#include "malloc_error_handlers.h" //pour le malloc error
 #include "structs.h"
 #include <limits.h>
 #include <stdio.h>
 #include <unistd.h>
+
+// TODO
+// un fichier init_shell_var.c
+// fixer l'init du shlvlv
+// revoir exit_code ET var _
+// une fonction +25l
 
 // a revoir
 // a deplacer dans un init_shell_var ?
@@ -44,8 +50,7 @@ int	init_last_cmd_var(char *name, t_var **env)
 	return (0);
 }
 
-
-//Add_shell_Vars
+// Add_shell_Vars
 int	add_default_shell_vars(t_var **env)
 {
 	char	*s;
@@ -93,7 +98,7 @@ int	init_env(t_var **new_env, char **env, char *program_name)
 {
 	int	i;
 
-	if (! env && !*env)
+	if (!env && !*env)
 		return (build_minimal_env(new_env, program_name));
 	i = 0;
 	while (env[i])
@@ -116,5 +121,5 @@ int	init_env(t_var **new_env, char **env, char *program_name)
 	}
 	if (init_last_cmd_var(program_name, new_env) == -1)
 		return (-1);
-	return (add_back_var(new_env, "?=0", 0)); // revoir l'init de l'exit code 
+	return (add_back_var(new_env, "?=0", 0)); // revoir l'init de l'exit code
 }

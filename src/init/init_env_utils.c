@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 17:04:05 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/14 15:59:44 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/14 16:13:21 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,11 @@
 #include "utils.h"
 #include <stdlib.h>
 
+// TODO
+// faire un fichier frees.c
+// une fonction de 25l+ a racrourcir
+
+// a ranger dans un fihcier frees.c
 void	free_list(t_var **l)
 {
 	t_var	*tmp;
@@ -34,33 +39,32 @@ void	free_list(t_var **l)
 	*l = NULL;
 }
 
-int    set_node(t_var **node, int mode)
+int	set_node(t_var **node, int mode)
 {
-  (*node)->env = 0;
-  (*node)->exported = 0;
-  (*node)->loaded = 0;
-
-  if (mode == 1)
-  {
-      (*node)->env = 1;
-  }
-  else if (mode == 2)
-  {
-      (*node)->exported = 1;
-  }
-  else if (mode == 3)
-  {
-      (*node)->env = 1;
-      (*node)->exported = 1;
-  }
-  else if (mode == 4)
-  {
-      (*node)->loaded = 1;
-  }
-  return (0);
+	(*node)->env = 0;
+	(*node)->exported = 0;
+	(*node)->loaded = 0;
+	if (mode == 1)
+	{
+		(*node)->env = 1;
+	}
+	else if (mode == 2)
+	{
+		(*node)->exported = 1;
+	}
+	else if (mode == 3)
+	{
+		(*node)->env = 1;
+		(*node)->exported = 1;
+	}
+	else if (mode == 4)
+	{
+		(*node)->loaded = 1;
+	}
+	return (0);
 }
 
-int free_node_var(t_var *node, char **array)
+int	free_node_var(t_var *node, char **array)
 {
 	if (array)
 		free_array(array);
@@ -95,7 +99,6 @@ int	add_first_node(t_var **lst, t_var **new, char *s, int mode)
 	(*new)->next = NULL;
 	return (set_node(new, mode));
 }
-
 
 // 0 = aucun des deux / 1 = env / 2 = export / 3 = env + export
 // revoir le retour d'erreur

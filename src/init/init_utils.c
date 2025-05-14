@@ -6,22 +6,25 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 15:53:47 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/14 16:07:52 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/14 16:13:49 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
 #include "env_utils.h"
+#include "libft.h"
+#include "malloc_error_handlers.h" //pour le malloc error
 #include <limits.h>
+#include <stdio.h> // le perror
 #include <stdlib.h>
-#include "malloc_error_handlers.h" //pour le malloc error 
 #include <unistd.h>
-#include <stdio.h> // le perror 
 
-//misc
-int find_first_digit(char *s)
+//TODO
+//voir comment ferer le getcwd qui foire a l'init
+
+// misc
+int	find_first_digit(char *s)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (s[i])
@@ -33,8 +36,8 @@ int find_first_digit(char *s)
 	return (i);
 }
 
-//init_utils
-int get_cwd_init(char *s)
+// init_utils
+int	get_cwd_init(char *s)
 {
 	char	buf[PATH_MAX];
 
@@ -44,17 +47,18 @@ int get_cwd_init(char *s)
 	{
 		perror("getcwd");
 		/* free(s); */
-		return (1); //return 1 ? comment gerer un cas ou getcwd foire au demarrage ?
+		return (1);
+			// return 1 ? comment gerer un cas ou getcwd foire au demarrage ?
 	}
 	if (!s)
 		return (-1);
 	return (0);
 }
 
-//init_utils
-int incremente_shlvl(char *s, char *line)
+// init_utils
+int	incremente_shlvl(char *s, char *line)
 {
-	int n;
+	int		n;
 	char	*shlvl_n;
 
 	n = ft_atoi(s + 6);
@@ -77,7 +81,7 @@ int incremente_shlvl(char *s, char *line)
 	return (0);
 }
 
-//init_utils
+// init_utils
 // a tester
 int	init_and_incremente_shlvl(char *s, t_var **env)
 {
@@ -96,11 +100,10 @@ int	init_and_incremente_shlvl(char *s, t_var **env)
 	{
 		line = ft_strdup("SHLVL=1");
 		if (!line)
-			return(-1);
+			return (-1);
 	}
 	if (add_back_var(env, line, 3) == -1)
 		return (malloc_free_string(line));
 	free(line);
 	return (0);
 }
-
