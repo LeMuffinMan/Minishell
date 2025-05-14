@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:21:52 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/14 17:37:06 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/14 19:27:02 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,10 +145,6 @@
 
 //Tests de cons :
 //CTRL V + Tab : fait un tab dans le minishell a gerer !
-
-
-
-
 
 //est-ce qu'on garde ac ?
 int main(int ac, char **av, char **env)
