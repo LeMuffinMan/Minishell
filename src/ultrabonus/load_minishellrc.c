@@ -446,11 +446,12 @@ char *find_minishellrc(t_var **env, char *path)
 
     if (!path)
         path = get_default_minishellrc_path(env);
-    if (!path)
-        path = ft_strdup("./.minishellrc");
+    if (!path || access(path, F_OK) == -1)
+        path = ft_strdup(".minishellrc");
     if (access(path, F_OK) == -1)
     {
-        print_error_file_opening(path, "No such file or directory\n", 1);
+        //a voir ce print 
+        /* print_error_file_opening(path, "No such file or directory\n", 2); */
         free(path);
         return (NULL);
     }

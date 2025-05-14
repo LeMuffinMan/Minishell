@@ -56,7 +56,7 @@ int	get_cwd_init(char *s)
 }
 
 // init_utils
-int	incremente_shlvl(char *s, char *line)
+int	incremente_shlvl(char *s, char **line)
 {
 	int		n;
 	char	*shlvl_n;
@@ -64,8 +64,8 @@ int	incremente_shlvl(char *s, char *line)
 	n = ft_atoi(s + 6);
 	if (n < 0)
 	{
-		line = ft_strdup("SHLVL=0");
-		if (!line)
+		*line = ft_strdup("SHLVL=0");
+		if (!*line)
 			return (-1);
 	}
 	else
@@ -73,8 +73,8 @@ int	incremente_shlvl(char *s, char *line)
 		shlvl_n = ft_itoa(n + 1);
 		if (!shlvl_n)
 			return (-1);
-		line = ft_strjoin("SHLVL=", shlvl_n);
-		if (!line)
+		*line = ft_strjoin("SHLVL=", shlvl_n);
+		if (!*line)
 			return (malloc_free_string(shlvl_n));
 		free(shlvl_n);
 	}
@@ -91,9 +91,9 @@ int	init_and_incremente_shlvl(char *s, t_var **env)
 	i = 7;
 	line = NULL;
 	i = find_first_digit(s);
-	if ((size_t)i == ft_strlen(s)) // pas sur de ma logique la
+	if (!((size_t)i == ft_strlen(s))) // pas sur de ma logique la
 	{
-		if (incremente_shlvl(s, line) == -1)
+		if (incremente_shlvl(s, &line) == -1)
 			return (-1);
 	}
 	if (!line)

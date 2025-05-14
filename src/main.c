@@ -211,7 +211,7 @@ int main(int ac, char **av, char **env)
     char **strings_env;
 
     (void)ac;
-    is_interactive_mode();
+    /* is_interactive_mode(); */
     exit_code = 0; //on ajoute l'exit code a la megastruct ou on la laisse dans env ?
     lists = NULL;
     if (init(&lists, av, env) == -1)
