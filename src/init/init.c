@@ -143,7 +143,7 @@ int init(t_lists **lists, char **av, char **env)
     /* print_env(lists->env); */
     //
     //ULTRABONUS
-    if (find_and_load_startup_files(lists, env) == -1)
+    if (isatty(0) && env && *env && find_and_load_startup_files(lists, env) == -1)
     {
         free_lists(*lists);
         return (-1);

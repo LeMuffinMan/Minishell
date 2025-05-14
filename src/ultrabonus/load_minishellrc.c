@@ -38,52 +38,49 @@ int find_quotes(char *s)
         return (0);
 }
 
-char *get_alias_name(char *s)
+int get_alias_name(char *s, char **name)
 {
     char **splitted;
-    char *name;
 
     splitted = ft_split(s, '=');
     if (!splitted)
-        return(NULL);
+        return(-1);
     if (!splitted[0] || !splitted[1])
     {
         free_array(splitted);
-        return (NULL);
+        return (-1);
     }
-    name = ft_strdup(splitted[0]);
+    *name = ft_strdup(splitted[0]);
     free_array(splitted);
-    return (name);
+    return (0);
 }
 
-char *trim_quotes(char *str)
+int trim_quotes(char *str, char **trimmed)
 {
     int len;
-    char *trimmed;
     int i;
 
     len = ft_strlen(str);
     if (len < 2 ||
         !( (str[0] == '\'' && str[len - 1] == '\'') ||
            (str[0] == '\"' && str[len - 1] == '\"') ) )
-        return (str);
+        return (0);
     trimmed = malloc(sizeof(char) * (len - 1));
     if (!trimmed) 
-        return (NULL);
+        return (-1);
     i = 0;
     while (i < len - 2)
     {
-        trimmed[i] = str[i + 1];
+        *trimmed[i] = str[i + 1];
         i++;
     }
-    trimmed[i] = '\0';
-    return (trimmed);
+    *trimmed[i] = '\0';
+    return (0);
 }
 
-char *trim_quotes_alias(char *s)
+int trim_quotes_alias(char *s, char **trimmed)
 {
     int j;
-    char *trimmed;
     int i;
     int count;
 
@@ -95,7 +92,9 @@ char *trim_quotes_alias(char *s)
             count++;
         i++;
     }
-    trimmed = malloc(sizeof(char) * (ft_strlen(s) + 1 - count));
+    *trimmed = malloc(sizeof(char) * (ft_strlen(s) + 1 - count));
+    if (!*trimmed)
+        return (-1);
     i = 0;
     j = 0;
     while (s[i])
@@ -104,13 +103,13 @@ char *trim_quotes_alias(char *s)
             i++;
         if (s[i])
         {
-            trimmed[j] = s[i];
+            (*trimmed)[j] = s[i];
             i++;
             j++;
         }
     }
-    trimmed[j] = '\0';
-    return (trimmed);
+    (*trimmed)[j] = '\0';
+    return (0);
 }
 
 int add_alias(char *src, t_alias **aliases)
@@ -121,12 +120,41 @@ int add_alias(char *src, t_alias **aliases)
     char *line;
 
     s = src + 6;
-    line = trim_quotes_alias(s);
+    line = NULL;
+    trim_quotes_alias(s, &line);
+    if (!line)
+        return (-1);
     new_alias = malloc(sizeof(t_alias));
     if (!new_alias)
+    {
+        free(line);
+        free(new_alias);
         return (-1);
-    new_alias->name = get_alias_name(line);
+    }
+    if (!new_alias)
+        return (-1);
+    if (get_alias_name(line, &(new_alias->name)) == -1)
+    {
+        free(line);
+        free(new_alias);
+        return (-1);
+    }
+    if (!new_alias->name)
+    {
+        free(line);
+        free(new_alias->name);
+        free(new_alias);
+        return (-1);
+    }
+    //faire un calloc
     new_alias->content = ft_strdup(ft_strchr(line, '=') + 1);
+    if (!new_alias->content)
+    {
+        free(line);
+        free(new_alias->name);
+        free_array(&(new_alias->content));
+        free(new_alias);
+    }
     new_alias->next = NULL;
     tmp = *aliases;
     if (!tmp)
@@ -169,10 +197,22 @@ int add_shell_fct(char **lines, t_shell_fct **shell_fcts, int i, int closed_brac
         return (-1);
     i+=2;
     new_fct->content = malloc(sizeof(char *) * (closed_bracket_index - i + 1));
+    if (!new_fct->content)
+    {
+        free(new_fct);
+        return (-1);
+    }
     j = 0;
+    //faire un calloc juste avant 
     while(i < closed_bracket_index)
     {
         new_fct->content[j] = ft_strdup(lines[i]);
+        if (!new_fct->content[j])
+        {
+            free_array(new_fct->content);
+            free(new_fct);
+            return (-1);
+        }
         i++;
         j++;
     }
@@ -262,12 +302,11 @@ int print_fct_content(char *name, t_var **env)
     return (1);
 }
 
-char **read_minishell_rc(char *path)
+int read_minishell_rc(char *path, char ***lines)
 {
     char buffer[4096];
     ssize_t bytes_read;
     int fd;
-    char **lines;
 
     if (!path)
         path = "./.minishellrc";
@@ -275,17 +314,17 @@ char **read_minishell_rc(char *path)
     if (fd < 0)
     {
         //error open 
-        return (NULL);
+        return (1);
     }
     bytes_read = read(fd, buffer, sizeof(buffer) - 1);
     close(fd);
     if (bytes_read <= 0)
         return (0);
     buffer[bytes_read] = '\0';
-    lines = ft_split(buffer, '\n');
+    *lines = ft_split(buffer, '\n');
     if (!lines)
-        return (NULL);
-    return (lines);
+        return (-1);
+    return (0);
 }
 
 
@@ -294,9 +333,18 @@ int is_a_segfault_trap(char *line, char *file_path)
     char **path_to_load;
     char *trimmed_line;
 
-    trimmed_line = trim_quotes(line);
+    trimmed_line = NULL;
+    if (trim_quotes(line, &trimmed_line) == -1)
+        return (-1);
     path_to_load = NULL;
+    if (!trimmed_line)
+        return (0); //provoquait un segfault
     path_to_load = ft_split(trimmed_line, ' ');
+    if (!path_to_load)
+    {
+        free(trimmed_line);
+        return (-1);
+    }
     //si on a pas la cmd source
     /* printf("path_to_load[0] = %s | path_to_load[1]= %s | file_path = %s\n", path_to_load[0], path_to_load[1], file_path); */
     if (path_to_load[0] && ft_strncmp(path_to_load[0], "source", 7))
@@ -332,7 +380,13 @@ int add_or_update_last_rc_file_var(t_var **env, char *path)
     if (!value)
     {
         value = ft_strjoin("last_rc_file=", path);
-        add_back_var(env, value, 0); // ajouter une exception pour unset
+        if (!value)
+            return (-1);
+        if (add_back_var(env, value, 0) == -1) // ajouter une exception pour unset
+        {
+            free(value);
+            return (-1);
+        }
         if (value)
             free(value);
         return (0);
@@ -342,6 +396,8 @@ int add_or_update_last_rc_file_var(t_var **env, char *path)
         node = is_known_key(env, "last_rc_file");
         free(node->value);
         node->value = ft_strdup(path);
+        if (!node->value)
+            return (-1);
         return (0);
     }
 }
@@ -353,50 +409,62 @@ int load_minishellrc(t_var **env, t_alias **aliases, t_shell_fct **shell_fcts, c
     int i;
     int closed_bracket_index;
     t_var *tmp;
+    int exit_code;
 
-    /* printf("path = %s\n", path); */
-    lines = read_minishell_rc(path);
-    if (!lines)
+    lines = NULL;
+    if (read_minishell_rc(path, &lines) == -1)
         return (-1);
     i = 0;
+    if (!lines)
+        return (1);
     while (lines[i])
     {
-        /* printf("line[%d] = %s\n", i, lines[i]); */
         closed_bracket_index = is_a_shell_function(lines, i);
         if (closed_bracket_index < 0)
+        {
+            free_array(lines);
             return (-1);
+        }
         if (closed_bracket_index > 2)
         {
-            add_shell_fct(lines, shell_fcts, i, closed_bracket_index);
-            /* printf("shell fct name: %s\n", lines[i]); */
-            /* print_fct_content(lines[i], env); */
+            if (add_shell_fct(lines, shell_fcts, i, closed_bracket_index) == -1)
+            {
+                free_array(lines);
+                return (-1);
+            } 
             i = closed_bracket_index;
         }
-        /* if (lines[i][0] && lines[i][0] == '#') */
-        /* { */
-            /* printf("comment : %s\n", lines[i]); */
-        /* } */
         else if (!ft_strncmp("alias ", lines[i], 6))
         {
-            /* printf("ici\n"); */
-            add_alias(lines[i], aliases);
+            if (add_alias(lines[i], aliases) == -1)
+            {
+                free_array(lines);
+                return (-1);
+            }
             tmp = *env;
             while(tmp->next)
                 tmp = tmp->next;
-            /* printf("alias added in env : %s=%s\n", tmp->key, tmp->value); */
         }
         else if (!ft_strncmp("PS1=", lines[i], 4))
         {
-            add_back_var(env, lines[i], 4);
+            if (add_back_var(env, lines[i], 4) == -1)
+            {
+                free_array(lines);
+                return (-1);
+            }
             tmp = *env;
             while(tmp->next)
                 tmp = tmp->next;
-            /* printf("PS1 added in env : %s=%s | exported = %d | env = %d\n", tmp->key, tmp->value, tmp->exported, tmp->env); */
         }
         else if (ft_strlen(lines[i]) > 1 && lines[i][0] != '}' && lines[i][0] != '#')//if is command du parsing
         {
-            /* printf("lines[%d] = %s\n", i, lines[i]); */
-            if (path && is_a_segfault_trap(lines[i], path) > 0)
+            exit_code = is_a_segfault_trap(lines[i], path);
+            if (exit_code == -1)
+            {
+                free_array(lines);
+                return (-1);
+            }
+            if (path && exit_code > 0)
             {
                 if (print_noway())
                 {
@@ -413,74 +481,97 @@ int load_minishellrc(t_var **env, t_alias **aliases, t_shell_fct **shell_fcts, c
         }
         i++;
     }
-    add_or_update_last_rc_file_var(env, path);
+    if (add_or_update_last_rc_file_var(env, path) == -1)
+    {
+        free_array(lines);
+        return (-1);
+    }
     free_array(lines);
     return(0);
 }
 
-char *get_default_minishellrc_path(t_var **env)
+int get_default_minishellrc_path(t_var **env, char **path)
 {
-	char	*s;
-	char *tmp;
+    char *tmp;
+    char *home;
 
-    s = get_value(env, "HOME");
-    if (!s)
+    home = get_value(env, "HOME");
+    if (!home)
     {
-        s = get_value(env, "USER");
-        if (!s)
+        tmp = get_value(env, "USER");
+        if (!tmp)
         {
             ft_putstr_fd("minishell: load_minishellrc: no HOME or USER variable set\n", 2);
-            return (NULL);
+            return (1);
         }
-        tmp = s;
-        s = ft_strjoin("/home/", s);
-        free(tmp);
+        home = ft_strjoin("/home/", tmp);
+        if (!home)
+            return (-1);
     }
-    tmp = s;
-    s = ft_strjoin(s, "/.minishellrc"); //ca fuite sur un CTRL+D
-    return(s);
-}
-
-char *find_minishellrc(t_var **env, char *path)
-{
-
-    if (!path)
-        path = get_default_minishellrc_path(env); //fuite
-    if (!path || access(path, F_OK) == -1)
-        path = ft_strdup(".minishellrc");
-    if (access(path, F_OK) == -1)
-    {
-        //a voir ce print 
-        /* print_error_file_opening(path, "No such file or directory\n", 2); */
-        free(path);
-        return (NULL);
-    }
-    if (access(path, R_OK) == 0)
-        return (path);
-    else 
-    {
-        //integrer dans les error.c
-        ft_putstr_fd("minishell: .minishellrc: Permission denied\n", 2);
-        free(path);
-        return (NULL);
-    }
-}
-
-//Se lance alors que isatty(0) renvoie NON ?
-int find_and_load_startup_files(t_lists **lists, char **env)
-{
-    char *file;
-
-    file = find_minishellrc((*lists)->env, NULL); //fuite !
-    if (isatty(0) && env && *env && file)
-        load_minishellrc((*lists)->env, (*lists)->aliases, (*lists)->shell_fcts, file);
-    if (file)
-        free(file);
-    if (isatty(0) && env && *env)
-        load_history((*lists)->env, (*lists)->history);
+    home = ft_strjoin(home, "/.minishellrc");
+    if (!home)
+        return (-1);
+    *path = home;
     return (0);
 }
 
+int find_minishellrc(t_var **env, char **path)
+{
+    if (!*path)
+    {
+        if (get_default_minishellrc_path(env, path) == -1)
+            return (-1);
+    }
+    if (!*path || access(*path, F_OK) == -1)
+    {
+        if (*path)
+            free(*path);
+        *path = ft_strdup(".minishellrc");
+        if (!*path)
+            return (-1);
+    }
+    if (access(*path, F_OK) == -1)
+    {
+        free(*path);
+        *path = NULL;
+        return (1);
+    }
+    if (access(*path, R_OK) == 0)
+        return (0);
+    else
+    {
+        ft_putstr_fd("minishell: .minishellrc: Permission denied\n", 2);
+        free(*path);
+        *path = NULL;
+        return (1);
+    }
+}
+
+int find_and_load_startup_files(t_lists **lists, char **env)
+{
+    char *file = NULL;
+
+    if (find_minishellrc((*lists)->env, &file) == -1)
+    {
+        free(file);
+        return (-1);
+    }
+    if (isatty(0) && env && *env && file)
+    {
+        if (load_minishellrc((*lists)->env, (*lists)->aliases, (*lists)->shell_fcts, file) == -1)
+        {
+            free(file);
+            return (-1);
+        }
+    }
+    free(file);
+    if (isatty(0) && env && *env)
+    {
+        if (load_history((*lists)->env, (*lists)->history) == -1)
+            return (-1);
+    }
+    return (0);
+}
 
 
 /**/
