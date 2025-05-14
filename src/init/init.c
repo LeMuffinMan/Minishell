@@ -6,18 +6,21 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 17:02:11 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/20 16:06:46 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/14 16:06:27 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "structs.h"
 #include "env_utils.h"
+#include "init_utils.h"
+#include "malloc_error_handlers.h" //pour le malloc error 
 #include "libft.h"
+#include "structs.h"
 #include <limits.h>
-#include <unistd.h>
 #include <stdio.h>
+#include <unistd.h>
 
-//a revoir 
+// a revoir
+// a deplacer dans un init_shell_var ?
 int	init_last_cmd_var(char *name, t_var **env)
 {
 	char	*s;
@@ -27,7 +30,7 @@ int	init_last_cmd_var(char *name, t_var **env)
 		s = ft_strjoin(buf, name);
 	else
 	{
-		//gerer l'erreur d'un getcwd qui a echoue
+		// gerer l'erreur d'un getcwd qui a echoue
 		s = ft_strdup(name);
 	}
 	if (!s)
@@ -41,115 +44,56 @@ int	init_last_cmd_var(char *name, t_var **env)
 	return (0);
 }
 
-int add_default_shell_vars(t_var **env)
+
+//Add_shell_Vars
+int	add_default_shell_vars(t_var **env)
 {
 	char	*s;
 
 	s = ft_strdup("SHLVL=1"); // si le SHLVL est negatif il met SHLVL = 0
 	if (!s)
-	{
-		free(s);
-		return (-1);
-	}
+		return (malloc_free_string(s));
 	if (add_back_var(env, s, 3) == -1)
-	{
-		free(s);
-		return (-1);
-	}
+		return (malloc_free_string(s));
 	free(s);
 	s = ft_strdup("OLDPWD="); // updated in CD seulement ?
 	if (!s)
-	{
-		free(s);
-		return (-1);
-	}
+		return (malloc_free_string(s));
 	if (add_back_var(env, s, 1) == -1)
-	{
-		free(s);
-		return (-1);
-	}
+		return (malloc_free_string(s));
 	free(s);
-	return(0);
+	return (0);
 }
 
 int	build_minimal_env(t_var **env, char *arg)
 {
-	char	buf[PATH_MAX];
-	char *s;
+	char	*s;
 
 	s = NULL;
-	if (getcwd(buf, sizeof(buf)) != NULL)
-		s = ft_strdup(buf);
-	else
-	{
-		perror("getcwd");
-		/* (void)s = NULL; */
-		//  1 ou errno ?
-		//  free avant !
-		return (1);
-	}
+	if (get_cwd_init(s) == -1)
+		return (-1);
 	if (!s)
 		return (-1);
 	s = ft_strjoin("PWD=", s);
 	if (!s)
-	{
-		free(s);
-		return (-1);
-	}
+		return (malloc_free_string(s));
 	if (add_back_var(env, s, 3) == -1)
-	{
-		free(s);
-		return (-1);
-	}
+		return (malloc_free_string(s));
 	free(s);
-	if(add_default_shell_vars(env) == -1)
+	if (add_default_shell_vars(env) == -1)
 		return (-1);
 	if (init_last_cmd_var(arg, env) == -1)
 		return (-1);
 	return (add_back_var(env, "_=env", 0));
 }
 
-// a tester
-int	init_and_incremente_shlvl(char *s, t_var **env)
-{
-	int		n;
-	int		i;
-	char	*line;
-	char	*shlvl_n;
-
-	i = 7;
-	line = NULL;
-	while (s[i])
-	{
-		if (!ft_isdigit(s[i]))
-			break ;
-		i++;
-	}
-	if ((size_t)i == ft_strlen(s))
-	{
-		n = ft_atoi(s + 6);
-		if (n < 0)
-			line = ft_strdup("SHLVL=0");
-		else
-		{
-			shlvl_n = ft_itoa(n + 1);
-			line = ft_strjoin("SHLVL=", shlvl_n);
-			free(shlvl_n);
-		}
-	}
-	if (!line)
-		line = ft_strdup("SHLVL=1");
-	add_back_var(env, line, 3);
-	free(line);
-	return (0);
-}
-
-//revoir la variable _
+// revoir la variable _
+// 25 lignes qund on aura fix l'exit code et la var _
 int	init_env(t_var **new_env, char **env, char *program_name)
 {
 	int	i;
 
-	if (!*env)
+	if (! env && !*env)
 		return (build_minimal_env(new_env, program_name));
 	i = 0;
 	while (env[i])
@@ -172,7 +116,5 @@ int	init_env(t_var **new_env, char **env, char *program_name)
 	}
 	if (init_last_cmd_var(program_name, new_env) == -1)
 		return (-1);
-	return (add_back_var(new_env, "?=0", 0));
+	return (add_back_var(new_env, "?=0", 0)); // revoir l'init de l'exit code 
 }
-
-

@@ -6,7 +6,7 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 17:58:12 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/20 18:01:02 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/14 15:58:51 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -216,6 +216,14 @@ int array_size(char **array)
     i++;
   return (i);
 
+}
+
+//un fichier malloc_errors_handlers
+int malloc_free_string(char *s)
+{
+	if (s)
+		free(s);
+	return (-1);
 }
 /* int exec_here_docs(t_tree *ast) */
 /* { */

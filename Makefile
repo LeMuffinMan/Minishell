@@ -6,7 +6,7 @@
 #    By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/05/09 14:11:44 by asinsard         ###   ########lyon.fr    #
+#    Updated: 2025/05/14 16:03:01 by oelleaum         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,7 +39,7 @@ DIR_ULTRABONUS		=	src/ultrabonus \
 						src/ultrabonus/get_prompt 
 
 vpath %.c $(DIR_EXEC) $(DIR_PARSING) $(DIR_ULTRABONUS)
-vpath %.h include:include/parsing:include/exec:include/init:src/libft/include
+vpath %.h include:include/parsing:include/exec:include/init:include/misc:src/libft/include
 vpath %.a src/libft/obj
 
 CC					=	cc
@@ -50,7 +50,7 @@ HEAD				=	display.h $(HEAD_EXEC)
 
 HEAD_DIR			=	include
 
-INC_HEAD			=	-I$(HEAD_DIR) -I$(HEAD_DIR)/parsing -I$(HEAD_DIR)/exec -I$(HEAD_DIR)/init -I$(HEAD_DIR)/ultrabonus
+INC_HEAD			=	-I$(HEAD_DIR) -I$(HEAD_DIR)/parsing -I$(HEAD_DIR)/exec -I$(HEAD_DIR)/init -I$(HEAD_DIR)/misc -I$(HEAD_DIR)/ultrabonus
 
 LIBFT_DIR			=	src/libft
 LIBFT_HEAD_DIR		=	src/libft/include
@@ -95,6 +95,7 @@ SRC					=	main.c \
 					export_utils.c \
 					builtins_utils.c \
 					exec/env_utils.c \
+					init_env_utils.c \
 					init_utils.c \
 					init_lists.c \
 					prints.c \
