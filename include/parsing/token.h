@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 01:26:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/13 15:41:52 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/14 18:51:40 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,11 +73,11 @@ void					is_built_in(t_token **node);
 void					alloc_cmd_split(char ***split_cmd, char **path,
 							char *arg, int *error);
 void					is_command_whithout_env(t_token **node, char **envp);
-void					is_command(t_token **node, char **envp);
+void					is_command(t_token **node, char **envp, bool flag);
 void					handle_cmd(t_token **node, char **envp, bool flag);
 bool					is_valid_argcmd(t_token *node);
 void					del_last_space_for_arg(t_token **node, char **tmp);
-void					handle_is_command(t_token *node, char *cmd_w_path);
+void					handle_is_command(t_token *node, char *cmd_w_path, bool flag);
 int						is_valid_prev(t_token *prev);
 
 int						env_is_alive(char **envp);

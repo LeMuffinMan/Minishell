@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 21:44:17 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/13 15:39:00 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/14 18:59:55 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,27 +81,27 @@ void	is_command_whithout_env(t_token **node, char **envp)
 	}
 }
 
-void	is_command(t_token **node, char **envp)
+void	is_command(t_token **node, char **envp, bool flag)
 {
 	char	*tmp;
 	char	**path;
 	char	*cmd_w_path;
-	bool	flag;
+	bool	is_lit_expand;
 
 	tmp = NULL;
 	path = NULL;
 	cmd_w_path = NULL;
-	flag = false;
+	is_lit_expand = false;
 	if (!(*node)->content[0][0])
 		return ;
 	if ((*node)->error == LITERAL_EXPAND)
-		flag = true;
+		is_lit_expand = true;
 	if ((*node)->token == NO_TOKEN || (*node)->token == EXPAND
 		|| (*node)->token == D_QUOTE || (*node)->token == S_QUOTE)
 		cmd_w_path = verif_command(node, tmp, path, envp);
-	handle_is_command(*node, cmd_w_path);
+	handle_is_command(*node, cmd_w_path, flag);
 	free(cmd_w_path);
-	if (flag && (*node)->error != 0)
+	if (is_lit_expand && (*node)->error != 0)
 		(*node)->error = LITERAL_EXPAND;
 }
 

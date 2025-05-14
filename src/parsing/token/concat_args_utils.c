@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:44:43 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/13 14:14:10 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/14 18:50:52 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int	is_valid_prev(t_token *prev)
 	return (0);
 }
 
-void	handle_is_command(t_token *node, char *cmd_w_path)
+void	handle_is_command(t_token *node, char *cmd_w_path, bool flag)
 {
 	if (cmd_w_path && (node->error == SUCCESS || node->error == QUOTE))
 	{
@@ -48,7 +48,8 @@ void	handle_is_command(t_token *node, char *cmd_w_path)
 			node->error = CMD_NOT_FOUND;
 			return ;
 		}
-		replace_tab(&node, cmd_w_path); //exec : fix l'absence de path
+		if (flag)
+			replace_tab(&node, cmd_w_path); //exec : fix l'absence de path
 		node->token = CMD;
 	}
 }

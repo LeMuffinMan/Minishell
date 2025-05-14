@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 21:07:56 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/13 20:14:57 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/14 18:15:17 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ typedef struct s_tree
 	int				priority;
 }	t_tree;
 
-void					add_to_root(t_token *node, t_tree **root, bool flag);
+void					add_to_root(t_token **node, t_tree **root, bool flag);
 void					free_tree(t_tree **head);
 
 t_token					*find_best_priority(t_token *start,

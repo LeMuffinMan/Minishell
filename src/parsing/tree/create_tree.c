@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 21:12:15 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/13 20:14:29 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/14 18:17:18 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,22 +71,22 @@ static t_tree	*parse_list(t_token *start, t_token *end,
 	return (add_new_node(arg, left, right));
 }
 
-void	add_to_root(t_token *node, t_tree **root, bool flag)
+void	add_to_root(t_token **node, t_tree **root, bool flag)
 {
 	t_token	*end;
 	t_token	*start;
 
-	if (!node)
+	if (!*node)
 		return ;
-	end = node;
-	start = node;
 	if (!flag)
-		handle_parenthesis(&node);
-	assign_priority(&node, flag);
+		handle_parenthesis(node);
+	end = (*node);
+	start = (*node);
+	assign_priority(node, flag);
 	last_node(&end, flag);
 	if (flag && start->prev)
 		start->priority = 0;
-	*root = parse_list(node, end, flag);
+	*root = parse_list(*node, end, flag);
 	if (flag)
 		set_bool_seq(root);
 	assign_head(root, *root);

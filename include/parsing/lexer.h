@@ -6,12 +6,14 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 00:13:42 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/13 15:44:19 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/14 19:09:14 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LEXER_H
 # define LEXER_H
+
+# include <stdbool.h>
 
 # define MEM_ALLOC 12
 
@@ -30,5 +32,7 @@ void					alloc_operator_to_lexer(char *str, int i,
 void					alloc_word_to_lexer(char *str, int *i, t_lexer **list);
 int						alloc_space_to_lexer(char *str, t_lexer **list);
 int						alloc_quote_to_lexer(char *str, char c, t_lexer **list);
+bool					check_op_and_parenthesis(t_lexer *lexer);
+
 
 #endif

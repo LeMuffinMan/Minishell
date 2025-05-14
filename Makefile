@@ -6,7 +6,7 @@
 #    By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/05/13 16:05:00 by asinsard         ###   ########lyon.fr    #
+#    Updated: 2025/05/14 18:31:24 by asinsard         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -79,6 +79,7 @@ SRC					=	main.c \
 						create_tree.c \
 						handle_parenthesis.c \
 						tree_utils.c \
+						display_lexer.c \
 						display_list.c \
 						display_tree.c \
 						parser.c \

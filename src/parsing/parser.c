@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 03:09:12 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/13 20:13:24 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/14 19:03:53 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,13 @@ t_tree	*parse(char *line, char **envp, t_var *list_env)
 	t_token	*token;
 	t_lexer	*lexer;
 	t_tree	*root;
+	bool	flag;
 
 	token = NULL;
 	lexer = NULL;
 	root = NULL;
 	parse_line(line, &lexer);
+	flag = check_op_and_parenthesis(lexer);
 	display_lexer(lexer, DEBUG);
 	while (lexer->next)
 	{
@@ -38,12 +40,12 @@ t_tree	*parse(char *line, char **envp, t_var *list_env)
 	}
 	add_back(&token, lexer->arg);
 	free_lexer(lexer, NULL, 0);
-	assign_token(&token, envp, list_env, false);
+	assign_token(&token, envp, list_env, flag);
 	display_list(token, DEBUG);
 	concat_args(&token, list_env, envp);
 	if (!handle_here_doc(&token))
 		free_parse(token, "Problem with here_doc creation", MEM_ALLOC);
-	add_to_root(token, &root, false);
+	add_to_root(&token, &root, flag);
 	if (!root)
 		free_parse(token, NULL, 0);
 	display_list(token, DEBUG);

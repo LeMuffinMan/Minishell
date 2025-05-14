@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 19:51:51 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/13 15:36:48 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/14 18:51:23 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ void	handle_cmd(t_token **node, char **envp, bool flag)
 			if (flag || (*node)->token == NO_TOKEN
 				|| (*node)->token == APPEND
 				|| (*node)->token == D_QUOTE || (*node)->token == S_QUOTE)
-				is_command(node, envp);
+				is_command(node, envp, flag);
 		}
 	}
 	else
