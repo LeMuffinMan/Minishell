@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 04:50:03 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/09 16:30:21 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/13 15:36:25 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,6 @@ void	concat_args(t_token **head, t_var *list_env, char **envp)
 
 	if (!*head)
 		return ;
-	// parse_quote(head);
 	if (init_expand(head, list_env))
 		assign_token(head, envp, list_env, true);
 	delete_space_node(head);

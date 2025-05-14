@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 21:12:15 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/07 13:37:40 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/14 18:17:18 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ static void	assign_head(t_tree **root, t_tree *head)
 {
 	t_tree	*tmp;
 
+	if (!*root || !head)
+		return ;
 	tmp = *root;
 	tmp->head = head;
 	if (!tmp)
@@ -46,7 +48,7 @@ static t_tree	*add_new_node(t_token *token, t_tree *left,
 	if (right)
 		new_node->right = right;
 	new_node->token = token;
-	new_node->priority = 10;
+	new_node->priority = PRIO_IGNORE;
 	return (new_node);
 }
 
@@ -71,18 +73,22 @@ static t_tree	*parse_list(t_token *start, t_token *end,
 	return (add_new_node(arg, left, right));
 }
 
-void	add_to_root(t_token *node, t_tree **root, bool flag)
+void	add_to_root(t_token **node, t_tree **root, bool flag)
 {
 	t_token	*end;
 	t_token	*start;
 
-	end = node;
-	start = node;
-	assign_priority(&node, flag);
+	if (!*node)
+		return ;
+	if (!flag)
+		handle_parenthesis(node);
+	end = (*node);
+	start = (*node);
+	assign_priority(node, flag);
 	last_node(&end, flag);
 	if (flag && start->prev)
 		start->priority = 0;
-	*root = parse_list(node, end, flag);
+	*root = parse_list(*node, end, flag);
 	if (flag)
 		set_bool_seq(root);
 	assign_head(root, *root);

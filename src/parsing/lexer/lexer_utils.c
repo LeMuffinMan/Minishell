@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 01:45:03 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/08 19:35:42 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/14 19:08:29 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,4 +84,20 @@ int	alloc_quote_to_lexer(char *str, char c, t_lexer **list)
 	add_lexer_back(list, word);
 	free(word);
 	return (i);
+}
+
+bool	check_op_and_parenthesis(t_lexer *lexer)
+{
+	while (lexer)
+	{
+		if (lexer->arg[0] == '<'
+			|| lexer->arg[0] == '>'
+			|| lexer->arg[0] == '('
+			|| lexer->arg[0] == ')'
+			|| lexer->arg[0] == '|'
+			|| lexer->arg[0] == '&')
+			return (false);
+		lexer = lexer->next;
+	}
+	return (true);
 }
