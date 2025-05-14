@@ -437,7 +437,7 @@ char *get_default_minishellrc_path(t_var **env)
         free(tmp);
     }
     tmp = s;
-    s = ft_strjoin(s, "/.minishellrc");
+    s = ft_strjoin(s, "/.minishellrc"); //ca fuite sur un CTRL+D
     return(s);
 }
 
@@ -445,7 +445,7 @@ char *find_minishellrc(t_var **env, char *path)
 {
 
     if (!path)
-        path = get_default_minishellrc_path(env);
+        path = get_default_minishellrc_path(env); //fuite
     if (!path || access(path, F_OK) == -1)
         path = ft_strdup(".minishellrc");
     if (access(path, F_OK) == -1)
@@ -466,11 +466,12 @@ char *find_minishellrc(t_var **env, char *path)
     }
 }
 
+//Se lance alors que isatty(0) renvoie NON ?
 int find_and_load_startup_files(t_lists **lists, char **env)
 {
     char *file;
 
-    file = find_minishellrc((*lists)->env, NULL);
+    file = find_minishellrc((*lists)->env, NULL); //fuite !
     if (isatty(0) && env && *env && file)
         load_minishellrc((*lists)->env, (*lists)->aliases, (*lists)->shell_fcts, file);
     if (file)
