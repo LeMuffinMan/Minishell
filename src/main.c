@@ -148,6 +148,34 @@
 //Tests de cons :
 //CTRL V + Tab : fait un tab dans le minishell a gerer !
 
+//TODO pour merge 20 mai
+//exec :
+    //integrer nouvelle exec && || () 
+    //fixer le builtin exit
+        //fixer cd et proteger cd - et getcwd a l'init
+        //malloc protection de tout exec.c
+        //normage exec.c
+//parsing :
+    //bug fixes
+        //ajouter les fixs en reserve ( $HONE $USER ) + (unset )
+    //here_doc (expand dans here_doc ?)
+    //wildcards
+//A TESTER AU MERGE 
+    //la nouvelle exec
+    //here_docs
+    //wildscards
+    //BUILTINS
+    //SIGNAUX
+//
+//TODO POUR LE 26 mai
+    //BUG FIXES de ce qui a merde au merge, et des cas de cons 
+    //gitaction pour proteger le push sur master
+    //norm & malloc protection check
+//
+//push 26 mai
+
+
+
 //est-ce qu'on garde ac ?
 int main(int ac, char **av, char **env)
 {
