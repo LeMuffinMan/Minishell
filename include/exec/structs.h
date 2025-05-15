@@ -57,11 +57,13 @@ typedef struct s_lists
 	t_var **env;
 	t_tree **ast;
 	t_pipe **pipes;
-	// t_hist **history;
-	// t_alias **aliases;
-	// t_shell_fct **shell_fcts;
 	int origin_fds[2];
 	int exit_code;
+	//ULTRABONUS
+	t_hist **history;
+	t_alias **aliases;
+	t_shell_fct **shell_fcts;
+	//ULTRABONUS
 } t_lists;
 
 // ultrabonus
