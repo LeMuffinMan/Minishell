@@ -90,12 +90,10 @@ bool	check_op_and_parenthesis(t_lexer *lexer)
 {
 	while (lexer)
 	{
-		if (lexer->arg[0] == '<'
-			|| lexer->arg[0] == '>'
-			|| lexer->arg[0] == '('
-			|| lexer->arg[0] == ')'
-			/* || lexer->arg[0] == '|' */
-			|| lexer->arg[0] == '&')
+		if (!ft_strncmp(lexer->arg, "(", 2)
+			|| !ft_strncmp(lexer->arg, ")", 2)
+			|| !ft_strncmp(lexer->arg, "||", 3)
+			|| !ft_strncmp(lexer->arg, "&&", 3))
 			return (false);
 		lexer = lexer->next;
 	}
