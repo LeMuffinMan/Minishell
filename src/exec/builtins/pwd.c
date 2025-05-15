@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "libft.h"
+#include "env_utils.h"
 #include <limits.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -20,12 +21,11 @@
 // tester un unset avec un env vide
 		//  1 ou errno ?
 //  si on est dans un dossier supprimer proteger !
-int	builtin_pwd(char **content)
+int	builtin_pwd(t_var **env)
 {
 	char	buf[PATH_MAX];
 	char	*s;
 
-	(void)content;
 	s = NULL;
 	if (getcwd(buf, sizeof(buf)) != NULL)
 	{
@@ -36,7 +36,11 @@ int	builtin_pwd(char **content)
 	}
 	else
 	{
-		perror("pwd");
+		s = ft_strjoin(get_value(env, "PWD"), "\n");
+		if (s)
+			ft_putstr_fd(s, 1);
+		else
+			perror("pwd");
 		return (1);
 	}
 	return (0);

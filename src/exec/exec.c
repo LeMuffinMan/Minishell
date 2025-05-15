@@ -37,7 +37,7 @@ int	builtins(char **arg, t_lists **lists)
 	else if (!ft_strncmp(arg[0], "cd", 3))
 		return (builtin_cd(arg, env));
 	else if (!ft_strncmp(arg[0], "pwd", 4))
-		return (builtin_pwd());
+		return (builtin_pwd(env));
 	else if (!ft_strncmp(arg[0], "export", 7))
 		return (builtin_export(env, arg));
 	else if (!ft_strncmp(arg[0], "unset", 6))
@@ -46,7 +46,7 @@ int	builtins(char **arg, t_lists **lists)
 		return (builtin_env(env, arg));
 	else if (!ft_strncmp(arg[0], "exit", 5))
 		return (builtin_exit(arg, lists));
-	else if (!ft_strncmp(arg[0], "source", 7))
+	else if (!ft_strncmp(arg[0], "source", 7)) //ULTRA BONUS
 		return (builtin_source((*ast)->right->token->content[0], env));
 	else
 		return (1);
@@ -201,7 +201,6 @@ int	exec_cmd(t_tree **ast, t_lists **lists)
 		{
 			set_signals(1);
 			exit_code = wait_children(pid, pid);
-			update_env(env);
 			update_last_arg_var(env, (*ast)->token->content);
 			setup_parent_signals();
       rl_on_new_line();

@@ -39,7 +39,7 @@ int		builtin_env(t_var **env, char **arg);
 int		builtin_exit(char **arg, t_lists **lists);
 
 // builtins/pwd
-int		builtin_pwd(void);
+int		builtin_pwd(t_var **env);
 
 // builtins/unset
 int		builtin_unset(t_var **env, char **arg);
