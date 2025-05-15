@@ -12,6 +12,7 @@
 
 #include "libft.h"
 #include "init.h"
+#include "misc.h"
 #include "get_prompt.h" // A VIRER !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #include "tree.h"
 #include "exec.h"
@@ -157,12 +158,14 @@ int main(int ac, char **av, char **env)
     char **strings_env;
 
     (void)ac;
+    //decommenter a la toute fin !!!
     /* is_interactive_mode(); */
     exit_code = 0; //on ajoute l'exit code a la megastruct ou on la laisse dans env ?
     lists = NULL;
     if (init(&lists, av, env) == -1)
     {
         //malloc error
+        free_lists(lists);
         return (-1);
     }
     while (1)

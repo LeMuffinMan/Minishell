@@ -16,6 +16,7 @@
 #include "structs.h"
 #include <stdio.h>
 #include <unistd.h>
+#include <errno.h>
 
 /* DECIDER : */
 // - CDPATH
@@ -120,7 +121,15 @@ int	builtin_cd_without_arg(t_var **env)
 	else
 	{
 		if (!change_directory(s))
+		{
 			update_env(env);
+			printf("ici\n");
+
+		}
+		if (errno == ENOENT)
+		{
+			printf("la\n");
+		}
 	}
 	return (0);
 }
@@ -144,7 +153,7 @@ int builtin_cd_with_arg(char **arg, t_var **env)
 		return (0); // pas sur
 	}
 	if (!ft_strncmp(arg[1], "-", 2))
-		builtin_pwd();
+		builtin_pwd(env);
 	if (path && *path)
 		free(path);
 	return (0);

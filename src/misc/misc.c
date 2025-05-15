@@ -229,7 +229,7 @@ int malloc_free_string(char *s)
 
 int is_interactive_mode(void)
 {
-    if (isatty(1))
+    if (!isatty(0))
     {
         ft_putstr_fd("Minishell does not support non-interactive mode\n", 2);
         exit(0);
