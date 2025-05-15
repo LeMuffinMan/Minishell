@@ -107,6 +107,7 @@ int	change_directory(char *path)
 	}
 }
 
+//securiser si get_cwd
 // revoir le get_value home ?
 int	builtin_cd_without_arg(t_var **env)
 {
@@ -121,15 +122,8 @@ int	builtin_cd_without_arg(t_var **env)
 	else
 	{
 		if (!change_directory(s))
-		{
 			update_env(env);
-			printf("ici\n");
-
-		}
-		if (errno == ENOENT)
-		{
-			printf("la\n");
-		}
+		/* if (errno == ENOENT) */
 	}
 	return (0);
 }
