@@ -243,7 +243,40 @@ int redirect_stdio(t_tree **ast, t_lists **lists)
 	return (exit_code);
 }
 
+<<<<<<< Updated upstream
 int	exec_ast(t_tree **ast, t_lists **lists)
+=======
+int exec_parenthesis(char *line)
+{
+	pid = fork();
+	if (pid == 0)
+	{
+		if (is_there_any_op_or_parenthesis(line)) //si je trouve des parentheses ou des bool operateurs
+		{
+			sub_ast = exec_order_parser(line, env, ...);
+			exit_code = exec_ast(&sub_ast , lists);
+			free_tree(sub_ast);
+			//on free tout 
+			exit(exit_code);
+		}
+		else
+		{
+			sub_ast = parse((*ast)->token->group, env , ...);
+			exit_code = exec_ast(&sub_ast);
+			free_tree(sub_ast);
+			exit(exit_code);
+		}
+	}
+	else
+	{
+		exit_code = wait_children(pid, pid);
+		return (exit_code);
+	}
+}
+
+
+int	exec_ast(t_tree **ast, t_var **env, int origin_fds[2], t_pipe **pipes)
+>>>>>>> Stashed changes
 {
   int exit_code;
   t_alias *alias;
@@ -251,7 +284,32 @@ int	exec_ast(t_tree **ast, t_lists **lists)
 
   exit_code = 0;
   if (!*ast)
-  	return(127);
+  	return(127); //on devrait peut etre reagir dans le main pour ca
+
+	//NEW_EXEC
+	if ((*ast)->token->token == O_AND)
+	{
+		exit_code = exec_ast((*ast)->left);
+		if (!exit_code)
+			exit_code = exec_ast((*ast)->right);
+	}
+	if ((*ast)->token->token == O_OR)
+	{
+		exit_code = exec_ast((*ast)->left);
+		if (exit_code != 0)
+			exit_code = exec_ast((*ast)->right);
+	}
+	if ((*ast)->token->token == GROUP_PARENTHESIS) 
+		return (exec_parenthesis((*ast)->token->groups));
+	if ((*ast)->token->token == GROUP) //si dans GROUP je n'ai jamais de parentheses, de && ou de || : je peux direct appeler notre parser actuel
+	{
+		sub_ast = parse((*ast)->token->group, env , ...);
+		exit_code = exec_ast(&sub_ast);
+		free_tree(sub_ast);
+		return (exit_code);
+	}
+	//NEW_EXEC
+
   if ((*ast)->token->error == 2)
   {
   	ft_putendl_fd((*ast)->token->content[0], 2);

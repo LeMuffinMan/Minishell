@@ -102,6 +102,7 @@
 /* } */
 
 
+
 //Exec todo 
     //Bultins refacto
         //unset SHLVL USER HOME PATH export | grep SHLVL export | grep USER export | grep HOME export | grep PATH : STDERR + EXIT fails
