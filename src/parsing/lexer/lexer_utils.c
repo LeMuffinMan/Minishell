@@ -94,7 +94,7 @@ bool	check_op_and_parenthesis(t_lexer *lexer)
 			|| lexer->arg[0] == '>'
 			|| lexer->arg[0] == '('
 			|| lexer->arg[0] == ')'
-			|| lexer->arg[0] == '|'
+			/* || lexer->arg[0] == '|' */
 			|| lexer->arg[0] == '&')
 			return (false);
 		lexer = lexer->next;

@@ -71,7 +71,7 @@ static void	display_unvalid(int i, t_token *node)
 static void	print_token(t_token *head, const char **tab, int i)
 {
 	printf("%sNULL\n ^\n |\n%s", BOLD_BLUE, STOP_COLOR);
-	while (head->next)
+	while (head && head->next)
 	{
 		if (head->token != NO_TOKEN)
 			display_valid(head, i, head->content, tab);
