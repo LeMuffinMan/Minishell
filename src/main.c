@@ -155,9 +155,12 @@
         //fixer cd et proteger cd - et getcwd a l'init
         //malloc protection de tout exec.c
         //normage exec.c
+    //virer autocompletion
 //parsing :
+    //minor fix () && ||
     //bug fixes
         //ajouter les fixs en reserve ( $HONE $USER ) + (unset )
+    //update $? avec l'exit_code dans lists
     //here_doc (expand dans here_doc ?)
     //wildcards
 //A TESTER AU MERGE 
