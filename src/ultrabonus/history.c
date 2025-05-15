@@ -163,7 +163,6 @@ int load_history(t_var **env, t_hist **history)
   char *tmp;
 
   tmp = NULL;
-  file = NULL;
   file = get_history_path(env);
   if (!file)
   {

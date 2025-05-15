@@ -16,6 +16,7 @@
 #include <limits.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <errno.h>
 
 t_var	*is_known_key(t_var **env, char *key)
 {
@@ -31,13 +32,13 @@ t_var	*is_known_key(t_var **env, char *key)
 	return (NULL);
 }
 
-//  return (1) ou errno ?
 int	update_env(t_var **env)
 {
 	t_var	*old_pwd;
 	t_var	*pwd;
 	char	buf[PATH_MAX];
 
+	errno = 0;
 	(void)buf;
 	old_pwd = is_known_key(env, "OLDPWD");
 	if (!old_pwd)
@@ -48,14 +49,17 @@ int	update_env(t_var **env)
 	if (old_pwd->value)
 		free(old_pwd->value);
 	old_pwd->value = ft_strdup(pwd->value);
-	if (pwd->value)
-		free(pwd->value);
 	if (getcwd(buf, sizeof(buf)) != NULL)
-		pwd->value = ft_strdup(buf);
-	else
 	{
-			//on arrive ici si on a rm le dossier ou on est
-		/* perror("pwd"); */
+		if (pwd->value)
+			free(pwd->value);
+		pwd->value = ft_strdup(buf);
+	}
+	else if (errno == ENOENT)
+	{
+		ft_putstr_fd("cd: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory\n", 2);
+		pwd->value = ft_strjoin(pwd->value, "/..");
+		//on check errno a la sortie pour un potnetiel malloc qui a foire !
 		return (1);
 	}
 	return (0);
