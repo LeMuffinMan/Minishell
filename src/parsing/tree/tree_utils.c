@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 16:03:15 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/13 20:11:24 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/15 18:47:34 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,32 +14,26 @@
 #include "tree.h"
 #include <stdlib.h>
 
-static void	cost_priority(t_token **node, bool flag)
+static void	cost_priority(t_token **node)
 {
-	if (!flag)
-	{
-		if ((*node)->token == GROUP_PARENTHESIS)
-			(*node)->priority = PRIO_PARENTHESIS;
-		else if ((*node)->token == O_OR)
-			(*node)->priority = PRIO_O_OR;
-		else if ((*node)->token == O_AND)
-			(*node)->priority = PRIO_O_AND;
-	}
+	if ((*node)->token == GROUP_PARENTHESIS)
+		(*node)->priority = PRIO_PARENTHESIS;
+	else if ((*node)->token == O_OR)
+		(*node)->priority = PRIO_O_OR;
+	else if ((*node)->token == O_AND)
+		(*node)->priority = PRIO_O_AND;
+	else if ((*node)->token == PIPE)
+		(*node)->priority = PRIO_PIPE;
+	else if (((*node)->token == R_IN) || ((*node)->token == HD)
+		|| ((*node)->token == APPEND) || ((*node)->token == TRUNC))
+		(*node)->priority = PRIO_REDIR;
+	else if ((*node)->token == CMD || ((*node)->token == BUILT_IN))
+		(*node)->priority = PRIO_CMD;
 	else
-	{
-		if ((*node)->token == GROUP_PARENTHESIS)
-			(*node)->priority = PRIO_IGNORE;
-		else if ((*node)->token == PIPE)
-			(*node)->priority = PRIO_PIPE;
-		else if (((*node)->token == R_IN) || ((*node)->token == HD)
-			|| ((*node)->token == APPEND) || ((*node)->token == TRUNC))
-			(*node)->priority = PRIO_REDIR;
-		else if ((*node)->token == CMD || ((*node)->token == BUILT_IN))
-			(*node)->priority = PRIO_CMD;
-	}
+		(*node)->priority = PRIO_IGNORE;
 }
 
-void	assign_priority(t_token **head, bool flag)
+void	assign_priority(t_token **head)
 {
 	t_token	*tmp;
 
@@ -53,45 +47,33 @@ void	assign_priority(t_token **head, bool flag)
 	tmp = *head;
 	while (tmp->next)
 	{
-		cost_priority(&tmp, flag);
+		cost_priority(&tmp);
 		tmp = tmp->next;
 	}
-	cost_priority(&tmp, flag);
+	cost_priority(&tmp);
 }
 
-void	set_bool_seq(t_tree **root)
-{
-	t_tree	*tmp;
+// void	set_bool_seq(t_tree **root)
+// {
+// 	t_tree	*tmp;
 
-	if (!*root)
-		return ;
-	tmp = *root;
-	set_bool_seq(&tmp->left);
-	set_bool_seq(&tmp->right);
-	tmp->token->seq = false;
-}
+// 	if (!*root)
+// 		return ;
+// 	tmp = *root;
+// 	set_bool_seq(&tmp->left);
+// 	set_bool_seq(&tmp->right);
+// 	tmp->token->seq = false;
+// }
 
-void	last_node(t_token **node, bool flag)
+void	last_node(t_token **node)
 {
 	if (!(*node) || !(*node)->next)
 		return ;
-	if (flag == false)
-	{
-		while ((*node)->next)
-			*node = (*node)->next;
-	}
-	else
-	{
-		while ((*node)->next)
-		{
-			if ((*node)->token == O_AND || (*node)->token == O_OR)
-				break ;
-			*node = (*node)->next;
-		}
-	}
+	while ((*node)->next)
+		*node = (*node)->next;
 }
 
-t_token	*find_best_priority(t_token *start, t_token *end, bool flag)
+t_token	*find_best_priority(t_token *start, t_token *end)
 {
 	t_token	*best;
 	t_token	*current;
@@ -106,7 +88,7 @@ t_token	*find_best_priority(t_token *start, t_token *end, bool flag)
 			best = current;
 		current = current->next;
 	}
-	if ((best->priority == 10 && !flag) || (best->seq == false))
+	if ((best->priority == 10) || (best->seq == false))
 		return (NULL);
 	return (best);
 }
