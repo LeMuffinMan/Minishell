@@ -15,67 +15,83 @@
 #include "libft.h"
 #include <stdlib.h>
 
-// static void	delete_parenthesis_node(t_token **group)
-// {
-// 	t_token	*tmp;
-// 	t_token	*next_node;
+static int	find_len_new_content(t_token *node, t_token *end)
+{
+	int	len;
+	int	i;
 
-// 	tmp = *group;
-// 	next_node = tmp->next;
-// 	next_node->prev = NULL;
-// 	free_tab(tmp->content);
-// 	free(tmp);
-// 	tmp = next_node;
-// 	*group = tmp;
-// 	while (tmp->next)
-// 		tmp = tmp->next;
-// 	next_node = tmp->prev;
-// 	next_node->next = NULL;
-// 	free_tab(tmp->content);
-// 	free(tmp);
-// 	tmp = next_node;
-// }
+	len = 0;
+	i = 0;
+	while (node)
+	{
+		i = -1;
+		while (node->content[++i])
+			len += ft_strlen(node->content[i]) + 1;
+		if (node == end)
+			break ;
+		node = node->next;
+	}
+	return (len);
+}
 
+static void	copy_nodes_content(t_token *start, t_token *end, char **res,
+				t_type current_token)
+{
+	int		pos;
+	int		i;
+	int 	word_len;
+
+	pos = 0;
+	while (start)
+	{
+		i = -1;
+		while (start->content[++i])
+		{
+			if (current_token == start->token
+				|| start->token == R_PARENTHESIS)
+				break ;
+			word_len = ft_strlen(start->content[i]);
+			ft_memcpy(*res + pos, start->content[i], word_len);
+			pos += word_len;
+			(*res)[pos++] = ' ';
+		}
+		if (start == end)
+			break ;
+		start = start->next;
+	}
+	if (pos > 0 && (*res)[pos - 1] == ' ')
+		(*res)[pos - 1] = '\0';
+}
+
+static void	free_node_unused(t_token *node)
+{
+	t_token	*next_node;
+
+	if (node->next)
+		next_node = node->next;
+	while (node)
+	{
+		next_node = node->next;
+		if (node->content)
+			free_tab(node->content);
+		if (node)
+			free(node);
+		node = NULL;
+		node = next_node;
+	}
+}
+
+// need to resolve leak when we have some groups
 static void	assign_pointer(t_token **new_node, t_token **start, t_token **end)
 {
 	char	*res;
 	int		i;
-	int		len;
-	t_token	*tmp_node;
-	int		pos;
 
-	tmp_node = *start;
-	len = 0;
-	while (tmp_node)
-	{
-		i = -1;
-		while (tmp_node->content[++i])
-			len += ft_strlen(tmp_node->content[i]) + 1;
-		if (tmp_node == *end)
-			break ;
-		tmp_node = tmp_node->next;
-	}
-	res = ft_calloc(sizeof(char), len + 1);
+	i = find_len_new_content(*start, *end);
+	res = ft_calloc(sizeof(char), i + 1);
 	if (!res)
 		free_parse(*new_node, "Malloc failed in function 'assign_pointer'", MEM_ALLOC);
-	tmp_node = *start;
-	pos = 0;
-	while (tmp_node)
-	{
-		i = -1;
-		while (tmp_node->content[++i])
-		{
-			int word_len = ft_strlen(tmp_node->content[i]);
-			ft_memcpy(res + pos, tmp_node->content[i], word_len);
-			pos += word_len;
-			res[pos++] = ' ';
-		}
-		if (tmp_node == *end)
-			break ;
-		tmp_node = tmp_node->next;
-	}
-	if (pos > 0 && res[pos - 1] == ' ')
-		res[pos - 1] = '\0';
+	copy_nodes_content(*start, *end, &res, (*start)->token);
 	(*new_node)->prev = (*start)->prev;
 	(*new_node)->next = (*end)->next;
 	if ((*new_node)->prev)
@@ -83,10 +99,16 @@ static void	assign_pointer(t_token **new_node, t_token **start, t_token **end)
 	if ((*new_node)->next)
 		(*new_node)->next->prev = (*new_node);
 	(*new_node)->group = add_new_token(res, SUCCESS);
-	(*new_node)->token = GROUP_PARENTHESIS;
+	free(res);
+	if ((*start)->token == L_PARENTHESIS)
+		(*new_node)->token = GROUP_PARENTHESIS;
+	else if ((*start)->token == O_AND)
+		(*new_node)->token = GROUP_O_AND;
+	else
+		(*new_node)->token = GROUP_O_OR;
 	(*start)->prev = NULL;
 	(*end)->next = NULL;
-	// delete_parenthesis_node(&(*new_node)->group);
+	free_node_unused(*start);
 }
 
 static t_token	*set_group_parenthesis(t_token **start, t_token **end,
@@ -108,41 +130,12 @@ static t_token	*set_group_parenthesis(t_token **start, t_token **end,
 	tmp = add_new_token("()", SUCCESS);
 	if (!tmp)
 		free_parse(*start,
-			"Malloc failed in 'add_new_token' for group parenthesis",
-			MEM_ALLOC);
+			"Malloc failed in 'add_new_token' for group", MEM_ALLOC);
 	assign_pointer(&tmp, start, end);
 	(*current) = tmp;
 	if (flag)
 		new_head = tmp;
 	return (new_head);
-}
-
-void	handle_bool_operator(t_token **head)
-{
-	t_token	*tmp;
-	// t_token	*start;
-	// t_token	*end;
-	// t_type	current;
-
-	tmp = *head;
-	return ;
-	// start = NULL;
-	// end = NULL;
-	// while (tmp)
-	// {
-	// 	if (tmp->token == O_AND || tmp->token == O_OR)
-	// 	{
-	// 		current = tmp->token;
-	// 		start = tmp;
-	// 		while (tmp && tmp->token != current)
-	// 			tmp = tmp->prev;
-	// 		end = tmp;
-	// 		*head = set_group_parenthesis(&start, &end, &tmp);
-	// 		tmp = tmp->next;
-	// 	}
-	// 	else
-	// 		tmp = tmp->next;
-	// }
 }
 
 void	handle_parenthesis(t_token **head)

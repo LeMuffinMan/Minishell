@@ -39,6 +39,8 @@ typedef enum e_type
 	EXPAND,
 	FLE,
 	GROUP_PARENTHESIS,
+	GROUP_O_AND,
+	GROUP_O_OR,
 	HD,
 	O_AND,
 	O_OR,

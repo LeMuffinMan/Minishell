@@ -90,11 +90,12 @@ static void	print_token(t_token *head, const char **tab, int i)
 void	display_list(t_token *head, int debug)
 {
 	int					i;
-	static const char	*tab[20] = {"No Token", "Append", "Built_in",
+	static const char	*tab[22] = {"No Token", "Append", "Built_in",
 		"Command", "Directory", "Double quote", "Expand", "File",
-		"Group Parenthesis", "Here doc", "And", "Or", "Left Parenthesis",
-		"Right Parenthesis", "Pipe", "Redir in", "Simple quote", "Space",
-		"Truncate", "Wildcard"};
+		"Group Parenthesis", "Group AND", "Group OR", "Here doc",
+		"And", "Or", "Left Parenthesis", "Right Parenthesis",
+		"Pipe", "Redir in", "Simple quote", "Space", "Truncate",
+		"Wildcard"};
 
 	i = 1;
 	if (!head)

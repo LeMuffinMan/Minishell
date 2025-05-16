@@ -45,8 +45,8 @@ t_tree	*parse(char *line, char **envp, t_var *list_env)
 	concat_args(&token, list_env, envp);
 	if (!handle_here_doc(&token))
 		free_parse(token, "Problem with here_doc creation", MEM_ALLOC);
-	add_to_root(&token, &root);
 	display_list(token, DEBUG);
+	add_to_root(&token, &root);
 	if (!root)
 		free_parse(token, NULL, 0);
 	display_ast(root, DEBUG);

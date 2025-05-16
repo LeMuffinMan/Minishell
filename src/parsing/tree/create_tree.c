@@ -80,7 +80,6 @@ void	add_to_root(t_token **node, t_tree **root)
 	if (!*node)
 		return ;
 	handle_parenthesis(node);
-	handle_bool_operator(node);
 	end = (*node);
 	start = (*node);
 	assign_priority(node);
@@ -88,6 +87,7 @@ void	add_to_root(t_token **node, t_tree **root)
 	if (start->prev)
 		start->priority = 0;
 	*root = parse_list(*node, end);
+	handle_boolop_group(root);
 	assign_head(root, *root);
 }
 
