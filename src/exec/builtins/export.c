@@ -104,7 +104,6 @@ int update_var(t_var **node, char **key_value, int inc)
 	char *s;
 	char *tmp;
 
-
 	if (inc == 1)
 	{
 		s = ft_strdup((*node)->value);
@@ -257,12 +256,14 @@ int add_or_update_var(t_var **env, char *var)
 	inc = 0;
 	if (is_an_incrementation(var))
 	{
+		/* #include <stdio.h> */
+		/* if (!ft_strncmp("SHLVL", var, ft_strlen(var))) */
+		/* 	printf("%s\n", var); */
 		s = clean_inc_operator(var);
 		inc = 1;
 	}
 	else
 		s = ft_strdup(var);
-	//ici on sait si on doit incrementer et tout est pret 
 	key = ft_split(s, '='); //surement qu'on peut faire plus simple au'un split
 	node = is_known_exported_key(env, key[0]);
 	free_array(key);
@@ -278,7 +279,7 @@ int add_or_update_var(t_var **env, char *var)
 		else
 		{
 			free(node->value);
-			node->value = ft_strdup(value);
+			node->value = ft_strdup(value + 1);
 		}
 	}
 	else // si on l'a pas 
@@ -309,13 +310,9 @@ int	builtin_export(t_var **env, char **arg)
 		else
 		{
 			exit_code = 1;
-			/* s = "minishell: export: not a valid identifier\n";  //revoir pour mettre la var qui a merder ? */
 			ft_putstr_fd("minishell: export: not a valid identifier\n", 2);
-			/* free(s); */
 		}
 		i++;
-		while (arg[i] && !ft_strchr(arg[i], '='))
-			i++;
 	}
 	return (exit_code);
 }

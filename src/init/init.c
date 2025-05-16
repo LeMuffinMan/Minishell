@@ -97,14 +97,23 @@ int init_pwd(t_var **env)
 {
 	char	buf[PATH_MAX];
 	char	*s;
+	char *tmp;
 
 	s = "PWD=";
 	if (getcwd(buf, sizeof(buf)) != NULL)
 	{
 		s = ft_strjoin(s, buf);
+		if (!s)
+			return (-1);
 		tmp = s;
 		s = ft_strjoin(s, "\n");
-		add_back_var(new_env, s, 3); //3 en mode ?
+		if (!s) 
+		{
+			free(tmp);
+			return (-1);
+		}
+		free(tmp);
+		add_back_var(env, s, 3); //3 en mode ?
 		return (0);
 	}
 	else
@@ -134,10 +143,11 @@ int	init_env(t_var **new_env, char **env, char *program_name)
 			if (init_and_incremente_shlvl(env[i], new_env) == -1)
 				return (-1);
 		}
-		if (!ft_strncmp("PWD=", env[i], 5))
+		else if (!ft_strncmp("PWD=", env[i], 5))
 		{
-			init_pwd(new_env);
-			s = getcwd(buf, )
+			if (init_pwd(new_env) == -1)
+				return (-1);
+
 		}
 		else
 		{
