@@ -31,6 +31,14 @@ int get_next_door(char *str, int i)
       /* node->content = ft_strndup(str + i + 2, stop); */
     //
 
+int is_a_valid_boolop(char *str, int i)
+{
+  if ((str[i] == '&' && str[i + 1] && str[i] == str[i + 1])
+  || (str[i] == '&' && str[i + 1] && str[i] == str[i + 1])) //verifier les char avant apres aussi !!
+   return (1); 
+  return (0);
+}
+
 //remplacer strlen par end ?
 int is_main_bool_op(char *str, int i, int end)
 {
@@ -104,6 +112,7 @@ t_seq *get_sequences(char *str, int end)
 	t_seq *node;
 
 	i = start;
+	//verifier si str existe et si str[i] exist !!
 	/* if (!str) */
 	/* 	return (1); */
 	//trimer des espaces de debut et fin de ligne
@@ -129,7 +138,7 @@ t_seq *get_sequences(char *str, int end)
     else 
       node->left->sub_shell = 0;
     node->right = get_sequences((str + i + 2), (end - i - 2));
-    if (!noright)
+    if (!node->right)
     {
       //differencer le malloc de la syntax error
       //si errno == MEMALOC : on se barre
@@ -160,6 +169,18 @@ t_seq *get_sequences(char *str, int end)
     // il manque une parenthese
     return (NULL);
   }
+}
+
+
+
+int main (char **argv)
+{
+  t_seq *seq;
+
+  seq = get_sequences(argv[1]);
+  //utiliser le principe du print de l'arbre ?
+  print_sequence(&seq);
+  return (0);
 }
 	  /* if (str[i] == '(') */
 	  /* { */
