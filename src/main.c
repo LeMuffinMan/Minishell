@@ -164,6 +164,8 @@
     //update $? avec l'exit_code dans lists
     //here_doc (expand dans here_doc ?)
     //wildcards
+
+
 //A TESTER AU MERGE 
     //la nouvelle exec
     //here_docs
@@ -176,8 +178,10 @@
     //gitaction pour proteger le push sur master
     //norm & malloc protection check
 //
+// CTRL + V et TAB
+// ou juste TAB
+//
 //push 26 mai
-
 
 
 //est-ce qu'on garde ac ?
@@ -195,6 +199,7 @@ int main(int ac, char **av, char **env)
     /* is_interactive_mode(); */
     exit_code = 0; //on ajoute l'exit code a la megastruct ou on la laisse dans env ?
     lists = NULL;
+    rl_inhibit_completion = 1; //desactive l'autocompletion
     if (init(&lists, av, env) == -1)
     {
         //malloc error
