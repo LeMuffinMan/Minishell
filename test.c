@@ -39,7 +39,9 @@ int is_a_valid_boolop(char *str, int i)
   return (0);
 }
 
-//remplacer strlen par end ?
+//pas assez robuste
+//les quotes a skipper
+//syntax error des quotes ici ?
 int is_main_bool_op(char *str, int i, int end)
 {
   if (is_a_valid_boolop(str, i))
@@ -54,7 +56,7 @@ int is_main_bool_op(char *str, int i, int end)
     }
     if (str[i] == '(')
     {
-      while(i < end && str[i] != ')')
+      while(i < end && str[i] != ')') // pas assez robuste en cas de sous sous parentheses ?
         i++;
       if (i == end)
         return (-1); //parenthese non fermee
