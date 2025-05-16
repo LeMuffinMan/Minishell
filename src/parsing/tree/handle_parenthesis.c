@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 15:53:21 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/15 20:29:40 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/16 17:41:16 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,77 +36,46 @@
 // 	tmp = next_node;
 // }
 
-static char	*alloc_cmd_line(char **tab_content)
-{
-	int		i;
-	char	*line;
-	char	*tmp;
-	char	*res;
-
-	i = 0;
-	res = ft_strdup("");
-	if (!res)
-		return (NULL);
-	while (tab_content[i])
-	{
-		line = ft_strjoin(res, tab_content[i]);
-		free(res);
-		if (!line)
-			return (NULL);
-		tmp = ft_strjoin(line, " ");
-		free(line);
-		if (!tmp)
-		{
-			free(res);
-			return (NULL);
-		}
-		res = ft_strdup(tmp);
-		free(tmp);
-		if (!res)
-			return (NULL);
-		i++;
-	}
-	return (res);
-}
-
 static void	assign_pointer(t_token **new_node, t_token **start, t_token **end)
 {
-	// int	i;
 	char	*res;
-	char	*tmp;
-	// char	*line;
+	int		i;
+	int		len;
 	t_token	*tmp_node;
+	int		pos;
 
-	res = ft_strdup("");
-	if (!res)
-		free_parse(*new_node, "Malloc failed in function '?'", MEM_ALLOC);
 	tmp_node = *start;
-	tmp = NULL;
-	while (tmp_node != *end)
+	len = 0;
+	while (tmp_node)
 	{
-		// i = 0;
-		// while (tmp_node->content[i])
-		// {
-		// 	line = ft_strjoin(res, tmp_node->content[i]);
-		// 	free(res);
-		// 	if (!line)
-		// 		free_parse(*new_node, "Malloc failed in function '?'", MEM_ALLOC);
-		// 	tmp = ft_strjoin(line, " ");
-		// 	if (!tmp)
-		// 	{
-		// 		free(res);
-		// 		free_parse(*new_node, "Malloc failed in function '?'", MEM_ALLOC);
-		// 	}
-		// 	res = ft_strdup(tmp);
-		// 	free(line);
-		// 	free(tmp);
-		// 	if (!res)
-		// 		free_parse(*new_node, "Malloc failed in function '?'", MEM_ALLOC);
-		// 	i++;
-		// }
-		res = alloc_cmd_line(tmp_node->content);
+		i = -1;
+		while (tmp_node->content[++i])
+			len += ft_strlen(tmp_node->content[i]) + 1;
+		if (tmp_node == *end)
+			break ;
 		tmp_node = tmp_node->next;
 	}
+	res = ft_calloc(sizeof(char), len + 1);
+	if (!res)
+		free_parse(*new_node, "Malloc failed in function 'assign_pointer'", MEM_ALLOC);
+	tmp_node = *start;
+	pos = 0;
+	while (tmp_node)
+	{
+		i = -1;
+		while (tmp_node->content[++i])
+		{
+			int word_len = ft_strlen(tmp_node->content[i]);
+			ft_memcpy(res + pos, tmp_node->content[i], word_len);
+			pos += word_len;
+			res[pos++] = ' ';
+		}
+		if (tmp_node == *end)
+			break ;
+		tmp_node = tmp_node->next;
+	}
+	if (pos > 0 && res[pos - 1] == ' ')
+		res[pos - 1] = '\0';
 	(*new_node)->prev = (*start)->prev;
 	(*new_node)->next = (*end)->next;
 	if ((*new_node)->prev)
