@@ -268,7 +268,6 @@ int main(int ac, char **av, char **env)
         strings_env = NULL;
         exit_code = exec_ast(lists->ast, &lists);
         update_exit_code_var(lists->env, exit_code);
-        //update la variable exit_code dans l'environnement !
         dup2(lists->origin_fds[0], STDIN_FILENO);
         dup2(lists->origin_fds[1], STDOUT_FILENO);
         close(lists->origin_fds[0]);
