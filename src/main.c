@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:21:52 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/14 19:27:02 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/16 18:39:31 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,11 +152,12 @@
 //TODO pour merge 20 mai
 //exec :
     //integrer nouvelle exec && || () 
-    //fixer le builtin exit
-        //fixer cd et proteger cd - et getcwd a l'init
+        //fixer le builtin exit
+    //DONE fixer cd et proteger cd - et getcwd a l'init
         //malloc protection de tout exec.c
         //normage exec.c
-    //virer autocompletion
+    //
+//DONE virer autocompletion
 //parsing :
     //minor fix () && ||
     //bug fixes

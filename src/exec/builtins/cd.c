@@ -6,7 +6,7 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 17:36:27 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/04 19:22:45 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/16 17:56:24 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,10 +141,11 @@ int builtin_cd_with_arg(char **arg, t_var **env)
 		update_env(env);
 	else
 	{
-		perror("change_directory");
+		/* printf("ici\n"); */
+		/* perror("change_directory"); */
 		if (path)
 			free(path);
-		return (0); // pas sur
+		return (1); // pas sur
 	}
 	if (!ft_strncmp(arg[1], "-", 2))
 		builtin_pwd(env);

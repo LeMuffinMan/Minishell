@@ -6,7 +6,7 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 17:02:11 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/14 17:36:15 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/16 18:03:28 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,27 @@ int	build_minimal_env(t_var **env, char *arg)
 	return (add_back_var(env, "_=env", 0));
 }
 
+int init_pwd(t_var **env)
+{
+	char	buf[PATH_MAX];
+	char	*s;
+
+	s = "PWD=";
+	if (getcwd(buf, sizeof(buf)) != NULL)
+	{
+		s = ft_strjoin(s, buf);
+		tmp = s;
+		s = ft_strjoin(s, "\n");
+		add_back_var(new_env, s, 3); //3 en mode ?
+		return (0);
+	}
+	else
+	{
+		ft_putstr_fd("shell-init: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory\n", 2);
+		return (1);
+	}
+}
+
 // revoir la variable _
 // 25 lignes qund on aura fix l'exit code et la var _
 int	init_env(t_var **new_env, char **env, char *program_name)
@@ -112,6 +133,11 @@ int	init_env(t_var **new_env, char **env, char *program_name)
 		{
 			if (init_and_incremente_shlvl(env[i], new_env) == -1)
 				return (-1);
+		}
+		if (!ft_strncmp("PWD=", env[i], 5))
+		{
+			init_pwd(new_env);
+			s = getcwd(buf, )
 		}
 		else
 		{
