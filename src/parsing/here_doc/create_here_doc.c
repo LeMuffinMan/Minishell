@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 23:50:55 by asinsard          #+#    #+#             */
-/*   Updated: 2025/04/22 18:33:39 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/17 17:33:42 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,11 +47,9 @@ static char	*make_hd_name(int fd, char *print_char, char *res)
 			}
 			free(res);
 			res = ft_strdup(tmp);
+			free(tmp);
 			if (!res)
-			{
-				free(tmp);
 				return (NULL);
-			}
 		}
 	}
 	return (res);
@@ -96,7 +94,6 @@ static bool	handle_name(t_token **node)
 	if (!print_char)
 		return (free_and_return(res, NULL, fd));
 	name = make_hd_name(fd, print_char, res);
-	free(res);
 	free(print_char);
 	close(fd);
 	if (!name)
