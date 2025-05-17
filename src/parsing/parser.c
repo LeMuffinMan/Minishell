@@ -52,3 +52,5 @@ t_tree	*parse(char *line, char **envp, t_var *list_env)
 	display_ast(root, DEBUG);
 	return (root);
 }
+
+

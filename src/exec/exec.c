@@ -292,45 +292,19 @@ int	exec_ast(t_tree **ast, t_lists **lists)
 	exit_code = 0;
 	if (!*ast)
 		return (127); // on devrait peut etre reagir dans le main pour ca
-	// ou alors : je fais une premiere fonction exec_seq,
-		/* qui appelle exec_ast pour chaque block */
-	// NEW_EXEC
-	/* if ((*ast)->token->token == O_AND) */
-	/* { */
-	/* 	exit_code = exec_ast((*ast)->left); */
-	/* 	if (!exit_code) */
-	/* 		exit_code = exec_ast((*ast)->right); */
-	/* } */
-	/* if ((*ast)->token->token == O_OR) */
-	/* { */
-	/* 	exit_code = exec_ast((*ast)->left); */
-	/* 	if (exit_code != 0) */
-	/* 		exit_code = exec_ast((*ast)->right); */
-	/* } */
-	/* if ((*ast)->token->token == GROUP_PARENTHESIS)  */
-	/* 	return (exec_parenthesis((*ast)->token->groups)); */
-	/* if ((*ast)->token->token == GROUP)
-		//si dans GROUP je n'ai jamais de parentheses, de && ou de
-		|| : je peux direct appeler notre parser actuel */
-	/* { */
-	/* 	sub_ast = parse((*ast)->token->group, env , ...); */
-	/* 	exit_code = exec_ast(&sub_ast); */
-	/* 	free_tree(sub_ast); */
-	/* 	return (exit_code); */
-	/* } */
-	// NEW_EXEC
+
+	//signaux a virer ?
 	struct sigaction sa_ignore, sa_orig;
 	sigemptyset(&sa_ignore.sa_mask);
 	sa_ignore.sa_handler = SIG_IGN;
 	sa_ignore.sa_flags = 0;
 	sigaction(SIGINT, &sa_ignore, &sa_orig);
+	//signaux a virer ?
 	if ((*ast)->token->token == O_AND)
 	{
 		if ((*ast)->left)
 		{
 			exit_code = exec_ast(&((*ast)->left), lists);
-			if ((*lists)->stop_execution == 1)
-				return (exit_code);
 			if (exit_code == 0)
 			{
 				/* printf("right exit_code = %d\n", exit_code); */
@@ -340,7 +314,6 @@ int	exec_ast(t_tree **ast, t_lists **lists)
 			{
  				// si on doit pas stoper l'exec,
 				/* mais qu'on ne passe pas la porte avec l'exit code qu'on a */
-				(*lists)->stop_execution = 1;
 				return (exit_code);
 			}
 		}
@@ -350,15 +323,12 @@ int	exec_ast(t_tree **ast, t_lists **lists)
 		if ((*ast)->left)
 		{
 			exit_code = exec_ast(&((*ast)->left), lists);
-			if ((*lists)->stop_execution == 1)
-				return (exit_code);
 			if (exit_code != 0)
 				return (exec_ast(&((*ast)->right), lists));
 			else 
 			{
 				// si on doit pas stoper l'exec,
 				/* mais qu'on ne passe pas la porte avec l'exit code qu'on a */
-				(*lists)->stop_execution = 1;
 				return (exit_code);
 			}
 		}

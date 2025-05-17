@@ -84,7 +84,7 @@ t_token	*find_best_priority(t_token *start, t_token *end)
 	current = start;
 	while (current != end->next)
 	{
-		if (current->priority < best->priority)
+		if (current->priority <= best->priority)
 			best = current;
 		current = current->next;
 	}

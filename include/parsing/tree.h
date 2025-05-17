@@ -19,7 +19,7 @@ struct					s_token;
 typedef struct s_token	t_token;
 
 # define PRIO_O_OR 0
-# define PRIO_O_AND 1
+# define PRIO_O_AND 0
 # define PRIO_PIPE 2
 # define PRIO_PARENTHESIS 3
 # define PRIO_REDIR 4
