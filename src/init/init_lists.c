@@ -126,5 +126,7 @@ int	init_lists(t_lists **lists)
 		return (-1);
 	if (init_lists_shell_functions(lists) == -1)
 		return (-1);
+	(*lists)->exit_code = 0;
+	(*lists)->stop_execution = 0;
 	return (0);
 }

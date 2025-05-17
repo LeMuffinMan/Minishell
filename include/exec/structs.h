@@ -59,6 +59,7 @@ typedef struct s_lists
 	t_pipe **pipes;
 	int origin_fds[2];
 	int exit_code;
+	int stop_execution;
 	//ULTRABONUS
 	t_hist **history;
 	t_alias **aliases;

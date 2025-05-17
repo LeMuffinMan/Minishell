@@ -11,22 +11,22 @@
 /* ************************************************************************** */
 
 #include "aliases.h"
-#include "shell_fct.h"
-#include "exec.h"
 #include "builtins.h"
 #include "env_utils.h"
-#include "utils.h"
+#include "exec.h"
 #include "libft.h"
 #include "list.h"
+#include "shell_fct.h"
 #include "signals.h"
+#include "utils.h"
+#include <readline/readline.h> // compiler avec -l readline
 #include <stdio.h>
 #include <unistd.h>
-#include <readline/readline.h> // compiler avec -l readline
 
 int	builtins(char **arg, t_lists **lists)
 {
-	t_var **env;
-	t_tree **ast;
+	t_var	**env;
+	t_tree	**ast;
 
 	ast = (*lists)->ast;
 	env = (*lists)->env;
@@ -46,21 +46,21 @@ int	builtins(char **arg, t_lists **lists)
 		return (builtin_env(env, arg));
 	else if (!ft_strncmp(arg[0], "exit", 5))
 		return (builtin_exit(arg, lists));
-	else if (!ft_strncmp(arg[0], "source", 7)) //ULTRA BONUS
+	else if (!ft_strncmp(arg[0], "source", 7)) // ULTRA BONUS
 		return (builtin_source((*ast)->right->token->content[0], env));
 	else
 		return (1);
 }
 
-//DEFINE UN MAX PIPEFD ?
+// DEFINE UN MAX PIPEFD ?
 int	exec_pipe(t_tree **ast, t_lists **lists)
 {
-	pid_t left_pid;
-	pid_t right_pid;
+	pid_t	left_pid;
+	pid_t	right_pid;
 	int		pipefd[2];
-	int exit_code;
-	t_pipe **pipes;
-	t_var **env;
+	int		exit_code;
+	t_pipe	**pipes;
+	t_var	**env;
 
 	//
 	struct sigaction sa_ignore, sa_orig;
@@ -110,7 +110,7 @@ int	exec_pipe(t_tree **ast, t_lists **lists)
 	}
 	if ((*ast)->right && (*ast)->right->token->token == PIPE)
 	{
-		//attendre avant ?
+		// attendre avant ?
 		exit_code = exec_pipe(&((*ast)->right), lists);
 		exit_code = wait_children(left_pid, left_pid);
 		return (exit_code);
@@ -120,7 +120,7 @@ int	exec_pipe(t_tree **ast, t_lists **lists)
 		right_pid = fork();
 		if (right_pid < 0)
 		{
-			//error
+			// error
 		}
 		if (right_pid == 0)
 		{
@@ -141,28 +141,29 @@ int	exec_pipe(t_tree **ast, t_lists **lists)
 			exit_code = wait_children(right_pid, left_pid);
 			sigaction(SIGINT, &sa_orig, NULL);
 			update_last_arg_var(env, (*ast)->token->content);
-			return(exit_code);
+			return (exit_code);
 		}
 	}
 	return (1);
 }
 
 /* #include <stdio.h> */
-//BUILT_IN : PARENT
-//CMD : CHILD
+// BUILT_IN : PARENT
+// CMD : CHILD
 int	exec_cmd(t_tree **ast, t_lists **lists)
 {
 	char	**strings_env;
 	pid_t	pid;
-	int exit_code;
-	char *s;
-	char *tmp;
-	t_var **env;
+	int		exit_code;
+	char	*s;
+	char	*tmp;
+	t_var	**env;
 
 	env = (*lists)->env;
 	/* expand_cmd_sub((*ast)->token->content, env); */
-	//les builtins ne mettent pas a jour la variable _ !!
-	if ((*ast)->token->token == BUILT_IN  || !ft_strncmp((*ast)->token->content[0], "source", 7))
+	// les builtins ne mettent pas a jour la variable _ !!
+	if ((*ast)->token->token == BUILT_IN
+		|| !ft_strncmp((*ast)->token->content[0], "source", 7))
 	{
 		exit_code = builtins((*ast)->token->content, lists);
 		return (exit_code);
@@ -177,15 +178,14 @@ int	exec_cmd(t_tree **ast, t_lists **lists)
 		free(s);
 		return (126);
 	}
-
 	if ((*ast)->token->token == CMD)
 	{
 		pid = fork();
 		if (pid == -1)
-			return(-1);
+			return (-1);
 		if (pid == 0)
 		{
-    	setup_child_signals();
+			setup_child_signals();
 			if ((*lists)->origin_fds[0] > 2 || (*lists)->origin_fds[1] > 2)
 				close_origin_fds((*lists)->origin_fds);
 			strings_env = lst_to_array(env);
@@ -203,42 +203,50 @@ int	exec_cmd(t_tree **ast, t_lists **lists)
 			exit_code = wait_children(pid, pid);
 			update_last_arg_var(env, (*ast)->token->content);
 			setup_parent_signals();
-      rl_on_new_line();
+			rl_on_new_line();
 			return (exit_code);
 		}
 	}
-	return (1); //on ne devrait pas arriver ici
+	return (1); // on ne devrait pas arriver ici
 }
 
-int redirect_stdio(t_tree **ast, t_lists **lists)
+int	redirect_stdio(t_tree **ast, t_lists **lists)
 {
-	t_tree *left;
-	t_tree *right;
-	int exit_code;
+	t_tree	*left;
+	t_tree	*right;
+	int		exit_code;
 
 	left = (*ast)->left;
 	right = (*ast)->right;
-	//doute pour ce if, on devrait le faire au parsing ?
-	//dans tous les cas, avec juste un input "<" je trouve un synbole aleatoire dans content[1]
+	// doute pour ce if, on devrait le faire au parsing ?
+	// dans tous les cas,
+		/* avec juste un input "<" je trouve un synbole aleatoire dans content[1] */
 	if (!(*ast)->token->content[1])
-		return(print_error_file_opening("", "syntax error\n", 2));
-	exit_code = file_check((*ast)->token->content[1], (*ast)->token->token, (*ast)->token->error);
+		return (print_error_file_opening("", "syntax error\n", 2));
+	exit_code = file_check((*ast)->token->content[1], (*ast)->token->token,
+			(*ast)->token->error);
 	if (exit_code != 0)
-		return(exit_code);
-	exit_code = open_dup2_close((*ast)->token->content[1], (*ast)->token->token);
+		return (exit_code);
+	exit_code = open_dup2_close((*ast)->token->content[1],
+			(*ast)->token->token);
 	if (exit_code == -1)
-		return (-1);//on stop la chaine de redirections
+		return (-1); // on stop la chaine de redirections
 	if (left && (left->token->token == DIREC && left->token->error == 127))
 		exit_code = error_cmd(left->token->content[0], 127);
 	if (right && (right->token->token == DIREC && right->token->error == 127))
 		exit_code = error_cmd(right->token->content[0], 127);
-	if (left && (left->token->token == R_IN || left->token->token == APPEND || left->token->token == TRUNC || left->token->token == HD))
+	if (left && (left->token->token == R_IN || left->token->token == APPEND
+			|| left->token->token == TRUNC || left->token->token == HD))
 		exit_code = redirect_stdio(&left, lists);
-	if (exit_code == 0 && right && (right->token->token == R_IN || right->token->token == APPEND || right->token->token == TRUNC || right->token->token == HD))
+	if (exit_code == 0 && right && (right->token->token == R_IN
+			|| right->token->token == APPEND || right->token->token == TRUNC
+			|| right->token->token == HD))
 		exit_code = redirect_stdio(&right, lists);
-	if (exit_code == 0 && left && (left->token->token == CMD || left->token->token == BUILT_IN))
+	if (exit_code == 0 && left && (left->token->token == CMD
+			|| left->token->token == BUILT_IN))
 		exit_code = exec_cmd(&left, lists);
-	if (exit_code == 0 && right && (right->token->token == CMD || right->token->token == BUILT_IN))
+	if (exit_code == 0 && right && (right->token->token == CMD
+			|| right->token->token == BUILT_IN))
 		exit_code = exec_cmd(&right, lists);
 	return (exit_code);
 }
@@ -248,7 +256,8 @@ int redirect_stdio(t_tree **ast, t_lists **lists)
 /* 	pid = fork(); */
 /* 	if (pid == 0) */
 /* 	{ */
-/* 		if (is_there_any_op_or_parenthesis(line)) //si je trouve des parentheses ou des bool operateurs */
+/* 		if (is_there_any_op_or_parenthesis(line))
+			//si je trouve des parentheses ou des bool operateurs */
 /* 		{ */
 /* 			sub_ast = exec_ast(line, env, ...); */
 /* 			exit_code = exec_ast(&sub_ast , lists); */
@@ -271,19 +280,21 @@ int redirect_stdio(t_tree **ast, t_lists **lists)
 /* 	} */
 /* } */
 
-
 int	exec_ast(t_tree **ast, t_lists **lists)
 {
-  int exit_code;
-  t_alias *alias;
-  t_shell_fct *shell_fct;
+	int			exit_code;
+	char		**strings_env;
+	t_alias		*alias;
+	t_shell_fct	*shell_fct;
+	t_tree		*sub_ast;
+	pid_t		pid;
 
-  exit_code = 0;
-  if (!*ast)
-  	return(127); //on devrait peut etre reagir dans le main pour ca
-
-	//ou alors : je fais une premiere fonction exec_seq, qui appelle exec_ast pour chaque block
-	//NEW_EXEC
+	exit_code = 0;
+	if (!*ast)
+		return (127); // on devrait peut etre reagir dans le main pour ca
+	// ou alors : je fais une premiere fonction exec_seq,
+		/* qui appelle exec_ast pour chaque block */
+	// NEW_EXEC
 	/* if ((*ast)->token->token == O_AND) */
 	/* { */
 	/* 	exit_code = exec_ast((*ast)->left); */
@@ -298,96 +309,188 @@ int	exec_ast(t_tree **ast, t_lists **lists)
 	/* } */
 	/* if ((*ast)->token->token == GROUP_PARENTHESIS)  */
 	/* 	return (exec_parenthesis((*ast)->token->groups)); */
-	/* if ((*ast)->token->token == GROUP) //si dans GROUP je n'ai jamais de parentheses, de && ou de || : je peux direct appeler notre parser actuel */
+	/* if ((*ast)->token->token == GROUP)
+		//si dans GROUP je n'ai jamais de parentheses, de && ou de
+		|| : je peux direct appeler notre parser actuel */
 	/* { */
 	/* 	sub_ast = parse((*ast)->token->group, env , ...); */
 	/* 	exit_code = exec_ast(&sub_ast); */
 	/* 	free_tree(sub_ast); */
 	/* 	return (exit_code); */
 	/* } */
-	//NEW_EXEC
+	// NEW_EXEC
+	struct sigaction sa_ignore, sa_orig;
+	sigemptyset(&sa_ignore.sa_mask);
+	sa_ignore.sa_handler = SIG_IGN;
+	sa_ignore.sa_flags = 0;
+	sigaction(SIGINT, &sa_ignore, &sa_orig);
+	if ((*ast)->token->token == O_AND)
+	{
+		if ((*ast)->left)
+		{
+			exit_code = exec_ast(&((*ast)->left), lists);
+			if ((*lists)->stop_execution == 1)
+				return (exit_code);
+			if (exit_code == 0)
+			{
+				/* printf("right exit_code = %d\n", exit_code); */
+				return (exec_ast(&((*ast)->right), lists));
+			}
+			else // si on doit pas stoper l'exec,
+				/* mais qu'on ne passe pas la porte avec l'exit code qu'on a */
+			{
+				(*lists)->stop_execution = 1;
+				return (exit_code);
+			}
+		}
+	}
+	if ((*ast)->token->token == O_OR)
+	{
+		if ((*ast)->right)
+		{
+			exit_code = exec_ast(&((*ast)->right), lists);
+			if ((*lists)->stop_execution == 1)
+				return (exit_code);
+			if (exit_code != 0)
+				return (exec_ast(&((*ast)->right), lists));
+			else // si on doit pas stoper l'exec,
+				/* mais qu'on ne passe pas la porte avec l'exit code qu'on a */
+			{
+				(*lists)->stop_execution = 1;
+				return (exit_code);
+			}
+		}
+	}
+	if ((*ast)->token->token == GROUP_PARENTHESIS)
+	{
+		pid = fork();
+		if (!pid)
+		{
+			// error de fork
+		}
+		if (pid == 0)
+		{
+			setup_child_signals();
+			strings_env = lst_to_array((*lists)->env);
+			sub_ast = parse((*ast)->token->group->content[0], strings_env, *(*lists)->env);
+			free_array(strings_env);
+			exit_code = exec_ast(&sub_ast, lists);
+			free_tree(&sub_ast);
+			free_lists(*lists);
+			exit (exit_code);
+		}
+		else
+		{
+			exit_code = wait_children(pid, pid);
+			sigaction(SIGINT, &sa_orig, NULL);
+			return (exit_code);
+		}
+	}
+	if ((*ast)->token->token == GROUP_BOOLOP)
+	{
+			strings_env = lst_to_array((*lists)->env);
+			sub_ast = parse((*ast)->token->content[0], strings_env, *(*lists)->env);
+			free_array(strings_env);
+			exit_code = exec_ast(&sub_ast, lists);
+			free_tree(&sub_ast);
+			return (exit_code);
+	}
 
-  if ((*ast)->token->error == 2)
-  {
-  	ft_putendl_fd((*ast)->token->content[0], 2);
-  	return ((*ast)->token->error);
-  }
-	if ((*ast)->token->token == R_IN || (*ast)->token->token == APPEND || (*ast)->token->token == TRUNC)
-		return(redirect_stdio(ast, lists));
+
+
+
+
+
+
+	if ((*ast)->token->error == 2)
+	{
+		ft_putendl_fd((*ast)->token->content[0], 2);
+		return ((*ast)->token->error);
+	}
+	if ((*ast)->token->token == R_IN || (*ast)->token->token == APPEND
+		|| (*ast)->token->token == TRUNC)
+		return (redirect_stdio(ast, lists));
 	if ((*ast)->token->token == PIPE)
 		return (exec_pipe(ast, lists));
-	if ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD  || !ft_strncmp((*ast)->token->content[0], "source", 7))
+	if ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD
+		|| !ft_strncmp((*ast)->token->content[0], "source", 7))
 	{
 		exit_code = exec_cmd(ast, lists);
 		return (exit_code);
 	}
 	//
 	alias = is_a_known_alias((*ast)->token->content[0], (*lists)->aliases);
-	if ((*ast)->token->error == 127 && alias) 
+	if ((*ast)->token->error == 127 && alias)
 		return (exec_alias(ast, lists, alias));
-	shell_fct = is_a_known_shell_fct((*ast)->token->content[0], (*lists)->shell_fcts);
+	shell_fct = is_a_known_shell_fct((*ast)->token->content[0],
+			(*lists)->shell_fcts);
 	if ((*ast)->token->error == 127 && shell_fct)
 		return (exec_shell_fct(ast, lists, shell_fct));
 	//
-	if ((*ast)->token->error == 127 || (*ast)->token->error == 126 || (*ast)->token->error == 21)
+	if ((*ast)->token->error == 127 || (*ast)->token->error == 126
+		|| (*ast)->token->error == 21)
 		return (error_cmd((*ast)->token->content[0], (*ast)->token->error));
-	//Ultrabonus
-		//un token Alias
-	  //un token shell_func
-	  //un token substitution cmd ?
-			//on ne l'expand pas jusqu'au dernier moment, et on execute le contenu des parentheses 
-	return (exit_code);
+	// Ultrabonus
+	// un token Alias
+	// un token shell_func
+	// un token substitution cmd ?
+	// on ne l'expand pas jusqu'au dernier moment,
+	/* 	et on execute le contenu des parentheses */
+
+
+	//syntax error ?
+	return (exit_code); // pas possible d'arriver la normalement
 }
 
-//modifs pour le ctrl dans un pipe :
+// modifs pour le ctrl dans un pipe :
 //
-//il faut avoir un check is_in_pipe dans cmd : pour gerer un cat tout seul
-//il faut deplacer les ajouts de set sig etc faites dans cmd dans exec_pipe
-//il faut modifier la fonction wait_children pour qu'il recupere correctement le signal
-//https://chat.deepseek.com/a/chat/s/a6fb8416-77db-418a-9c33-91607fa40c13
+// il faut avoir un check is_in_pipe dans cmd : pour gerer un cat tout seul
+// il faut deplacer les ajouts de set sig etc faites dans cmd dans exec_pipe
+// il faut modifier la fonction wait_children pour qu'il recupere correctement le signal
+// https://chat.deepseek.com/a/chat/s/a6fb8416-77db-418a-9c33-91607fa40c13
 
-//Gros debuggage 
+// Gros debuggage
 //
-//implementer le nouveau free de l'arbre 
-//corriger si on fait un ctrl D dans le prompt : tout free
-//idem pour exit : tout free
+// implementer le nouveau free de l'arbre
+// corriger si on fait un ctrl D dans le prompt : tout free
+// idem pour exit : tout free
 //
-//Parsing ?
-//whoami | cat | > file1 | uname
-//doit afficher Linux et pas cmd not found !
+// Parsing ?
+// whoami | cat | > file1 | uname
+// doit afficher Linux et pas cmd not found !
 //
-					//TESTS
+// TESTS
 //
-//PIPES
+// PIPES
 //
-//whoami OK
-//whoami | cat OK
-//whoami | cat | cat OK
-//whoami | cat | cat | cat OK
+// whoami OK
+// whoami | cat OK
+// whoami | cat | cat OK
+// whoami | cat | cat | cat OK
 //
-//REDIRS OUT
-//whoami > file1 OK
-//not_existing_cmd > file1 OK
-//whoami > file1 > file2 OK
-//whoami > file1 > file2 > file3 > file4 OK
-//whoami >> file1 OK
-//whoami > file1 >> file2 OK
-//whoami >> file1 > file2 > file3
-//whoami > file1 > file2 >> file3 KO
+// REDIRS OUT
+// whoami > file1 OK
+// not_existing_cmd > file1 OK
+// whoami > file1 > file2 OK
+// whoami > file1 > file2 > file3 > file4 OK
+// whoami >> file1 OK
+// whoami > file1 >> file2 OK
+// whoami >> file1 > file2 > file3
+// whoami > file1 > file2 >> file3 KO
 //
-//REIDRS IN
+// REIDRS IN
 //< file1 whoami KO
 //< file1 cat : boucle infinie KO
 //
-//PIPE + redirs out
-//whoami | cat | cat > file1 | cat > file1 > file2 | cat KO
+// PIPE + redirs out
+// whoami | cat | cat > file1 | cat > file1 > file2 | cat KO
 //
-//PIPE + redirs in
-//TODO
+// PIPE + redirs in
+// TODO
 
-//Mettre 1024 en limite de pipes !!
+// Mettre 1024 en limite de pipes !!
 //
-//gros BUG !
+// gros BUG !
 /* [Minishell]$ whoami | file1 */
 /* mimishell: file1: Permission denied */
 /* [Minishell]$ oelleaum */
@@ -409,4 +512,3 @@ int	exec_ast(t_tree **ast, t_lists **lists)
 /* int expand_variables(t_tree **ast); */
 /* int find_expands(t_tree *ast) */
 /* int free_lists_and_exit(t_var **env, t_tree **ast, t_pipe **pipes) */
-

@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <readline/readline.h>
 #include "signals.h"
+#include "libft.h"
 #include <unistd.h>
 #include <stdlib.h>
 
@@ -74,20 +75,21 @@ void handle_child_sigint()
     exit(130);  // Code de sortie standard pour SIGINT (128 + 2)
 }
 
-void	setup_child_signals(void)
+void setup_child_signals(void)
 {
-	struct sigaction	sa;
+    struct sigaction sa;
 
-	// sa.sa_handler = handle_child_sigint; ne veut pas compiler
-	// SIGINT par défaut dans les enfants
-	sa.sa_flags = 0;
-	sigemptyset(&sa.sa_mask);
-	sigaction(SIGINT, &sa, NULL);
-	// SIGQUIT par défaut dans les enfants
-	sa.sa_handler = handle_child_sigquit;
-	sigaction(SIGQUIT, &sa, NULL);
+    // Initialiser toute la structure à zéro
+    ft_memset(&sa, 0, sizeof(sa));
+    // SIGINT par défaut dans les enfants
+    sa.sa_handler = SIG_DFL;  // Utiliser le gestionnaire par défaut
+    sa.sa_flags = 0;
+    sigemptyset(&sa.sa_mask);
+    sigaction(SIGINT, &sa, NULL);
+    // SIGQUIT avec gestionnaire personnalisé
+    sa.sa_handler = handle_child_sigquit;
+    sigaction(SIGQUIT, &sa, NULL);
 }
-
 void sigint_prompt_handler()
 {
 	  write(STDOUT_FILENO, "\n", 1);
