@@ -57,6 +57,13 @@ int	init_lists_pipes(t_lists **lists)
 	return (0);
 }
 
+int init_lists_origin_fds(t_lists **lists)
+{
+    (*lists)->origin_fds[0] = -1;
+    (*lists)->origin_fds[1] = -1;
+    return (0);
+}
+
 // Ultra bonus
 //
 int	init_lists_history(t_lists **lists)
@@ -110,6 +117,8 @@ int	init_lists(t_lists **lists)
 	if (init_lists_ast(lists) == -1)
 		return (-1);
 	if (init_lists_pipes(lists) == -1)
+		return (-1);
+	if (init_lists_origin_fds(lists) == -1)
 		return (-1);
 	if (init_lists_history(lists) == -1)
 		return (-1);
