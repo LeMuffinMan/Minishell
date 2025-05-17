@@ -126,7 +126,8 @@ int	handle_boolop_group(t_tree **root)
 		if ((tmp->token->token == O_AND 
 			|| tmp->token->token == O_OR)
 				&& tmp->left->token->token != O_AND 
-				&& tmp->left->token->token != O_OR)
+				&& tmp->left->token->token != O_OR
+				&& tmp->left->token->token != GROUP_PARENTHESIS)
 		{
 			if (set_boolop_group(&tmp->left, tmp->token->token) == -1)
 				return (-1);
@@ -139,7 +140,8 @@ int	handle_boolop_group(t_tree **root)
 		if ((tmp->token->token == O_AND 
 			|| tmp->token->token == O_OR)
 				&& tmp->right->token->token != O_AND 
-				&& tmp->right->token->token != O_OR)
+				&& tmp->right->token->token != O_OR
+				&& tmp->left->token->token != GROUP_PARENTHESIS)
 		{
 			if (set_boolop_group(&tmp->right, tmp->token->token) == -1)
 				return (-1);
