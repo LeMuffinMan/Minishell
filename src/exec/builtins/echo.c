@@ -16,6 +16,24 @@
 	// on join tous les args avec un space entre chaque, sauf le dernier
 	// si on n'avait pas de -n : on join le \n
 	// si on dup2 au tout debut, ici 1 ecrira bien ou je vuex ?
+
+int is_a_valid_echo_option(char *s)
+{
+	int i;
+
+	if (s[0] && s[0] == '-' && s[1] && s[1] == 'n' && s[2])
+	{
+		i = 2;
+		while (s[i])
+		{
+			if (s[i] != 'n')
+				return (0);
+			i++;
+		}
+	}
+	return (1);
+}
+
 int	builtin_echo(char **arg)
 {
 	int		option;
@@ -38,6 +56,7 @@ int	builtin_echo(char **arg)
 	}
 	s = ft_strdup("");
 	i = 1;
+	/* if (is_a_valid_echo_option(arg[i])) */
 	if ((!ft_strncmp(arg[i], "-n", 3) && ft_strlen(arg[i]) == 2) || (!ft_strncmp(arg[i], "-n ", 4) && ft_strlen(arg[i]) == 3 )) // 2 avant : -n a un espace apres donc 3
 	{
 		option = 1;
