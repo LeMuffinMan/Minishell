@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 21:12:15 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/14 18:17:18 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/15 18:57:20 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,7 @@ static t_tree	*add_new_node(t_token *token, t_tree *left,
 	return (new_node);
 }
 
-static t_tree	*parse_list(t_token *start, t_token *end,
-							bool flag)
+static t_tree	*parse_list(t_token *start, t_token *end)
 {
 	t_tree	*left;
 	t_tree	*right;
@@ -61,36 +60,34 @@ static t_tree	*parse_list(t_token *start, t_token *end,
 
 	if (!start || !end)
 		return (add_new_node(start, NULL, NULL));
-	arg = find_best_priority(start, end, flag);
+	arg = find_best_priority(start, end);
 	if (!arg)
 		return (NULL);
 	left = NULL;
 	right = NULL;
 	if (arg->prev && arg != start)
-		left = parse_list(start, arg->prev, flag);
+		left = parse_list(start, arg->prev);
 	if (arg->next && arg != end)
-		right = parse_list(arg->next, end, flag);
+		right = parse_list(arg->next, end);
 	return (add_new_node(arg, left, right));
 }
 
-void	add_to_root(t_token **node, t_tree **root, bool flag)
+void	add_to_root(t_token **node, t_tree **root)
 {
 	t_token	*end;
 	t_token	*start;
 
 	if (!*node)
 		return ;
-	if (!flag)
-		handle_parenthesis(node);
+	handle_parenthesis(node);
 	end = (*node);
 	start = (*node);
-	assign_priority(node, flag);
-	last_node(&end, flag);
-	if (flag && start->prev)
+	assign_priority(node);
+	last_node(&end);
+	if (start->prev)
 		start->priority = 0;
-	*root = parse_list(*node, end, flag);
-	if (flag)
-		set_bool_seq(root);
+	*root = parse_list(*node, end);
+	handle_boolop_group(root);
 	assign_head(root, *root);
 }
 

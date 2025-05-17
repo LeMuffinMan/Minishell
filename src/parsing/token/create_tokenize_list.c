@@ -46,14 +46,14 @@ t_token	*add_new_token(char *str, int error_code)
 	new_node->token = NO_TOKEN;
 	new_node->error = error_code;
 	new_node->content = alloc_tab(str);
-	new_node->priority = 10;
-	new_node->seq = true;
-	new_node->group = NULL;
 	if (!new_node->content)
 	{
 		free(new_node);
 		return (NULL);
 	}
+	new_node->priority = 10;
+	new_node->seq = true;
+	new_node->group = NULL;
 	return (new_node);
 }
 
@@ -82,28 +82,26 @@ void	add_back(t_token **head, char *str)
 
 void	free_parse(t_token *list, const char *str, int error)
 {
-	t_token	*tmp;
 	t_token	*next_node;
 
 	if (!list)
 		return ;
+	next_node = NULL;
 	if (list->prev)
 	{
 		while (list->prev)
 			list = list->prev;
 	}
-	tmp = list;
-	if (tmp->group)
-		free_parse(tmp->group, NULL, SUCCESS);
-	while (tmp)
+	while (list)
 	{
-		next_node = tmp->next;
-		if (tmp->content)
-			free_tab(tmp->content);
-		if (tmp)
-			free(tmp);
-		tmp = NULL;
-		tmp = next_node;
+		if (list->next)
+			next_node = list->next;
+		if (list->group)
+			free_parse(list->group, NULL, SUCCESS);
+		if (list->content)
+		free_tab(list->content);
+		free(list);
+		list = next_node;
 	}
 	if (str)
 		ft_error(str, error);

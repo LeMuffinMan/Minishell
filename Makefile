@@ -77,6 +77,7 @@ SRC					=	main.c \
 						tokenize.c \
 						create_tokenize_list.c \
 						create_tree.c \
+						handle_boolop_group.c \
 						handle_parenthesis.c \
 						tree_utils.c \
 						display_lexer.c \
