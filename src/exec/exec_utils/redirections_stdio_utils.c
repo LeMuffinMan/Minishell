@@ -46,15 +46,15 @@ int file_check(char *file, t_type type, int error_code)
 		if (is_a_directory(file))
 			return(print_error_file_opening(file, ": Is a directory\n", 1));
 	}
-
 	if (type == APPEND || type == TRUNC)
 	{
-		if(access(file, F_OK) == -1)
-			return (print_error_file_opening(file, ": No such file or directory\n", 1));
-		if (access(file, W_OK) == -1)
-			return (print_error_file_opening(file, ": Permission denied\n", 1));
-		if (is_a_directory(file))
-			return(print_error_file_opening(file, ": Is a directory\n", 1));
+		if(access(file, F_OK) != -1)
+		{
+			if (access(file, W_OK) == -1)
+				return (print_error_file_opening(file, ": Permission denied\n", 1));
+			if (is_a_directory(file))
+				return(print_error_file_opening(file, ": Is a directory\n", 1));
+		}
 	}
 	return (0);
 }
