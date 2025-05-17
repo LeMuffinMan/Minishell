@@ -78,12 +78,15 @@ static int	set_boolop_group(t_tree **ast_node, t_token *token_node)
 	free((*ast_node)->token);
 	(*ast_node)->token = new_token;
 	(*ast_node)->token->group = NULL;
-	// if (token_node->next)
-	// {
-	// 	token_node->next->prev = new_token;
-	// 	new_token->next = 
-	// }
-	(void)token_node;
+	if (token_node->next)
+	{
+		token_node->next->prev = new_token;
+		new_token->next = token_node->next;
+		token_node->next = new_token;
+	}
+	else
+		new_token->next = NULL;
+	new_token->prev = token_node;
 	(*ast_node)->token->token = GROUP_BOOLOP;
 	free_partial_tree((*ast_node)->left);
 	free_partial_tree((*ast_node)->right);
@@ -148,7 +151,7 @@ int	handle_boolop_group(t_tree **root)
 			|| tmp->token->token == O_OR)
 				&& tmp->right->token->token != O_AND 
 				&& tmp->right->token->token != O_OR
-				&& tmp->left->token->token != GROUP_PARENTHESIS)
+				&& tmp->right->token->token != GROUP_PARENTHESIS)
 		{
 			if (set_boolop_group(&tmp->right, tmp->token) == -1)
 				return (-1);
