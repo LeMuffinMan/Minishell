@@ -323,6 +323,7 @@ int	exec_ast(t_tree **ast, t_lists **lists)
 		if ((*ast)->left)
 		{
 			exit_code = exec_ast(&((*ast)->left), lists);
+			/* dprintf(2, "exit_code = %d\n", exit_code); */
 			if (exit_code != 0)
 				return (exec_ast(&((*ast)->right), lists));
 			else 
