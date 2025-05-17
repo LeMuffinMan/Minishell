@@ -336,9 +336,10 @@ int	exec_ast(t_tree **ast, t_lists **lists)
 				/* printf("right exit_code = %d\n", exit_code); */
 				return (exec_ast(&((*ast)->right), lists));
 			}
-			else // si on doit pas stoper l'exec,
-				/* mais qu'on ne passe pas la porte avec l'exit code qu'on a */
+			else
 			{
+ 				// si on doit pas stoper l'exec,
+				/* mais qu'on ne passe pas la porte avec l'exit code qu'on a */
 				(*lists)->stop_execution = 1;
 				return (exit_code);
 			}
@@ -346,16 +347,17 @@ int	exec_ast(t_tree **ast, t_lists **lists)
 	}
 	if ((*ast)->token->token == O_OR)
 	{
-		if ((*ast)->right)
+		if ((*ast)->left)
 		{
-			exit_code = exec_ast(&((*ast)->right), lists);
+			exit_code = exec_ast(&((*ast)->left), lists);
 			if ((*lists)->stop_execution == 1)
 				return (exit_code);
 			if (exit_code != 0)
 				return (exec_ast(&((*ast)->right), lists));
-			else // si on doit pas stoper l'exec,
-				/* mais qu'on ne passe pas la porte avec l'exit code qu'on a */
+			else 
 			{
+				// si on doit pas stoper l'exec,
+				/* mais qu'on ne passe pas la porte avec l'exit code qu'on a */
 				(*lists)->stop_execution = 1;
 				return (exit_code);
 			}
@@ -370,6 +372,8 @@ int	exec_ast(t_tree **ast, t_lists **lists)
 		}
 		if (pid == 0)
 		{
+			/* dprintf(2, "origin_fd[0] = %d\n", (*lists)->origin_fds[0]); */
+			/* dprintf(2, "origin_fd[1] = %d\n", (*lists)->origin_fds[1]); */
 			/* if ((*lists)->origin_fds[0] > 2 || (*lists)->origin_fds[1] > 2) */
 			/* 	close_origin_fds((*lists)->origin_fds); */
 			setup_child_signals();

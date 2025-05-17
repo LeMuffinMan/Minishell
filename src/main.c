@@ -209,6 +209,8 @@ int main(int ac, char **av, char **env)
     }
     while (1)
     {
+	    lists->origin_fds[0] = dup(STDIN_FILENO);
+	    lists->origin_fds[1] = dup(STDOUT_FILENO);
         setup_parent_signals();
         prompt = NULL;
         if (isatty(0) && *env)
@@ -246,8 +248,6 @@ int main(int ac, char **av, char **env)
                     add_history(line);
             }
         }
-	    lists->origin_fds[0] = dup(STDIN_FILENO);
-	    lists->origin_fds[1] = dup(STDOUT_FILENO);
         if (isatty(0) && *env)
         {
             free(prompt);
@@ -272,7 +272,7 @@ int main(int ac, char **av, char **env)
         *lists->ast = parse(line, strings_env, *lists->env);
         free_array(strings_env);
         strings_env = NULL;
-        /* exit_code =  */exec_ast(lists->ast, &lists);
+        exit_code = exec_ast(lists->ast, &lists);
         update_exit_code_var(lists->env, exit_code);
         dup2(lists->origin_fds[0], STDIN_FILENO);
         dup2(lists->origin_fds[1], STDOUT_FILENO);
