@@ -170,6 +170,7 @@ int	exec_cmd(t_tree **ast, t_lists **lists)
 	}
 	if (is_a_directory((*ast)->token->content[0]))
 	{
+		/* printf("ici ?"); */
 		s = ft_strjoin("minishell: ", (*ast)->token->content[0]);
 		tmp = s;
 		s = ft_strjoin(s, ": Is a directory\n");
@@ -323,7 +324,7 @@ int	exec_ast(t_tree **ast, t_lists **lists)
 		if ((*ast)->left)
 		{
 			exit_code = exec_ast(&((*ast)->left), lists);
-			/* dprintf(2, "exit_code = %d\n", exit_code); */
+			dprintf(2, "exit_code = %d\n", exit_code);
 			if (exit_code != 0)
 				return (exec_ast(&((*ast)->right), lists));
 			else 
@@ -360,6 +361,7 @@ int	exec_ast(t_tree **ast, t_lists **lists)
 		{
 			exit_code = wait_children(pid, pid);
 			sigaction(SIGINT, &sa_orig, NULL);
+			/* printf("exit_code = %d\n", exit_code); */
 			return (exit_code);
 		}
 	}
