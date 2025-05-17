@@ -370,6 +370,8 @@ int	exec_ast(t_tree **ast, t_lists **lists)
 		}
 		if (pid == 0)
 		{
+			/* if ((*lists)->origin_fds[0] > 2 || (*lists)->origin_fds[1] > 2) */
+			/* 	close_origin_fds((*lists)->origin_fds); */
 			setup_child_signals();
 			strings_env = lst_to_array((*lists)->env);
 			sub_ast = parse((*ast)->token->group->content[0], strings_env, *(*lists)->env);
