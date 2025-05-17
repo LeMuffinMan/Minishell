@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 15:53:21 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/16 17:41:16 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/17 16:15:26 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,12 +100,7 @@ static void	assign_pointer(t_token **new_node, t_token **start, t_token **end)
 		(*new_node)->next->prev = (*new_node);
 	(*new_node)->group = add_new_token(res, SUCCESS);
 	free(res);
-	if ((*start)->token == L_PARENTHESIS)
-		(*new_node)->token = GROUP_PARENTHESIS;
-	else if ((*start)->token == O_AND)
-		(*new_node)->token = GROUP_O_AND;
-	else
-		(*new_node)->token = GROUP_O_OR;
+	(*new_node)->token = GROUP_PARENTHESIS;
 	(*start)->prev = NULL;
 	(*end)->next = NULL;
 	free_node_unused(*start);

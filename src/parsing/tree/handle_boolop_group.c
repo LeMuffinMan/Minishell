@@ -80,6 +80,8 @@ static int	set_boolop_group(t_tree **ast_node, t_type current_token)
 	free_tab((*ast_node)->token->content);
 	free((*ast_node)->token);
 	(*ast_node)->token = new_token;
+	(*ast_node)->token->group = NULL;
+	(*ast_node)->token->token = GROUP_BOOLOP;
 	free_partial_tree((*ast_node)->left);
 	free_partial_tree((*ast_node)->right);
 	(*ast_node)->left = NULL;
