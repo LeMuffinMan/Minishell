@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 01:26:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/14 18:51:40 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/17 16:13:32 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,7 @@ typedef enum e_type
 	EXPAND,
 	FLE,
 	GROUP_PARENTHESIS,
-	GROUP_O_AND,
-	GROUP_O_OR,
+	GROUP_BOOLOP,
 	HD,
 	O_AND,
 	O_OR,

@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 19:15:40 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/15 19:21:13 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/17 16:13:51 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,9 +90,9 @@ static void	print_token(t_token *head, const char **tab, int i)
 void	display_list(t_token *head, int debug)
 {
 	int					i;
-	static const char	*tab[22] = {"No Token", "Append", "Built_in",
+	static const char	*tab[21] = {"No Token", "Append", "Built_in",
 		"Command", "Directory", "Double quote", "Expand", "File",
-		"Group Parenthesis", "Group AND", "Group OR", "Here doc",
+		"Group Boolop", "Group OR", "Here doc",
 		"And", "Or", "Left Parenthesis", "Right Parenthesis",
 		"Pipe", "Redir in", "Simple quote", "Space", "Truncate",
 		"Wildcard"};
