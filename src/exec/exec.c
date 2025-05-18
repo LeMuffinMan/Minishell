@@ -6,7 +6,7 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:49:28 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/04 19:36:34 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/18 16:12:35 by oelleaum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ int	builtins(char **arg, t_lists *lists, int origin_fds[2])
 	else if (!ft_strncmp(arg[0], "env", 4))
 		return (builtin_env(env, arg));
 	else if (!ft_strncmp(arg[0], "exit", 5))
-		return (builtin_exit(arg, lists, origin_fds));
+		return (builtin_exit(arg, ast, lists, origin_fds));
 	else if (!ft_strncmp(arg[0], "source", 7)) // ULTRA BONUS
 		return (builtin_source((*ast)->right->token->content[0], env));
 	else
@@ -187,8 +187,10 @@ int	exec_cmd(t_tree **ast, t_lists *lists, int origin_fds[2])
 		if (pid == 0)
 		{
 			setup_child_signals();
-			if (lists->origin_fds[0] > 2 || lists->origin_fds[1] > 2)
-				close_origin_fds(lists->origin_fds);
+			dprintf(2, "origin_fds[0] = %d", origin_fds[0]);
+			dprintf(2, "origin_fds[0] = %d", origin_fds[1]);
+			if (origin_fds[0] > 2 || origin_fds[1] > 2)
+				close_origin_fds(origin_fds);
 			strings_env = lst_to_array(env);
 			execve((*ast)->token->content[0], (*ast)->token->content,
 				strings_env);

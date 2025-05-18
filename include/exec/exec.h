@@ -22,7 +22,7 @@ int		exec_ast(t_tree **ast, t_lists *lists, int origin_fds[2]);
 int		exec_cmd(t_tree **ast, t_lists *lists, int origin_fds[2]);
 // int redirect_stdio(t_tree **ast, t_var **env, int origin_fds[2]);
 // int	exec_pipe(t_tree **ast, t_var **env, t_pipe **pipes, int origin_fds[2]);
-// int	builtins(char **arg, t_var **env, t_tree **ast, int origin_fds[2]);
+// int	builtins(char **arg, t_lists *lists, int origin_fds[2]);
 
 // redirect_stdio_utils
 int		file_check(char *file, t_type type, int error_code);

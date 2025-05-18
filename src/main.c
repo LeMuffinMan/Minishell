@@ -210,8 +210,6 @@ int main(int ac, char **av, char **env)
 
     while (1)
     {
-	    origin_fds[0] = dup(STDIN_FILENO);
-	    origin_fds[1] = dup(STDOUT_FILENO);
         setup_parent_signals();
         prompt = NULL;
         if (isatty(0) && *env)
@@ -256,6 +254,8 @@ int main(int ac, char **av, char **env)
             free(prompt);
             prompt = NULL;
         }
+	    origin_fds[0] = dup(STDIN_FILENO);
+	    origin_fds[1] = dup(STDOUT_FILENO);
 
         /* t_tree *seq_order; */
         /**/

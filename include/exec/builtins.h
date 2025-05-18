@@ -6,7 +6,7 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/04 19:21:36 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/04 19:21:38 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/18 16:13:14 by oelleaum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int		builtin_echo(char **arg);
 int		builtin_env(t_var **env, char **arg);
 
 // builtins/exit
-int		builtin_exit(char **arg, t_lists *lists, int origin_fds[2]);
+int		builtin_exit(char **arg, t_tree **ast, t_lists *lists, int origin_fds[2]);
 
 // builtins/pwd
 int		builtin_pwd(t_var **env);

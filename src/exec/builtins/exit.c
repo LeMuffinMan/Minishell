@@ -6,7 +6,7 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 17:36:33 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/20 17:36:33 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/18 16:11:51 by oelleaum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int	is_only_numeric_argument(char *s)
 	return (1);
 }
 
-int exit_no_arg(t_tree **ast, t_lists **lists, int origin_fds[2])
+int exit_no_arg(t_tree **ast, t_lists *lists, int origin_fds[2])
 {
 	/* free_list(lists->env); */
 	/* free_tree(&(*ast)->head); */
@@ -39,10 +39,10 @@ int exit_no_arg(t_tree **ast, t_lists **lists, int origin_fds[2])
   (void)ast;
   (void)origin_fds;
 	ft_putstr_fd("exit\n", 1);
-	/* close_origin_fds(origin_fds); */
+	close_origin_fds(origin_fds);
   /* close(origin_fds[0]); */
   /* close(origin_fds[1]); */
-	free_lists(*lists);
+	free_lists(lists);
 	exit(0);
 }
 
@@ -60,7 +60,7 @@ int exit_overflow_error(char **arg)
 	return (2);
 }
 
-int exit_numeric_argument_required_error(char **arg, t_tree **ast, t_lists **lists, int origin_fds[2])
+int exit_numeric_argument_required_error(char **arg, t_tree **ast, t_lists *lists, int origin_fds[2])
 {
 	char *s;
 	char *tmp;
@@ -73,14 +73,14 @@ int exit_numeric_argument_required_error(char **arg, t_tree **ast, t_lists **lis
 	free(s);
 	/* free_list(env); */
 	/* free_tree(&(*ast)->head); */
-	free_lists(*lists);
+	free_lists(lists);
   /* free_history(history); */
 	close_origin_fds(origin_fds);
   (void)ast;
 	exit(2);
 }
 
-int exit_with_valid_arg(char **arg, t_tree **ast, t_lists **lists, int origin_fds[2])
+int exit_with_valid_arg(char **arg, t_tree **ast, t_lists *lists, int origin_fds[2])
 {
 	int n;
 
@@ -92,7 +92,7 @@ int exit_with_valid_arg(char **arg, t_tree **ast, t_lists **lists, int origin_fd
 	//free le prompt ici ?
   /* free_history(history); */
 	close_origin_fds(origin_fds);
-	free_lists(*lists);
+	free_lists(lists);
   (void)ast;
 	exit(n);
 }
@@ -100,7 +100,7 @@ int exit_with_valid_arg(char **arg, t_tree **ast, t_lists **lists, int origin_fd
 // a voir
 // des fuites et des exits a des moments ou ils doivent pas
 // a tester : is only numeric arg
-int	builtin_exit(char **arg, t_tree **ast, t_lists **lists, int origin_fds[2])
+int	builtin_exit(char **arg, t_tree **ast, t_lists *lists, int origin_fds[2])
 {
 	if (!arg[1])
 		exit_no_arg(ast, lists, origin_fds);
