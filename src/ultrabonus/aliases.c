@@ -144,7 +144,7 @@ t_alias *is_a_known_alias(char *word, t_alias **aliases)
   return (NULL);
 }
 
-int exec_alias(t_tree **ast, t_lists **lists, t_alias *alias)
+int exec_alias(t_tree **ast, t_lists *lists, t_alias *alias, int origin_fds[2])
 {
   char *line;
   char **strings_env;
@@ -152,9 +152,9 @@ int exec_alias(t_tree **ast, t_lists **lists, t_alias *alias)
   int exit_code;
 
 	line = expand_alias((*ast)->token->content, &alias);	
-	strings_env = lst_to_array((*lists)->env);
-	tree_to_free = parse(line, strings_env, *(*lists)->env);
-	exit_code = exec_ast(&tree_to_free, lists);
+	strings_env = lst_to_array(lists->env);
+	tree_to_free = parse(line, strings_env, *lists->env);
+	exit_code = exec_ast(&tree_to_free, lists, origin_fds);
   free_tree(&tree_to_free); 
   free_array(strings_env);
   free(line);

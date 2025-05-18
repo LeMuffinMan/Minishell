@@ -122,9 +122,15 @@ int	free_pipes(t_pipe **pipes)
 
 int	close_origin_fds(int origin_fds[2])
 {
-	close(origin_fds[0]);
-	origin_fds[0] = -1;
-	close(origin_fds[1]);
-	origin_fds[1] = -1;
+	if (origin_fds[0] > 0)
+	{
+		close(origin_fds[0]);
+		origin_fds[0] = -1;
+	}
+	if (origin_fds[1] > 0)
+	{
+		close(origin_fds[1]);
+		origin_fds[1] = -1;
+	}
 	return (0);
 }

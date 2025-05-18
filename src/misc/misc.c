@@ -186,25 +186,18 @@ void free_lists(t_lists *lists)
     }
     if (lists->pipes)
         free(lists->pipes);
-    if (lists->aliases && *lists->aliases)  // Vérifier à la fois le pointeur et son contenu
+    if (lists->aliases)
     {
-        free_aliases(lists->aliases);
+        if (*lists->aliases)
+            free_aliases(lists->aliases);
         free(lists->aliases);
     }
-    else if (lists->aliases)  // Si seul le pointeur existe
+    if (lists->shell_fcts)
     {
-        free(lists->aliases);
-    }
-    if (lists->shell_fcts && *lists->shell_fcts)
-    {
-        free_shell_fcts(lists->shell_fcts);
+        if (*lists->shell_fcts)
+            free_shell_fcts(lists->shell_fcts);
         free(lists->shell_fcts);
     }
-    else if (lists->shell_fcts)
-    {
-        free(lists->shell_fcts);
-    }
-    free(lists);
 }
 
 

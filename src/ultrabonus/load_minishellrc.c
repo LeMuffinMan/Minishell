@@ -547,18 +547,18 @@ int find_minishellrc(t_var **env, char **path)
     }
 }
 
-int find_and_load_startup_files(t_lists **lists, char **env)
+int find_and_load_startup_files(t_lists *lists, char **env)
 {
     char *file = NULL;
 
-    if (find_minishellrc((*lists)->env, &file) == -1)
+    if (find_minishellrc(lists->env, &file) == -1)
     {
         free(file);
         return (-1);
     }
     if (isatty(0) && env && *env && file)
     {
-        if (load_minishellrc((*lists)->env, (*lists)->aliases, (*lists)->shell_fcts, file) == -1)
+        if (load_minishellrc(lists->env, lists->aliases, lists->shell_fcts, file) == -1)
         {
             free(file);
             return (-1);
@@ -567,7 +567,7 @@ int find_and_load_startup_files(t_lists **lists, char **env)
     free(file);
     if (isatty(0) && env && *env)
     {
-        if (load_history((*lists)->env, (*lists)->history) == -1)
+        if (load_history(lists->env, lists->history) == -1)
             return (-1);
     }
     return (0);

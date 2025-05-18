@@ -4,7 +4,7 @@
 
 #include "structs.h"
 
-int init_lists(t_lists **lists);
+int init_lists(t_lists *lists);
 
 #endif
 

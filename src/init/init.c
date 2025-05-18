@@ -161,7 +161,7 @@ int	init_env(t_var **new_env, char **env, char *program_name)
 	return (add_back_var(new_env, "?=0", 0)); // revoir l'init de l'exit code
 }
 
-int init(t_lists **lists, char **av, char **env)
+int init(t_lists *lists, char **av, char **env)
 {
     //revoir retour d'erreur
     if (init_lists(lists) == -1)
@@ -170,9 +170,9 @@ int init(t_lists **lists, char **av, char **env)
     }
     /* utiliser getenv ?
         * Si on n'a pas d'env uniquement ?*/
-    if (init_env((*lists)->env, env, av[0]) == -1)
+    if (init_env(lists->env, env, av[0]) == -1)
     {
-        free_lists(*lists);
+        free_lists(lists);
         return (-1);
     }
     /* print_all_variables(lists->env); */
@@ -181,7 +181,7 @@ int init(t_lists **lists, char **av, char **env)
     //ULTRABONUS
     if (isatty(0) && env && *env && find_and_load_startup_files(lists, env) == -1)
     {
-        free_lists(*lists);
+        free_lists(lists);
         return (-1);
     }
     //ULTRABONUS

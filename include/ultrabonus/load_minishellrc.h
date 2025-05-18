@@ -14,6 +14,6 @@
 # define LOAD_MINISHELLRC_H
 
 //load_minishellrc.c
-int find_and_load_startup_files(t_lists **lists, char **env);
+int find_and_load_startup_files(t_lists *lists, char **env);
 
 #endif

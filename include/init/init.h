@@ -16,10 +16,10 @@
 #include "structs.h"
 
 //init.c
-int init(t_lists **lists, char **av, char **env);
+int init(t_lists *lists, char **av, char **env);
 
 //init_lists.c
-int init_lists(t_lists **lists);
+int init_lists(t_lists *lists);
 
 //init_utils.c
 int	init_and_incremente_shlvl(char *s, t_var **env);
