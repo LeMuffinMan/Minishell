@@ -95,6 +95,7 @@ int	exec_pipe(t_tree **ast, t_lists *lists, int origin_fds[2])
 		/* free_list(env); */
 		/* printf("exec : %p\n", (*ast)->head); */
 		/* free_tree(&((*ast)->head)); */
+		close_origin_fds(origin_fds);
 		free_lists(lists);
 		exit(exit_code);
 	}
@@ -131,6 +132,7 @@ int	exec_pipe(t_tree **ast, t_lists *lists, int origin_fds[2])
 			exit_code = exec_ast(&((*ast)->right), lists, origin_fds);
 			/* free_list(env); */
 			/* free_tree(&((*ast)->head)); */
+		close_origin_fds(origin_fds);
 			free_lists(lists);
 			exit(exit_code);
 		}
@@ -187,8 +189,6 @@ int	exec_cmd(t_tree **ast, t_lists *lists, int origin_fds[2])
 		if (pid == 0)
 		{
 			setup_child_signals();
-			dprintf(2, "origin_fds[0] = %d", origin_fds[0]);
-			dprintf(2, "origin_fds[0] = %d", origin_fds[1]);
 			if (origin_fds[0] > 2 || origin_fds[1] > 2)
 				close_origin_fds(origin_fds);
 			strings_env = lst_to_array(env);
