@@ -31,83 +31,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-/* int exec_sequence(char *sequence, t_var **env) */
-/* { */
-/*     t_tree *seq; */
-/*     int exit_code; */
-/* 	int lists.lists.origin_fds[2]; */
-/**/
-/* 	lists.lists.origin_fds[0] = dup(STDIN_FILENO); */
-/* 	lists.lists.origin_fds[1] = dup(STDOUT_FILENO); */
-/*     seq = NULL; */
-/*     strings_env = lst_to_array(lists.env); */
-/*     seq = parse(sequence, strings_env); */
-/*     free_array(strings_env); */
-/*     strings_env = NULL; */
-/*     exit_code = exec_seq(&seq, env, lists.lists.origin_fds); */
-/*     //update la variable exit_code dans l'environnement ! */
-/*     //ici on update tout l'environnement ? */
-/*     dup2(lists.lists.origin_fds[0], STDIN_FILENO); */
-/*     dup2(lists.lists.origin_fds[1], STDOUT_FILENO); */
-/*     close(lists.lists.origin_fds[0]); */
-/*     close(lists.lists.origin_fds[1]); */
-/*     if (seq) */
-/*     { */
-/*         free_parse(seq->token, NULL, 0); */
-/*         free_tree(&seq); */
-/*     } */
-/*     return(exit_code) */
-/* } */
-/**/
-/* int get_subshell(t_tree **left, t_tree **right, t_var **env) */
-/* { */
-/*     pid_t pid; */
-/**/
-/*     pid = fork(); */
-/*     if (pid == -1) */
-/*         return(-1); */
-/*     if (pid == 0) */
-/*     { */
-/*        
-	//sur un maillon () la suite est a droite ou a gauche ou les deux ??? */
-/*         if (left) */
-/*             exit(exec_line(left, env)); */
-/*         if (right) */
-/*             exit(exec_line(right, env)); */
-/*     } */
-/*     else */
-/*     { */
-/*         exit_code = wait_childen(pid, pid); */
-/*         return (exit_code); */
-/*     } */
-/* } */
-/**/
-/* int exec_line(t_tree **seq_order, t_var **env) */
-/* { */
-/*     int exit_code; */
-/*     t_tree **left; */
-/*     t_tree **right; */
-/**/
-/**/
-/*     left = (*seq_order)->left; */
-/*     right = (*seq_order)->right; */
-/*     exit_code = exec_line(&left, env); */
-/*     if ((*seq_order)->token->token == O_AND && exit_code == 0) */
-/*         return (exec_line(&right, env)); */
-/*     if ((*seq_order)->token->token == O_OR && exit_code != 0) */
-/*         return(exec_line(&right, env)); */
-/*     if ((*seq_order)->token->token == PARENTHESIS) */
-/*         return (get_subshell(&left, &right, env)); */
-/*     if (!(*seq_order)->token->token)
-	//si on n'a pas de token : on doit executer */
-/*         return (exec_sequence((*seq_order)->token->content[0], env));
-	//penser aux erreurs de syntaxe avec rien apres ou avant un && ou un
-	|| ou deux && || colles */
-/*     else
-	//cas ou la porte n'est pas franchie et ou on n'est pas sur un node parenthesis */
-/*         return(exit_code); */
-/* } */
-
 // Exec todo
 // Bultins refacto
 // unset SHLVL USER HOME PATH export | grep SHLVL export | grep USER export | grep HOME export | grep PATH : STDERR
@@ -135,11 +58,7 @@
 // exec malloc protection
 // normed
 
-// debuggage 1 semaine ?
-
 // Push autour du 26 mai ?
-
-// ici
 
 // ultrabonus :
 // tester load minishellrc avec le parsing fini
@@ -157,8 +76,8 @@
 
 // TODO pour merge 20 mai
 // exec :
-// integrer nouvelle exec && || ()
-// fixer le builtin exit
+// DONE integrer nouvelle exec && || ()
+// DONE fixer le builtin exit
 // DONE fixer cd et proteger cd - et getcwd a l'init
 // malloc protection de tout exec.c
 // normage exec.c
@@ -174,8 +93,18 @@
 
 // A TESTER AU MERGE
 // la nouvelle exec
+//    Avec parentheses
+//    avec sous parentheses
+//    avec tous dans la meme ligne
+//    Leaks
+//
 // here_docs
+//		unlink
+//		signaux
+//
 // wildscards
+//	4 patterns
+//
 // BUILTINS
 // SIGNAUX
 //
@@ -196,6 +125,7 @@ int	malloc_error_close_free_exit(t_lists *lists)
 	exit(errno);
 }
 
+//ULTRABONUS
 int free_prompt_string(char *prompt)
 {
 	if (prompt && ft_strncmp(prompt, "[Minishell]$ ", 13))
