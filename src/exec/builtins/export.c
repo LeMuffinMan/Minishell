@@ -162,7 +162,7 @@ int is_var_declaration(char *arg)
 	{
 		if (!ft_isalnum(arg[i]))
 		{
-			if ((arg[i] == '=') || (arg[i] == '+' && arg[i + 1] == '='))
+			if ((arg[i] == '=') || arg[i + 1] && (arg[i] == '+' && arg[i + 1] == '='))
 				return (1);
 			else
 				return (0);
@@ -289,6 +289,7 @@ int add_or_update_var(t_var **env, char *var)
 	return (0);
 }
 
+//PS1 to fix
 int	builtin_export(t_var **env, char **arg)
 {
 	int i;
