@@ -55,102 +55,185 @@ int	builtins(char **arg, t_lists *lists, int origin_fds[2])
 		return (builtins_ultra_bonus(arg, lists));
 }
 
-
-// DEFINE UN MAX PIPEFD ?
-int	exec_pipe(t_tree **ast, t_lists *lists, int origin_fds[2])
+int setup_pipe_signals(struct sigaction *sa_ignore, struct sigaction *sa_orig)
 {
-	pid_t	left_pid;
-	pid_t	right_pid;
-	int		pipefd[2];
-	int		exit_code;
-	t_pipe	**pipes;
-	t_var	**env;
+	sigemptyset(&sa_ignore->sa_mask);
+	sa_ignore->sa_handler = SIG_IGN;
+	sa_ignore->sa_flags = 0;
+	sigaction(SIGINT, sa_ignore, sa_orig); // On sauvegarde dans sa_orig
+	return 0;
+}
 
-	//
-	struct sigaction sa_ignore, sa_orig;
-	sigemptyset(&sa_ignore.sa_mask);
-	sa_ignore.sa_handler = SIG_IGN;
-	sa_ignore.sa_flags = 0;
-	sigaction(SIGINT, &sa_ignore, &sa_orig);
-	//
-	pipes = lists->pipes;
-	env = lists->env;
-	add_pipe(pipefd, pipes);
-	left_pid = fork();
-	if (left_pid < 0)
+int left_child_execution(t_tree **ast, t_lists *lists)
+{
+	int exit_code;
+
+	exit_code = 0;
+	close_origin_fds(lists->origin_fds);
+	close(lists->pipe_fd[0]);
+	if ((*lists->pipes)->next)
+	{
+		dup2((*lists->pipes)->next->fd[0], STDIN_FILENO);
+		close((*lists->pipes)->next->fd[0]);
+		free((*lists->pipes)->next);
+		(*lists->pipes)->next = NULL;
+	}
+	dup2(lists->pipe_fd[1], STDOUT_FILENO);
+	close(lists->pipe_fd[1]);
+	free_pipes(lists->pipes);
+	exit_code = exec_ast(&(*ast)->left, lists, lists->origin_fds);
+	close_origin_fds(lists->origin_fds);
+	free_lists(lists);
+	exit(exit_code);
+	return (0);
+}
+
+int left_parent_execution(t_pipe **pipes, int pipefd[2])
+{
+	if ((*pipes)->next)
+	{
+		close((*pipes)->next->fd[0]);
+		free((*pipes)->next);
+		(*pipes)->next = NULL;
+	}
+	close(pipefd[1]);
+	return (0);
+}
+
+int right_child_execution(t_tree **ast, t_lists *lists, int pipefd[2], t_pipe **pipes)
+{
+	int exit_code;
+
+	exit_code = 0;
+	close_origin_fds(lists->origin_fds);
+	dup2(pipefd[0], STDIN_FILENO);
+	close(pipefd[0]);
+	free_pipes(pipes);
+	exit_code = exec_ast(&((*ast)->right), lists, lists->origin_fds);
+	close_origin_fds(lists->origin_fds);
+	free_lists(lists);
+	exit(exit_code);
+	return (0);
+}
+
+int exec_pipe_left_execution(t_tree **ast, t_lists *lists, pid_t pid)
+{
+	if (pid < 0)
 	{
 		// error
 	}
-	if (left_pid == 0)
+	if (pid == 0)
 	{
-		close_origin_fds(lists->origin_fds);
-		close(pipefd[0]);
-		if ((*pipes)->next)
-		{
-			dup2((*pipes)->next->fd[0], STDIN_FILENO);
-			close((*pipes)->next->fd[0]);
-			free((*pipes)->next);
-			(*pipes)->next = NULL;
-		}
-		dup2(pipefd[1], STDOUT_FILENO);
-		close(pipefd[1]);
-		free_pipes(pipes);
-		exit_code = exec_ast(&(*ast)->left, lists, origin_fds);
-		close_origin_fds(origin_fds);
-		free_lists(lists);
-		exit(exit_code);
+		if (left_child_execution(ast, lists) == -1)
+			return (-1);
 	}
 	else
 	{
-		if ((*pipes)->next)
+		if (left_parent_execution(lists->pipes, lists->pipe_fd) == -1)
 		{
-			close((*pipes)->next->fd[0]);
-			free((*pipes)->next);
-			(*pipes)->next = NULL;
+			free_pipes(lists->pipes);
+			if (lists->pipe_fd[0] > 0)
+			{
+				close(lists->pipe_fd[0]);
+				close(lists->pipe_fd[1]);
+			}
+			return (-1);
 		}
-		close(pipefd[1]);
 	}
-	if ((*ast)->right && (*ast)->right->token->token == PIPE)
+	return (0);
+}
+
+int exec_pipe_right_execution(t_tree **ast, t_lists *lists, pid_t right_pid, pid_t left_pid)
+{
+	int exit_code;
+
+	exit_code = 0;
+	if (right_pid < 0)
 	{
-		exit_code = exec_pipe(&((*ast)->right), lists, origin_fds);
-		exit_code = wait_children(left_pid, left_pid);
+		// error
+	}
+	if (right_pid == 0)
+	{
+		if (right_child_execution(ast, lists, lists->pipe_fd, lists->pipes) == -1)
+			return (-1);
+	}
+	else
+	{
+		close(lists->pipe_fd[0]);
+		free_pipes(lists->pipes);
+		exit_code = wait_children(right_pid, left_pid);
 		return (exit_code);
 	}
+	return (0);
+}
+
+int malloc_error_close_free_pipes(int pipefd[2], t_pipe **pipes)
+{
+	if (close(pipefd[0]) == -1 || close(pipefd[1]) == -1)
+	{
+		free_pipes(pipes);
+		return (-1);
+	}
+	free_pipes(pipes);
+	return (-1);	
+}
+
+int exec_pipe_right_pipe_execution(t_tree **ast, t_lists *lists, pid_t left_pid)
+{
+	int exit_code;
+
+	exit_code = exec_pipe(&((*ast)->right), lists);
+	exit_code = wait_children(left_pid, left_pid);
+	return (exit_code);
+}
+
+// DEFINE UN MAX PIPEFD ?
+int	exec_pipe(t_tree **ast, t_lists *lists)
+{
+	pid_t	left_pid;
+	pid_t	right_pid;
+	int exit_code;
+	struct sigaction sa_ignore, sa_orig;
+
+	setup_pipe_signals(&sa_ignore, &sa_orig);
+	add_pipe(lists->pipe_fd, lists->pipes);
+	left_pid = fork();
+	if (exec_pipe_left_execution(ast, lists, left_pid) == -1)
+		return (malloc_error_close_free_pipes(lists->pipe_fd, lists->pipes));
+	if ((*ast)->right && (*ast)->right->token->token == PIPE)
+		return (exec_pipe_right_pipe_execution(ast, lists, left_pid));
 	else
 	{
 		right_pid = fork();
-		if (right_pid < 0)
-		{
-			// error
-		}
-		if (right_pid == 0)
-		{
-			close_origin_fds(lists->origin_fds);
-			dup2(pipefd[0], STDIN_FILENO);
-			close(pipefd[0]);
-			free_pipes(pipes);
-			exit_code = exec_ast(&((*ast)->right), lists, origin_fds);
-			close_origin_fds(origin_fds);
-			free_lists(lists);
-			exit(exit_code);
-		}
-		else
-		{
-			close(pipefd[0]);
-			free_pipes(pipes);
-			exit_code = wait_children(right_pid, left_pid);
-			sigaction(SIGINT, &sa_orig, NULL);
-			update_last_arg_var(env, (*ast)->token->content);
-			return (exit_code);
-		}
+		exit_code = exec_pipe_right_execution(ast, lists, right_pid, left_pid);
+		if (exit_code == -1)
+			return (malloc_error_close_free_pipes(lists->pipe_fd, lists->pipes));
+		sigaction(SIGINT, &sa_orig, NULL);
+		update_last_arg_var(lists->env, (*ast)->token->content);
+		return (exit_code);
 	}
 	return (1);
 }
 
-int exec_cmd_execve(t_tree **ast, t_lists *lists, int origin_fds[2])
+int exec_cmd_execve_child(t_tree **ast, t_lists *lists)
+{
+	char **strings_env;
+
+	setup_child_signals();
+	/* if (origin_fds[0] > 2 || origin_fds[1] > 2) */
+	/* 	close_origin_fds(origin_fds); */
+	strings_env = lst_to_array(lists->env);
+	execve((*ast)->token->content[0], (*ast)->token->content,
+		strings_env);
+	perror("execve");
+	free_array(strings_env);
+	free_lists(lists);
+	exit(-1);
+}
+
+int exec_cmd_execve(t_tree **ast, t_lists *lists)
 {
 	pid_t	pid;
-	char **strings_env;
 	int exit_code;
 
 	pid = fork();
@@ -158,20 +241,12 @@ int exec_cmd_execve(t_tree **ast, t_lists *lists, int origin_fds[2])
 		return (-1);
 	if (pid == 0)
 	{
-		(void)origin_fds;
-		setup_child_signals();
-		/* if (origin_fds[0] > 2 || origin_fds[1] > 2) */
-		/* 	close_origin_fds(origin_fds); */
-		strings_env = lst_to_array(lists->env);
-		execve((*ast)->token->content[0], (*ast)->token->content,
-			strings_env);
-		perror("execve");
-		free_array(strings_env);
-		free_lists(lists);
-		exit(1);
+		if (exec_cmd_execve_child(ast, lists) == -1)
+			return (-1);
 	}
 	else
 	{
+		//doublon pour les signaux ?
 		set_signals(1);
 		exit_code = wait_children(pid, pid);
 		update_last_arg_var(lists->env, (*ast)->token->content);
@@ -179,6 +254,7 @@ int exec_cmd_execve(t_tree **ast, t_lists *lists, int origin_fds[2])
 		rl_on_new_line();
 		return (exit_code);
 	}
+	return (1); //impossible d'arriver ici
 }
 
 int	exec_cmd(t_tree **ast, t_lists *lists, int origin_fds[2])
@@ -204,7 +280,7 @@ int	exec_cmd(t_tree **ast, t_lists *lists, int origin_fds[2])
 		return (126);
 	}
 	if ((*ast)->token->token == CMD)
-		return (exec_cmd_execve(ast, lists, origin_fds));
+		return (exec_cmd_execve(ast, lists));
 	return (1); // on ne devrait pas arriver ici
 }
 
@@ -356,7 +432,7 @@ int	exec_ast(t_tree **ast, t_lists *lists, int origin_fds[2])
 		|| (*ast)->token->token == TRUNC)
 		return (redirect_stdio(ast, lists, origin_fds));
 	if ((*ast)->token->token == PIPE)
-		return (exec_pipe(ast, lists, origin_fds));
+		return (exec_pipe(ast, lists));
 	if ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD
 		|| !ft_strncmp((*ast)->token->content[0], "source", 7))
 	{
@@ -370,7 +446,6 @@ int	exec_ast(t_tree **ast, t_lists *lists, int origin_fds[2])
 	shell_fct = is_a_known_shell_fct((*ast)->token->content[0],
 			lists->shell_fcts);
 	if (shell_fct)
-		printf("ici\n");
 	if ((*ast)->token->error == 127 && shell_fct)
 		return (exec_shell_fct(ast, lists, shell_fct));
 	//
@@ -380,11 +455,6 @@ int	exec_ast(t_tree **ast, t_lists *lists, int origin_fds[2])
 	// Ultrabonus
 	// un token Alias
 	// un token shell_func
-	// un token substitution cmd ?
-	// on ne l'expand pas jusqu'au dernier moment,
-	/* 	et on execute le contenu des parentheses */
-
-
 	//syntax error ?
 	return (exit_code); // pas possible d'arriver la normalement
 }

@@ -58,6 +58,8 @@ typedef struct s_lists
 	t_tree **ast;
 	t_pipe **pipes;
 	int origin_fds[2];
+	//ajouter le close des pipe_fd si necessaire pour le free
+	int pipe_fd[2];
 	int exit_code;
 	//ULTRABONUS
 	t_hist **history;
