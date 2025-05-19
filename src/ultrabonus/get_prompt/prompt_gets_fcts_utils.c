@@ -17,7 +17,7 @@
 
 int get_value_len(t_var **env, t_prompt *prompt, char c)
 {
-  (void)env;
+  (void)env; // a virer
   if (c == 'u' && prompt->user)
     return (ft_strlen(prompt->user));
   if (c == 'h' && prompt->hostname)

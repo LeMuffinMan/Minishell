@@ -41,13 +41,6 @@ char **build_new_array(char **array_to_update, char *alias_value, int alias_size
     j++;
   }
   new_array[i] = NULL;
-  /* i = 0; */
-  /* #include <stdio.h> */
-  /* while (new_array[i]) */
-  /* { */
-  /*   printf("%s\n", new_array[i]); */
-  /*   i++; */
-  /* } */
   free_array(alias_array);
   return (new_array);
 }
@@ -74,20 +67,6 @@ int count_words(char *s, char sep)
   }
   return (words);
 }
-
-/* char *get_alias_value(char *line, t_var **aliases) */
-/* { */
-/*   t_var *tmp; */
-/**/
-/*   tmp = *aliases; */
-/*   while(tmp) */
-/*   { */
-/*     if (!ft_strncmp(line, tmp->value, ft_strlen(tmp->value) + 1)) */
-/*       return (tmp->value); */
-/*     tmp = tmp->next; */
-/*   } */
-/*   return(NULL); */
-/* } */
 
 char *join_new_line(char **array)
 {
