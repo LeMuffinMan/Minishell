@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdio.h>
 #include "display.h"
 #include "env_utils.h"
 #include "exec.h"
@@ -27,7 +28,6 @@
 #include <errno.h>
 #include <readline/history.h>
 #include <readline/readline.h> // compiler avec -l readline
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -196,14 +196,22 @@ int	malloc_error_close_free_exit(t_lists *lists)
 	exit(errno);
 }
 
+int free_prompt_string(char *prompt)
+{
+	if (prompt && ft_strncmp(prompt, "[Minishell]$ ", 13))
+	{
+		free(prompt);
+		prompt = NULL;
+	}
+	return (0);
+}
+
+//ULTRABONUS
 int	init_prompt(char **strenv, char **prompt, t_var **env)
 {
 	if (isatty(0) && *strenv)
 	{
-		if (*prompt && ft_strncmp(*prompt, "[Minishell]$ ", 13))
-		{
-			free(*prompt);
-		}
+		free_prompt_string(*prompt);
 		*prompt = get_prompt(env);
 		if (!*prompt)
 			return (-1);
@@ -217,17 +225,30 @@ int	init_prompt(char **strenv, char **prompt, t_var **env)
 
 int	end_of_file_exit(char **prompt, t_lists *lists, int exit_code)
 {
-	if (*prompt && ft_strncmp(*prompt, "[Minishell]$ ", 13))
-	{
-		free(*prompt);
-		*prompt = NULL;
-	}
+	//Ultrabonus
+	free_prompt_string(*prompt);
 	if (lists->origin_fds[0] != -1 && close(lists->origin_fds[0]) == -1)
 		malloc_error_close_free_exit(lists);
 	if (lists->origin_fds[1] != -1 && close(lists->origin_fds[1]) == -1)
 		malloc_error_close_free_exit(lists);
 	free_lists(lists);
 	exit(exit_code); // Normal exit when readline returns NULL (Ctrl+D)
+}
+
+int update_history(char *line, t_lists *lists, char **env)
+{
+	if (ft_strlen(line) > 0 && !is_duplicated_hist_entry(lists->history,
+				line))
+	{
+		if (isatty(0) && *env)
+		{
+			if (ft_add_history(lists->env, lists->history, line) == -1)
+				return (-1);
+		}
+		else
+			add_history(line);
+	}
+	return (0);
 }
 
 char	*readline_loop(char **prompt, t_lists *lists, char **env, int exit_code)
@@ -244,16 +265,11 @@ char	*readline_loop(char **prompt, t_lists *lists, char **env, int exit_code)
 		line = readline(*prompt);
 		if (!line || !line)
 			end_of_file_exit(prompt, lists, exit_code);
-		if (ft_strlen(line) > 0 && !is_duplicated_hist_entry(lists->history,
-				line))
+		if (update_history(line, lists, env) == -1)
 		{
-			if (isatty(0) && *env)
-			{
-				if (ft_add_history(lists->env, lists->history, line) == -1)
-					return (NULL);
-			}
-			else
-				add_history(line);
+			free_prompt_string(*prompt);
+			free(line);
+			malloc_error_close_free_exit(lists);
 		}
 	}
 	return (line);
@@ -309,20 +325,19 @@ int	parse_and_execution_loop(char **env, char **prompt, t_lists *lists,
 	line = readline_loop(prompt, lists, env, exit_code);
 	if (!line)
 		malloc_error_close_free_exit(lists);
-	if (prompt && ft_strncmp(*prompt, "[Minishell]$ ", 13))
-	{
-		free(prompt);
-		prompt = NULL;
-	}
 	if (dup_origins_fds(lists->origin_fds) == -1)
 		malloc_error_close_free_exit(lists);
-	/* new_env = *lists.env; */
+	//est-ce qu'on a besoin du strings env ou on peut passer direct les lists ou la liste env ?
 	strings_env = lst_to_array(lists->env);
 	(*lists->ast) = parse(line, strings_env, *lists->env);
+	/* if (errno = ENOMEM) // tant qu'on detecte le malloc qui foire avec un if (str == NULL), on peut faire remonter l'erreur avec un if (errno == ENOMEM)  */
+	/* 	malloc_error_close_free_exit(lists); */
 	free_array(strings_env);
 	strings_env = NULL;
 	exit_code = exec_ast(lists->ast, lists, lists->origin_fds);
-	// a virer
+	/* if (errno = ENOMEM) */
+	/* 	malloc_error_close_free_exit(lists); */
+	// a virer : exit code dans la structure lists ?
 	update_exit_code_var(lists->env, exit_code);
 	// a virer
 	if (clean_post_execution(lists->origin_fds, lists, &line) == -1)
@@ -354,4 +369,7 @@ int	main(int ac, char **av, char **env)
 	}
 	while (1)
 		exit_code = parse_and_execution_loop(env, &prompt, &lists, exit_code);
+	//superful ?
+	free_lists(&lists);
+	return (errno);
 }

@@ -22,34 +22,10 @@
 #include <unistd.h>
 #include <dirent.h>
 
-
-/* int prompt_expand(char *prompt, char *value, int start) */
-/* { */
-/*   int i; */
-/**/
-/*   if (!value) */
-/*     return (2); */
-    /* return (NULL); //est-ce que je vais chercher le user avec la strat access ?  */
-/*   //si il a access sur all, c'est root OU admin */
-/*   //si getuid() == 0 USER = root */
-/*   //si il a acces a plus de 1 dossier c'est un admin USER = "" */
-/*   i = 0; */
-/*   while(value[i]) */
-/*   { */
-/*     prompt[start] = value[i]; */
-/*     start++; */
-/*     i++; */
-/*   } */
-/*   if (i < 2) */
-/*     i = 2; */
-/*   return (i); */
-/* } */
-
 int cpy_prompt_element(t_prompt *prompt, int *i, int *j, char *value)
 {
   int len;
 
-  /* printf("[%s]\n", value); */
   if (value)
   {
     len = ft_strlen(value);
@@ -69,9 +45,6 @@ int copy_end_prompt(t_prompt *prompt, int i, int j, int len)
 {
   if (i < len && j < prompt->total_len + 3)
       prompt->prompt[j++] = prompt->ps1[i];
-  /* if (prompt->user_type) */
-  /*   prompt->prompt[j++] = prompt->user_type[0]; */
-  /* prompt->prompt[j++] = ' '; */
   prompt->prompt[j] = '\0';
   return (0);
 }
@@ -190,7 +163,6 @@ char *get_prompt (t_var **env)
   prompt->ps1 = read_ps1(env);
   if (!prompt->ps1)
     prompt->ps1 = ft_strdup(ps1_fake);
-  /* printf("%s\n", get_value(env, "PS1")); */
 /*prompt->ps1 = get_value(env, "PS1");*/
   prompt->uid = ft_getuid();
   if (prompt->uid == 0)
@@ -215,9 +187,6 @@ char *get_prompt (t_var **env)
   return (expanded_prompt);
 }
 
-//interpreter comme bash : 
-// double backslash pour que ce soit recu comme ca
-// permettre les quote pour mettre des espaces 
 //ajouter le \w 
 ////\l : pour afficher bash / minishell
 //\s :  the name of the shell, the basename of $0 (the portion following the final slash)

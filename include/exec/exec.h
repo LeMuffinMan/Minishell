@@ -41,6 +41,9 @@ int		error_not_valid_identifier(char *s);
 int print_error_is_a_directory(char *file);
 int print_perm_error(char *file);
 
+
+int exec_redirection(t_tree **ast, t_lists *lists, int origin_fds[2]);
+
 t_tree	*parse(char *line, char **envp, t_var *new_env);
 
 #endif

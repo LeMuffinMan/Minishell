@@ -71,7 +71,7 @@ int error_not_valid_identifier(char *s)
 	free(tmp);
 	ft_putstr_fd(s, 2);
 	free(s);
-	return (0);
+	return (1);
 }
 
 int print_error_is_a_directory(char *file)
