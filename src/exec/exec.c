@@ -158,9 +158,10 @@ int exec_cmd_execve(t_tree **ast, t_lists *lists, int origin_fds[2])
 		return (-1);
 	if (pid == 0)
 	{
+		(void)origin_fds;
 		setup_child_signals();
-		if (origin_fds[0] > 2 || origin_fds[1] > 2)
-			close_origin_fds(origin_fds);
+		/* if (origin_fds[0] > 2 || origin_fds[1] > 2) */
+		/* 	close_origin_fds(origin_fds); */
 		strings_env = lst_to_array(lists->env);
 		execve((*ast)->token->content[0], (*ast)->token->content,
 			strings_env);
@@ -368,6 +369,8 @@ int	exec_ast(t_tree **ast, t_lists *lists, int origin_fds[2])
 		return (exec_alias(ast, lists, alias));
 	shell_fct = is_a_known_shell_fct((*ast)->token->content[0],
 			lists->shell_fcts);
+	if (shell_fct)
+		printf("ici\n");
 	if ((*ast)->token->error == 127 && shell_fct)
 		return (exec_shell_fct(ast, lists, shell_fct));
 	//

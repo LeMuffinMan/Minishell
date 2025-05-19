@@ -156,6 +156,8 @@ int	init_prompt(char **strenv, char **prompt, t_var **env)
 int	end_of_file_exit(char **prompt, t_lists *lists, int exit_code)
 {
 	//Ultrabonus
+	if (save_history(lists->env, lists->history) == -1)
+		malloc_error_close_free_exit(lists);
 	free_prompt_string(*prompt);
 	if (lists->origin_fds[0] != -1 && close(lists->origin_fds[0]) == -1)
 		malloc_error_close_free_exit(lists);

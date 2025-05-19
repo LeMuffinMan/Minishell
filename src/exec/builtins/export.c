@@ -162,7 +162,7 @@ int is_var_declaration(char *arg)
 	{
 		if (!ft_isalnum(arg[i]))
 		{
-			if ((arg[i] == '=') || arg[i + 1] && (arg[i] == '+' && arg[i + 1] == '='))
+			if ((arg[i] == '=') || (arg[i + 1] && arg[i] == '+' && arg[i + 1] == '='))
 				return (1);
 			else
 				return (0);
