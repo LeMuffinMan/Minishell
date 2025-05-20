@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:44:43 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/20 19:11:31 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/20 19:33:28 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,8 +154,7 @@ bool	syntax_error_for_op(t_token **head)
 				return (true);
 			}
 		}
-		else
-			tmp = tmp->next;
+		tmp = tmp->next;
 	}
 	return (false);
 }
