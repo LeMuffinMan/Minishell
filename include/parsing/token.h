@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 01:26:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/20 15:00:43 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/20 17:22:41 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,8 @@ int						env_is_alive(char **envp);
 void					replace_tab(t_token **node, char *str);
 
 void					check_syntax_error(t_token **head);
+void					error_one_quote(t_token **head);
+void					error_one_parenthesis(t_token **head);
 
 t_token					*add_new_token(char *str, int error_code);
 

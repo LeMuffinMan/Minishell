@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 02:24:25 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/20 14:51:26 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/20 16:29:28 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,9 +101,7 @@ void	free_parse(t_token *list, const char *str, int error)
 		tmp->prev = NULL;
 		tmp->group = NULL;
 		tmp->content = NULL;
-
 		free(tmp);
-
 		if (group)
 			free_parse(group, NULL, SUCCESS);
 		tmp = next_node;

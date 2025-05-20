@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 16:01:39 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/09 22:42:43 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/20 16:51:57 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,8 @@ void	parse_quote(t_token **node)
 			|| (*node)->error == QUOTE)
 		&& is_to_expand((*node)->content[0]))
 		(*node)->error = LITERAL_EXPAND;
-	del_quote_char(&(*node));
+	if ((*node)->error != PB_QUOTE)
+		del_quote_char(node);
 }
 
 bool	is_quote(t_token **node)
@@ -108,15 +109,13 @@ bool	is_quote(t_token **node)
 
 	len = ft_strlen((*node)->content[0]);
 	flag = false;
-	if (((*node)->content[0][0] == '"')
-			&& (*node)->content[0][len - 1] == '"')
+	if ((*node)->content[0][0] == '"')
 	{
 		(*node)->token = D_QUOTE;
 		(*node)->error = QUOTE;
 		flag = true;
 	}
-	else if (((*node)->content[0][0] == '\'')
-			&& (*node)->content[0][len - 1] == '\'')
+	else if ((*node)->content[0][0] == '\'')
 	{
 		(*node)->token = S_QUOTE;
 		(*node)->error = QUOTE;

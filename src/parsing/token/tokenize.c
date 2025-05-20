@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 21:44:17 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/14 18:59:55 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/20 16:47:56 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,8 @@ void	assign_token(t_token **head, char **envp, t_var *list_env, bool flag)
 			is_redirection_or_f_or_d(&tmp);
 		if (tmp->token == NO_TOKEN)
 			is_operand_or_quote(&tmp);
+		if (tmp->error == PB_QUOTE)
+			return ;
 		if (tmp->token == NO_TOKEN
 			|| (tmp->token == D_QUOTE && tmp->content[0][0])
 			|| (tmp->token == D_QUOTE && tmp->content[0][0])

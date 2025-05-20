@@ -54,7 +54,6 @@ static void	free_partial_tree(t_tree *node)
 	free(node);
 }
 
-#include <stdio.h>
 static int	set_boolop_group(t_tree **ast_node, t_token *token_node)
 {
 	int		len;
@@ -74,10 +73,6 @@ static int	set_boolop_group(t_tree **ast_node, t_token *token_node)
 	new_token = add_new_token(res, SUCCESS);
 	if (!new_token)
 		return (-1);
-	free_tab((*ast_node)->token->content);
-	free((*ast_node)->token);
-	(*ast_node)->token = new_token;
-	(*ast_node)->token->group = NULL;
 	if (token_node->next)
 	{
 		token_node->next->prev = new_token;
@@ -86,6 +81,10 @@ static int	set_boolop_group(t_tree **ast_node, t_token *token_node)
 	}
 	else
 		new_token->next = NULL;
+	free_tab((*ast_node)->token->content);
+	free((*ast_node)->token);
+	(*ast_node)->token = new_token;
+	(*ast_node)->token->group = NULL;
 	new_token->prev = token_node;
 	(*ast_node)->token->token = GROUP_BOOLOP;
 	free_partial_tree((*ast_node)->left);
@@ -95,34 +94,6 @@ static int	set_boolop_group(t_tree **ast_node, t_token *token_node)
 	free(res);
 	return (0);
 }
-
-// static int	set_boolop_group(t_tree **ast_node, t_type current_token)
-// {
-// 	int		len = 0;
-// 	int		pos = 0;
-// 	char	*res = NULL;
-// 	t_token	*new_token = NULL;
-
-// 	(void)current_token;
-// 	len_boolop_group(*ast_node, &len);
-// 	res = ft_calloc(sizeof(char), len + 1);
-// 	if (!res)
-// 		return (-1);
-// 	copy_boolop_group_content(*ast_node, &res, &pos);
-// 	if (pos > 0 && res[pos - 1] == ' ')
-// 		res[pos - 1] = '\0';
-// 	new_token = add_new_token(res, SUCCESS);
-// 	if (!new_token)
-// 		return (-1);
-// 	free_tab((*ast_node)->token->content);
-// 	free((*ast_node)->token);
-// 	(*ast_node)->token = new_token;
-// 	free_partial_tree((*ast_node)->left);
-// 	free_partial_tree((*ast_node)->right);
-// 	(*ast_node)->left = NULL;
-// 	(*ast_node)->right = NULL;
-// 	return (0);
-// }
 
 int	handle_boolop_group(t_tree **root)
 {
