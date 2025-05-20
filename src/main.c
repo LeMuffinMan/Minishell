@@ -118,6 +118,25 @@
 //
 // push 26 mai
 
+//Vendedi 23 merge vant 16h :
+//parsing :
+ 	//fix sudo -A et sudo -A apt update
+	//echo $HOME $USER
+ 	//fixer export : il faut toujours maitnenir dnas un seul char * chaque couple key=value 
+//
+ 	//HERE_DOC 
+ 	//wildcards 
+//Exec :
+ 	//Refacto de tout exec.c 
+ 	//blueprint un export adapte au parsing 
+//
+	//preparer exec here_doc + signaux
+  //reparer et tester les builtins
+
+
+
+
+
 int	malloc_error_close_free_exit(t_lists *lists)
 {
 	close_origin_fds(lists->origin_fds);
@@ -263,7 +282,7 @@ int	parse_and_execution_loop(char **env, char **prompt, t_lists *lists,
 	strings_env = lst_to_array(lists->env);
 	(*lists->ast) = parse(line, strings_env, *lists->env);
 	/* if (errno = ENOMEM) // tant qu'on detecte le malloc qui foire avec un if (str == NULL), on peut faire remonter l'erreur avec un if (errno == ENOMEM)  */
-	/* 	malloc_error_close_free_exit(lists); */
+	/* 	malloc_error_close_free_exi et(lists); */
 	free_array(strings_env);
 	strings_env = NULL;
 	exit_code = exec_ast(lists->ast, lists, lists->origin_fds);
