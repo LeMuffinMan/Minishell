@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 04:50:03 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/20 15:00:28 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/20 19:00:04 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,8 @@ static void	change_node(t_token **node)
 		|| ((*node)->token == R_IN) || ((*node)->token == TRUNC))
 		*node = (*node)->next;
 }
+
+#include "display.h"
 void	concat_args(t_token **head, t_var *list_env, char **envp, bool flag)
 {
 	t_token	*tmp;
@@ -133,5 +135,6 @@ void	concat_args(t_token **head, t_var *list_env, char **envp, bool flag)
 		else
 			tmp = tmp->next;
 	}
+	display_list(*head, DEBUG);
 	check_syntax_error(head);
 }
