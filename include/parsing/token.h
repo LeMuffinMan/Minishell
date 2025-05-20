@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 01:26:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/17 16:13:32 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/20 15:00:43 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ typedef enum e_type
 void					assign_token(t_token **head, char **envp,
 							t_var *list_env, bool flag);
 void					concat_args(t_token **head, t_var *list_env,
-							char **envp);
+							char **envp, bool flag);
 void					delete_space_node(t_token **head);
 void					delete_space_node(t_token **head);
 

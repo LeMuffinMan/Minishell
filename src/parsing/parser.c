@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 03:09:12 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/17 13:03:34 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/20 15:00:52 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ t_tree	*parse(char *line, char **envp, t_var *list_env)
 	free_lexer(lexer, NULL, 0);
 	assign_token(&token, envp, list_env, flag);
 	display_list(token, DEBUG);
-	concat_args(&token, list_env, envp);
+	concat_args(&token, list_env, envp, flag);
 	if (!handle_here_doc(&token))
 		free_parse(token, "Problem with here_doc creation", MEM_ALLOC);
 	add_to_root(&token, &root);

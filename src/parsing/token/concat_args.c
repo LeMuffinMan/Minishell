@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 04:50:03 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/13 15:36:25 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/20 15:00:28 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,15 +111,17 @@ static void	change_node(t_token **node)
 		|| ((*node)->token == R_IN) || ((*node)->token == TRUNC))
 		*node = (*node)->next;
 }
-
-void	concat_args(t_token **head, t_var *list_env, char **envp)
+void	concat_args(t_token **head, t_var *list_env, char **envp, bool flag)
 {
 	t_token	*tmp;
 
 	if (!*head)
 		return ;
-	if (init_expand(head, list_env))
-		assign_token(head, envp, list_env, true);
+	if (flag)
+	{
+		if (init_expand(head, list_env))
+			assign_token(head, envp, list_env, true);
+	}
 	delete_space_node(head);
 	tmp = *head;
 	while (tmp)

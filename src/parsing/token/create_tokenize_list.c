@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 02:24:25 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/17 16:12:39 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/20 14:51:26 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,26 +82,31 @@ void	add_back(t_token **head, char *str)
 
 void	free_parse(t_token *list, const char *str, int error)
 {
+	t_token	*tmp;
 	t_token	*next_node;
+	t_token	*group;
 
 	if (!list)
 		return ;
-	next_node = NULL;
-	if (list->prev)
+	tmp = list;
+	while (tmp->prev)
+		tmp = tmp->prev;
+	while (tmp)
 	{
-		while (list->prev)
-			list = list->prev;
-	}
-	while (list)
-	{
-		if (list->next)
-			next_node = list->next;
-		if (list->group)
-			free_parse(list->group, NULL, SUCCESS);
-		if (list->content)
-		free_tab(list->content);
-		free(list);
-		list = next_node;
+		next_node = tmp->next;
+		group = tmp->group;
+		if (tmp->content)
+			free_tab(tmp->content);
+		tmp->next = NULL;
+		tmp->prev = NULL;
+		tmp->group = NULL;
+		tmp->content = NULL;
+
+		free(tmp);
+
+		if (group)
+			free_parse(group, NULL, SUCCESS);
+		tmp = next_node;
 	}
 	if (str)
 		ft_error(str, error);

@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:44:43 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/14 18:50:52 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/20 14:59:05 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,8 @@ static t_token	*set_syntax_error(t_token *node)
 	char	*tmp;
 	char	*new_content;
 
+	if (!node || !node->content || !node->content[0])
+		return (NULL);
 	operator = ft_strdup(node->content[0]);
 	if (!operator)
 		return (NULL);
@@ -91,6 +93,25 @@ static t_token	*set_syntax_error(t_token *node)
 	return (head);
 }
 
+bool	syntax_error_for_op(t_token **head)
+{
+	t_token	*tmp;
+
+	tmp = *head;
+	while (tmp)
+	{
+		if ((tmp->token == O_OR || tmp->token == O_AND) && (!tmp->prev || !tmp->next
+			|| (tmp->next && tmp->next->token == L_PARENTHESIS)))
+		{
+			*head = set_syntax_error(tmp);
+			return (true);
+		}
+		else
+			tmp = tmp->next;
+	}
+	return (false);
+}
+
 void	check_syntax_error(t_token **head)
 {
 	t_token	*tmp;
@@ -98,10 +119,11 @@ void	check_syntax_error(t_token **head)
 	if (!head || !*head)
 		return ;
 	tmp = *head;
+	if (syntax_error_for_op(head))
+		return ;
 	while (tmp)
 	{
 		if ((tmp->token == PIPE && (!tmp->prev || !tmp->next))
-			|| (tmp->token == O_OR && (!tmp->prev || !tmp->next))
 			|| (((tmp->token == R_IN) || (tmp->token == HD)
 					|| (tmp->token == TRUNC) || (tmp->token == APPEND))
 				&& !tmp->content[1]))
