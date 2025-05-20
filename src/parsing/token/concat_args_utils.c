@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:44:43 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/20 20:03:12 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/20 20:10:41 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ static t_token	*set_parenthesis_error(t_token *node)
 	if (!node || !node->content || !node->content[0])
 		return (NULL);
 	free_parse(node, NULL, 0);
-	new_content = ft_strdup("Usage: Use parenthesis for priorities of '&&' and '||'");
+	new_content = ft_strdup("Usage: Use parenthesis for priorities of '&&' and '||'\n");
 	if (!new_content)
 		return (NULL);
 	head = add_new_token(new_content, E_IO);
