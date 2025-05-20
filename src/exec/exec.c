@@ -452,6 +452,11 @@ int	exec_ast(t_tree **ast, t_lists *lists, int origin_fds[2])
 	if ((*ast)->token->error == 127 || (*ast)->token->error == 126
 		|| (*ast)->token->error == 21)
 		return (error_cmd((*ast)->token->content[0], (*ast)->token->error));
+	if ((*ast)->token->error == 5)
+	{
+		ft_putstr_fd((*ast)->token->content[0], 2);
+		return (5);
+	}
 	// Ultrabonus
 	// un token Alias
 	// un token shell_func
