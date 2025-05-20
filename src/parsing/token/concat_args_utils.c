@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:44:43 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/20 19:33:28 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/20 20:03:12 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,8 +147,10 @@ bool	syntax_error_for_op(t_token **head)
 		if (tmp->token == PIPE)
 		{
 			if (!tmp->prev || !tmp->next
-				|| (tmp->prev->token != CMD && tmp->prev->token != BUILT_IN)
-				|| (tmp->next->token != CMD && tmp->next->token != BUILT_IN))
+				|| (tmp->prev->token != CMD && tmp->prev->token != BUILT_IN && tmp->prev->error == CMD_NOT_FOUND 
+					&& tmp->prev->error == PERMISSION_DENIED)
+				|| (tmp->next->token != CMD && tmp->next->token != BUILT_IN && tmp->next->error == CMD_NOT_FOUND 
+					&& tmp->next->error == PERMISSION_DENIED))
 			{
 				*head = set_syntax_error(tmp);
 				return (true);
