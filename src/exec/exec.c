@@ -324,10 +324,7 @@ int	redirect_stdio(t_tree **ast, t_lists *lists)
 			|| right->token->token == BUILT_IN))
 		exit_code = exec_cmd(&right, lists);
 	if ((*ast)->token->token == HD)
-	{
 		unlink(file);
-		//a proteger !!!
-	}
 	return (exit_code);
 }
 
@@ -411,7 +408,7 @@ int exec_group_cmd(t_tree **ast, t_lists *lists)
 
 	exit_code = 0;
 	if ((*ast)->token->token == R_IN || (*ast)->token->token == APPEND
-		|| (*ast)->token->token == TRUNC)
+		|| (*ast)->token->token == TRUNC || (*ast)->token->token == HD)
 		return (redirect_stdio(ast, lists));
 	if ((*ast)->token->token == PIPE)
 		return (exec_pipe(ast, lists));
@@ -474,7 +471,7 @@ int	exec_ast(t_tree **ast, t_lists *lists)
 		return ((*ast)->token->error);
 	}
 	if (((*ast)->token->token == R_IN || (*ast)->token->token == APPEND || (*ast)->token->token == TRUNC) || 
-		((*ast)->token->token == PIPE) ||
+		((*ast)->token->token == PIPE) || ((*ast)->token->token == HD) ||
 		((*ast)->token->error != 126 && ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD)))
 		return (exec_group_cmd(ast, lists));
 	//

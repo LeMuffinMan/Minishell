@@ -25,5 +25,7 @@ void	setup_child_signals(void);
 void handle_child_sigint();
 void	setup_child_signals(void);
 void	setup_parent_signals(void);
+int setup_pipe_signals(struct sigaction *sa_ignore, struct sigaction *sa_orig);
+int		wait_children(pid_t last_child, pid_t first_child);
 
 #endif

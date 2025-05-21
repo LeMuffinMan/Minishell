@@ -18,17 +18,25 @@
 #include <readline/readline.h>
 #include <stdio.h>
 #include <unistd.h>
+#include "signals.h"
 
 bool	extract_stdin(int fd, char *limiter)
 {
 	int		len;
 	char	*line;
+	char *tmp;
 
 	while (1)
 	{
 		line = readline("> ");
 		if (!line)
+		{
+			printf("minishell: warning: here-document delimited by end-of-file (wanted `%s')\n", limiter);
 			break ;
+		}
+		tmp = line;
+		line = ft_strjoin(line, "\n");
+		free(tmp);
 		len = ft_strlen(limiter);
 		if (ft_strncmp(line, limiter, len) == 0)
 		{
@@ -49,6 +57,8 @@ bool	create_here_doc(t_token *node)
 {
 	int		fd;
 	char	*limiter;
+	pid_t pid;
+	struct sigaction sa_ignore, sa_orig;
 
 	fd = open(node->content[2], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd == -1)
@@ -59,8 +69,25 @@ bool	create_here_doc(t_token *node)
 		close(fd);
 		return (false);
 	}
-	if (!extract_stdin(fd, limiter))
-		return (false);
+	setup_pipe_signals(&sa_ignore, &sa_orig);
+	pid = fork();
+	if (pid < 0)
+	{
+		//on quit tout
+	}
+	if (pid == 0)
+	{
+		setup_child_signals();
+		if (!extract_stdin(fd, limiter))
+			exit(EXIT_FAILURE);
+		exit(EXIT_SUCCESS);
+	}
+	else
+	{
+		//proteger le wait
+		wait_children(pid, pid);
+		sigaction(SIGINT, &sa_orig, NULL);
+	}
 	close(fd);
 	free(limiter);
 	return (true);

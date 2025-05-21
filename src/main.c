@@ -127,13 +127,12 @@
  	//done HERE_DOC 
  	//wildcards 
 //Exec :
-	//fix exec here_doc + signaux
+	//done fix exec here_doc + signaux
  	//Refacto de tout exec.c 
 //
   //reparer et tester les builtins
-
 //
-//jeudi : merge jeudi 18h : wildcards + signaux (HD) + export au parsing
+//jeudi : merge jeudi 18h : wildcards + DONE signaux (HD + wanted EOF pour HD) + export au parsing
 //vendredi : refacto builtin complet + tests des builtins 
 //WEEK END : refacto chacun de notre cote : secu malloc et norme
 //Lundi : verifier le Makefile Et on push
@@ -215,7 +214,7 @@ char	*readline_loop(char **prompt, t_lists *lists, char **env, int exit_code)
 		free(line);
 		line = NULL;
 		line = readline(*prompt);
-		if (!line || !line)
+		if (!line)
 			end_of_file_exit(prompt, lists, exit_code);
 		if (update_history(line, lists, env) == -1)
 		{
