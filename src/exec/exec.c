@@ -430,8 +430,8 @@ int	exec_ast(t_tree **ast, t_lists *lists)
 		return (redirect_stdio(ast, lists));
 	if ((*ast)->token->token == PIPE)
 		return (exec_pipe(ast, lists));
-	if ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD
-		|| !ft_strncmp((*ast)->token->content[0], "source", 7)) // exclure les codes d'erreurs
+	if ((*ast)->token->error != 126 && ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD
+		|| !ft_strncmp((*ast)->token->content[0], "source", 7))) // exclure les codes d'erreurs
 	{
 		exit_code = exec_cmd(ast, lists);
 		return (exit_code);
