@@ -323,6 +323,11 @@ int	redirect_stdio(t_tree **ast, t_lists *lists)
 	if (exit_code == 0 && right && (right->token->token == CMD
 			|| right->token->token == BUILT_IN))
 		exit_code = exec_cmd(&right, lists);
+	if ((*ast)->token->token == HD)
+	{
+		unlink(file);
+		//a proteger !!!
+	}
 	return (exit_code);
 }
 
