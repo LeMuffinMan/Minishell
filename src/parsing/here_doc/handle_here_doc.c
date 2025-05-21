@@ -6,79 +6,83 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 15:20:38 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/21 15:33:30 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/21 16:02:53 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "here_doc.h"
 #include "token.h"
 #include "list.h"
+#include "libft.h"
 #include <fcntl.h>
+#include <readline/readline.h>
+#include <stdio.h>
+#include <unistd.h>
 
-// void	extract_stdin(t_pipex *pipex)
-// {
-// 	int	len;
+bool	extract_stdin(int fd, char *limiter)
+{
+	int		len;
+	char	*line;
 
-// 	while (1)
-// 	{
-// 		write(1, "> ", 2);
-// 		pipex->line = get_next_line(0);
-// 		if (!pipex->line)
-// 		{
-// 			error_message_hd(pipex, pipex->count);
-// 			break ;
-// 		}
-// 		len = ft_strlen(pipex->limiter);
-// 		if (ft_strncmp(pipex->line, pipex->limiter, len) == 0)
-// 		{
-// 			free(pipex->line);
-// 			break ;
-// 		}
-// 		if (write(pipex->fd, pipex->line, ft_strlen(pipex->line)) == -1)
-// 		{
-// 			free(pipex->line);
-// 			ft_error("Problem with the write of 'extract stdin'", errno);
-// 		}
-// 		free(pipex->line);
-// 		pipex->count++;
-// 	}
-// }
+	while (1)
+	{
+		line = readline("> ");
+		if (!line)
+			break ;
+		len = ft_strlen(limiter);
+		if (ft_strncmp(line, limiter, len) == 0)
+		{
+			free(line);
+			break ;
+		}
+		if (write(fd, line, ft_strlen(line)) == -1)
+		{
+			free(line);
+			return (false);
+		}
+		free(line);
+	}
+	return (true);
+}
 
-// void	make_here_doc(t_token *node)
-// {
-// 	int	fd;
+bool	create_here_doc(t_token *node)
+{
+	int		fd;
+	char	*limiter;
 
-// 	fd = open("/tmp/here_doc", O_WRONLY | O_CREAT | O_TRUNC, 0644);
-// 	if (fd == -1)
-// 		ft_error("Problem with the here_doc file", NO_F_OR_D);
-// 	node->limiter = ft_strjoin(node->av[2], "\n");
-// 	if (!node->limiter)
-// 	{
-// 		close(node->fd);
-// 		ft_error("Problem of 'ft_strjoin' of 'make_here_doc'", MEM_ALLOC);
-// 	}
-// 	extract_stdin(node);
-// 	close(node->fd);
-// 	free(node->limiter);
-// 	node->is_hd = true;
-// }
+	fd = open(node->content[2], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (fd == -1)
+		return (false);
+	limiter = ft_strdup(node->content[1]);
+	if (!limiter)
+	{
+		close(fd);
+		return (false);
+	}
+	if (!extract_stdin(fd, limiter))
+		return (false);
+	close(fd);
+	free(limiter);
+	return (true);
+}
 
-// bool	handle_here_doc(t_token **head)
-// {
-// 	t_token	*tmp;
-// 	bool	flag;
+bool	handle_here_doc(t_token **head)
+{
+	t_token	*tmp;
 
-// 	if (!head || !*head)
-// 		return (false);
-// 	if (!create_hd_name(head))
-// 		return (false);
-// 	tmp = *head;
-// 	flag = false;
-// 	while (tmp)
-// 	{
-// 		if (tmp->token == HD)
-// 			flag = create_here_doc(tmp);
-// 		tmp = tmp->next;			
-// 	}
-// 	return (flag);
-// }
+	if (!head || !*head)
+		return (false);
+	if (!create_hd_name(head))
+		return (false);
+	tmp = *head;
+	while (tmp)
+	{
+		if (tmp->token == HD)
+		{
+			if (!create_here_doc(tmp))
+				return (false);
+		}
+		tmp = tmp->next;			
+	}
+	return (true);
+}
