@@ -127,14 +127,16 @@
  	//done HERE_DOC 
  	//wildcards 
 //Exec :
+	//fix exec here_doc + signaux
  	//Refacto de tout exec.c 
 //
-	//fix exec here_doc + signaux
   //reparer et tester les builtins
 
-
-
-
+//
+//jeudi : merge jeudi 18h : wildcards + signaux (HD) + export au parsing
+//vendredi : refacto builtin complet + tests des builtins 
+//WEEK END : refacto chacun de notre cote : secu malloc et norme
+//Lundi : verifier le Makefile Et on push
 
 int	malloc_error_close_free_exit(t_lists *lists)
 {
