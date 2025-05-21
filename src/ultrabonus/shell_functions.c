@@ -161,7 +161,7 @@ int exec_shell_fct(t_tree **ast, t_lists *lists, t_shell_fct *shell_fct)
 	while (expanded_fct_content[i])
 	{
 		strings_env = lst_to_array(lists->env);	
-		tree_to_free = parse(expanded_fct_content[i], strings_env, *lists->env);
+		tree_to_free = parse(expanded_fct_content[i], strings_env, *lists->env, lists);
 		exit_code = exec_ast(&tree_to_free, lists);
 		free_tree(&tree_to_free);
 		tree_to_free = NULL;

@@ -22,11 +22,14 @@
 # define LITERAL_EXPAND 200
 
 # include <stdbool.h>
+// # include "structs.h"
 
 struct					s_token;
 typedef struct s_token	t_token;
 struct					s_var;
 typedef struct s_var	t_var;
+struct					s_lists;
+typedef struct s_lists	t_lists;
 
 typedef enum e_type
 {
@@ -57,7 +60,7 @@ typedef enum e_type
 void					assign_token(t_token **head, char **envp,
 							t_var *list_env, bool flag);
 void					concat_args(t_token **head, t_var *list_env,
-							char **envp, bool flag);
+							char **envp, bool flag, t_lists *lists);
 void					delete_space_node(t_token **head);
 void					delete_space_node(t_token **head);
 

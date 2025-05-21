@@ -279,7 +279,7 @@ int	parse_and_execution_loop(char **env, char **prompt, t_lists *lists,
 		malloc_error_close_free_exit(lists);
 	//est-ce qu'on a besoin du strings env ou on peut passer direct les lists ou la liste env ?
 	strings_env = lst_to_array(lists->env);
-	(*lists->ast) = parse(line, strings_env, *lists->env);
+	(*lists->ast) = parse(line, strings_env, *lists->env, lists);
 	/* if (errno = ENOMEM) // tant qu'on detecte le malloc qui foire avec un if (str == NULL), on peut faire remonter l'erreur avec un if (errno == ENOMEM)  */
 	/* 	malloc_error_close_free_exi et(lists); */
 	free_array(strings_env);

@@ -13,13 +13,17 @@
 #ifndef HISTORY_H
 #define HISTORY_H
 
+# include "structs.h"
+
+struct					s_var;
+typedef struct s_var	t_var;
+
 typedef struct s_hist
 {
   char *cmd_line;
   struct s_hist *next;
   struct s_hist *prev;
 } t_hist;
-
 
 
 int ft_add_history(t_var **env, t_hist **history, char *line);

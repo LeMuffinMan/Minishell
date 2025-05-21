@@ -374,7 +374,7 @@ int exec_parenthesis(t_tree **ast, t_lists *lists)
 		//bien checker les fd open sur les parentheses a la main : ces closes sont necessaires 
 		setup_child_signals();
 		strings_env = lst_to_array(lists->env);
-		sub_ast = parse((*ast)->token->group->content[0], strings_env, *lists->env);
+		sub_ast = parse((*ast)->token->group->content[0], strings_env, *lists->env, lists);
 		free_array(strings_env);
 		exit_code = exec_ast(&sub_ast, lists);
 		free_tree(&sub_ast);
@@ -433,7 +433,7 @@ int exec_group_boolop(t_tree **ast, t_lists *lists)
 	exit_code = 0;
 	sub_ast = NULL;
 	strings_env = lst_to_array(lists->env);
-	sub_ast = parse((*ast)->token->content[0], strings_env, *lists->env);
+	sub_ast = parse((*ast)->token->content[0], strings_env, *lists->env, lists);
 	free_array(strings_env);
 	exit_code = exec_ast(&sub_ast, lists);
 	free_tree(&sub_ast);

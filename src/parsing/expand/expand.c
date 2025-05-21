@@ -58,7 +58,7 @@ static int	export_value(char *str, char **value)
 	return (index);
 }
 
-static void	expand_node_content(t_token **node, t_var *list_env, int j)
+static void	expand_node_content(t_token **node, t_var *list_env, int j, t_lists *lists)
 {
 	char	*res;
 	char	*value;
@@ -68,11 +68,15 @@ static void	expand_node_content(t_token **node, t_var *list_env, int j)
 	res = NULL;
 	index = 0;
 	value = NULL;
+
 	index = export_value(&(*node)->content[0][j], &value);
 	if (!value)
 		free_parse(*node,
 			"Malloc failed in function 'expand_node_content'", MEM_ALLOC);
-	res = get_value(&list_env, value);
+	if (!ft_strncmp((*node)->content[0], "?", 2))
+		res = ft_itoa(lists->exit_code);
+	else
+		res = get_value(&list_env, value);
 	free(value);
 	new_content = alloc_new_expand(node, res, index, j - 1);
 	free((*node)->content[0]);
@@ -82,7 +86,7 @@ static void	expand_node_content(t_token **node, t_var *list_env, int j)
 		(*node)->error = SUCCESS;
 }
 
-static bool	to_expand(t_token **node, t_var *list_env)
+static bool	to_expand(t_token **node, t_var *list_env, t_lists *lists)
 {
 	int		j;
 	bool	flag;
@@ -99,7 +103,7 @@ static bool	to_expand(t_token **node, t_var *list_env)
 				j++;
 			else
 			{
-				expand_node_content(node, list_env, j + 1);
+				expand_node_content(node, list_env, j + 1, lists);
 				if ((*node)->content[0][0])
 					flag = true;
 				j = -1;
@@ -110,7 +114,7 @@ static bool	to_expand(t_token **node, t_var *list_env)
 	return (flag);
 }
 
-bool	init_expand(t_token **head, t_var *list_env)
+bool	init_expand(t_token **head, t_var *list_env, t_lists *lists)
 {
 	t_token	*tmp;
 	bool	flag;
@@ -123,7 +127,7 @@ bool	init_expand(t_token **head, t_var *list_env)
 			tmp = tmp->next;
 		else
 		{
-			flag = to_expand(&tmp, list_env);
+			flag = to_expand(&tmp, list_env, lists);
 			tmp = tmp->next;
 		}
 	}

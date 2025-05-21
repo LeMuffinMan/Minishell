@@ -112,7 +112,7 @@ static void	change_node(t_token **node)
 		*node = (*node)->next;
 }
 
-void	concat_args(t_token **head, t_var *list_env, char **envp, bool flag)
+void	concat_args(t_token **head, t_var *list_env, char **envp, bool flag, t_lists *lists)
 {
 	t_token	*tmp;
 
@@ -120,7 +120,7 @@ void	concat_args(t_token **head, t_var *list_env, char **envp, bool flag)
 		return ;
 	if (flag)
 	{
-		if (init_expand(head, list_env))
+		if (init_expand(head, list_env, lists))
 			assign_token(head, envp, list_env, true);
 	}
 	delete_space_node(head);

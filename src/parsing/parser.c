@@ -20,7 +20,7 @@
 #include <unistd.h>
 #include <stdio.h>
 
-t_tree	*parse(char *line, char **envp, t_var *list_env)
+t_tree	*parse(char *line, char **envp, t_var *list_env, t_lists *lists)
 {
 	t_token	*token;
 	t_lexer	*lexer;
@@ -44,7 +44,7 @@ t_tree	*parse(char *line, char **envp, t_var *list_env)
 	error_one_quote(&token);
 	error_one_parenthesis(&token);
 	display_list(token, DEBUG);
-	concat_args(&token, list_env, envp, flag);
+	concat_args(&token, list_env, envp, flag, lists);
 	if (!handle_here_doc(&token))
 		free_parse(token, "Problem with here_doc creation", MEM_ALLOC);
 	display_list(token, DEBUG);

@@ -44,6 +44,6 @@ int print_perm_error(char *file);
 
 int exec_redirection(t_tree **ast, t_lists *lists);
 
-t_tree	*parse(char *line, char **envp, t_var *new_env);
+t_tree	*parse(char *line, char **envp, t_var *new_env, t_lists *lists);
 
 #endif
