@@ -383,6 +383,55 @@ int exec_parenthesis(t_tree **ast, t_lists *lists)
 	return (1); // cas impossible ?
 }
 
+int exec_error_cases(t_tree **ast)
+{
+	if ((*ast)->token->error == 127 || (*ast)->token->error == 126
+		|| (*ast)->token->error == 21)
+		return (error_cmd((*ast)->token->content[0], (*ast)->token->error));
+	if ((*ast)->token->error == 5)
+	{
+		ft_putstr_fd((*ast)->token->content[0], 2);
+		return (5);
+	}
+	//c'est un syntax error ?
+	return (-1); //quelle code d'erreur si on est entre dans aucun case ?
+}
+
+int exec_group_cmd(t_tree **ast, t_lists *lists)
+{
+	int exit_code;
+
+	exit_code = 0;
+	if ((*ast)->token->token == R_IN || (*ast)->token->token == APPEND
+		|| (*ast)->token->token == TRUNC)
+		return (redirect_stdio(ast, lists));
+	if ((*ast)->token->token == PIPE)
+		return (exec_pipe(ast, lists));
+	if ((*ast)->token->error != 126 && ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD
+		|| !ft_strncmp((*ast)->token->content[0], "source", 7))) // exclure les codes d'erreurs
+	{
+		exit_code = exec_cmd(ast, lists);
+		return (exit_code);
+	}
+	return (-1); // impossible d'arriver ici : quelle code d'erreur ?
+}
+
+int exec_group_boolop(t_tree **ast, t_lists *lists)
+{
+	int exit_code;
+	char **strings_env;
+	t_tree *sub_ast;
+
+	exit_code = 0;
+	sub_ast = NULL;
+	strings_env = lst_to_array(lists->env);
+	sub_ast = parse((*ast)->token->content[0], strings_env, *lists->env);
+	free_array(strings_env);
+	exit_code = exec_ast(&sub_ast, lists);
+	free_tree(&sub_ast);
+	return (exit_code);
+}
+
 //retester les parentheses a la main :
 //output
 //error
@@ -391,15 +440,12 @@ int exec_parenthesis(t_tree **ast, t_lists *lists)
 int	exec_ast(t_tree **ast, t_lists *lists)
 {
 	int			exit_code;
-	char		**strings_env;
 	t_alias		*alias;
 	t_shell_fct	*shell_fct;
-	t_tree		*sub_ast;
 
 	exit_code = 0;
 	if (!*ast)
 		return (127); // on devrait peut etre reagir dans le main pour ca
-
 	//signaux a virer ?
 	struct sigaction sa_ignore, sa_orig;
 	sigemptyset(&sa_ignore.sa_mask);
@@ -412,53 +458,29 @@ int	exec_ast(t_tree **ast, t_lists *lists)
 	if ((*ast)->token->token == GROUP_PARENTHESIS)
 		return (exec_parenthesis(ast, lists));
 	if ((*ast)->token->token == GROUP_BOOLOP)
-	{
-			strings_env = lst_to_array(lists->env);
-			sub_ast = parse((*ast)->token->content[0], strings_env, *lists->env);
-			free_array(strings_env);
-			exit_code = exec_ast(&sub_ast, lists);
-			free_tree(&sub_ast);
-			return (exit_code);
-	}
+		return (exec_group_boolop(ast, lists));	
+	//l'error code 2 correspond a quoi deja ?
 	if ((*ast)->token->error == 2)
 	{
 		ft_putendl_fd((*ast)->token->content[0], 2);
 		return ((*ast)->token->error);
 	}
-	if ((*ast)->token->token == R_IN || (*ast)->token->token == APPEND
-		|| (*ast)->token->token == TRUNC)
-		return (redirect_stdio(ast, lists));
-	if ((*ast)->token->token == PIPE)
-		return (exec_pipe(ast, lists));
-	if ((*ast)->token->error != 126 && ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD
-		|| !ft_strncmp((*ast)->token->content[0], "source", 7))) // exclure les codes d'erreurs
-	{
-		exit_code = exec_cmd(ast, lists);
-		return (exit_code);
-	}
+	if (((*ast)->token->token == R_IN || (*ast)->token->token == APPEND || (*ast)->token->token == TRUNC) || 
+		((*ast)->token->token == PIPE) ||
+		((*ast)->token->error != 126 && ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD)))
+		return (exec_group_cmd(ast, lists));
 	//
+	// un token Alias
 	alias = is_a_known_alias((*ast)->token->content[0], lists->aliases);
 	if ((*ast)->token->error == 127 && alias)
 		return (exec_alias(ast, lists, alias));
+	// un token shell_func
 	shell_fct = is_a_known_shell_fct((*ast)->token->content[0],
 			lists->shell_fcts);
 	if (shell_fct)
 	if ((*ast)->token->error == 127 && shell_fct)
 		return (exec_shell_fct(ast, lists, shell_fct));
-	//
-	if ((*ast)->token->error == 127 || (*ast)->token->error == 126
-		|| (*ast)->token->error == 21)
-		return (error_cmd((*ast)->token->content[0], (*ast)->token->error));
-	if ((*ast)->token->error == 5)
-	{
-		ft_putstr_fd((*ast)->token->content[0], 2);
-		return (5);
-	}
-	// Ultrabonus
-	// un token Alias
-	// un token shell_func
-	//syntax error ?
-	return (exit_code); // pas possible d'arriver la normalement
+	return (exec_error_cases(ast));
 }
 
 // modifs pour le ctrl dans un pipe :
