@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 23:50:55 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/17 17:33:42 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/21 15:24:56 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,12 +104,10 @@ static bool	handle_name(t_token **node)
 	return (true);
 }
 
-bool	handle_here_doc(t_token **head)
+bool	create_hd_name(t_token **head)
 {
 	t_token	*tmp;
 
-	if (!*head)
-		return (false);
 	tmp = *head;
 	while (tmp)
 	{

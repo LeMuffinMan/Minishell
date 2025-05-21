@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:21:52 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/16 18:39:31 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/21 13:35:04 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,7 @@
 //parsing :
  	//fix sudo -A et sudo -A apt update
 	//echo $HOME $USER
- 	//fixer export : il faut toujours maitnenir dnas un seul char * chaque couple key=value 
+ 	//fixer export : il faut toujours maitnenir dnas un seul char * chaque couple key=value
 //
  	//HERE_DOC 
  	//wildcards 

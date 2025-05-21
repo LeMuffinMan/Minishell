@@ -6,7 +6,7 @@
 #    By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/05/14 18:31:24 by asinsard         ###   ########lyon.fr    #
+#    Updated: 2025/05/21 15:26:28 by asinsard         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -66,6 +66,7 @@ SRC					=	main.c \
 						quote_utils.c \
 						quote.c \
 						create_here_doc.c \
+						handle_here_doc.c \
 						lexer_utils.c \
 						lexer.c \
 						concat_args_utils.c \

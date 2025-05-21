@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 21:44:17 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/20 20:11:06 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/21 15:13:56 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,8 @@ void	is_command_whithout_env(t_token **node, char **envp)
 		else
 		{
 			replace_tab(node, NULL);
-			(*node)->error = SUCCESS;
+			if ((*node)->error != PERMISSION_DENIED)
+				(*node)->error = SUCCESS;
 			(*node)->token = CMD;
 		}
 	}
@@ -104,7 +105,6 @@ void	is_command(t_token **node, char **envp, bool flag)
 	if (is_lit_expand && (*node)->error != 0)
 		(*node)->error = LITERAL_EXPAND;
 }
-
 void	assign_token(t_token **head, char **envp, t_var *list_env, bool flag)
 {
 	t_token	*tmp;

@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 23:46:28 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/13 14:23:00 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/21 13:48:18 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ bool	parse_path_without_env(t_token *node)
 	if (!verif_access_exec(tmp_cmd[0], &node->error))
 	{
 		free_tab(tmp_cmd);
-		return (false);
+		return (true);
 	}
 	free_tab(tmp_cmd);
 	return (true);
