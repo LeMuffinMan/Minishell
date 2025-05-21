@@ -6,7 +6,7 @@
 #    By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/05/21 15:26:28 by asinsard         ###   ########lyon.fr    #
+#    Updated: 2025/05/21 20:24:11 by asinsard         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,7 +33,8 @@ DIR_PARSING			=	src/parsing \
 						src/parsing/here_doc \
 						src/parsing/lexer \
 						src/parsing/token \
-						src/parsing/tree
+						src/parsing/tree \
+						src/parsing/wildcard
 
 DIR_ULTRABONUS		=	src/ultrabonus \
 						src/ultrabonus/get_prompt 
@@ -56,7 +57,6 @@ LIBFT_DIR			=	src/libft
 LIBFT_HEAD_DIR		=	src/libft/include
 LIB_LIBFT			=	$(LIBFT_DIR)/obj/libft.a
 LIBFT_FLAG			=	-L$(LIBFT_DIR)/src/ $(LIB_LIBFT)
-LIBFT_HEAD			=	libft.h get_next_line.h ft_printf.h
 
 SRC					=	main.c \
 						expand_utils.c \

@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 21:44:17 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/21 15:13:56 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/21 20:23:05 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "libft.h"
 #include "ft_printf.h"
 #include "quote.h"
+#include "wildcard.h"
 #include <sys/stat.h>
 
 static void	is_operand_or_quote(t_token **node)
@@ -27,7 +28,7 @@ static void	is_operand_or_quote(t_token **node)
 		(*node)->token = O_OR;
 	else if (!ft_strcmp((*node)->content[0], "|"))
 		(*node)->token = PIPE;
-	else if (!ft_strcmp((*node)->content[0], "*"))
+	else if (is_wildcard((*node)->content[0]))
 		(*node)->token = WILDCARD;
 	else if ((*node)->content[0][0] == '(')
 		(*node)->token = L_PARENTHESIS;

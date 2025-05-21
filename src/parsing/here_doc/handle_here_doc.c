@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 15:20:38 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/21 16:02:53 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/21 19:45:24 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,19 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "signals.h"
+#include <sys/stat.h>
+
+bool	verif_name(char *name)
+{
+	struct stat	status;
+
+	if (stat(name, &status) == 0)
+	{
+		free(name);
+		return (false);
+	}
+	return (true);
+}
 
 bool	extract_stdin(int fd, char *limiter)
 {
