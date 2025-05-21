@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 23:50:55 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/21 15:24:56 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/21 16:10:19 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,12 @@ static char	*make_hd_name(int fd, char *print_char, char *res)
 static bool	replace_content(t_token	**node, char *add_content)
 {
 	char	**res;
+	char	*new_content;
 
+	new_content = ft_strjoin("/tmp/", add_content);
+	free(add_content);
+	if (!new_content)
+		return (false);
 	res = malloc(sizeof(char *) * 4);
 	if (!res)
 		return (false);
@@ -68,7 +73,8 @@ static bool	replace_content(t_token	**node, char *add_content)
 	res[1] = ft_strdup((*node)->content[1]);
 	if (!res[1])
 		return (free_and_return(NULL, res, -1));
-	res[2] = ft_strdup(add_content);
+	res[2] = ft_strdup(new_content);
+	free(new_content);
 	if (!res[2])
 		return (free_and_return(NULL, res, -1));
 	res[3] = NULL;
@@ -100,7 +106,6 @@ static bool	handle_name(t_token **node)
 		return (false);
 	if (!replace_content(node, name))
 		return (free_and_return(name, NULL, -1));
-	free(name);
 	return (true);
 }
 
