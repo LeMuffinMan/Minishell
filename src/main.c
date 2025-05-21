@@ -120,17 +120,16 @@
 
 //Vendedi 23 merge vant 16h :
 //parsing :
- 	//fix sudo -A et sudo -A apt update
-	//echo $HOME $USER
+ 	//done fix sudo -A et sudo -A apt update
+	//done echo $HOME $USER
  	//fixer export : il faut toujours maitnenir dnas un seul char * chaque couple key=value
 //
- 	//HERE_DOC 
+ 	//done HERE_DOC 
  	//wildcards 
 //Exec :
  	//Refacto de tout exec.c 
- 	//blueprint un export adapte au parsing 
 //
-	//preparer exec here_doc + signaux
+	//fix exec here_doc + signaux
   //reparer et tester les builtins
 
 
