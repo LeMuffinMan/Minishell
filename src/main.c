@@ -128,11 +128,11 @@
  	//wildcards 
 //Exec :
 	//done fix exec here_doc + signaux
+	//reparer l'expand de l'exit code pour false || echo $?
  	//Refacto de tout exec.c 
-//
   //reparer et tester les builtins
 //
-//jeudi : merge jeudi 18h : wildcards + DONE signaux (HD + wanted EOF pour HD) + export au parsing
+//jeudi : merge jeudi 18h : wildcards + DONE signaux (HD + wanted EOF pour HD) + exit_code fixed + export au parsing 
 //vendredi : refacto builtin complet + tests des builtins 
 //WEEK END : refacto chacun de notre cote : secu malloc et norme
 //Lundi : verifier le Makefile Et on push
