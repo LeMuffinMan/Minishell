@@ -289,18 +289,21 @@ int	redirect_stdio(t_tree **ast, t_lists *lists)
 	t_tree	*left;
 	t_tree	*right;
 	int		exit_code;
+	char *file;
 
-	left = (*ast)->left;
-	right = (*ast)->right;
 	// doute pour ce if, on devrait le faire au parsing ?
 	if (!(*ast)->token->content[1])
 		return (print_error_file_opening("", "syntax error\n", 2));
-	exit_code = file_check((*ast)->token->content[1], (*ast)->token->token,
-			(*ast)->token->error);
+	left = (*ast)->left;
+	right = (*ast)->right;
+	if ((*ast)->token->token == HD)
+		file = (*ast)->token->content[2];
+	else
+		file = (*ast)->token->content[1];
+	exit_code = file_check(file, (*ast)->token->token, (*ast)->token->error);
 	if (exit_code != 0)
-		return (exit_code);
-	exit_code = open_dup2_close((*ast)->token->content[1],
-			(*ast)->token->token);
+		return (exit_code); // il faut return ici ?
+	exit_code = open_dup2_close(file, (*ast)->token->token);
 	if (exit_code == -1) // ERRNO
 		return (-1);
 	if (left && (left->token->token == DIREC && left->token->error == 127))
