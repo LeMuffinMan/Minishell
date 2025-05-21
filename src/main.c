@@ -285,7 +285,7 @@ int	parse_and_execution_loop(char **env, char **prompt, t_lists *lists,
 	/* 	malloc_error_close_free_exi et(lists); */
 	free_array(strings_env);
 	strings_env = NULL;
-	exit_code = exec_ast(lists->ast, lists, lists->origin_fds);
+	exit_code = exec_ast(lists->ast, lists);
 	/* if (errno = ENOMEM) */
 	/* 	malloc_error_close_free_exit(lists); */
 	// a virer : exit code dans la structure lists ?

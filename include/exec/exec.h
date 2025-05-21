@@ -18,8 +18,8 @@
 # include <sys/wait.h>
 
 // exec.c
-int		exec_ast(t_tree **ast, t_lists *lists, int origin_fds[2]);
-int		exec_cmd(t_tree **ast, t_lists *lists, int origin_fds[2]);
+int		exec_ast(t_tree **ast, t_lists *lists);
+int		exec_cmd(t_tree **ast, t_lists *lists);
 int	exec_pipe(t_tree **ast, t_lists *lists);
 // int redirect_stdio(t_tree **ast, t_var **env, int origin_fds[2]);
 // int	builtins(char **arg, t_lists *lists, int origin_fds[2]);
@@ -42,7 +42,7 @@ int print_error_is_a_directory(char *file);
 int print_perm_error(char *file);
 
 
-int exec_redirection(t_tree **ast, t_lists *lists, int origin_fds[2]);
+int exec_redirection(t_tree **ast, t_lists *lists);
 
 t_tree	*parse(char *line, char **envp, t_var *new_env);
 

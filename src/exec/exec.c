@@ -33,7 +33,7 @@ int builtins_ultra_bonus(char **arg, t_lists *lists)
 	return (1);
 }
 
-int	builtins(char **arg, t_lists *lists, int origin_fds[2])
+int	builtins(char **arg, t_lists *lists)
 {
 	if (!*arg)
 		return (1);
@@ -50,7 +50,7 @@ int	builtins(char **arg, t_lists *lists, int origin_fds[2])
 	else if (!ft_strncmp(arg[0], "env", 4))
 		return (builtin_env(lists->env, arg));
 	else if (!ft_strncmp(arg[0], "exit", 5))
-		return (builtin_exit(arg, lists->ast, lists, origin_fds));
+		return (builtin_exit(arg, lists->ast, lists));
 	else
 		return (builtins_ultra_bonus(arg, lists));
 }
@@ -81,7 +81,7 @@ int left_child_execution(t_tree **ast, t_lists *lists)
 	dup2(lists->pipe_fd[1], STDOUT_FILENO);
 	close(lists->pipe_fd[1]);
 	free_pipes(lists->pipes);
-	exit_code = exec_ast(&(*ast)->left, lists, lists->origin_fds);
+	exit_code = exec_ast(&(*ast)->left, lists);
 	close_origin_fds(lists->origin_fds);
 	free_lists(lists);
 	exit(exit_code);
@@ -109,7 +109,7 @@ int right_child_execution(t_tree **ast, t_lists *lists, int pipefd[2], t_pipe **
 	dup2(pipefd[0], STDIN_FILENO);
 	close(pipefd[0]);
 	free_pipes(pipes);
-	exit_code = exec_ast(&((*ast)->right), lists, lists->origin_fds);
+	exit_code = exec_ast(&((*ast)->right), lists);
 	close_origin_fds(lists->origin_fds);
 	free_lists(lists);
 	exit(exit_code);
@@ -257,7 +257,7 @@ int exec_cmd_execve(t_tree **ast, t_lists *lists)
 	return (1); //impossible d'arriver ici
 }
 
-int	exec_cmd(t_tree **ast, t_lists *lists, int origin_fds[2])
+int	exec_cmd(t_tree **ast, t_lists *lists)
 {
 	int		exit_code;
 	char	*s;
@@ -266,7 +266,7 @@ int	exec_cmd(t_tree **ast, t_lists *lists, int origin_fds[2])
 	if ((*ast)->token->token == BUILT_IN
 		|| !ft_strncmp((*ast)->token->content[0], "source", 7))
 	{
-		exit_code = builtins((*ast)->token->content, lists, origin_fds);
+		exit_code = builtins((*ast)->token->content, lists);
 		return (exit_code);
 	}
 	if (is_a_directory((*ast)->token->content[0]))
@@ -284,7 +284,7 @@ int	exec_cmd(t_tree **ast, t_lists *lists, int origin_fds[2])
 	return (1); // on ne devrait pas arriver ici
 }
 
-int	redirect_stdio(t_tree **ast, t_lists *lists, int origin_fds[2])
+int	redirect_stdio(t_tree **ast, t_lists *lists)
 {
 	t_tree	*left;
 	t_tree	*right;
@@ -309,21 +309,21 @@ int	redirect_stdio(t_tree **ast, t_lists *lists, int origin_fds[2])
 		exit_code = error_cmd(right->token->content[0], 127);
 	if (left && (left->token->token == R_IN || left->token->token == APPEND
 			|| left->token->token == TRUNC || left->token->token == HD))
-		exit_code = redirect_stdio(&left, lists, origin_fds);
+		exit_code = redirect_stdio(&left, lists);
 	if (exit_code == 0 && right && (right->token->token == R_IN
 			|| right->token->token == APPEND || right->token->token == TRUNC
 			|| right->token->token == HD))
-		exit_code = redirect_stdio(&right, lists, origin_fds);
+		exit_code = redirect_stdio(&right, lists);
 	if (exit_code == 0 && left && (left->token->token == CMD
 			|| left->token->token == BUILT_IN))
-		exit_code = exec_cmd(&left, lists, origin_fds);
+		exit_code = exec_cmd(&left, lists);
 	if (exit_code == 0 && right && (right->token->token == CMD
 			|| right->token->token == BUILT_IN))
-		exit_code = exec_cmd(&right, lists, origin_fds);
+		exit_code = exec_cmd(&right, lists);
 	return (exit_code);
 }
 
-int	exec_ast(t_tree **ast, t_lists *lists, int origin_fds[2])
+int	exec_ast(t_tree **ast, t_lists *lists)
 {
 	int			exit_code;
 	char		**strings_env;
@@ -347,11 +347,11 @@ int	exec_ast(t_tree **ast, t_lists *lists, int origin_fds[2])
 	{
 		if ((*ast)->left)
 		{
-			exit_code = exec_ast(&((*ast)->left), lists, origin_fds);
+			exit_code = exec_ast(&((*ast)->left), lists);
 			if (exit_code == 0)
 			{
 				/* printf("right exit_code = %d\n", exit_code); */
-				return (exec_ast(&((*ast)->right), lists, origin_fds));
+				return (exec_ast(&((*ast)->right), lists));
 			}
 			else
 			{
@@ -365,10 +365,10 @@ int	exec_ast(t_tree **ast, t_lists *lists, int origin_fds[2])
 	{
 		if ((*ast)->left)
 		{
-			exit_code = exec_ast(&((*ast)->left), lists, origin_fds);
+			exit_code = exec_ast(&((*ast)->left), lists);
 			/* dprintf(2, "exit_code = %d\n", exit_code); */
 			if (exit_code != 0)
-				return (exec_ast(&((*ast)->right), lists, origin_fds));
+				return (exec_ast(&((*ast)->right), lists));
 			else 
 			{
 				// si on doit pas stoper l'exec,
@@ -394,7 +394,7 @@ int	exec_ast(t_tree **ast, t_lists *lists, int origin_fds[2])
 			strings_env = lst_to_array(lists->env);
 			sub_ast = parse((*ast)->token->group->content[0], strings_env, *lists->env);
 			free_array(strings_env);
-			exit_code = exec_ast(&sub_ast, lists, origin_fds);
+			exit_code = exec_ast(&sub_ast, lists);
 			free_tree(&sub_ast);
 			free_lists(lists);
 			exit (exit_code);
@@ -412,7 +412,7 @@ int	exec_ast(t_tree **ast, t_lists *lists, int origin_fds[2])
 			strings_env = lst_to_array(lists->env);
 			sub_ast = parse((*ast)->token->content[0], strings_env, *lists->env);
 			free_array(strings_env);
-			exit_code = exec_ast(&sub_ast, lists, origin_fds);
+			exit_code = exec_ast(&sub_ast, lists);
 			free_tree(&sub_ast);
 			return (exit_code);
 	}
@@ -430,13 +430,13 @@ int	exec_ast(t_tree **ast, t_lists *lists, int origin_fds[2])
 	}
 	if ((*ast)->token->token == R_IN || (*ast)->token->token == APPEND
 		|| (*ast)->token->token == TRUNC)
-		return (redirect_stdio(ast, lists, origin_fds));
+		return (redirect_stdio(ast, lists));
 	if ((*ast)->token->token == PIPE)
 		return (exec_pipe(ast, lists));
 	if ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD
-		|| !ft_strncmp((*ast)->token->content[0], "source", 7))
+		|| !ft_strncmp((*ast)->token->content[0], "source", 7)) // exclure les codes d'erreurs
 	{
-		exit_code = exec_cmd(ast, lists, origin_fds);
+		exit_code = exec_cmd(ast, lists);
 		return (exit_code);
 	}
 	//

@@ -145,7 +145,7 @@ char **gather_function_args(t_tree **ast, char **content)
   return (new_array);
 }
 
-int exec_shell_fct(t_tree **ast, t_lists *lists, t_shell_fct *shell_fct, int origin_fds[2])
+int exec_shell_fct(t_tree **ast, t_lists *lists, t_shell_fct *shell_fct)
 {
   t_tree *tree_to_free;
   char **strings_env;
@@ -162,7 +162,7 @@ int exec_shell_fct(t_tree **ast, t_lists *lists, t_shell_fct *shell_fct, int ori
 	{
 		strings_env = lst_to_array(lists->env);	
 		tree_to_free = parse(expanded_fct_content[i], strings_env, *lists->env);
-		exit_code = exec_ast(&tree_to_free, lists, origin_fds);
+		exit_code = exec_ast(&tree_to_free, lists);
 		free_tree(&tree_to_free);
 		tree_to_free = NULL;
 		free_array(strings_env);
