@@ -6,7 +6,7 @@
 #    By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/05/21 20:24:11 by asinsard         ###   ########lyon.fr    #
+#    Updated: 2025/05/21 22:02:18 by asinsard         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -84,6 +84,7 @@ SRC					=	main.c \
 						display_lexer.c \
 						display_list.c \
 						display_tree.c \
+						handle_wildcard.c \
 						parser.c \
 					init.c \
 					signals.c \

@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 03:09:12 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/21 15:52:14 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/21 22:35:47 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include "quote.h"
 #include "here_doc.h"
 #include "structs.h"
+#include "wildcard.h"
 #include <unistd.h>
 #include <stdio.h>
 
@@ -43,6 +44,7 @@ t_tree	*parse(char *line, char **envp, t_var *list_env, t_lists *lists)
 	assign_token(&token, envp, list_env, flag);
 	error_one_quote(&token);
 	error_one_parenthesis(&token);
+	handle_wildcard(&token, flag);
 	display_list(token, DEBUG);
 	concat_args(&token, list_env, envp, flag, lists);
 	if (!handle_here_doc(&token))
