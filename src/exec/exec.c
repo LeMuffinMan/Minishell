@@ -323,6 +323,71 @@ int	redirect_stdio(t_tree **ast, t_lists *lists)
 	return (exit_code);
 }
 
+int exec_boolop(t_tree **ast, t_lists *lists)
+{
+	int exit_code;
+
+	exit_code = 0;
+	if ((*ast)->left)
+	{
+		exit_code = exec_ast(&((*ast)->left), lists);
+		if ((exit_code == 0 && (*ast)->token->token == O_AND) || 
+			(exit_code != 0 && (*ast)->token->token == O_OR))
+			return (exec_ast(&((*ast)->right), lists));
+		else
+			return (exit_code);
+	}
+	return (1); //cas ou left existe pas dans un node AND
+}
+
+//ici j'ai peut etre casse les signaux !!
+int exec_parenthesis(t_tree **ast, t_lists *lists)
+{
+	pid_t pid;
+	int exit_code;
+	char **strings_env;
+	t_tree *sub_ast;
+
+	struct sigaction sa_ignore, sa_orig;
+	sigemptyset(&sa_ignore.sa_mask);
+	sa_ignore.sa_handler = SIG_IGN;
+	sa_ignore.sa_flags = 0;
+	sigaction(SIGINT, &sa_ignore, &sa_orig);
+	exit_code = 0;
+	pid = fork();
+	if (!pid)
+	{
+		// error de fork
+	}
+	if (pid == 0)
+	{
+		/* if (lists->origin_fds[0] > 2 || lists->origin_fds[1] > 2) */
+		/* 	close_origin_fds(lists->origin_fds); */
+		//bien checker les fd open sur les parentheses a la main : ces closes sont necessaires 
+		setup_child_signals();
+		strings_env = lst_to_array(lists->env);
+		sub_ast = parse((*ast)->token->group->content[0], strings_env, *lists->env);
+		free_array(strings_env);
+		exit_code = exec_ast(&sub_ast, lists);
+		free_tree(&sub_ast);
+		free_lists(lists);
+		exit (exit_code);
+	}
+	else
+	{
+		exit_code = wait_children(pid, pid);
+		sigaction(SIGINT, &sa_orig, NULL);
+		/* printf("exit_code = %d\n", exit_code); */
+		return (exit_code);
+	}
+	return (1); // cas impossible ?
+}
+
+//retester les parentheses a la main :
+//output
+//error
+//exit
+//fds opens 
 int	exec_ast(t_tree **ast, t_lists *lists)
 {
 	int			exit_code;
@@ -330,7 +395,6 @@ int	exec_ast(t_tree **ast, t_lists *lists)
 	t_alias		*alias;
 	t_shell_fct	*shell_fct;
 	t_tree		*sub_ast;
-	pid_t		pid;
 
 	exit_code = 0;
 	if (!*ast)
@@ -343,70 +407,10 @@ int	exec_ast(t_tree **ast, t_lists *lists)
 	sa_ignore.sa_flags = 0;
 	sigaction(SIGINT, &sa_ignore, &sa_orig);
 	//signaux a virer ?
-	if ((*ast)->token->token == O_AND)
-	{
-		if ((*ast)->left)
-		{
-			exit_code = exec_ast(&((*ast)->left), lists);
-			if (exit_code == 0)
-			{
-				/* printf("right exit_code = %d\n", exit_code); */
-				return (exec_ast(&((*ast)->right), lists));
-			}
-			else
-			{
- 				// si on doit pas stoper l'exec,
-				/* mais qu'on ne passe pas la porte avec l'exit code qu'on a */
-				return (exit_code);
-			}
-		}
-	}
-	if ((*ast)->token->token == O_OR)
-	{
-		if ((*ast)->left)
-		{
-			exit_code = exec_ast(&((*ast)->left), lists);
-			/* dprintf(2, "exit_code = %d\n", exit_code); */
-			if (exit_code != 0)
-				return (exec_ast(&((*ast)->right), lists));
-			else 
-			{
-				// si on doit pas stoper l'exec,
-				/* mais qu'on ne passe pas la porte avec l'exit code qu'on a */
-				return (exit_code);
-			}
-		}
-	}
+	if ((*ast)->token->token == O_AND || (*ast)->token->token == O_OR)
+		return (exec_boolop(ast, lists));
 	if ((*ast)->token->token == GROUP_PARENTHESIS)
-	{
-		pid = fork();
-		if (!pid)
-		{
-			// error de fork
-		}
-		if (pid == 0)
-		{
-			/* dprintf(2, "origin_fd[0] = %d\n", lists->origin_fds[0]); */
-			/* dprintf(2, "origin_fd[1] = %d\n", lists->origin_fds[1]); */
-			/* if (lists->origin_fds[0] > 2 || lists->origin_fds[1] > 2) */
-			/* 	close_origin_fds(lists->origin_fds); */
-			setup_child_signals();
-			strings_env = lst_to_array(lists->env);
-			sub_ast = parse((*ast)->token->group->content[0], strings_env, *lists->env);
-			free_array(strings_env);
-			exit_code = exec_ast(&sub_ast, lists);
-			free_tree(&sub_ast);
-			free_lists(lists);
-			exit (exit_code);
-		}
-		else
-		{
-			exit_code = wait_children(pid, pid);
-			sigaction(SIGINT, &sa_orig, NULL);
-			/* printf("exit_code = %d\n", exit_code); */
-			return (exit_code);
-		}
-	}
+		return (exec_parenthesis(ast, lists));
 	if ((*ast)->token->token == GROUP_BOOLOP)
 	{
 			strings_env = lst_to_array(lists->env);
@@ -416,13 +420,6 @@ int	exec_ast(t_tree **ast, t_lists *lists)
 			free_tree(&sub_ast);
 			return (exit_code);
 	}
-
-
-
-
-
-
-
 	if ((*ast)->token->error == 2)
 	{
 		ft_putendl_fd((*ast)->token->content[0], 2);
