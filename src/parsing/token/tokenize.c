@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 21:44:17 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/22 19:05:10 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/22 19:45:01 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,15 @@ static void	is_redirection_or_f_or_d(t_token **node, t_var *list_env)
 	char		*tmp;
 
 	del_last_space_for_arg(node, &tmp);
-	if (is_pwd_valid(list_env))
+	if (!ft_strcmp((*node)->content[0], ">>"))
+		(*node)->token = APPEND;
+	else if (!ft_strcmp((*node)->content[0], "<<"))
+		(*node)->token = HD;
+	else if (!ft_strcmp((*node)->content[0], "<"))
+		(*node)->token = R_IN;
+	else if (!ft_strcmp((*node)->content[0], ">"))
+		(*node)->token = TRUNC;
+	else if (is_pwd_valid(list_env))
 	{
 		if (stat(tmp, &status) == 0)
 		{
@@ -54,14 +62,6 @@ static void	is_redirection_or_f_or_d(t_token **node, t_var *list_env)
 				(*node)->token = DIREC;
 		}
 	}
-	else if (!ft_strcmp((*node)->content[0], ">>"))
-		(*node)->token = APPEND;
-	else if (!ft_strcmp((*node)->content[0], "<<"))
-		(*node)->token = HD;
-	else if (!ft_strcmp((*node)->content[0], "<"))
-		(*node)->token = R_IN;
-	else if (!ft_strcmp((*node)->content[0], ">"))
-		(*node)->token = TRUNC;
 	free(tmp);
 }
 
