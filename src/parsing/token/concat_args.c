@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 04:50:03 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/21 23:58:00 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/22 17:23:06 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@ void	concat_args(t_token **head, t_var *list_env, char **envp, bool flag, t_list
 {
 	t_token	*tmp;
 
-	if (!*head)
+	if (!head || !*head)
 		return ;
 	if (flag)
 	{

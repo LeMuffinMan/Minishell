@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 16:03:15 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/15 18:47:34 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/22 17:22:58 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,18 +53,6 @@ void	assign_priority(t_token **head)
 	cost_priority(&tmp);
 }
 
-// void	set_bool_seq(t_tree **root)
-// {
-// 	t_tree	*tmp;
-
-// 	if (!*root)
-// 		return ;
-// 	tmp = *root;
-// 	set_bool_seq(&tmp->left);
-// 	set_bool_seq(&tmp->right);
-// 	tmp->token->seq = false;
-// }
-
 void	last_node(t_token **node)
 {
 	if (!(*node) || !(*node)->next)
@@ -82,7 +70,7 @@ t_token	*find_best_priority(t_token *start, t_token *end)
 		return (NULL);
 	best = start;
 	current = start;
-	while (current != end->next)
+	while (current && current != end->next)
 	{
 		if (current->priority <= best->priority)
 			best = current;

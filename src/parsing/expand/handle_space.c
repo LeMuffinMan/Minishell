@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 15:58:38 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/22 16:08:44 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/22 17:22:23 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,13 @@ void	delete_space_node(t_token **head)
 	t_token	*tmp;
 	t_token	*old_node;
 
-	if (!*head)
+	if (!head || !*head)
 		return ;
 	tmp = *head;
 	while (tmp)
 	{
-		if ((tmp->next || tmp->prev)
-			&& (tmp->token == SPACE || !tmp->content[0][0]))
+		if (tmp->token == SPACE || !tmp->content || !tmp->content[0]
+			|| !tmp->content[0][0])
 		{
 			old_node = tmp;
 			if (tmp->next)
@@ -82,29 +82,65 @@ static void	handle_space_for_echo(t_token **node)
 	}
 }
 
+// static void	handle_space_for_export(t_token **node)
+// {
+// 	char	*res;
+// 	int		new_content;
+// 	int		i;
+
+// 	i = 0;
+// 	if ((*node)->error != 0
+// 		&& (*node)->content[0][ft_strlen((*node)->content[0]) - 1] == '='
+// 		&& (*node)->next && (*node)->next->token != SPACE)
+// 	{
+// 		new_content = ft_strlen((*node)->content[0]) + ft_strlen((*node)->next->content[0]);
+// 		res = malloc(sizeof(char) * (new_content + 1));
+// 		if (!res)
+// 			free_parse(*node, "Malloc failed in function 'handle_space_for_export'", MEM_ALLOC);
+// 		ft_memcpy(res, (*node)->content[0], ft_strlen((*node)->content[0]));
+// 		ft_memcpy(&res[ft_strlen((*node)->content[0])], (*node)->next->content[0], ft_strlen((*node)->next->content[0]));
+// 		res[new_content] = '\0';
+// 		free((*node)->content[0]);
+// 		(*node)->content[0] = res;
+// 		delete_node_pointer(node);
+// 	}
+// }
+
 static void	handle_space_for_export(t_token **node)
 {
+	t_token	*tmp;
 	char	*res;
 	int		new_content;
-	int		i;
 
-	i = 0;
-	if ((*node)->error != 0
-		&& (*node)->content[0][ft_strlen((*node)->content[0]) - 1] == '='
-		&& (*node)->next && (*node)->next->token != SPACE)
+	if (!node || !*node || !(*node)->content || !(*node)->content[0])
+		return ;
+	tmp = *node;
+	while (tmp && (tmp->error != 0 || tmp->token == SPACE))
 	{
-		new_content = ft_strlen((*node)->content[0]) + ft_strlen((*node)->next->content[0]);
-		res = malloc(sizeof(char) * (new_content + 1));
-		if (!res)
-			free_parse(*node, "Malloc failed in function 'handle_space_for_export'", MEM_ALLOC);
-		ft_memcpy(res, (*node)->content[0], ft_strlen((*node)->content[0]));
-		ft_memcpy(&res[ft_strlen((*node)->content[0])], (*node)->next->content[0], ft_strlen((*node)->next->content[0]));
-		res[new_content] = '\0';
-		free((*node)->content[0]);
-		(*node)->content[0] = res;
-		delete_node_pointer(node);
+		if (tmp->error != 0
+			&& ft_strlen(tmp->content[0]) > 0
+			&& tmp->content[0][ft_strlen(tmp->content[0]) - 1] == '='
+			&& tmp->next && tmp->next->content && tmp->next->content[0]
+			&& tmp->next->token != SPACE)
+		{
+			new_content = ft_strlen(tmp->content[0]) + ft_strlen(tmp->next->content[0]);
+			res = malloc(sizeof(char) * (new_content + 1));
+			if (!res)
+				free_parse(tmp, "Malloc failed in function 'handle_space_for_export'", MEM_ALLOC);
+			ft_memcpy(res, tmp->content[0],
+						ft_strlen(tmp->content[0]));
+			ft_memcpy(res + ft_strlen(tmp->content[0]),
+						tmp->next->content[0], ft_strlen(tmp->next->content[0]));
+			res[new_content] = '\0';
+			free(tmp->content[0]);
+			tmp->content[0] = res;
+			delete_node_pointer(&tmp);
+		}
+		else
+			tmp = tmp->next;
 	}
 }
+
 
 void	handle_space(t_token **head)
 {
@@ -122,7 +158,7 @@ void	handle_space(t_token **head)
 				delete_space_content(&tmp);
 			handle_space_for_echo(&tmp);
 		}
-		if (tmp->token == BUILT_IN && !ft_strncmp(tmp->content[0], "export", 7))
+		else if (tmp->token == BUILT_IN && !ft_strncmp(tmp->content[0], "export", 7))
 		{
 			tmp = tmp->next;
 			if (tmp && tmp->token == SPACE)

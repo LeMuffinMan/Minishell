@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 20:03:53 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/22 13:58:25 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/22 17:35:12 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,8 +166,13 @@ static void	is_prefix(t_token **node, char **current_dir)
 		i++;
 	}
 	res[count] = NULL;
-	free_tab((*node)->content);
-	(*node)->content = res;
+	if (res[0])
+	{
+		free_tab((*node)->content);
+		(*node)->content = res;
+	}
+	else
+		free_tab(res);
 }
 
 static bool	find_suffix(char *str, char *src)
@@ -229,8 +234,13 @@ static void	is_suffix(t_token **node, char **current_dir)
 		i++;
 	}
 	res[count] = NULL;
-	free_tab((*node)->content);
-	(*node)->content = res;
+	if (res[0])
+	{
+		free_tab((*node)->content);
+		(*node)->content = res;
+	}
+	else
+		free_tab(res);
 }
 
 static void	is_joker(t_token **node, char **current_dir)
@@ -260,8 +270,13 @@ static void	is_joker(t_token **node, char **current_dir)
 		i++;
 	}
 	res[i] = NULL;
-	free_tab((*node)->content);
-	(*node)->content = res;
+	if (res[0])
+	{
+		free_tab((*node)->content);
+		(*node)->content = res;
+	}
+	else
+		free_tab(res);
 }
 
 static void	is_infix(t_token **node, char **current_dir)
@@ -306,8 +321,13 @@ static void	is_infix(t_token **node, char **current_dir)
 		i++;
 	}
 	res[count] = NULL;
-	free_tab((*node)->content);
-	(*node)->content = res;
+	if (res[0])
+	{
+		free_tab((*node)->content);
+		(*node)->content = res;
+	}
+	else
+		free_tab(res);
 }
 
 static bool	make_wildcard(t_token **node)
