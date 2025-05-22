@@ -380,10 +380,10 @@ int exec_parenthesis(t_tree **ast, t_lists *lists)
 	}
 	else
 	{
-		exit_code = wait_children(pid, pid);
+		lists->exit_code = wait_children(pid, pid);
 		sigaction(SIGINT, &sa_orig, NULL);
 		/* printf("exit_code = %d\n", exit_code); */
-		return (exit_code);
+		return (lists->exit_code);
 	}
 	return (1); // cas impossible ?
 }
@@ -404,9 +404,6 @@ int exec_error_cases(t_tree **ast)
 
 int exec_group_cmd(t_tree **ast, t_lists *lists)
 {
-	int exit_code;
-
-	exit_code = 0;
 	if ((*ast)->token->token == R_IN || (*ast)->token->token == APPEND
 		|| (*ast)->token->token == TRUNC || (*ast)->token->token == HD)
 		return (redirect_stdio(ast, lists));
@@ -415,26 +412,24 @@ int exec_group_cmd(t_tree **ast, t_lists *lists)
 	if ((*ast)->token->error != 126 && ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD
 		|| !ft_strncmp((*ast)->token->content[0], "source", 7))) // exclure les codes d'erreurs
 	{
-		exit_code = exec_cmd(ast, lists);
-		return (exit_code);
+		lists->exit_code = exec_cmd(ast, lists);
+		return (lists->exit_code);
 	}
 	return (-1); // impossible d'arriver ici : quelle code d'erreur ?
 }
 
 int exec_group_boolop(t_tree **ast, t_lists *lists)
 {
-	int exit_code;
 	char **strings_env;
 	t_tree *sub_ast;
 
-	exit_code = 0;
 	sub_ast = NULL;
 	strings_env = lst_to_array(lists->env);
 	sub_ast = parse((*ast)->token->content[0], strings_env, *lists->env, lists);
 	free_array(strings_env);
-	exit_code = exec_ast(&sub_ast, lists);
+	lists->exit_code = exec_ast(&sub_ast, lists);
 	free_tree(&sub_ast);
-	return (exit_code);
+	return (lists->exit_code);
 }
 
 //retester les parentheses a la main :

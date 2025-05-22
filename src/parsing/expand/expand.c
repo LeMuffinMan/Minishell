@@ -74,7 +74,7 @@ static void	expand_node_content(t_token **node, t_var *list_env, int j, t_lists 
 	if (!value)
 		free_parse(*node,
 			"Malloc failed in function 'expand_node_content'", MEM_ALLOC);
-	if (!ft_strncmp((*node)->content[0], "?", 2))
+	if (!ft_strncmp((*node)->content[0], "$?", 3))
 		res = ft_itoa(lists->exit_code);
 	else
 		res = get_value(&list_env, value);
