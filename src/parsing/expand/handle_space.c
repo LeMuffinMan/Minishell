@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 15:58:38 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/21 15:13:40 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/22 16:08:44 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,30 @@ static void	handle_space_for_echo(t_token **node)
 	}
 }
 
+static void	handle_space_for_export(t_token **node)
+{
+	char	*res;
+	int		new_content;
+	int		i;
+
+	i = 0;
+	if ((*node)->error != 0
+		&& (*node)->content[0][ft_strlen((*node)->content[0]) - 1] == '='
+		&& (*node)->next && (*node)->next->token != SPACE)
+	{
+		new_content = ft_strlen((*node)->content[0]) + ft_strlen((*node)->next->content[0]);
+		res = malloc(sizeof(char) * (new_content + 1));
+		if (!res)
+			free_parse(*node, "Malloc failed in function 'handle_space_for_export'", MEM_ALLOC);
+		ft_memcpy(res, (*node)->content[0], ft_strlen((*node)->content[0]));
+		ft_memcpy(&res[ft_strlen((*node)->content[0])], (*node)->next->content[0], ft_strlen((*node)->next->content[0]));
+		res[new_content] = '\0';
+		free((*node)->content[0]);
+		(*node)->content[0] = res;
+		delete_node_pointer(node);
+	}
+}
+
 void	handle_space(t_token **head)
 {
 	t_token	*tmp;
@@ -89,13 +113,21 @@ void	handle_space(t_token **head)
 	tmp = *head;
 	while (tmp)
 	{
-		if (tmp->token == EXPAND && tmp->error != 200)
-			delete_space_content(&tmp);
 		if (tmp->token == BUILT_IN && !ft_strncmp(tmp->content[0], "echo", 5))
 		{
 			tmp = tmp->next;
+			if (tmp && tmp->token == SPACE)
+				tmp = tmp->next;
+			if (tmp && tmp->token == EXPAND && tmp->error != 200)
+				delete_space_content(&tmp);
 			handle_space_for_echo(&tmp);
-			return ;
+		}
+		if (tmp->token == BUILT_IN && !ft_strncmp(tmp->content[0], "export", 7))
+		{
+			tmp = tmp->next;
+			if (tmp && tmp->token == SPACE)
+				tmp = tmp->next;
+			handle_space_for_export(&tmp);
 		}
 		else
 			tmp = tmp->next;

@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 15:39:39 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/13 15:39:40 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/22 15:57:22 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,4 +54,22 @@ void	delete_space_content(t_token **node)
 	free((*node)->content[0]);
 	(*node)->content[0] = ft_strdup(res);
 	free(res);
+}
+
+void	delete_node_pointer(t_token **node)
+{
+	t_token	*to_delete;
+
+	to_delete = (*node)->next;
+	if ((*node)->next->next)
+	{
+		(*node)->next = (*node)->next->next;
+		(*node)->next->next->prev = (*node);
+	}
+	else
+		(*node)->next = NULL;
+	to_delete->next = NULL;
+	to_delete->prev = NULL;
+	free_tab(to_delete->content);
+	free(to_delete);
 }
