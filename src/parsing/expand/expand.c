@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:49:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/21 15:14:03 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/22 18:55:19 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,6 @@ static void	expand_node_content(t_token **node, t_var *list_env, int j, t_lists 
 	res = NULL;
 	index = 0;
 	value = NULL;
-
 	index = export_value(&(*node)->content[0][j], &value);
 	if (!value)
 		free_parse(*node,
