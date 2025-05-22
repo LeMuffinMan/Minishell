@@ -131,6 +131,8 @@
 	//reparer l'expand de l'exit code pour false || echo $?
  	//Refacto de tout exec.c 
   //reparer et tester les builtins
+		//exit arg1 arg2 : il regarde si le premier argument est valid, sinon, il exit avec l'erreur du premier argument
+ 		//env s'arrete au = 
 //
 //jeudi : merge jeudi 18h : wildcards + DONE signaux (HD + wanted EOF pour HD) + exit_code fixed + export au parsing 
 //vendredi : refacto builtin complet + tests des builtins 
@@ -313,7 +315,7 @@ int	main(int ac, char **av, char **env)
 	/* is_interactive_mode(); */
 	exit_code = 0;            
 		// on ajoute l'exit code a la megastruct ou on la laisse dans env ?
-	rl_inhibit_completion = 1; // desactive l'autocompletion
+	/* rl_inhibit_completion = 1; // desactive l'autocompletion */
 	if (init(&lists, av, env) == -1)
 	{
 		free_lists(&lists);
