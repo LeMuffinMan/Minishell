@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:44:43 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/23 19:10:24 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/23 21:29:26 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,18 @@
 #include "quote.h"
 #include <stdlib.h>
 
-int	is_valid_prev(t_token *prev)
+bool	is_valid_prev(t_token *prev)
 {
 	if (!prev)
-		return (1);
+		return (true);
+	if (prev->token == NO_TOKEN)
+	{
+		if (prev->prev && prev->prev->token == SPACE)
+		{
+			if (prev->prev->prev && prev->prev->prev->token == HD)
+				return (true);
+		}
+	}
 	if (prev->token == SPACE)
 		return (is_valid_prev(prev->prev));
 	if ((prev->token == PIPE
@@ -28,8 +36,8 @@ int	is_valid_prev(t_token *prev)
 			|| prev->token == L_PARENTHESIS
 			|| prev->token == DIREC
 			|| prev->token == FLE))
-		return (1);
-	return (0);
+		return (true);
+	return (false);
 }
 
 void	handle_is_command(t_token *node, char *cmd_w_path, bool flag)
@@ -50,7 +58,7 @@ void	handle_is_command(t_token *node, char *cmd_w_path, bool flag)
 			return ;
 		}
 		if (flag)
-			replace_tab(&node, cmd_w_path); //exec : fix l'absence de path
+			replace_tab(&node, cmd_w_path);
 		node->token = CMD;
 	}
 }
@@ -119,13 +127,15 @@ bool	syntax_error_for_op(t_token **head)
 	tmp = *head;
 	while (tmp)
 	{
-		if (tmp->token == O_OR || tmp->token == O_AND)
+		if (tmp->token == O_OR || tmp->token == O_AND || tmp->token == PIPE)
 		{
 			if (!tmp->prev || !tmp->next
 				|| (tmp->prev->token != CMD && tmp->prev->token != BUILT_IN
-					&& tmp->prev->token != R_PARENTHESIS && tmp->prev->token != NO_TOKEN && tmp->prev->token != D_QUOTE && tmp->prev->token != S_QUOTE)
+					&& tmp->prev->token != R_PARENTHESIS && tmp->prev->token != NO_TOKEN
+					&& tmp->prev->token != D_QUOTE && tmp->prev->token != S_QUOTE)
 				|| (tmp->next->token != CMD && tmp->next->token != BUILT_IN
-					&& tmp->next->token != L_PARENTHESIS && tmp->next->token != NO_TOKEN  && tmp->next->token != D_QUOTE && tmp->next->token != S_QUOTE))
+					&& tmp->next->token != L_PARENTHESIS && tmp->next->token != NO_TOKEN 
+					&& tmp->next->token != D_QUOTE && tmp->next->token != S_QUOTE))
 			{
 				*head = set_syntax_error(tmp);
 				return (true);
@@ -156,73 +166,10 @@ bool	syntax_error_for_op(t_token **head)
 				return (true);
 			}
 		}
-		if (tmp->token == PIPE)
-		{
-			if (!tmp->prev || !tmp->next
-				|| (tmp->prev->token != CMD && tmp->prev->token != BUILT_IN
-					&& tmp->prev->token != R_PARENTHESIS && tmp->prev->token != NO_TOKEN && tmp->prev->token != D_QUOTE && tmp->prev->token != S_QUOTE)
-				|| (tmp->next->token != CMD && tmp->next->token != BUILT_IN
-					&& tmp->next->token != L_PARENTHESIS && tmp->next->token != NO_TOKEN  && tmp->next->token != D_QUOTE && tmp->next->token != S_QUOTE))
-			{
-				*head = set_syntax_error(tmp);
-				return (true);
-			}
-		}
 		tmp = tmp->next;
 	}
 	return (false);
 }
-
-
-// bool	syntax_error_for_op(t_token **head)
-// {
-// 	t_token	*tmp;
-
-// 	tmp = *head;
-// 	while (tmp)
-// 	{
-// 		if (tmp->token == O_OR || tmp->token == O_AND)
-// 		{
-// 			if (!tmp->prev || !tmp->next
-// 				|| (tmp->prev->token != CMD && tmp->prev->token != BUILT_IN
-// 					&& tmp->prev->token != R_PARENTHESIS)
-// 				|| (tmp->next->token != CMD && tmp->next->token != BUILT_IN
-// 					&& tmp->next->token != L_PARENTHESIS))
-// 			{
-// 				*head = set_syntax_error(tmp);
-// 				return (true);
-// 			}
-// 		}
-// 		if (tmp->token == L_PARENTHESIS && (tmp->prev
-// 			&& tmp->prev->token != O_AND && tmp->prev->token != O_OR
-// 			&& tmp->next->token != L_PARENTHESIS))
-// 		{
-// 			*head = set_parenthesis_error(tmp);
-// 			return (true);
-// 		}
-// 		if (tmp->token == R_PARENTHESIS && (tmp->next
-// 			&& tmp->next->token != O_AND && tmp->next->token != O_OR
-// 			&& tmp->next->token != R_PARENTHESIS))
-// 		{
-// 			*head = set_parenthesis_error(tmp);
-// 			return (true);
-// 		}
-// 		if (tmp->token == PIPE)
-// 		{
-// 			if (!tmp->prev || !tmp->next
-// 				|| (tmp->prev->token != CMD && tmp->prev->token != BUILT_IN
-// 					&& tmp->prev->token != R_PARENTHESIS)
-// 				|| (tmp->next->token != CMD && tmp->next->token != BUILT_IN
-// 					&& tmp->next->token != L_PARENTHESIS))
-// 			{
-// 				*head = set_syntax_error(tmp);
-// 				return (true);
-// 			}
-// 		}
-// 		tmp = tmp->next;
-// 	}
-// 	return (false);
-// }
 
 static t_token	*set_quote_or_par_error(t_token *node, t_type token)
 {

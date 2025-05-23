@@ -6,13 +6,14 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 16:01:39 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/20 16:51:57 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/23 23:21:27 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "list.h"
 #include "libft.h"
 #include "quote.h"
+#include <errno.h>
 
 static bool	case_only_quote(t_token **node)
 {
@@ -59,36 +60,30 @@ static bool	is_one_quote(char **content, char c)
 	return (false);
 }
 
-static void	del_quote_char(t_token **node)
+static bool	del_quote_char(t_token **node)
 {
 	char	*start;
-	char	*end;
-	int		len;
 
 	if (case_only_quote(node))
-		return ;
+		return (true);
 	if ((*node)->content[0][0] == '"' || (*node)->content[0][0] == '\'')
 	{
 		start = ft_strdup(&(*node)->content[0][1]);
 		if (!start)
-			free_parse(*node,
-				"Malloc failed in function del_quote_char", MEM_ALLOC);
+		{
+			errno = MEM_ALLOC;
+			free_parse(*node, NULL, MEM_ALLOC);
+			return (false);
+		}
 		free((*node)->content[0]);
 		(*node)->content[0] = start;
 	}
-	len = ft_strlen((*node)->content[0]) - 1;
-	if ((*node)->content[0][len] == '"' || (*node)->content[0][len] == '\'')
-	{
-		end = ft_strndup((*node)->content[0], len);
-		if (!end)
-			free_parse(*node,
-				"Malloc failed in function del_quote_char", MEM_ALLOC);
-		free((*node)->content[0]);
-		(*node)->content[0] = end;
-	}
+	if (!del_last_quote(node))
+		return (false);
+	return (true);
 }
 
-void	parse_quote(t_token **node)
+static bool	parse_quote(t_token **node)
 {
 	if (is_one_quote((*node)->content, '\''))
 		(*node)->error = PB_QUOTE;
@@ -99,7 +94,11 @@ void	parse_quote(t_token **node)
 		&& is_to_expand((*node)->content[0]))
 		(*node)->error = LITERAL_EXPAND;
 	if ((*node)->error != PB_QUOTE)
-		del_quote_char(node);
+	{
+		if (!del_quote_char(node))
+			return (false);
+	}
+	return (true);
 }
 
 bool	is_quote(t_token **node)
@@ -123,7 +122,8 @@ bool	is_quote(t_token **node)
 	}
 	if (flag)
 	{
-		parse_quote(node);
+		if (!parse_quote(node))
+			return (false);
 		return (true);
 	}
 	return (false);

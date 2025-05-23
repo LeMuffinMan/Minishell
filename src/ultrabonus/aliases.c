@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   aliases.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:27:48 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/24 16:27:49 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/23 21:55:25 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,7 @@ int exec_alias(t_tree **ast, t_lists *lists, t_alias *alias)
 
 	line = expand_alias((*ast)->token->content, &alias);	
 	strings_env = lst_to_array(lists->env);
-	tree_to_free = parse(line, strings_env, *lists->env, lists);
+	tree_to_free = parse(line, *lists->env, lists);
 	exit_code = exec_ast(&tree_to_free, lists);
   free_tree(&tree_to_free); 
   free_array(strings_env);

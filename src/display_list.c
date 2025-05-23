@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 19:15:40 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/17 16:18:46 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/23 21:15:25 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,14 +45,14 @@ static void	display_valid(t_token *node, int i, char **arg, const char **tok)
 		}
 		printf("[%s%s%s]--->[%s%d%s]\n | ^\n v |\n%s",
 			BOLD_PURPLE, tok[node->token],
-			BOLD_BLUE, BOLD_RED, node->error, BOLD_BLUE, STOP_COLOR);
+			BOLD_BLUE, BOLD_GREEN, node->error, BOLD_BLUE, STOP_COLOR);
 	}
 	else
 	{
 		printf("%sNODE %d: [%s%s%s]--->[%s%s%s]--->[%s%d%s]\n | ^\n v |\n%s",
 			BOLD_BLUE, i, BOLD_GREEN, arg[0], BOLD_BLUE,
 			BOLD_PURPLE, tok[node->token], BOLD_BLUE,
-			BOLD_RED, node->error, BOLD_BLUE, STOP_COLOR);
+			BOLD_GREEN, node->error, BOLD_BLUE, STOP_COLOR);
 	}
 	if (node->group)
 		display_group(node->group);
@@ -90,9 +90,9 @@ static void	print_token(t_token *head, const char **tab, int i)
 void	display_list(t_token *head, int debug)
 {
 	int					i;
-	static const char	*tab[21] = {"No Token", "Append", "Built_in",
-		"Command", "Directory", "Double quote", "Expand", "File",
-		"Group Parenthesis", "Group Boolop", "Here doc",
+	static const char	*tab[22] = {"Argument", "No Token", "Append",
+		"Built_in", "Command", "Directory", "Double quote", "Expand",
+		"File", "Group Parenthesis", "Group Boolop", "Here doc",
 		"And", "Or", "Left Parenthesis", "Right Parenthesis",
 		"Pipe", "Redir in", "Simple quote", "Space", "Truncate",
 		"Wildcard"};

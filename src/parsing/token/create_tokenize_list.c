@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 02:24:25 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/20 16:29:28 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/23 22:59:13 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ t_token	*add_new_token(char *str, int error_code)
 	return (new_node);
 }
 
-void	add_back(t_token **head, char *str)
+bool	add_back(t_token **head, char *str)
 {
 	t_token	*new_node;
 	t_token	*tmp;
@@ -66,18 +66,19 @@ void	add_back(t_token **head, char *str)
 	if (!new_node)
 	{
 		free_parse(*head, NULL, 0);
-		return ;
+		return (false);
 	}
 	if (!*head)
 	{
 		*head = new_node;
-		return ;
+		return (true);
 	}
 	tmp = *head;
 	while (tmp->next)
 		tmp = tmp->next;
 	tmp->next = new_node;
 	new_node->prev = tmp;
+	return (true);
 }
 
 void	free_parse(t_token *list, const char *str, int error)

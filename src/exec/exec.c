@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:49:28 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/18 16:12:35 by oelleaum         ###   ########.fr       */
+/*   Updated: 2025/05/23 21:54:57 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -368,7 +368,7 @@ int exec_parenthesis(t_tree **ast, t_lists *lists)
 		close_origin_fds(lists->origin_fds);
 		setup_child_signals();
 		strings_env = lst_to_array(lists->env);
-		sub_ast = parse((*ast)->token->group->content[0], strings_env, *lists->env, lists);
+		sub_ast = parse((*ast)->token->group->content[0], *lists->env, lists);
 		free_array(strings_env);
 		exit_code = exec_ast(&sub_ast, lists);
 		free_tree(&sub_ast);
@@ -422,7 +422,7 @@ int exec_group_boolop(t_tree **ast, t_lists *lists)
 
 	sub_ast = NULL;
 	strings_env = lst_to_array(lists->env);
-	sub_ast = parse((*ast)->token->content[0], strings_env, *lists->env, lists);
+	sub_ast = parse((*ast)->token->content[0], *lists->env, lists);
 	free_array(strings_env);
 	lists->exit_code = exec_ast(&sub_ast, lists);
 	free_tree(&sub_ast);

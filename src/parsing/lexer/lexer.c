@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 00:19:05 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/08 19:48:33 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/23 22:57:46 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,9 @@
 #include "libft.h"
 #include "display.h"
 #include <stdio.h>
+#include <errno.h>
 
-void	free_lexer(t_lexer *head, const char *str, int error)
+void	free_lexer(t_lexer *head)
 {
 	t_lexer	*tmp;
 	t_lexer	*next_node;
@@ -36,8 +37,6 @@ void	free_lexer(t_lexer *head, const char *str, int error)
 		free(tmp);
 		tmp = next_node;
 	}
-	if (str)
-		ft_error(str, error);
 }
 
 static t_lexer	*add_new_node(char *str)
@@ -48,12 +47,16 @@ static t_lexer	*add_new_node(char *str)
 		return (NULL);
 	new_node = malloc(sizeof(t_lexer));
 	if (!new_node)
+	{
+		errno = MEM_ALLOC;
 		return (NULL);
+	}
 	new_node->next = NULL;
 	new_node->prev = NULL;
 	new_node->arg = ft_strdup(str);
 	if (!new_node->arg)
 	{
+		errno = MEM_ALLOC;
 		free(new_node);
 		return (NULL);
 	}
@@ -67,8 +70,11 @@ void	add_lexer_back(t_lexer **head, char *str)
 
 	new_node = add_new_node(str);
 	if (!new_node)
-		free_lexer(*head,
-			"Malloc failed in function 'add_lexer_back'", MEM_ALLOC);
+	{
+		errno = MEM_ALLOC;
+		free_lexer(*head);
+		return ;
+	}
 	if (!*head)
 	{
 		*head = new_node;
@@ -113,14 +119,15 @@ static int	parse_operator(char *str, char c, t_lexer **list)
 	return (i);
 }
 
-void	parse_line(char *str, t_lexer **list)
+bool	parse_line(char *str, t_lexer **list)
 {
 	int		i;
 
 	i = 0;
 	if (!str)
-		return ;
-	while (str[i])
+		return (false);
+	errno = 0;
+	while (str[i] && errno != MEM_ALLOC)
 	{
 		if (ft_isspace(str[i]))
 			i += alloc_space_to_lexer(&str[i], list);
@@ -133,4 +140,7 @@ void	parse_line(char *str, t_lexer **list)
 		else
 			alloc_word_to_lexer(str, &i, list);
 	}
+	if (errno == MEM_ALLOC)
+		return (false);
+	return (true);
 }

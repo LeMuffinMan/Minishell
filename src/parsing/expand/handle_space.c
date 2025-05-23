@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 15:58:38 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/23 19:02:45 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/23 21:02:53 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ static void	handle_space_for_echo(t_token **node)
 	while (tmp && (tmp->token == S_QUOTE || tmp->token == D_QUOTE
 			|| tmp->token == SPACE || tmp->token == EXPAND
 			|| tmp->token == NO_TOKEN || tmp->token == DIREC
-			|| tmp->token == FLE || tmp->error != 0))
+			|| tmp->token == FLE || tmp->token == ARG || tmp->error != 0 ))
 	{
 		if ((tmp->token == S_QUOTE || tmp->token == EXPAND
 				|| tmp->error != 0)
@@ -137,7 +137,7 @@ void	handle_space(t_token **head)
 	tmp = *head;
 	while (tmp)
 	{
-		if (tmp->token == BUILT_IN && !ft_strncmp(tmp->content[0], "echo", 5))
+		if (!ft_strncmp(tmp->content[0], "echo", 5))
 		{
 			tmp = tmp->next;
 			if (tmp && tmp->token == SPACE)
@@ -146,7 +146,7 @@ void	handle_space(t_token **head)
 				delete_space_content(&tmp);
 			handle_space_for_echo(&tmp);
 		}
-		else if (tmp->token == BUILT_IN && !ft_strncmp(tmp->content[0], "export", 7))
+		else if (!ft_strncmp(tmp->content[0], "export", 7))
 		{
 			tmp = tmp->next;
 			if (tmp && tmp->token == SPACE)

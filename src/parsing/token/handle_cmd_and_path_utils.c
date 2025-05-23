@@ -6,26 +6,30 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 00:53:37 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/13 15:15:35 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/23 23:39:00 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include "list.h"
+#include "structs.h"
+#include "errno.h"
 #include <unistd.h>
 
-int	env_is_alive(char **envp)
+bool	env_is_alive(t_var *list_env)
 {
-	int	i;
+	t_var	*tmp;
 
-	i = 0;
-	while (envp[i])
+	if (!list_env)
+		return (false);
+	tmp = list_env;
+	while (tmp)
 	{
-		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
+		if (!ft_strncmp(tmp->key, "PATH", 5))
 			return (1);
-		i++;
+		tmp = tmp->next;
 	}
-	return (0);
+	return (false);
 }
 
 static void	case_of_absolute_path(t_token **node)
@@ -34,21 +38,26 @@ static void	case_of_absolute_path(t_token **node)
 
 	tmp = ft_strdup((*node)->content[0]);
 	if (!tmp)
-		free_parse(*node, "Malloc failed in 'case_of_absolute_path'",
-			MEM_ALLOC);
+	{
+		free_parse(*node, NULL, MEM_ALLOC);
+		errno = MEM_ALLOC;
+		return ;
+	}
 	free_tab((*node)->content);
 	(*node)->content = ft_split(tmp, ' ');
 	if (!(*node)->content || !(*node)->content[0])
 	{
+		free_parse(*node, NULL, MEM_ALLOC);
 		free(tmp);
-		free_parse(*node, "Malloc failed in 'case_of_absolute_path'",
-			MEM_ALLOC);
+		errno = MEM_ALLOC;
+		return ;
 	}
 	free(tmp);
 }
 
 void	alloc_cmd_split(char ***split_cmd, char **path, char *arg, int *error)
 {
+	errno = SUCCESS;
 	*split_cmd = ft_split(arg, ' ');
 	if (!*split_cmd || !*split_cmd[0])
 	{
@@ -58,24 +67,10 @@ void	alloc_cmd_split(char ***split_cmd, char **path, char *arg, int *error)
 			free_tab(*split_cmd);
 			*error = CMD_NOT_FOUND;
 		}
+		if (errno)
+			errno = MEM_ALLOC;
 	}
 }
-
-/* int print_tab(char **s)
-{
-	int i;
-
-	#include <stdio.h>
-	printf("%s\n", s[0]);
-	i = 0;
-	while (s[i])
-	{
-		#include <stdio.h>
-		printf("%s\n", s[i]);
-		i++;
-	}
-	return (0);
-} */
 
 void	replace_tab(t_token **node, char *str)
 {
@@ -87,13 +82,17 @@ void	replace_tab(t_token **node, char *str)
 	{
 		tmp = ft_strdup((*node)->content[0]);
 		if (!tmp)
-			free_parse(*node, "Malloc failed in 'replace_tab'", MEM_ALLOC);
+		{
+			free_parse(*node, NULL, MEM_ALLOC);
+			errno = MEM_ALLOC;
+			return ;
+		}
 		free_tab((*node)->content);
 		(*node)->content = ft_split(str, ' ');
 		if (!(*node)->content || !(*node)->content[0])
 		{
-			free(tmp);
-			free_parse(*node, "Malloc failed in 'replace_tab'", MEM_ALLOC);
+			free_parse(*node, NULL, MEM_ALLOC);
+			errno = MEM_ALLOC;
 		}
 		free(tmp);
 	}

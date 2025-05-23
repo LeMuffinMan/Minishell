@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 04:50:03 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/23 17:30:49 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/23 21:52:39 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ static char	**join_node_content(t_token *node, char **old, char **new)
 	return (res);
 }
 
-static void	change_node(t_token **node)
+void	change_node(t_token **node, bool flag)
 {
 	t_token	*next_node;
 	char	**new_content;
@@ -96,8 +96,12 @@ static void	change_node(t_token **node)
 	next_node = (*node)->next;
 	if (!next_node)
 		return ;
-	new_content = join_node_content(*node,
-			(*node)->content, next_node->content);
+	if (flag)
+		new_content = join_node_content(*node,
+				(*node)->content, next_node->content);
+	else
+		new_content = join_content(*node,
+				(*node)->content, next_node->content);
 	if (!new_content)
 		free_parse(*node, "Malloc failed in function 'change_node'", MEM_ALLOC);
 	free_tab((*node)->content);
@@ -113,7 +117,7 @@ static void	change_node(t_token **node)
 		*node = (*node)->next;
 }
 
-void	concat_args(t_token **head, t_var *list_env, char **envp, bool flag, t_lists *lists)
+void	concat_args(t_token **head, t_var *list_env, bool flag, t_lists *lists)
 {
 	t_token	*tmp;
 
@@ -122,14 +126,16 @@ void	concat_args(t_token **head, t_var *list_env, char **envp, bool flag, t_list
 	if (flag)
 	{
 		if (init_expand(head, list_env, lists))
-			assign_token(head, envp, list_env, true);
+			assign_token(head, list_env, true);
 	}
+	if (join_token(head))
+		assign_token(head, list_env, true);
 	delete_space_node(head);
 	tmp = *head;
 	while (tmp)
 	{
 		if (is_same_family(tmp))
-			change_node(&tmp);
+			change_node(&tmp, true);
 		else
 			tmp = tmp->next;
 	}

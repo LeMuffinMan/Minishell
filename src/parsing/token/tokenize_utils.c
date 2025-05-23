@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 19:51:51 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/20 20:14:08 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/23 23:42:21 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include "expand.h"
 #include "quote.h"
 #include <stdlib.h>
+#include <errno.h>
 
 void	del_last_space_for_arg(t_token **node, char **tmp)
 {
@@ -30,23 +31,25 @@ void	del_last_space_for_arg(t_token **node, char **tmp)
 			i++;
 		*tmp = ft_strndup((*node)->content[0], i);
 		if (!*tmp)
-			free_parse(*node,
-				"Malloc failed in function 'del_last_space_for_arg'",
-				MEM_ALLOC);
+		{
+			free_parse(*node, NULL, MEM_ALLOC);
+			errno = MEM_ALLOC;
+		}
 	}
 	else
 	{
 		*tmp = ft_strdup((*node)->content[0]);
 		if (!*tmp)
-			free_parse(*node,
-				"Malloc failed in function 'del_last_space_for_arg'",
-				MEM_ALLOC);
+		{
+			free_parse(*node, NULL, MEM_ALLOC);
+			errno = MEM_ALLOC;
+		}
 	}
 }
 
-void	handle_cmd(t_token **node, char **envp, bool flag)
+void	handle_cmd(t_token **node, t_var *list_env, bool flag)
 {
-	if (env_is_alive(envp))
+	if (env_is_alive(list_env))
 	{
 		if ((*node)->content[0][0] != '\0' || (*node)->token == D_QUOTE
 		|| (*node)->token == S_QUOTE
@@ -62,40 +65,44 @@ void	handle_cmd(t_token **node, char **envp, bool flag)
 			if (flag || (*node)->token == NO_TOKEN
 				|| (*node)->token == APPEND
 				|| (*node)->token == D_QUOTE || (*node)->token == S_QUOTE)
-				is_command(node, envp, flag);
+				is_command(node, list_env, flag);
 		}
 	}
 	else
 		(*node)->error = PERMISSION_DENIED;
 }
 
-static void	case_of_cmd_quote(t_token *node, char **cmd_in_quote)
-{
-	if (node->token == D_QUOTE || node->token == S_QUOTE)
-	{
-		*cmd_in_quote = ft_strdup(node->content[0]);
-		if (!*cmd_in_quote)
-			free_parse(node,
-				"Malloc failed in function 'case_of_cmd_quote'", MEM_ALLOC);
-	}
-}
-
-char	*verif_command(t_token **node, char *tmp, char **path, char **envp)
+static char	*case_of_cmd_quote(t_token *node)
 {
 	char	*cmd_in_quote;
 
 	cmd_in_quote = NULL;
-	case_of_cmd_quote(*node, &cmd_in_quote);
-	tmp = extract_path(envp);
-	if (!tmp)
-		free_parse(*node,
-			"Malloc failed in function 'extract_path'", MEM_ALLOC);
+	if (node->token == D_QUOTE || node->token == S_QUOTE)
+	{
+		cmd_in_quote = ft_strdup(node->content[0]);
+		if (!cmd_in_quote)
+		{
+			free_parse(node, NULL, MEM_ALLOC);
+			errno = MEM_ALLOC;
+			return (NULL);
+		}
+	}
+	return (cmd_in_quote);
+}
+
+char	*verif_command(t_token **node, char *tmp, char **path, t_var *list_env)
+{
+	char	*cmd_in_quote;
+
+	cmd_in_quote = case_of_cmd_quote(*node);
+	tmp = extract_path(list_env);
 	path = split_the_path(tmp);
-	free(tmp);
-	tmp = NULL;
 	if (!path)
-		free_parse(*node,
-			"Malloc failed in function 'split_the_path'", MEM_ALLOC);
+	{
+		free_parse(*node, NULL, MEM_ALLOC);
+		errno = MEM_ALLOC;
+		return (NULL);
+	}
 	if ((*node)->token == D_QUOTE || (*node)->token == S_QUOTE)
 		tmp = parse_cmd(cmd_in_quote, path, &(*node)->error, false);
 	else
@@ -105,7 +112,10 @@ char	*verif_command(t_token **node, char *tmp, char **path, char **envp)
 	if ((*node)->error == CMD_NOT_FOUND || (*node)->error == PERMISSION_DENIED)
 		return (NULL);
 	if (!tmp)
-		free_parse(*node, "Malloc failed in function 'parse_cmd'", MEM_ALLOC);
+	{
+		free_parse(*node, NULL, MEM_ALLOC);
+		errno = MEM_ALLOC;
+	}
 	return (tmp);
 }
 

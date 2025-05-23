@@ -6,7 +6,7 @@
 #    By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/05/21 22:02:18 by asinsard         ###   ########lyon.fr    #
+#    Updated: 2025/05/23 19:15:43 by asinsard         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -74,6 +74,7 @@ SRC					=	main.c \
 						handle_cmd_and_path_utils.c \
 						handle_cmd_and_path.c \
 						handle_utils.c \
+						join_token.c \
 						tokenize_utils.c \
 						tokenize.c \
 						create_tokenize_list.c \
