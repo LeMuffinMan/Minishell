@@ -156,7 +156,7 @@ int is_var_declaration(char *arg)
 	int i;
 
 	i = 0;
-	if (arg[i] == '=')
+	if (arg[i] == '=' || ft_isdigit(arg[i]) || !ft_isalnum(arg[i]))
 		return (0);
 	while (arg[i])
 	{
@@ -289,9 +289,24 @@ int add_or_update_var(t_var **env, char *var)
 	return (0);
 }
 
+int is_var_exportation(char *s)
+{
+	int i;
+
+	i = 0;
+	if (s[i] == '=' || ft_isdigit(s[i]) || !ft_isalnum(arg[i]))
+		return (0);
+	while(s[i + 1])
+		i++;
+	if (s[i] == '=')
+		return (0);
+	return (1);
+}
+
 //PS1 to fix
 int	builtin_export(t_var **env, char **arg)
 {
+	t_var *node;
 	int i;
 	char *s;
 	int exit_code;
@@ -307,6 +322,12 @@ int	builtin_export(t_var **env, char **arg)
 			s = get_full_variable_declaration(arg, i);
 			add_or_update_var(env, s);
 			free(s);
+		}
+		else if (is_var_exportation(arg[i]))
+		{
+			node = is_known_key(env, arg[i]);
+			if (node)
+				node->exported = 1;
 		}
 		else
 		{
