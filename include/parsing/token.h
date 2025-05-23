@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 01:26:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/22 19:19:31 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/23 18:35:27 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,5 +94,6 @@ void					error_one_parenthesis(t_token **head);
 t_token					*add_new_token(char *str, int error_code);
 
 bool					is_pwd_valid(t_var *list_env);
+void					join_token(t_token **head);
 
 #endif

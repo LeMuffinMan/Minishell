@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 15:20:38 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/21 19:45:24 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/23 16:15:25 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,7 @@ bool	create_here_doc(t_token *node)
 		setup_child_signals();
 		if (!extract_stdin(fd, limiter))
 			exit(EXIT_FAILURE);
+		close(fd);
 		exit(EXIT_SUCCESS);
 	}
 	else
@@ -122,7 +123,7 @@ bool	handle_here_doc(t_token **head)
 			if (!create_here_doc(tmp))
 				return (false);
 		}
-		tmp = tmp->next;			
+		tmp = tmp->next;
 	}
 	return (true);
 }

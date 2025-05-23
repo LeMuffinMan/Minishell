@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 23:50:55 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/21 19:51:52 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/23 16:31:15 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ static char	*make_hd_name(int fd, char *print_char, char *res)
 	{
 		read(fd, print_char, 1);
 		print_char[1] = '\0';
-		if (ft_isprint(print_char[0]))
+		if (ft_isalpha(print_char[0]))
 		{
 			tmp = ft_strjoin(res, print_char);
 			if (!tmp)
