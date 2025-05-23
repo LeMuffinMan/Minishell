@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 20:03:53 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/22 17:35:12 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/23 17:54:27 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -246,30 +246,41 @@ static void	is_suffix(t_token **node, char **current_dir)
 static void	is_joker(t_token **node, char **current_dir)
 {
 	int		i;
+	int		count;
 	char	**res;
 	
 	i = 0;
+	count = 0;
 	while (current_dir[i])
+	{
+		if (current_dir[i][0] != '.')
+			count++;
 		i++;
-	res = malloc(sizeof(char *) * (i + 1));
+	}
+	res = malloc(sizeof(char *) * (count + 1));
 	if (!res)
 	{
 		errno = MEM_ALLOC;
 		return ;
 	}
 	i = 0;
+	count = 0;
 	while (current_dir[i])
 	{
-		res[i] = ft_strdup(current_dir[i]);
-		if (!res[i])
+		if (current_dir[i][0] != '.')
 		{
-			errno = MEM_ALLOC;
-			free_tab(current_dir);
-			return ;
+			res[count] = ft_strdup(current_dir[i]);
+			if (!res[count])
+			{
+				errno = MEM_ALLOC;
+				free_tab(current_dir);
+				return ;
+			}
+			count++;
 		}
 		i++;
 	}
-	res[i] = NULL;
+	res[count] = NULL;
 	if (res[0])
 	{
 		free_tab((*node)->content);
@@ -330,7 +341,29 @@ static void	is_infix(t_token **node, char **current_dir)
 		free_tab(res);
 }
 
-static bool	make_wildcard(t_token **node)
+static void	add_space_for_wildcard(t_token **node)
+{
+	int		i;
+	char	*res;
+
+	i = 0;
+	while ((*node)->content[i + 1])
+	{
+		res = ft_strjoin((*node)->content[i], " ");
+		if (!res)
+			free_parse(*node,
+				"Malloc faile in function 'add_space_for_wildcard'", MEM_ALLOC);
+		free((*node)->content[i]);
+		(*node)->content[i] = ft_strdup(res);
+		free(res);
+		if (!(*node)->content[i])
+			free_parse(*node,
+				"Malloc faile in function 'add_space_for_wildcard'", MEM_ALLOC);
+		i++;
+	}
+}
+
+static bool	make_wildcard(t_token **node, bool flag)
 {
 	char	**current_dir;
 	int		sort_of;
@@ -350,21 +383,28 @@ static bool	make_wildcard(t_token **node)
 	if (errno == MEM_ALLOC)
 		return (false);
 	free_tab(current_dir);
+	if (flag)
+		add_space_for_wildcard(node);
 	return (true);
 }
 
 void	handle_wildcard(t_token **head, bool flag)
 {
 	t_token	*tmp;
+	bool	is_echo;
 
 	if (!head || !*head || !flag)
 		return ;
 	tmp = *head;
+	is_echo = false;
 	while (tmp)
 	{
 		if (tmp->token == WILDCARD)
 		{
-			if (!make_wildcard(&tmp))
+			if (tmp->prev && tmp->prev->prev 
+				&& !ft_strncmp(tmp->prev->prev->content[0], "echo", 5))
+				is_echo = true;
+			if (!make_wildcard(&tmp, is_echo))
 				free_parse(*head, "Malloc failed in function 'make_wildcard'", MEM_ALLOC);
 		}
 		tmp = tmp->next;

@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 15:58:38 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/22 17:22:23 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/23 19:02:45 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void	delete_space_node(t_token **head)
 	}
 }
 
-static void	add_space(t_token **node)
+void	add_space(t_token **node)
 {
 	char	*res;
 
@@ -54,6 +54,7 @@ static void	add_space(t_token **node)
 	free((*node)->content[0]);
 	(*node)->content[0] = res;
 }
+
 static void	handle_space_for_echo(t_token **node)
 {
 	t_token	*tmp;
@@ -67,7 +68,7 @@ static void	handle_space_for_echo(t_token **node)
 		if ((tmp->token == S_QUOTE || tmp->token == EXPAND
 				|| tmp->error != 0)
 			&& (tmp->next && tmp->next->token == SPACE
-				&& ft_strncmp(tmp->content[0], "-n", 3)))
+				&& ft_strncmp(tmp->content[0], "-n", 2)))
 		{
 			if (tmp->next->next && (tmp->next->next->token != R_IN
 					&& tmp->next->next->token != HD
@@ -82,29 +83,16 @@ static void	handle_space_for_echo(t_token **node)
 	}
 }
 
-// static void	handle_space_for_export(t_token **node)
-// {
-// 	char	*res;
-// 	int		new_content;
-// 	int		i;
-
-// 	i = 0;
-// 	if ((*node)->error != 0
-// 		&& (*node)->content[0][ft_strlen((*node)->content[0]) - 1] == '='
-// 		&& (*node)->next && (*node)->next->token != SPACE)
-// 	{
-// 		new_content = ft_strlen((*node)->content[0]) + ft_strlen((*node)->next->content[0]);
-// 		res = malloc(sizeof(char) * (new_content + 1));
-// 		if (!res)
-// 			free_parse(*node, "Malloc failed in function 'handle_space_for_export'", MEM_ALLOC);
-// 		ft_memcpy(res, (*node)->content[0], ft_strlen((*node)->content[0]));
-// 		ft_memcpy(&res[ft_strlen((*node)->content[0])], (*node)->next->content[0], ft_strlen((*node)->next->content[0]));
-// 		res[new_content] = '\0';
-// 		free((*node)->content[0]);
-// 		(*node)->content[0] = res;
-// 		delete_node_pointer(node);
-// 	}
-// }
+static bool	verif_is_token_valid(t_type token)
+{
+	if (token == SPACE || token == O_AND || token == O_OR
+		|| token == R_IN || token == HD || token == APPEND
+		|| token == TRUNC || token == PIPE
+		|| token == L_PARENTHESIS || token == R_PARENTHESIS)
+		return (false);
+	else
+		return (true);
+}
 
 static void	handle_space_for_export(t_token **node)
 {
@@ -112,7 +100,7 @@ static void	handle_space_for_export(t_token **node)
 	char	*res;
 	int		new_content;
 
-	if (!node || !*node || !(*node)->content || !(*node)->content[0])
+	if (!node || !*node)
 		return ;
 	tmp = *node;
 	while (tmp && (tmp->error != 0 || tmp->token == SPACE))
@@ -121,7 +109,7 @@ static void	handle_space_for_export(t_token **node)
 			&& ft_strlen(tmp->content[0]) > 0
 			&& tmp->content[0][ft_strlen(tmp->content[0]) - 1] == '='
 			&& tmp->next && tmp->next->content && tmp->next->content[0]
-			&& tmp->next->token != SPACE)
+			&& verif_is_token_valid(tmp->next->token))
 		{
 			new_content = ft_strlen(tmp->content[0]) + ft_strlen(tmp->next->content[0]);
 			res = malloc(sizeof(char) * (new_content + 1));

@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 04:50:03 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/22 17:23:06 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/23 17:30:49 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,8 +128,6 @@ void	concat_args(t_token **head, t_var *list_env, char **envp, bool flag, t_list
 	tmp = *head;
 	while (tmp)
 	{
-		if (tmp->token == D_QUOTE || tmp->token == S_QUOTE)
-			tmp->error = SUCCESS;
 		if (is_same_family(tmp))
 			change_node(&tmp);
 		else

@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 20:47:42 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/07 19:21:19 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/23 17:38:57 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,6 @@
 #include "libft.h"
 #include "list.h"
 #include <stdlib.h>
-
-void	add_space(t_token **node)
-{
-	char	*res;
-
-	res = ft_strjoin((*node)->content[0], " ");
-	if (!res)
-		free_parse(*node, "Malloc faile in function add_space", MEM_ALLOC);
-	free((*node)->content[0]);
-	(*node)->content[0] = res;
-}
 
 void	copy_value(t_token *node, char *value, char **value_cpy)
 {

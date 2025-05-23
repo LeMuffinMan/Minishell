@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 21:44:17 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/22 19:45:01 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/23 19:06:59 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,7 @@ void	assign_token(t_token **head, char **envp, t_var *list_env, bool flag)
 			return ;
 		if (tmp->token == NO_TOKEN
 			|| (tmp->token == D_QUOTE && tmp->content[0][0])
-			|| (tmp->token == D_QUOTE && tmp->content[0][0])
+			|| (tmp->token == S_QUOTE && tmp->content[0][0])
 			|| tmp->token == EXPAND)
 			handle_cmd(&tmp, envp, flag);
 		if ((tmp->token == D_QUOTE || tmp->token == D_QUOTE
