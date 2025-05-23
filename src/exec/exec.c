@@ -220,8 +220,7 @@ int exec_cmd_execve_child(t_tree **ast, t_lists *lists)
 	char **strings_env;
 
 	setup_child_signals();
-	/* if (origin_fds[0] > 2 || origin_fds[1] > 2) */
-	/* 	close_origin_fds(origin_fds); */
+	close_origin_fds(lists->origin_fds);
 	strings_env = lst_to_array(lists->env);
 	execve((*ast)->token->content[0], (*ast)->token->content,
 		strings_env);
@@ -366,9 +365,7 @@ int exec_parenthesis(t_tree **ast, t_lists *lists)
 	}
 	if (pid == 0)
 	{
-		/* if (lists->origin_fds[0] > 2 || lists->origin_fds[1] > 2) */
-		/* 	close_origin_fds(lists->origin_fds); */
-		//bien checker les fd open sur les parentheses a la main : ces closes sont necessaires 
+		close_origin_fds(lists->origin_fds);
 		setup_child_signals();
 		strings_env = lst_to_array(lists->env);
 		sub_ast = parse((*ast)->token->group->content[0], strings_env, *lists->env, lists);

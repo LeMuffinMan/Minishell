@@ -80,6 +80,8 @@ static void	expand_node_content(t_token **node, t_var *list_env, int j, t_lists 
 		res = get_value(&list_env, value);
 	free(value);
 	new_content = alloc_new_expand(node, res, index, j - 1);
+	if (!ft_strncmp((*node)->content[0], "$?", 3)) // j'ai ajoute ces deux lignes
+		free(res); //si on print l'exit code, res est alloue donc faut le free, mais du coup la norme ...
 	free((*node)->content[0]);
 	(*node)->content[0] = new_content;
 	(*node)->token = EXPAND;

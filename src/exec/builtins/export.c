@@ -299,9 +299,9 @@ int	builtin_export(t_var **env, char **arg)
 	i = 1;
 	if (!arg[i])
 		return(export_without_argument(env));
+	exit_code = 0;
 	while(arg[i])
 	{
-		exit_code = 0;
 		if (is_var_declaration(arg[i])) //si la declaration de variable est vlaide
 		{
 			s = get_full_variable_declaration(arg, i);

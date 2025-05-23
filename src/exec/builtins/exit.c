@@ -96,15 +96,19 @@ int exit_with_valid_arg(char **arg, t_tree **ast, t_lists *lists)
 	exit(n);
 }
 
-// a voir
-// des fuites et des exits a des moments ou ils doivent pas
-// a tester : is only numeric arg
 int	builtin_exit(char **arg, t_tree **ast, t_lists *lists)
 {
 	if (!arg[1])
 		exit_no_arg(ast, lists);
 	if (ft_strlen(arg[1]) > 18)
 		return (exit_overflow_error(arg));
+	if (!is_only_numeric_argument(arg[1]))
+	{
+		ft_putstr_fd("minishell: exit: numeric argument required\n", 2);
+		free_lists(lists);
+		exit(2);
+		
+	}
 	if (arg[2])
 	{
 		ft_putstr_fd("minishell: exit: too many arguments\n", 2);
@@ -115,11 +119,3 @@ int	builtin_exit(char **arg, t_tree **ast, t_lists *lists)
 	exit_with_valid_arg(arg, ast, lists);
 	return (0);
 }
-/* Exit status: */
-/*        125    if the env command itself fails */
-/**/
-/*        126    if COMMAND is found but cannot be invoked */
-/**/
-/*        127    if COMMAND cannot be found */
-/**/
-/*        -      the exit status of COMMAND otherwise */
