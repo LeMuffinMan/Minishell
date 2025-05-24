@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 15:58:38 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/24 00:47:50 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/24 03:12:00 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,31 +45,16 @@ void	delete_space_node(t_token **head)
 	}
 }
 
-void	add_space(t_token **node)
-{
-	char	*res;
-
-	res = ft_strjoin((*node)->content[0], " ");
-	if (!res)
-	{
-		free_parse(*node, NULL, MEM_ALLOC);
-		errno = MEM_ALLOC;
-		return ;
-	}
-	free((*node)->content[0]);
-	(*node)->content[0] = res;
-}
-
 static void	handle_space_for_echo(t_token **node)
 {
 	t_token	*tmp;
-	
+
 	tmp = *node;
-	while (tmp && errno != MEM_ALLOC && (tmp->token == S_QUOTE 
+	while (tmp && errno != MEM_ALLOC && (tmp->token == S_QUOTE
 			|| tmp->token == D_QUOTE
 			|| tmp->token == SPACE || tmp->token == EXPAND
 			|| tmp->token == NO_TOKEN || tmp->token == DIREC
-			|| tmp->token == FLE || tmp->token == ARG || tmp->error != 0 ))
+			|| tmp->token == FLE || tmp->token == ARG || tmp->error != 0))
 	{
 		if ((tmp->token == S_QUOTE || tmp->token == EXPAND
 				|| tmp->error != 0)
@@ -83,29 +68,22 @@ static void	handle_space_for_echo(t_token **node)
 					&& tmp->next->next->token != O_AND
 					&& tmp->next->next->token != O_OR
 					&& tmp->next->next->token != PIPE))
-					add_space(&tmp);
+				add_space(&tmp);
 		}
 		tmp = tmp->next;
 	}
-}
-
-static bool	verif_is_token_valid(t_type token)
-{
-	if (token == SPACE || token == O_AND || token == O_OR
-		|| token == R_IN || token == HD || token == APPEND
-		|| token == TRUNC || token == PIPE
-		|| token == L_PARENTHESIS || token == R_PARENTHESIS)
-		return (false);
-	else
-		return (true);
 }
 
 static void	add_space_for_export(t_token **node)
 {
 	int		new_content;
 	char	*res;
+	int		len_current;
+	int		len_next;
 
-	new_content = ft_strlen((*node)->content[0]) + ft_strlen((*node)->next->content[0]);
+	len_current = ft_strlen((*node)->content[0]);
+	len_next = ft_strlen((*node)->next->content[0]);
+	new_content = len_current + len_next;
 	res = malloc(sizeof(char) * (new_content + 1));
 	if (!res)
 	{
@@ -113,10 +91,8 @@ static void	add_space_for_export(t_token **node)
 		errno = MEM_ALLOC;
 		return ;
 	}
-	ft_memcpy(res, (*node)->content[0],
-				ft_strlen((*node)->content[0]));
-	ft_memcpy(res + ft_strlen((*node)->content[0]),
-				(*node)->next->content[0], ft_strlen((*node)->next->content[0]));
+	ft_memcpy(res, (*node)->content[0], len_current);
+	ft_memcpy(res + len_current, (*node)->next->content[0], len_next);
 	res[new_content] = '\0';
 	free((*node)->content[0]);
 	(*node)->content[0] = res;
@@ -129,7 +105,8 @@ static void	handle_space_for_export(t_token **node)
 	if (!node || !*node)
 		return ;
 	tmp = *node;
-	while (tmp && errno != MEM_ALLOC && (tmp->error != 0 || tmp->token == SPACE))
+	while (tmp && errno != MEM_ALLOC
+		&& (tmp->error != 0 || tmp->token == SPACE))
 	{
 		if (tmp->error != 0
 			&& ft_strlen(tmp->content[0]) > 0
@@ -146,7 +123,6 @@ static void	handle_space_for_export(t_token **node)
 			tmp = tmp->next;
 	}
 }
-
 
 void	handle_space(t_token **head)
 {

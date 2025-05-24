@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 01:26:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/24 02:06:22 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/24 03:16:05 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,5 +96,9 @@ bool					join_token(t_token **head);
 
 void					change_node(t_token **node, bool flag);
 char					**join_content(t_token *node, char **old, char **new);
+
+bool					verif_is_token_valid(t_type token);
+void					add_space(t_token **node);
+char					**copy_tab(t_token *node, char **dest, char **src, int index);
 
 #endif

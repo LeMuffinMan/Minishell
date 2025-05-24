@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 21:44:17 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/23 23:28:45 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/24 02:24:13 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,6 +110,7 @@ void	is_command(t_token **node, t_var *list_env, bool flag)
 	if (is_lit_expand && (*node)->error != 0)
 		(*node)->error = LITERAL_EXPAND;
 }
+
 void	assign_token(t_token **head, t_var *list_env, bool flag)
 {
 	t_token	*tmp;

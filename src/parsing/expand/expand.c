@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:49:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/24 00:48:04 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/24 02:12:53 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,8 @@ static int	export_value(char *str, char **value)
 	return (index);
 }
 
-static void	expand_node_content(t_token **node, t_var *list_env, int j, t_lists *lists)
+static void	expand_node_content(t_token **node,
+								t_var *list_env, int j, t_lists *lists)
 {
 	char	*res;
 	char	*value;

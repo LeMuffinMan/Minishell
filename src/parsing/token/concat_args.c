@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 04:50:03 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/24 01:18:24 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/24 03:16:52 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,29 +17,6 @@
 #include "structs.h"
 #include <stdlib.h>
 #include <errno.h>
-
-static char	**cpy_tab(t_token *node, char **dest, char **src, int index)
-{
-	int		i;
-	int		len;
-
-	len = ft_tab_len(src);
-	i = 0;
-	while (i < len)
-	{
-		dest[index] = ft_strdup(src[i]);
-		if (!dest[index])
-		{
-			free_tab(dest);
-			free_parse(node, NULL, MEM_ALLOC);
-			errno = MEM_ALLOC;
-			return (NULL);
-		}
-		index++;
-		i++;
-	}
-	return (dest);
-}
 
 static bool	is_same_family(t_token *node)
 {
@@ -84,10 +61,10 @@ static char	**join_node_content(t_token *node, char **old, char **new)
 		free_parse(node, NULL, MEM_ALLOC);
 		return (NULL);
 	}
-	res = cpy_tab(node, res, old, 0);
+	res = copy_tab(node, res, old, 0);
 	if (!res)
 		return (NULL);
-	res = cpy_tab(node, res, new, len_old);
+	res = copy_tab(node, res, new, len_old);
 	if (!res)
 		return (NULL);
 	res[len_new + len_old] = NULL;

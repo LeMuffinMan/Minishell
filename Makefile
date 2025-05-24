@@ -6,7 +6,7 @@
 #    By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/05/24 01:34:34 by asinsard         ###   ########lyon.fr    #
+#    Updated: 2025/05/24 03:16:39 by asinsard         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -77,17 +77,25 @@ SRC					=	main.c \
 						join_token.c \
 						syntax_error_utils.c \
 						syntax_error.c \
+						token_utils.c \
 						tokenize_utils.c \
 						tokenize.c \
 						create_tokenize_list.c \
 						create_tree.c \
+						handle_boolop_group_utils.c \
 						handle_boolop_group.c \
+						handle_parenthesis_utils.c \
 						handle_parenthesis.c \
 						tree_utils.c \
 						display_lexer.c \
 						display_list.c \
 						display_tree.c \
+						handle_wildcard_utils.c \
 						handle_wildcard.c \
+						infix.c \
+						joker.c \
+						prefix.c \
+						suffix.c \
 						parser.c \
 					init.c \
 					signals.c \

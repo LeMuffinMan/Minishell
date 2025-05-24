@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 15:20:38 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/24 01:02:04 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/24 02:19:39 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,14 +38,16 @@ bool	extract_stdin(int fd, char *limiter)
 {
 	int		len;
 	char	*line;
-	char *tmp;
+	char	*tmp;
 
 	while (1)
 	{
 		line = readline("> ");
 		if (!line)
 		{
-			printf("minishell: warning: here-document delimited by end-of-file (wanted `%s')\n", limiter);
+			printf(
+				"minishell: here-doc delimited by end-of-file (wanted `%s')\n",
+				limiter);
 			break ;
 		}
 		tmp = line;
