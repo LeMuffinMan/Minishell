@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:49:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/23 20:33:30 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/24 00:48:04 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "env_utils.h"
 #include "libft.h"
 #include <stdlib.h>
+#include <errno.h>
 
 static char	*alloc_new_expand(t_token **node, char *value,
 		int index, int j)
@@ -27,17 +28,21 @@ static char	*alloc_new_expand(t_token **node, char *value,
 	{
 		res = alloc_first_expand(value_cpy, (*node)->content[0], index + 1);
 		if (!res)
-			free_parse(*node, "Malloc failed in expand'", MEM_ALLOC);
+		{
+			free_parse(*node, NULL, MEM_ALLOC);
+			errno = MEM_ALLOC;
+		}
+		return (res);
 	}
+	if (value)
+		res = ft_strjoin3((*node)->content[0], value, j, index);
 	else
+		res = ft_strjoin3((*node)->content[0], value_cpy, j, index);
+	free(value_cpy);
+	if (!res)
 	{
-		if (value)
-			res = ft_strjoin3((*node)->content[0], value, j, index);
-		else
-			res = ft_strjoin3((*node)->content[0], value_cpy, j, index);
-		free(value_cpy);
-		if (!res)
-			free_parse(*node, "Malloc failed in expand'", MEM_ALLOC);
+		free_parse(*node, NULL, MEM_ALLOC);
+		errno = MEM_ALLOC;
 	}
 	return (res);
 }
@@ -57,6 +62,8 @@ static int	export_value(char *str, char **value)
 		index++;
 	}
 	*value = ft_strndup(str, index);
+	if (!*value)
+		errno = MEM_ALLOC;
 	return (index);
 }
 
@@ -67,21 +74,21 @@ static void	expand_node_content(t_token **node, t_var *list_env, int j, t_lists 
 	char	*new_content;
 	int		index;
 
-	res = NULL;
-	index = 0;
-	value = NULL;
 	index = export_value(&(*node)->content[0][j], &value);
-	if (!value)
-		free_parse(*node,
-			"Malloc failed in function 'expand_node_content'", MEM_ALLOC);
+	if (errno == MEM_ALLOC)
+	{
+		free_parse(*node, NULL, MEM_ALLOC);
+		errno = MEM_ALLOC;
+		return ;
+	}
 	if (!ft_strncmp((*node)->content[0], "$?", 3))
 		res = ft_itoa(lists->exit_code);
 	else
 		res = get_value(&list_env, value);
 	free(value);
 	new_content = alloc_new_expand(node, res, index, j - 1);
-	if (!ft_strncmp((*node)->content[0], "$?", 3)) // j'ai ajoute ces deux lignes
-		free(res); //si on print l'exit code, res est alloue donc faut le free, mais du coup la norme ...
+	if (!ft_strncmp((*node)->content[0], "$?", 3))
+		free(res);
 	free((*node)->content[0]);
 	(*node)->content[0] = new_content;
 	(*node)->token = EXPAND;
@@ -96,7 +103,7 @@ static bool	to_expand(t_token **node, t_var *list_env, t_lists *lists)
 
 	j = 0;
 	flag = false;
-	while ((*node)->content[0][j])
+	while ((*node)->content[0][j] && errno != MEM_ALLOC)
 	{
 		if ((*node)->content[0][j] == '$')
 		{
@@ -131,6 +138,8 @@ bool	init_expand(t_token **head, t_var *list_env, t_lists *lists)
 		else
 		{
 			flag = to_expand(&tmp, list_env, lists);
+			if (errno == MEM_ALLOC)
+				return (false);
 			tmp = tmp->next;
 		}
 	}

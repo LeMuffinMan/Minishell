@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 03:09:12 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/23 22:58:33 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/24 01:17:57 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include "here_doc.h"
 #include "structs.h"
 #include "wildcard.h"
+#include <errno.h>
 #include <unistd.h>
 #include <stdio.h>
 
@@ -41,6 +42,8 @@ static bool	lexing_and_tokenize(char *line, t_token **token,
 		return (false);
 	free_lexer(lexer);
 	assign_token(token, list_env, *flag);
+	if (errno == MEM_ALLOC)
+		return (false);
 	return (true);
 }
 
@@ -52,14 +55,18 @@ t_tree	*parse(char *line, t_var *list_env, t_lists *lists)
 
 	token = NULL;
 	root = NULL;
-	if (!lexing_and_tokenize(line, &token, list_env, &flag))
+	if (!lexing_and_tokenize(line, &token, list_env, &flag)
+		|| !error_one_quote(&token))
 		return (NULL);
-	error_one_quote(&token);
-	error_one_parenthesis(&token);
+	if (!error_one_parenthesis(&token))
+	{
+		errno = MEM_ALLOC;
+		return (NULL);
+	}
 	handle_wildcard(&token, flag);
 	display_list(token, DEBUG);
-	concat_args(&token, list_env, flag, lists);
-	if (!handle_here_doc(&token))
+	if (!concat_args(&token, list_env, flag, lists)
+		||!handle_here_doc(&token))
 		return (NULL);
 	display_list(token, DEBUG);
 	add_to_root(&token, &root);
@@ -68,5 +75,3 @@ t_tree	*parse(char *line, t_var *list_env, t_lists *lists)
 	display_ast(root, DEBUG);
 	return (root);
 }
-
-

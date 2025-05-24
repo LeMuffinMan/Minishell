@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 20:04:26 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/21 22:49:08 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/24 00:00:21 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,6 @@ struct					s_token;
 typedef struct s_token	t_token;
 
 bool					is_wildcard(char *str);
-void					handle_wildcard(t_token **head, bool flag);
+bool					handle_wildcard(t_token **head, bool flag);
 
 #endif

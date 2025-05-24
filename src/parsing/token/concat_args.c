@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 04:50:03 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/23 21:52:39 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/24 01:18:24 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,9 @@
 #include "expand.h"
 #include "structs.h"
 #include <stdlib.h>
+#include <errno.h>
 
-static char	**cpy_tab(char **dest, char **src, int index)
+static char	**cpy_tab(t_token *node, char **dest, char **src, int index)
 {
 	int		i;
 	int		len;
@@ -30,6 +31,8 @@ static char	**cpy_tab(char **dest, char **src, int index)
 		if (!dest[index])
 		{
 			free_tab(dest);
+			free_parse(node, NULL, MEM_ALLOC);
+			errno = MEM_ALLOC;
 			return (NULL);
 		}
 		index++;
@@ -76,14 +79,17 @@ static char	**join_node_content(t_token *node, char **old, char **new)
 	len_new = ft_tab_len(new);
 	res = malloc(sizeof(char *) * (len_old + len_new + 1));
 	if (!res)
-		free_parse(node,
-			"Malloc failed in function 'join_node_content'", MEM_ALLOC);
-	res = cpy_tab(res, old, 0);
+	{
+		errno = MEM_ALLOC;
+		free_parse(node, NULL, MEM_ALLOC);
+		return (NULL);
+	}
+	res = cpy_tab(node, res, old, 0);
 	if (!res)
-		free_parse(node, "Malloc failed in function 'cpy_tab'", MEM_ALLOC);
-	res = cpy_tab(res, new, len_old);
+		return (NULL);
+	res = cpy_tab(node, res, new, len_old);
 	if (!res)
-		free_parse(node, "Malloc failed in function 'cpy_tab'", MEM_ALLOC);
+		return (NULL);
 	res[len_new + len_old] = NULL;
 	return (res);
 }
@@ -103,7 +109,7 @@ void	change_node(t_token **node, bool flag)
 		new_content = join_content(*node,
 				(*node)->content, next_node->content);
 	if (!new_content)
-		free_parse(*node, "Malloc failed in function 'change_node'", MEM_ALLOC);
+		return ;
 	free_tab((*node)->content);
 	(*node)->content = new_content;
 	(*node)->next = next_node->next;
@@ -117,22 +123,46 @@ void	change_node(t_token **node, bool flag)
 		*node = (*node)->next;
 }
 
-void	concat_args(t_token **head, t_var *list_env, bool flag, t_lists *lists)
+bool	handle_expand_and_join(t_token **head, t_var *list_env,
+								t_lists *lists, bool flag)
 {
-	t_token	*tmp;
-
-	if (!head || !*head)
-		return ;
 	if (flag)
 	{
 		if (init_expand(head, list_env, lists))
+		{
+			if (errno == MEM_ALLOC)
+			{
+				free_parse(*head, NULL, MEM_ALLOC);
+				return (false);
+			}
 			assign_token(head, list_env, true);
+			if (errno == MEM_ALLOC)
+			{
+				free_parse(*head, NULL, MEM_ALLOC);
+				return (false);
+			}
+		}
 	}
 	if (join_token(head))
 		assign_token(head, list_env, true);
 	delete_space_node(head);
+	return (true);
+}
+
+bool	concat_args(t_token **head, t_var *list_env, bool flag, t_lists *lists)
+{
+	t_token	*tmp;
+
+	if (!head || !*head)
+		return (true);
+	if (!handle_expand_and_join(head, list_env, lists, flag))
+	{
+		errno = MEM_ALLOC;
+		return (false);
+	}
 	tmp = *head;
-	while (tmp)
+	errno = SUCCESS;
+	while (tmp && errno != MEM_ALLOC)
 	{
 		if (is_same_family(tmp))
 			change_node(&tmp, true);
@@ -140,4 +170,10 @@ void	concat_args(t_token **head, t_var *list_env, bool flag, t_lists *lists)
 			tmp = tmp->next;
 	}
 	check_syntax_error(head);
+	if (!head || !*head)
+	{
+		errno = MEM_ALLOC;
+		return (false);
+	}
+	return (true);
 }

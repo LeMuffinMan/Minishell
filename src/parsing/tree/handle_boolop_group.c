@@ -100,7 +100,7 @@ int	handle_boolop_group(t_tree **root)
 	t_tree	*tmp;
 
 	if (!root || !*root)
-		return (0);
+		return (-1);
 	tmp = *root;
 	if (tmp->left)
 	{

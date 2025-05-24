@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/23 18:26:02 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/23 20:33:56 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/24 00:57:01 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "stdlib.h"
 #include "libft.h"
 #include "expand.h"
+#include <errno.h>
 
 static bool	token_valid_for_join(t_type token)
 {
@@ -37,9 +38,18 @@ char	**join_content(t_token *node, char **old, char **new)
 	len_new = ft_strlen(new[0]);
 	res = malloc(sizeof(char *) * 2);
 	if (!res)
-		free_parse(node,
-			"Malloc failed in function 'join_node_content'", MEM_ALLOC);
+	{
+		free_parse(node, NULL, MEM_ALLOC);
+		errno = MEM_ALLOC;
+		return (NULL);
+	}
 	res[0] = malloc(sizeof(char) * (len_old + len_new + 1));
+	if (!res[0])
+	{
+		free_parse(node, NULL, MEM_ALLOC);
+		errno = MEM_ALLOC;
+		return (NULL);
+	}
 	ft_memcpy(res[0], old[0], len_old);
 	ft_memcpy(&res[0][len_old], new[0], len_new);
 	res[0][len_old + len_new] = '\0';

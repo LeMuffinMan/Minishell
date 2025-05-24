@@ -6,13 +6,14 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:44:43 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/23 21:29:26 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/24 02:07:08 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "list.h"
 #include "libft.h"
 #include "quote.h"
+#include <errno.h>
 #include <stdlib.h>
 
 bool	is_valid_prev(t_token *prev)
@@ -206,32 +207,38 @@ static t_token	*set_quote_or_par_error(t_token *node, t_type token)
 	return (head);
 }
 
-void	error_one_quote(t_token **head)
+bool	error_one_quote(t_token **head)
 {
 	t_token	*tmp;
 
 	if (!head || !*head)
-		return ;
+		return (true);
 	tmp = *head;
 	while (tmp)
 	{
 		if (tmp->error == PB_QUOTE)
 		{
 			*head = set_quote_or_par_error(tmp, tmp->token);
-			return ;
+			if (!*head)
+			{
+				errno = MEM_ALLOC;
+				return (false);
+			}
+			return (true);
 		}
 		tmp = tmp->next;
 	}
+	return (true);
 }
 
-void	error_one_parenthesis(t_token **head)
+bool	error_one_parenthesis(t_token **head)
 {
 	t_token	*tmp;
 	int		left;
 	int		right;
 
 	if (!head || !*head)
-		return ;
+		return (true);
 	tmp = *head;
 	left = 0;
 	right = 0;
@@ -247,6 +254,9 @@ void	error_one_parenthesis(t_token **head)
 		*head = set_quote_or_par_error(*head, R_PARENTHESIS);
 	else if (left < right)
 		*head = set_quote_or_par_error(*head, L_PARENTHESIS);
+	if (!*head)
+		return (false);
+	return (true);
 }
 
 void	check_syntax_error(t_token **head)
@@ -265,6 +275,8 @@ void	check_syntax_error(t_token **head)
 				&& !tmp->content[1]))
 		{
 			*head = set_syntax_error(tmp);
+			if (!*head)
+				errno = MEM_ALLOC;
 			return ;
 		}
 		else if (tmp->token == DIREC)

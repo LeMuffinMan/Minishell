@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 15:58:38 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/23 21:02:53 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/24 00:47:50 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "expand.h"
 #include "list.h"
 #include "libft.h"
+#include <errno.h>
 
 void	delete_space_node(t_token **head)
 {
@@ -50,7 +51,11 @@ void	add_space(t_token **node)
 
 	res = ft_strjoin((*node)->content[0], " ");
 	if (!res)
-		free_parse(*node, "Malloc faile in function add_space", MEM_ALLOC);
+	{
+		free_parse(*node, NULL, MEM_ALLOC);
+		errno = MEM_ALLOC;
+		return ;
+	}
 	free((*node)->content[0]);
 	(*node)->content[0] = res;
 }
@@ -60,7 +65,8 @@ static void	handle_space_for_echo(t_token **node)
 	t_token	*tmp;
 	
 	tmp = *node;
-	while (tmp && (tmp->token == S_QUOTE || tmp->token == D_QUOTE
+	while (tmp && errno != MEM_ALLOC && (tmp->token == S_QUOTE 
+			|| tmp->token == D_QUOTE
 			|| tmp->token == SPACE || tmp->token == EXPAND
 			|| tmp->token == NO_TOKEN || tmp->token == DIREC
 			|| tmp->token == FLE || tmp->token == ARG || tmp->error != 0 ))
@@ -94,16 +100,36 @@ static bool	verif_is_token_valid(t_type token)
 		return (true);
 }
 
+static void	add_space_for_export(t_token **node)
+{
+	int		new_content;
+	char	*res;
+
+	new_content = ft_strlen((*node)->content[0]) + ft_strlen((*node)->next->content[0]);
+	res = malloc(sizeof(char) * (new_content + 1));
+	if (!res)
+	{
+		free_parse((*node), NULL, MEM_ALLOC);
+		errno = MEM_ALLOC;
+		return ;
+	}
+	ft_memcpy(res, (*node)->content[0],
+				ft_strlen((*node)->content[0]));
+	ft_memcpy(res + ft_strlen((*node)->content[0]),
+				(*node)->next->content[0], ft_strlen((*node)->next->content[0]));
+	res[new_content] = '\0';
+	free((*node)->content[0]);
+	(*node)->content[0] = res;
+}
+
 static void	handle_space_for_export(t_token **node)
 {
 	t_token	*tmp;
-	char	*res;
-	int		new_content;
 
 	if (!node || !*node)
 		return ;
 	tmp = *node;
-	while (tmp && (tmp->error != 0 || tmp->token == SPACE))
+	while (tmp && errno != MEM_ALLOC && (tmp->error != 0 || tmp->token == SPACE))
 	{
 		if (tmp->error != 0
 			&& ft_strlen(tmp->content[0]) > 0
@@ -111,17 +137,9 @@ static void	handle_space_for_export(t_token **node)
 			&& tmp->next && tmp->next->content && tmp->next->content[0]
 			&& verif_is_token_valid(tmp->next->token))
 		{
-			new_content = ft_strlen(tmp->content[0]) + ft_strlen(tmp->next->content[0]);
-			res = malloc(sizeof(char) * (new_content + 1));
-			if (!res)
-				free_parse(tmp, "Malloc failed in function 'handle_space_for_export'", MEM_ALLOC);
-			ft_memcpy(res, tmp->content[0],
-						ft_strlen(tmp->content[0]));
-			ft_memcpy(res + ft_strlen(tmp->content[0]),
-						tmp->next->content[0], ft_strlen(tmp->next->content[0]));
-			res[new_content] = '\0';
-			free(tmp->content[0]);
-			tmp->content[0] = res;
+			add_space_for_export(&tmp);
+			if (errno == MEM_ALLOC)
+				return ;
 			delete_node_pointer(&tmp);
 		}
 		else
@@ -135,7 +153,7 @@ void	handle_space(t_token **head)
 	t_token	*tmp;
 
 	tmp = *head;
-	while (tmp)
+	while (tmp && errno != MEM_ALLOC)
 	{
 		if (!ft_strncmp(tmp->content[0], "echo", 5))
 		{

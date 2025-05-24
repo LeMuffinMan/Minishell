@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 20:03:53 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/23 17:54:27 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/24 00:06:53 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,8 +157,8 @@ static void	is_prefix(t_token **node, char **current_dir)
 			res[count] = ft_strdup(current_dir[i]);
 			if (!res[count])
 			{
-				errno = MEM_ALLOC;
 				free_tab(res);
+				errno = MEM_ALLOC;
 				return ;
 			}
 			count++;
@@ -272,8 +272,8 @@ static void	is_joker(t_token **node, char **current_dir)
 			res[count] = ft_strdup(current_dir[i]);
 			if (!res[count])
 			{
-				errno = MEM_ALLOC;
 				free_tab(current_dir);
+				errno = MEM_ALLOC;
 				return ;
 			}
 			count++;
@@ -323,8 +323,8 @@ static void	is_infix(t_token **node, char **current_dir)
 			res[count] = ft_strdup(current_dir[i]);
 			if (!res[count])
 			{
-				errno = MEM_ALLOC;
 				free_tab(res);
+				errno = MEM_ALLOC;
 				return ;
 			}
 			count++;
@@ -351,14 +351,20 @@ static void	add_space_for_wildcard(t_token **node)
 	{
 		res = ft_strjoin((*node)->content[i], " ");
 		if (!res)
-			free_parse(*node,
-				"Malloc faile in function 'add_space_for_wildcard'", MEM_ALLOC);
+		{
+			free_parse(*node, NULL, MEM_ALLOC);
+			errno = MEM_ALLOC;
+			return ;
+		}
 		free((*node)->content[i]);
 		(*node)->content[i] = ft_strdup(res);
 		free(res);
 		if (!(*node)->content[i])
-			free_parse(*node,
-				"Malloc faile in function 'add_space_for_wildcard'", MEM_ALLOC);
+		{
+			free_parse(*node, NULL, MEM_ALLOC);
+			errno = MEM_ALLOC;
+			return ;
+		}
 		i++;
 	}
 }
@@ -381,20 +387,25 @@ static bool	make_wildcard(t_token **node, bool flag)
 	else
 		is_joker(node, current_dir);
 	if (errno == MEM_ALLOC)
+	{
+		free_tab(current_dir);
 		return (false);
+	}
 	free_tab(current_dir);
 	if (flag)
 		add_space_for_wildcard(node);
+	if (errno == MEM_ALLOC)
+		return (false);
 	return (true);
 }
 
-void	handle_wildcard(t_token **head, bool flag)
+bool	handle_wildcard(t_token **head, bool flag)
 {
 	t_token	*tmp;
 	bool	is_echo;
 
 	if (!head || !*head || !flag)
-		return ;
+		return (true);
 	tmp = *head;
 	is_echo = false;
 	while (tmp)
@@ -405,8 +416,13 @@ void	handle_wildcard(t_token **head, bool flag)
 				&& !ft_strncmp(tmp->prev->prev->content[0], "echo", 5))
 				is_echo = true;
 			if (!make_wildcard(&tmp, is_echo))
-				free_parse(*head, "Malloc failed in function 'make_wildcard'", MEM_ALLOC);
+			{
+				free_parse(*head, NULL, MEM_ALLOC);
+				errno = MEM_ALLOC;
+				return (false);
+			}
 		}
 		tmp = tmp->next;
 	}
+	return (true);
 }

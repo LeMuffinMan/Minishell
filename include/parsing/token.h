@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 01:26:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/23 21:52:56 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/24 02:06:22 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ typedef enum e_type
 
 /* ----------------------Token---------------------- */
 void					assign_token(t_token **head, t_var *list_env, bool flag);
-void					concat_args(t_token **head, t_var *list_env, bool flag, t_lists *lists);
+bool					concat_args(t_token **head, t_var *list_env, bool flag, t_lists *lists);
 void					delete_space_node(t_token **head);
 void					delete_space_node(t_token **head);
 
@@ -87,8 +87,7 @@ bool					env_is_alive(t_var *list_env);
 void					replace_tab(t_token **node, char *str);
 
 void					check_syntax_error(t_token **head);
-void					error_one_quote(t_token **head);
-void					error_one_parenthesis(t_token **head);
+bool					error_one_parenthesis(t_token **head);
 
 t_token					*add_new_token(char *str, int error_code);
 
