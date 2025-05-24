@@ -79,21 +79,18 @@ void	setup_child_signals(void)
 {
 	struct sigaction	sa;
 
-	// Initialiser toute la structure à zéro
 	ft_memset(&sa, 0, sizeof(sa));
-	// SIGINT par défaut dans les enfants
-	sa.sa_handler = SIG_DFL; // Utiliser le gestionnaire par défaut
+	sa.sa_handler = SIG_DFL;
 	sa.sa_flags = 0;
 	sigemptyset(&sa.sa_mask);
 	sigaction(SIGINT, &sa, NULL);
-	// SIGQUIT avec gestionnaire personnalisé
 	sa.sa_handler = handle_child_sigquit;
 	sigaction(SIGQUIT, &sa, NULL);
 }
 void	sigint_prompt_handler(int sig)
 {
-    (void)sig;
-    g_signal = 130;
+  (void)sig;
+  g_signal = 130;
 	write(STDOUT_FILENO, "\n", 1);
 	rl_on_new_line();
 	rl_replace_line("", 0);
@@ -102,6 +99,8 @@ void	sigint_prompt_handler(int sig)
 
 void	setup_parent_signals(void)
 {
-	signal(SIGINT, sigint_prompt_handler); // Ctrl+C géré dans le prompt
-	signal(SIGQUIT, SIG_IGN);              // Ctrl+\ ignoré dans le shell
+	signal(SIGINT, sigint_prompt_handler);
+	signal(SIGQUIT, SIG_IGN);
 }
+
+

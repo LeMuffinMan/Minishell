@@ -35,49 +35,32 @@
 /* 	return (exit_code); */
 /* } */
 /**/
-int	wait_children(pid_t last_child, pid_t first_child)
+int wait_children(pid_t last_child)
 {
-	int		status;
-	int		last_status;
-	int		first_status;
-	pid_t	wpid;
-	int	last_child_done;
-	int	first_child_done;
+    int status;
+    int last_status;
+    pid_t wpid;
 
-(void)last_child_done;
-(void)first_child_done;
-(void)first_status;
-
-	last_status = 0;
-	first_status = 0;
-	last_child_done = 0;
-	first_child_done = 0;
-	while ((wpid = waitpid(-1, &status, 0)) > 0)
-	{
-		if (wpid == last_child)
-		{
-			last_child_done = 1;
-			if (WIFEXITED(status))
-				last_status = WEXITSTATUS(status);
-			else if (WIFSIGNALED(status))
-			{
-				last_status = 128 + WTERMSIG(status);
-				if (WTERMSIG(status) == SIGINT)
-					write(STDOUT_FILENO, "\n", 1);
-				if (WTERMSIG(status) == SIGQUIT)
-					write(STDOUT_FILENO, "Quit (core dumped)\n", 19);
-			}
-		}
-		else if (wpid == first_child)
-		{
-			first_child_done = 1;
-			if (WIFEXITED(status))
-				first_status = WEXITSTATUS(status);
-			else if (WIFSIGNALED(status))
-				first_status = 128 + WTERMSIG(status);
-		}
-	}
-	return (last_status);
+    last_status = 0;
+    wpid = waitpid(-1, &status, 0);
+    while (wpid > 0)
+    {
+        if (wpid == last_child)
+        {
+            if (WIFEXITED(status))
+                last_status = WEXITSTATUS(status);
+            else if (WIFSIGNALED(status))
+            {
+                last_status = 128 + WTERMSIG(status);
+                if (WTERMSIG(status) == SIGINT)
+                    write(STDOUT_FILENO, "\n", 1);
+                else if (WTERMSIG(status) == SIGQUIT)
+                    write(STDOUT_FILENO, "Quit (core dumped)\n", 19);
+            }
+        }
+        wpid = waitpid(-1, &status, 0);
+    }
+    return (last_status);
 }
 
 int	add_pipe(int fd[2], t_pipe **pipes)

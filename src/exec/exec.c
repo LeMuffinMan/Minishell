@@ -209,7 +209,7 @@ int	exec_pipe(t_tree **ast, t_lists *lists)
 		if (exit_code == -1)
 			return (malloc_error_close_free_pipes(lists->pipe_fd, lists->pipes));
 		sigaction(SIGINT, &sa_orig, NULL);
-		update_last_arg_var(lists->env, (*ast)->token->content);
+		update_last_arg_var(lists->env, (*ast)->token->content); // a virer 
 		return (exit_code);
 	}
 	return (1);
