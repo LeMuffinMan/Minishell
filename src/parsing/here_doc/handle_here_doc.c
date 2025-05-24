@@ -66,7 +66,7 @@ bool	extract_stdin(int fd, char *limiter)
 	return (true);
 }
 
-bool	create_here_doc(t_token *node)
+bool	create_here_doc(t_token *node, t_lists *lists)
 {
 	int		fd;
 	char	*limiter;
@@ -98,7 +98,7 @@ bool	create_here_doc(t_token *node)
 	else
 	{
 		//proteger le wait
-		wait_children(pid, pid);
+		lists->exit_code = wait_children(pid, pid);
 		sigaction(SIGINT, &sa_orig, NULL);
 	}
 	close(fd);
@@ -106,7 +106,7 @@ bool	create_here_doc(t_token *node)
 	return (true);
 }
 
-bool	handle_here_doc(t_token **head)
+bool	handle_here_doc(t_token **head, t_lists *lists)
 {
 	t_token	*tmp;
 
@@ -119,7 +119,7 @@ bool	handle_here_doc(t_token **head)
 	{
 		if (tmp->token == HD)
 		{
-			if (!create_here_doc(tmp))
+			if (!create_here_doc(tmp, lists))
 				return (false);
 		}
 		tmp = tmp->next;			
