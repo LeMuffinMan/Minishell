@@ -106,6 +106,7 @@ int	builtin_exit(char **arg, t_tree **ast, t_lists *lists)
 	{
 		ft_putstr_fd("minishell: exit: numeric argument required\n", 2);
 		free_lists(lists);
+		close_origin_fds(lists->origin_fds);
 		exit(2);
 		
 	}

@@ -286,6 +286,12 @@ int	parse_and_execution_loop(char **env, char **prompt, t_lists *lists,
 	//un free du prompt qui se fait pas sur un test cat << EOF 
 	if (dup_origins_fds(lists->origin_fds) == -1)
 		malloc_error_close_free_exit(lists);
+	if (*prompt && ft_strncmp(*prompt, "[Minishell]$ ", 13))
+	{
+		free(*prompt);
+		*prompt = NULL;
+		prompt = NULL;
+	}
 	//est-ce qu'on a besoin du strings env ou on peut passer direct les lists ou la liste env ?
 	strings_env = lst_to_array(lists->env);
 	(*lists->ast) = parse(line, strings_env, *lists->env, lists);
