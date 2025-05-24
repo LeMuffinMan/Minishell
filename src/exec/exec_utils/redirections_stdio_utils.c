@@ -63,7 +63,6 @@ int open_dup2_close(char *file, t_type type)
 {
 	int fd;
 
-	#include <stdio.h>
 	if (type == R_IN || type == HD)
 		fd = open(file, O_RDONLY);
 	else if (type == APPEND)
