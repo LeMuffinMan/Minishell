@@ -39,13 +39,13 @@ int wait_children(pid_t last_child)
 {
     int status;
     int last_status;
-    pid_t wpid;
+    pid_t pid;
 
     last_status = 0;
-    wpid = waitpid(-1, &status, 0);
-    while (wpid > 0)
+    pid = waitpid(-1, &status, 0);
+    while (pid > 0)
     {
-        if (wpid == last_child)
+        if (pid == last_child)
         {
             if (WIFEXITED(status))
                 last_status = WEXITSTATUS(status);
@@ -58,7 +58,7 @@ int wait_children(pid_t last_child)
                     write(STDOUT_FILENO, "Quit (core dumped)\n", 19);
             }
         }
-        wpid = waitpid(-1, &status, 0);
+        pid = waitpid(-1, &status, 0);
     }
     return (last_status);
 }
