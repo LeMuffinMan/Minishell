@@ -145,9 +145,6 @@ int exec_pipe_left_execution(t_tree **ast, t_lists *lists, pid_t pid)
 
 int exec_pipe_right_execution(t_tree **ast, t_lists *lists, pid_t right_pid, pid_t left_pid)
 {
-	int exit_code;
-
-	exit_code = 0;
 	if (right_pid < 0)
 	{
 		// error
@@ -161,8 +158,8 @@ int exec_pipe_right_execution(t_tree **ast, t_lists *lists, pid_t right_pid, pid
 	{
 		close(lists->pipe_fd[0]);
 		free_pipes(lists->pipes);
-		exit_code = wait_children(right_pid, left_pid);
-		return (exit_code);
+		lists->exit_code = wait_children(right_pid, left_pid);
+		return (lists->exit_code);
 	}
 	return (0);
 }
@@ -209,7 +206,7 @@ int	exec_pipe(t_tree **ast, t_lists *lists)
 		if (exit_code == -1)
 			return (malloc_error_close_free_pipes(lists->pipe_fd, lists->pipes));
 		sigaction(SIGINT, &sa_orig, NULL);
-		update_last_arg_var(lists->env, (*ast)->token->content); // a virer 
+		update_last_arg_var(lists->env, (*ast)->token->content); 
 		return (exit_code);
 	}
 	return (1);
