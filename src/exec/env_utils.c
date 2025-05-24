@@ -43,6 +43,7 @@ int	update_env(t_var **env)
 	old_pwd = is_known_key(env, "OLDPWD");
 	if (!old_pwd)
 	{
+		//seg fault a proteger ici si on fait unset PWD et cd 
 		// ajouter le old_pwd a l'env
 	}
 	pwd = is_known_key(env, "PWD");
