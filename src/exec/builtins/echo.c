@@ -26,7 +26,6 @@ int is_a_valid_echo_option(char *s)
 		i = 2;
 		while (s[i])
 		{
-			printf("s[%d] = %c\n", i, s[i]);
 			if (s[i] != 'n')
 				return (0);
 			i++;
@@ -59,14 +58,14 @@ int	builtin_echo(char **arg)
 	}
 	s = ft_strdup("");
 	i = 1;
-	if (is_a_valid_echo_option(arg[i]) && option == 0)
+	if (is_a_valid_echo_option(arg[i]))
 	{
 		option = 1;
 		i++;
 	}
 	if (option == 1)
 	{
-		while (arg[i] && ((!ft_strncmp(arg[i], "-n", 3) && ft_strlen(arg[1]) == 2)  || (!ft_strncmp(arg[i], "-n ", 4) && ft_strlen(arg[i]) == 3 )))
+		while (arg[i] && ((!ft_strncmp(arg[i], "-n", 2))))
 			i++;
 		/* printf("i = %d\n", i); */
 	}
