@@ -125,14 +125,14 @@
  	//fixer export : il faut toujours maitnenir dnas un seul char * chaque couple key=value
 //
  	//done HERE_DOC 
- 	//wildcards 
+ 	//done wildcards 
 //Exec :
-	//done fix exec here_doc + signaux
-	//reparer l'expand de l'exit code pour false || echo $?
+	//fix exec here_doc + signaux
+	//done reparer l'expand de l'exit code pour false || echo $?
  	//Refacto de tout exec.c 
   //reparer et tester les builtins
-		//exit arg1 arg2 : il regarde si le premier argument est valid, sinon, il exit avec l'erreur du premier argument
- 		//env s'arrete au = 
+		//done exit arg1 arg2 : il regarde si le premier argument est valid, sinon, il exit avec l'erreur du premier argument
+ 		//done env s'arrete au = 
 //
 //jeudi : merge jeudi 18h : wildcards + DONE signaux (HD + wanted EOF pour HD) + exit_code fixed + export au parsing 
 //vendredi : refacto builtin complet + tests des builtins 
@@ -278,6 +278,11 @@ int	parse_and_execution_loop(char **env, char **prompt, t_lists *lists,
 	line = readline_loop(prompt, lists, env, exit_code);
 	if (!line)
 		malloc_error_close_free_exit(lists);
+	if (g_signal != 0)
+	{
+		lists->exit_code = g_signal;
+		g_signal = 0; // Réinitialiser le flag de signal
+	}
 	//un free du prompt qui se fait pas sur un test cat << EOF 
 	if (dup_origins_fds(lists->origin_fds) == -1)
 		malloc_error_close_free_exit(lists);
@@ -314,6 +319,7 @@ int	main(int ac, char **av, char **env)
 	// decommenter a la toute fin !!!
 	/* is_interactive_mode(); */
 	exit_code = 0;            
+	g_signal = 0;
 		// on ajoute l'exit code a la megastruct ou on la laisse dans env ?
 	/* rl_inhibit_completion = 1; // desactive l'autocompletion */
 	if (init(&lists, av, env) == -1)

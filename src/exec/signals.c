@@ -10,22 +10,21 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <readline/readline.h>
-#include "signals.h"
 #include "libft.h"
-#include <unistd.h>
+#include "signals.h"
+#include <readline/readline.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
+// pour CTRL bckslsh : child : on veut core dump + imprimer le message
+////et ne rien faire dans un parent
 
-//pour CTRL bckslsh : child : on veut core dump + imprimer le message 
-////et ne rien faire dans un parent 
+volatile sig_atomic_t	g_signal = 0; //DOC !
 
-volatile sig_atomic_t g_signal = 0;
-
-void do_nothing_sig(int sig)
+void	do_nothing_sig(int sig)
 {
-  (void)sig;
+	(void)sig;
 }
 
 int	set_signals(int mode)
@@ -36,70 +35,73 @@ int	set_signals(int mode)
 	sigaddset(&sa.sa_mask, SIGQUIT);
 	sa.sa_flags = SA_RESTART;
 	if (mode == 0)
-	  sa.sa_handler = handle_sig;
+		sa.sa_handler = handle_sig;
 	else if (mode == 1)
-	  sa.sa_handler = SIG_IGN; // ou do nothing ?
+		sa.sa_handler = SIG_IGN; // ou do nothing ?
 	if ((sigaction(SIGINT, &sa, NULL)) == -1)
-	  return (-1);
+		return (-1);
 	if ((sigaction(SIGQUIT, &sa, NULL)) == -1)
-	  return (-1);
+		return (-1);
 	/* sa.sa_handler = SIG_IGN; // On ignore SIGQUIT dans le shell principal */
 	return (0);
 }
 
-
 void	handle_sig(int sig)
 {
-  g_signal = sig; //doc pour volatile et sig_atomic_t
+	g_signal = sig; 
 	if (sig == SIGINT) // CTRL + C
 	{
-	  write(STDOUT_FILENO, "\n", 1);
-	  rl_on_new_line();
-	  rl_replace_line("", 0);
-	  rl_redisplay();
-  }
-  if (sig == SIGQUIT) // CTRL + backslash 
-  {
+		write(STDOUT_FILENO, "\n", 1);
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		rl_redisplay();
+	}
+	if (sig == SIGQUIT) // CTRL + backslash
+	{
 		do_nothing_sig(sig);
-  }
+	}
 }
 
-void 	handle_child_sigquit()
+void	handle_child_sigquit(int sig)
 {
-	exit (131);
+    (void)sig;
+	exit(131);
 }
 
-void handle_child_sigint()
+void	handle_child_sigint(int sig)
 {
-    /* write(STDOUT_FILENO, "\n", 1);  // Force un saut de ligne */
-    exit(130);  // Code de sortie standard pour SIGINT (128 + 2)
+    (void)sig;
+	/* write(STDOUT_FILENO, "\n", 1);  // Force un saut de ligne */
+	exit(130); // Code de sortie standard pour SIGINT (128 + 2)
 }
 
-void setup_child_signals(void)
+void	setup_child_signals(void)
 {
-    struct sigaction sa;
+	struct sigaction	sa;
 
-    // Initialiser toute la structure à zéro
-    ft_memset(&sa, 0, sizeof(sa));
-    // SIGINT par défaut dans les enfants
-    sa.sa_handler = SIG_DFL;  // Utiliser le gestionnaire par défaut
-    sa.sa_flags = 0;
-    sigemptyset(&sa.sa_mask);
-    sigaction(SIGINT, &sa, NULL);
-    // SIGQUIT avec gestionnaire personnalisé
-    sa.sa_handler = handle_child_sigquit;
-    sigaction(SIGQUIT, &sa, NULL);
+	// Initialiser toute la structure à zéro
+	ft_memset(&sa, 0, sizeof(sa));
+	// SIGINT par défaut dans les enfants
+	sa.sa_handler = SIG_DFL; // Utiliser le gestionnaire par défaut
+	sa.sa_flags = 0;
+	sigemptyset(&sa.sa_mask);
+	sigaction(SIGINT, &sa, NULL);
+	// SIGQUIT avec gestionnaire personnalisé
+	sa.sa_handler = handle_child_sigquit;
+	sigaction(SIGQUIT, &sa, NULL);
 }
-void sigint_prompt_handler()
+void	sigint_prompt_handler(int sig)
 {
-	  write(STDOUT_FILENO, "\n", 1);
-	  rl_on_new_line();
-	  rl_replace_line("", 0);
-	  rl_redisplay();
+    (void)sig;
+    g_signal = 130;
+	write(STDOUT_FILENO, "\n", 1);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
 }
 
 void	setup_parent_signals(void)
 {
-	signal(SIGINT, sigint_prompt_handler);   // Ctrl+C géré dans le prompt
-	signal(SIGQUIT, SIG_IGN);         // Ctrl+\ ignoré dans le shell
+	signal(SIGINT, sigint_prompt_handler); // Ctrl+C géré dans le prompt
+	signal(SIGQUIT, SIG_IGN);              // Ctrl+\ ignoré dans le shell
 }
