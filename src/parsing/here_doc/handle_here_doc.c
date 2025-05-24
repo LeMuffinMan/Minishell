@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "signals.h"
+#include "utils.h"
 #include <sys/stat.h>
 
 bool	verif_name(char *name)
@@ -90,7 +91,9 @@ bool	create_here_doc(t_token *node, t_lists *lists)
 	}
 	if (pid == 0)
 	{
+		close_origin_fds(lists->origin_fds);
 		setup_child_signals();
+		free_lists(lists);
 		if (!extract_stdin(fd, limiter))
 			exit(EXIT_FAILURE);
 		exit(EXIT_SUCCESS);

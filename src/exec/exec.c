@@ -284,7 +284,6 @@ int	redirect_stdio(t_tree **ast, t_lists *lists)
 {
 	t_tree	*left;
 	t_tree	*right;
-	int		exit_code;
 	char *file;
 
 	// doute pour ce if, on devrait le faire au parsing ?
@@ -296,32 +295,32 @@ int	redirect_stdio(t_tree **ast, t_lists *lists)
 		file = (*ast)->token->content[2];
 	else
 		file = (*ast)->token->content[1];
-	exit_code = file_check(file, (*ast)->token->token, (*ast)->token->error);
-	if (exit_code != 0)
-		return (exit_code); // il faut return ici ?
-	exit_code = open_dup2_close(file, (*ast)->token->token);
-	if (exit_code == -1) // ERRNO
+	lists->exit_code = file_check(file, (*ast)->token->token, (*ast)->token->error);
+	if (lists->exit_code != 0)
+		return (lists->exit_code); // il faut return ici ?
+	lists->exit_code = open_dup2_close(file, (*ast)->token->token);
+	if (lists->exit_code == -1) // ERRNO
 		return (-1);
 	if (left && (left->token->token == DIREC && left->token->error == 127))
-		exit_code = error_cmd(left->token->content[0], 127);
+		lists->exit_code = error_cmd(left->token->content[0], 127);
 	if (right && (right->token->token == DIREC && right->token->error == 127))
-		exit_code = error_cmd(right->token->content[0], 127);
+		lists->exit_code = error_cmd(right->token->content[0], 127);
 	if (left && (left->token->token == R_IN || left->token->token == APPEND
 			|| left->token->token == TRUNC || left->token->token == HD))
-		exit_code = redirect_stdio(&left, lists);
-	if (exit_code == 0 && right && (right->token->token == R_IN
+		lists->exit_code = redirect_stdio(&left, lists);
+	if (lists->exit_code == 0 && right && (right->token->token == R_IN
 			|| right->token->token == APPEND || right->token->token == TRUNC
 			|| right->token->token == HD))
-		exit_code = redirect_stdio(&right, lists);
-	if (exit_code == 0 && left && (left->token->token == CMD
+		lists->exit_code = redirect_stdio(&right, lists);
+	if (lists->exit_code == 0 && left && (left->token->token == CMD
 			|| left->token->token == BUILT_IN))
-		exit_code = exec_cmd(&left, lists);
-	if (exit_code == 0 && right && (right->token->token == CMD
+		lists->exit_code = exec_cmd(&left, lists);
+	if (lists->exit_code == 0 && right && (right->token->token == CMD
 			|| right->token->token == BUILT_IN))
-		exit_code = exec_cmd(&right, lists);
+		lists->exit_code = exec_cmd(&right, lists);
 	if ((*ast)->token->token == HD)
 		unlink(file);
-	return (exit_code);
+	return (lists->exit_code);
 }
 
 int exec_boolop(t_tree **ast, t_lists *lists)

@@ -14,6 +14,7 @@
 #include "env_utils.h"
 #include "libft.h"
 #include "structs.h"
+#include "limits.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
@@ -128,14 +129,60 @@ int	builtin_cd_without_arg(t_var **env)
 	return (0);
 }
 
+int find_last_slash(char *buf)
+{
+	int i;
+
+	i = ft_strlen(buf);
+	while (i >= 0)
+	{
+		if (buf[i] == '/')
+			break;
+		i--;
+	}
+	return (i);
+}
+
+int trim_pwd(char **s)
+{
+	int end;
+	char	buf[PATH_MAX];
+
+	if (getcwd(buf, sizeof(buf)) != NULL)
+	{
+		end = find_last_slash(buf);
+		*s = ft_strndup(buf, end);
+		return (0);
+	}
+	else 
+	{
+		ft_putstr_fd("cd: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory", 2);
+		return (1);	
+	}
+}
+
 //proteger si on fait rm -rf du dernier repertoire
 int builtin_cd_with_arg(char **arg, t_var **env)
 {
 	char *path;
 
+	path = NULL;
 	if (!ft_strncmp(arg[1], "-", 2))
-		path = ft_strdup(get_value(env, "OLDPWD"));
-	else
+	{
+		if (!get_value(env, "OLDPWD"))
+		{
+			ft_putstr_fd("minishell: cd: OLDPWD not set\n", 2);
+			return (1);
+		}
+		else
+			path = ft_strdup(get_value(env, "OLDPWD"));
+	}
+	if (!ft_strncmp(arg[1], "..", 3) && access("..", X_OK) != 0)
+	{
+		if (trim_pwd(&path) == -1)
+			return (-1);
+	}
+	else if (!path)
 		path = ft_strdup(arg[1]);
 	if (!change_directory(path))
 		update_env(env);
