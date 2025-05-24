@@ -20,7 +20,8 @@
 // pour CTRL bckslsh : child : on veut core dump + imprimer le message
 ////et ne rien faire dans un parent
 
-volatile sig_atomic_t	g_signal = 0; //DOC !
+//volatile ou int ?
+int	g_signal = 0;
 
 void	do_nothing_sig(int sig)
 {

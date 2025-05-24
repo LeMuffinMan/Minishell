@@ -122,12 +122,12 @@
 //parsing :
  	//done fix sudo -A et sudo -A apt update
 	//done echo $HOME $USER
- 	//fixer export : il faut toujours maitnenir dnas un seul char * chaque couple key=value
+ 	//done fixer export : il faut toujours maitnenir dnas un seul char * chaque couple key=value
 //
  	//done HERE_DOC 
  	//done wildcards 
 //Exec :
-	//fix exec here_doc + signaux
+	//done fix exec here_doc + signaux
 	//done reparer l'expand de l'exit code pour false || echo $?
  	//Refacto de tout exec.c 
   //reparer et tester les builtins

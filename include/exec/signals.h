@@ -15,7 +15,7 @@
 
 #include <signal.h>
 
-extern volatile sig_atomic_t g_signal;
+extern int g_signal;
 
 // void	setup_child_signals(void);
 void	handle_sig(int sig);
