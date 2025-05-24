@@ -432,11 +432,9 @@ int exec_group_boolop(t_tree **ast, t_lists *lists)
 //fds opens 
 int	exec_ast(t_tree **ast, t_lists *lists)
 {
-	int			exit_code;
 	t_alias		*alias;
 	t_shell_fct	*shell_fct;
 
-	exit_code = 0;
 	if (!*ast)
 		return (127); // on devrait peut etre reagir dans le main pour ca
 	//signaux a virer ?

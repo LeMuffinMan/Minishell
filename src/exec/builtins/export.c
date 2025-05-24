@@ -160,7 +160,7 @@ int is_var_declaration(char *arg)
 		return (0);
 	while (arg[i])
 	{
-		if (arg[i] == '+' && arg[i + 1] && arg[i + 1] != '=')
+		if (arg[i] == '+' && arg[i + 1] && arg[i + 1] != '=') // += pas valide !
 			return (0);
 		if (!ft_isalnum(arg[i]))
 		{
@@ -302,7 +302,7 @@ int is_var_exportation(char *s)
 	{
 		if (s[i] == '+' && s[i + 1] && s[i + 1] != '=')
 			return (0);
-		if (s[i] < '0')
+		if ((s[i] < '0' || s[i] > 'z'))
 			return (0);
 		i++;
 	}
@@ -333,9 +333,12 @@ int	builtin_export(t_var **env, char **arg)
 		}
 		else if (is_var_exportation(arg[i]))
 		{
+
 			node = is_known_key(env, arg[i]);
 			if (node)
 				node->exported = 1;
+			else 
+				add_or_update_var(env, arg[i]);
 		}
 		else
 		{

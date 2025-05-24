@@ -104,10 +104,8 @@ void	parse_quote(t_token **node)
 
 bool	is_quote(t_token **node)
 {
-	int		len;
 	bool	flag;
 
-	len = ft_strlen((*node)->content[0]);
 	flag = false;
 	if ((*node)->content[0][0] == '"')
 	{

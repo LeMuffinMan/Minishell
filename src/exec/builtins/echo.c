@@ -26,7 +26,7 @@ int is_a_valid_echo_option(char *s)
 		i = 2;
 		while (s[i])
 		{
-			if (s[i] != 'n')
+			if (s[i] != 'n' && s[i] != ' ') //fix temporaire
 				return (0);
 			i++;
 		}
@@ -34,6 +34,34 @@ int is_a_valid_echo_option(char *s)
 	else
 		return (0);
 	return (1);
+}
+
+int is_only_n(char *arg)
+{
+	int i;
+
+	i = 1;
+	while (arg[i])
+	{
+		if (arg[i] != 'n' && arg[i] != ' ')
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+int get_options(int *option, char **arg)
+{
+	int i;
+
+	i = 1;
+	while (arg[i] && !ft_strncmp(arg[i], "-n", 2) && is_only_n(arg[i]))
+	{
+		if (is_a_valid_echo_option(arg[i]))
+			*option = 1;
+		i++;
+	}
+	return (i);
 }
 
 int	builtin_echo(char **arg)
@@ -57,15 +85,14 @@ int	builtin_echo(char **arg)
 		return (0);
 	}
 	s = ft_strdup("");
-	i = 1;
-	if (is_a_valid_echo_option(arg[i]))
-	{
-		option = 1;
-		i++;
-	}
+	i = get_options(&option, arg);
 	if (option == 1)
+	/* if (is_a_valid_echo_option(arg[i])) */
+	/* { */
+	/* 	option = 1; */
+	/* } */
 	{
-		while (arg[i] && ((!ft_strncmp(arg[i], "-n", 2))))
+		while (arg[i] && ((!ft_strncmp(arg[i], "-n", 3))))
 			i++;
 		/* printf("i = %d\n", i); */
 	}

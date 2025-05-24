@@ -15,8 +15,8 @@
 #include "list.h"
 #include "libft.h"
 #include <fcntl.h>
-#include <readline/readline.h>
 #include <stdio.h>
+#include <readline/readline.h>
 #include <unistd.h>
 #include "signals.h"
 #include "utils.h"
