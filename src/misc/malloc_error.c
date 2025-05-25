@@ -37,9 +37,21 @@ int	handle_pipe_error(t_lists *lists)
 
 int malloc_error_parenthesis_child(t_lists *lists, t_tree **ast_to_free)
 {
+	int saved_errno;
+
+	saved_errno = errno;
 	if (ast_to_free && *ast_to_free) 
 		free_tree(ast_to_free);
 	free_lists(lists);
-	exit(errno);
+	exit(saved_errno);
 }
 
+int malloc_free_string(char *s)
+{
+	int saved_errno;
+
+	saved_errno = errno;
+	if (s)
+		free(s);
+	return (saved_errno);
+}

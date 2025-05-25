@@ -15,31 +15,42 @@
 #include "builtins.h"
 #include "utils.h"
 #include "env_utils.h"
+#include "malloc_error_handlers.h"
 #include <errno.h>
 
-int update_var(t_var **node, char **key_value, int inc)
+int	append_to_var(t_var **node, char **key_value)
 {
 	char *s;
 	char *tmp;
 	int saved_errno;
 
+	s = ft_strdup((*node)->value);
+	if (!s)
+		return (errno);
+	tmp = s;
+	s = ft_strjoin(s, key_value[1]);
+	if (!s)
+	{
+		saved_errno = errno;
+		free(tmp);
+		errno = saved_errno;
+		return (errno);
+	}
+	free(tmp);
+	free((*node)->value);	
+	(*node)->value = s;
+	return (0);
+}
+
+int	update_var(t_var **node, char **key_value, int inc)
+{
+	int	err;
+
 	if (inc == 1)
 	{
-		s = ft_strdup((*node)->value);
-		if (!s)
-			return (errno);
-		tmp = s;
-		s = ft_strjoin(s, key_value[1]);
-		if (!s)
-		{
-			saved_errno = errno;
-			free(tmp);
-			errno = saved_errno;
-			return (errno);
-		}
-		free(tmp);
-		free((*node)->value);	
-		(*node)->value = s;
+		err = append_to_var(node, key_value);
+		if (err)
+			return (err);
 	}
 	else
 	{
@@ -55,8 +66,9 @@ int update_var(t_var **node, char **key_value, int inc)
 			return (errno);
 	}
 	(*node)->exported = 1;
-	return(0);
+	return (0);
 }
+
 
 int export_without_argument(t_var **env)
 {
@@ -126,33 +138,14 @@ int is_an_incrementation(char *arg)
 	return (0);
 }
 
-char *clean_inc_operator(char *arg)
+char	*copy_after_plus(char *arg, char *s, int i)
 {
-	int i;
 	int j;
-	char *s;
 
-	s = malloc(sizeof(char) * (ft_strlen(arg)));
-	if (!s)
-		return (NULL);
-	i = 0;
-	while (arg[i] && arg[i] != '+')
-	{
-		s[i] = arg[i];
-		i++;
-	}
-	if (arg[i] == '+')
-	{
-		s[i] = '=';
-		j = i + 1;
-		i+=2;
-	}
-	else
-	{
-		s[i] = '\0';
-		return (s);
-	}
-	while(arg[i])
+	s[i] = '=';
+	j = i + 1;
+	i += 2;
+	while (arg[i])
 	{
 		s[j] = arg[i];
 		j++;
@@ -162,106 +155,142 @@ char *clean_inc_operator(char *arg)
 	return (s);
 }
 
-
-char *get_full_variable_declaration(char **arg, int i)
+char	*clean_inc_operator(char *arg)
 {
+	int i;
 	char *s;
 
-	if (arg[i][ft_strlen(arg[i]) - 1] == '=') //si s finit par = 
+	i = 0;
+	if (!arg)
+		return (NULL);
+	s = malloc(sizeof(char) * (ft_strlen(arg) + 1));
+	if (!s)
+		return (NULL);
+	while (arg[i] && arg[i] != '+')
 	{
-		if (arg[i + 1] && !is_var_declaration(arg[i + 1])) //et que content[i + 1] est sa valeur
+		s[i] = arg[i];
+		i++;
+	}
+	if (arg[i] != '+')
+	{
+		s[i] = '\0';
+		return (s);
+	}
+	return (copy_after_plus(arg, s, i));
+}
+
+char *get_full_variable_declaration(char **arg, int i, char **s)
+{
+	if (arg[i][ft_strlen(arg[i]) - 1] == '=') 
+	{
+		if (arg[i + 1] && !is_var_declaration(arg[i + 1])) 
 		{
-			s = ft_strjoin(arg[i], arg[i + 1]);
-			if (!s)
+			*s = ft_strjoin(arg[i], arg[i + 1]);
+			if (!*s)
 				return (NULL);
 		}
 		else
 		{
-			s = ft_strdup(arg[i]); //si on a une declaration de var en content[i + 1]
-			if (!s)
+			*s = ft_strdup(arg[i]); 
+			if (!*s)
 				return (NULL);
 		}
 	}
-	else //si on a un cas classique
+	else 
 	{
-		s = ft_strdup(arg[i]);
+		*s = ft_strdup(arg[i]);
+		if (!*s)
+			return (NULL);
+	}
+	return (*s);
+}
+
+
+char *prepare_var_string(char *var, int *inc)
+{
+	char *s;
+
+	if (is_an_incrementation(var))
+	{
+		*inc = 1;
+		s = clean_inc_operator(var);
+		if (!s)
+			return (NULL);
+	}
+	else
+	{
+		s = ft_strdup(var);
 		if (!s)
 			return (NULL);
 	}
 	return (s);
 }
 
+
+int update_existing_value(t_var *node, char *var, int inc)
+{
+	char *value;
+	char *tmp;
+
+	value = ft_strchr(var, '=');
+	if (!value)
+		return (0);
+	if (inc)
+	{
+		tmp = node->value;
+		node->value = ft_strjoin(node->value, value + 1);
+		if (!node->value)
+			return (malloc_free_string(tmp));
+		free(tmp);
+	}
+	else
+	{
+		free(node->value);
+		node->value = ft_strdup(value + 1);
+		if (!node->value)
+			return (errno);
+	}
+	return (0);
+}
+
+t_var *update_if_known_key(t_var **env, char *var, char *s, int inc)
+{
+	t_var *node;
+	char **key;
+
+	key = ft_split(s, '=');
+	if (!key)
+		return (NULL);
+	node = is_known_exported_key(env, key[0]);
+	free_array(key);
+	if (node)
+	{
+		if (update_existing_value(node, var, inc) == -1)
+			return (NULL);
+	}
+	return node;
+}
+
 int add_or_update_var(t_var **env, char *var)
 {
 	int inc;
 	char *s;
-	char *tmp;
-	char *value;
-	char **key;
-	int saved_errno;
 	t_var *node;
 
 	inc = 0;
-	if (is_an_incrementation(var))
-	{
-		s = clean_inc_operator(var);
-		if (errno == ENOMEM)
-			return (errno);
-		inc = 1;
-	}
-	else
-	{
-		s = ft_strdup(var);
-		if (!s)
-			return (errno);
-	}
-	key = ft_split(s, '='); //surement qu'on peut faire plus simple au'un split
-	if (!key)
-	{
-		saved_errno = errno;
-		free(s);
-		errno = saved_errno;
+	s = prepare_var_string(var, &inc);
+	if (!s)
 		return (errno);
-	}
-	node = is_known_exported_key(env, key[0]);
-	free_array(key);
-	if (node) // si on l'a deja
-	{
-		value = ft_strchr(var, '=');
-		if (inc)
-		{
-			tmp = node->value;
-			node->value = ft_strjoin(node->value, value + 1);
-			if (!node->value)
-			{
-				saved_errno = errno;
-				free(s);
-				errno = saved_errno;
-				return (errno);
-			}
-			free(tmp);
-		}
-		else
-		{
-			free(node->value);
-			node->value = ft_strdup(value + 1);
-			if (!node->value)
-			{
-				saved_errno = errno;
-				free(s);
-				errno = saved_errno;
-				return (errno);
-			}
-		}
-	}
-	else 
+	node = update_if_known_key(env, var, s, inc);
+	if (errno == ENOMEM)
+		return (malloc_free_string(s));
+	if (!node)
 	{
 		add_back_var(env, s, 3);
 		if (errno == ENOMEM)
-			return (errno);
+			return (malloc_free_string(s));
 	}
-	if (s)
-		free(s);
+	free(s);
 	return (0);
 }
 
@@ -285,11 +314,60 @@ int is_var_exportation(char *s)
 	return (1);
 }
 
-int	builtin_export(t_var **env, char **arg)
+int builtin_export_var_declaration(t_var **env, char **arg, int i, char **s)
+{
+	int saved_errno;
+
+	get_full_variable_declaration(arg, i, s);
+	if (errno == ENOMEM)
+		return (errno);
+	add_or_update_var(env, *s);
+	if (errno == ENOMEM)
+	{
+		saved_errno = errno;
+		free(*s);
+		errno = saved_errno;
+		return (errno);
+	}
+	free(*s);
+	return (0);
+} 
+
+int builtin_export_var_exportation(t_var **env, char *arg)
 {
 	t_var *node;
-	int i;
+	node = is_known_key(env, arg);
+	if (node)
+		node->exported = 1;
+	else 
+	{
+		add_or_update_var(env, arg);
+		if (errno == ENOMEM)
+			return (errno);
+	}
+	return (0);
+}
+
+int builtin_export_parse_args(t_var **env, char **arg, int i)
+{
 	char *s;
+
+	if (is_var_declaration(arg[i]))
+	{ 
+		if (builtin_export_var_declaration(env, arg, i, &s) != 0)
+			return (errno);
+	}
+	else if (is_var_exportation(arg[i]))
+	{
+		if(builtin_export_var_exportation(env, arg[i]) != 0)
+			return (errno);
+	}
+	return (0);
+}
+
+int	builtin_export(t_var **env, char **arg)
+{
+	int i;
 	int exit_code;
 
 	i = 1;
@@ -298,32 +376,8 @@ int	builtin_export(t_var **env, char **arg)
 	exit_code = 0;
 	while(arg[i])
 	{
-		if (is_var_declaration(arg[i])) //si la declaration de variable est vlaide
-		{ 
-			s = get_full_variable_declaration(arg, i);
-			if (errno == ENOMEM)
-				return (errno);
-			add_or_update_var(env, s);
-			if (errno == ENOMEM)
-			{
-				free(s);
-				return (errno);
-			}
-			free(s);
-		}
-		else if (is_var_exportation(arg[i]))
-		{
-
-			node = is_known_key(env, arg[i]);
-			if (node)
-				node->exported = 1;
-			else 
-			{
-				add_or_update_var(env, arg[i]);
-				if (errno == ENOMEM)
-					return (errno);
-			}
-		}
+		if (builtin_export_parse_args(env, arg, i) != 0)
+			return (errno);
 		else
 		{
 			exit_code = 1;
