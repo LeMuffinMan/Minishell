@@ -42,6 +42,7 @@ int print_error_is_a_directory(char *file);
 int print_perm_error(char *file);
 
 
+int	redirect_stdio(t_tree **ast, t_lists *lists);
 int exec_redirection(t_tree **ast, t_lists *lists);
 
 t_tree	*parse(char *line, char **envp, t_var *new_env, t_lists *lists);

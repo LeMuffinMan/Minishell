@@ -325,14 +325,58 @@ int	exec_cmd(t_tree **ast, t_lists *lists)
 	return (1); // on ne devrait pas arriver ici
 }
 
-int	redirect_stdio(t_tree **ast, t_lists *lists)
+int redirect_stdio_right_redirect(t_tree **ast, t_lists *lists)
 {
 	t_tree	*left;
 	t_tree	*right;
-	char *file;
 
 	left = (*ast)->left;
 	right = (*ast)->right;
+	if (left && (left->token->token == DIREC && left->token->error == 127))
+		lists->exit_code = error_cmd(left->token->content[0], 127);
+	if (right && (right->token->token == DIREC && right->token->error == 127))
+		lists->exit_code = error_cmd(right->token->content[0], 127);
+	if (left && (left->token->token == R_IN || left->token->token == APPEND
+			|| left->token->token == TRUNC || left->token->token == HD))
+		lists->exit_code = redirect_stdio(&left, lists);
+	if (errno == ENOMEM)
+		return (errno);
+	if (lists->exit_code == 0 && right && (right->token->token == R_IN
+			|| right->token->token == APPEND || right->token->token == TRUNC
+			|| right->token->token == HD))
+		lists->exit_code = redirect_stdio(&right, lists);
+	if (errno == ENOMEM)
+		return (errno);
+	return (0);
+}
+
+int redirect_stdio_right(t_tree **ast, t_lists *lists)
+{
+	t_tree	*left;
+	t_tree	*right;
+
+	left = (*ast)->left;
+	right = (*ast)->right;
+	redirect_stdio_right_redirect(ast, lists);
+	if (errno == ENOMEM)
+		return (errno);
+	if (lists->exit_code == 0 && left && (left->token->token == CMD
+			|| left->token->token == BUILT_IN))
+		lists->exit_code = exec_cmd(&left, lists);
+	if (errno == ENOMEM)
+		return (errno);
+	if (lists->exit_code == 0 && right && (right->token->token == CMD
+			|| right->token->token == BUILT_IN))
+		lists->exit_code = exec_cmd(&right, lists);
+	if (errno == ENOMEM)
+		return (errno);
+	return (0);
+}
+
+int	redirect_stdio(t_tree **ast, t_lists *lists)
+{
+	char *file;
+
 	if ((*ast)->token->token == HD)
 		file = (*ast)->token->content[2];
 	else
@@ -341,25 +385,11 @@ int	redirect_stdio(t_tree **ast, t_lists *lists)
 	if (lists->exit_code != 0)
 		return (lists->exit_code); // il faut return ici ?
 	lists->exit_code = open_dup2_close(file, (*ast)->token->token);
-	if (lists->exit_code == -1) // ERRNO
-		return (-1);
-	if (left && (left->token->token == DIREC && left->token->error == 127))
-		lists->exit_code = error_cmd(left->token->content[0], 127);
-	if (right && (right->token->token == DIREC && right->token->error == 127))
-		lists->exit_code = error_cmd(right->token->content[0], 127);
-	if (left && (left->token->token == R_IN || left->token->token == APPEND
-			|| left->token->token == TRUNC || left->token->token == HD))
-		lists->exit_code = redirect_stdio(&left, lists);
-	if (lists->exit_code == 0 && right && (right->token->token == R_IN
-			|| right->token->token == APPEND || right->token->token == TRUNC
-			|| right->token->token == HD))
-		lists->exit_code = redirect_stdio(&right, lists);
-	if (lists->exit_code == 0 && left && (left->token->token == CMD
-			|| left->token->token == BUILT_IN))
-		lists->exit_code = exec_cmd(&left, lists);
-	if (lists->exit_code == 0 && right && (right->token->token == CMD
-			|| right->token->token == BUILT_IN))
-		lists->exit_code = exec_cmd(&right, lists);
+	if (errno == ENOMEM)
+		return (errno);
+	redirect_stdio_right(ast, lists);
+	if (errno  == ENOMEM)
+		return (errno);
 	if ((*ast)->token->token == HD)
 		unlink(file);
 	return (lists->exit_code);
@@ -373,51 +403,75 @@ int exec_boolop(t_tree **ast, t_lists *lists)
 	if ((*ast)->left)
 	{
 		exit_code = exec_ast(&((*ast)->left), lists);
+		if (errno == ENOMEM)
+			return (errno);
 		if ((exit_code == 0 && (*ast)->token->token == O_AND) || 
 			(exit_code != 0 && (*ast)->token->token == O_OR))
-			return (exec_ast(&((*ast)->right), lists));
+		{
+			exit_code = exec_ast(&((*ast)->right), lists);
+			if (errno == ENOMEM)
+				return (errno);
+			return (exit_code);
+		}
 		else
 			return (exit_code);
 	}
 	return (1); //cas ou left existe pas dans un node AND
 }
 
-//ici j'ai peut etre casse les signaux !!
+int malloc_error_parenthesis_child(t_lists *lists, t_tree **ast_to_free)
+{
+	if (ast_to_free && *ast_to_free) 
+		free_tree(ast_to_free);
+	free_lists(lists);
+	exit(errno);
+}
+
+int  exec_parenthesis_child(t_tree **ast, t_lists *lists)
+{
+	char **strings_env;
+	t_tree *sub_ast;
+	int exit_code;
+
+	exit_code = 0;
+	if (close_origin_fds(lists->origin_fds) == -1)
+		malloc_error_parenthesis_child(lists, NULL);
+	setup_child_signals();
+	strings_env = lst_to_array(lists->env);
+	if (errno == ENOMEM)
+		malloc_error_parenthesis_child(lists, NULL);
+	sub_ast = parse((*ast)->token->group->content[0], strings_env, *lists->env, lists);
+	if (errno == ENOMEM)
+		malloc_error_parenthesis_child(lists, NULL);
+	free_array(strings_env);
+	exit_code = exec_ast(&sub_ast, lists);
+	if (errno == ENOMEM)
+		malloc_error_parenthesis_child(lists, &sub_ast);
+	free_tree(&sub_ast);
+	free_lists(lists);
+	exit (exit_code);
+}
+
 int exec_parenthesis(t_tree **ast, t_lists *lists)
 {
 	pid_t pid;
-	int exit_code;
-	char **strings_env;
-	t_tree *sub_ast;
 
 	struct sigaction sa_ignore, sa_orig;
 	sigemptyset(&sa_ignore.sa_mask);
 	sa_ignore.sa_handler = SIG_IGN;
 	sa_ignore.sa_flags = 0;
 	sigaction(SIGINT, &sa_ignore, &sa_orig);
-	exit_code = 0;
 	pid = fork();
 	if (!pid)
-	{
-		// error de fork
-	}
+		return (errno);
 	if (pid == 0)
-	{
-		close_origin_fds(lists->origin_fds);
-		setup_child_signals();
-		strings_env = lst_to_array(lists->env);
-		sub_ast = parse((*ast)->token->group->content[0], strings_env, *lists->env, lists);
-		free_array(strings_env);
-		exit_code = exec_ast(&sub_ast, lists);
-		free_tree(&sub_ast);
-		free_lists(lists);
-		exit (exit_code);
-	}
+		exec_parenthesis_child(ast, lists);
 	else
 	{
 		lists->exit_code = wait_children(pid, pid);
+		if (errno == ENOMEM)
+			return (errno);
 		sigaction(SIGINT, &sa_orig, NULL);
-		/* printf("exit_code = %d\n", exit_code); */
 		return (lists->exit_code);
 	}
 	return (1); // cas impossible ?
