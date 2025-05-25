@@ -13,6 +13,7 @@
 #include "libft.h"
 #include "structs.h"
 #include <stdlib.h>
+#include <errno.h>
 #include <unistd.h>
 
 int update_underscore_var(t_var **env)
@@ -26,6 +27,8 @@ int update_underscore_var(t_var **env)
 		{
 			free(tmp->value);
 			tmp->value = ft_strdup("env");
+			if (!tmp->value)
+				return (errno);
 		}
 		tmp = tmp->next;
 	}
@@ -36,10 +39,20 @@ int error_env(char **content)
 {
 	char *s;
 	char *temp;
+	int saved_errno;
 
 	s = ft_strjoin("env: \'", content[1]);
+	if (!s)
+		return (errno);
 	temp = s;
 	s = ft_strjoin(s, "\': No option or argument accepted for env builtin\n");
+	if (!s)
+	{
+		saved_errno = errno;
+		free(temp);
+		errno = saved_errno;
+		return (errno);
+	}
 	free(temp);
 	ft_putstr_fd(s, 2);
 	free(s);
@@ -58,6 +71,8 @@ int	builtin_env(t_var **env, char **content)
 	if (content[1])
 		return(error_env(content));
 	update_underscore_var(env);
+	if (errno == ENOMEM)
+		return (errno);
 	tmp = *env;
 	while (tmp)
 	{

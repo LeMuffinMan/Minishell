@@ -15,6 +15,7 @@
 #include "utils.h"
 #include "tree.h"
 #include <unistd.h>
+#include <errno.h>
 
 int	is_only_numeric_argument(char *s)
 {
@@ -39,14 +40,31 @@ int exit_no_arg(t_tree **ast, t_lists *lists)
 	exit(0);
 }
 
+int builtin_exit_malloc_error(t_lists *lists, char *s)
+{
+	int saved_errno;
+
+	saved_errno = errno;
+	if (s)
+		free(s);
+	free_lists(lists);
+	close_origin_fds(lists->origin_fds);
+	exit(saved_errno);
+}
+
 int exit_overflow_error(char **arg)
 {
 	char *s;
 	char *tmp;
+	int saved_errno;
 
 	s = ft_strjoin("minishell: exit: ", arg[1]);
+	if (!s)
+		return (errno);
 	tmp = s;
 	s = ft_strjoin(s, ": numeric argument required\n");
+	if (!s)
+		builtin_exit_malloc_error(lists, tmp);
 	free(tmp);
 	ft_putstr_fd(s, 2);
 	free(s);
@@ -59,8 +77,12 @@ int exit_numeric_argument_required_error(char **arg, t_tree **ast, t_lists *list
 	char *tmp;
 
 	s = ft_strjoin("minishell: exit: ", arg[1]);
+	if (!s)
+		builtin_exit_malloc_error(lists, NULL);
 	tmp = s;
 	s = ft_strjoin(s, "numeric argument required\n");
+	if (!s)
+		builtin_exit_malloc_error(lists, tmp);
 	free(tmp);
 	ft_putstr_fd(s, 2);
 	free(s);
@@ -95,7 +117,6 @@ int	builtin_exit(char **arg, t_tree **ast, t_lists *lists)
 		free_lists(lists);
 		close_origin_fds(lists->origin_fds);
 		exit(2);
-		
 	}
 	if (arg[2])
 	{
