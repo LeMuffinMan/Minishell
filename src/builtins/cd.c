@@ -105,57 +105,58 @@ int builtins_cd_oldpwd_path(t_var **env, char **path)
 	return (0);
 }
 
+int try_change_directory(char *path, t_var **env, char **arg)
+{
+	if (!change_directory(path))
+	{
+		update_env(env);
+		if (errno == ENOMEM)
+			return (errno);
+		if (!ft_strncmp(arg[1], "-", 2))
+		{
+			builtin_pwd(env);
+			if (errno == ENOMEM)
+				return (errno);
+		}
+		return (0);
+	}
+	return (1);
+}
+
+int handle_oldpwd(t_var **env, char **path)
+{
+	int exit_code;
+	int res;
+
+	exit_code = builtins_cd_oldpwd_path(env, path);
+	if (exit_code != 0)
+		return (exit_code);
+	res = try_change_directory(*path, env, (char*[]){"cd", "-", NULL});
+	free(*path);
+	return (res);
+}
+
 int builtin_cd_with_arg(char **arg, t_var **env)
 {
-	char *path;
+	char *path = NULL;
 	int exit_code;
 
-	path = NULL;
 	if (!ft_strncmp(arg[1], "-", 2))
-	{
-		exit_code = builtins_cd_oldpwd_path(env, &path);
-		if (exit_code != 0)
-			return (exit_code);
-	}	
+		return (handle_oldpwd(env, &path));
 	if (!ft_strncmp(arg[1], "..", 3) && access("..", X_OK) != 0)
 	{
 		if (trim_pwd(&path) == -1)
 			return (-1);
 	}
-	else if (!path)
+	else
 	{
 		path = ft_strdup(arg[1]);
 		if (!path)
 			return (-1);
 	}
-	if (!change_directory(path))
-	{
-		update_env(env);
-		if (errno == ENOMEM)
-		{
-			free(path);
-			return (errno);
-		}
-	}
-	else
-	{
-		if (path)
-			free(path);
-		return (1);
-	}
-	if (!ft_strncmp(arg[1], "-", 2))
-	{
-		builtin_pwd(env);
-		if (errno == ENOMEM)
-		{
-			if (path && *path)
-				free(path);
-			return (errno);
-		}
-	}
-	if (path && *path)
-		free(path);
-	return (0);
+	exit_code = try_change_directory(path, env, arg);
+	free(path);
+	return (exit_code);
 }
 
 int	builtin_cd(char **arg, t_var **env)

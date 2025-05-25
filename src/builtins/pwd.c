@@ -15,6 +15,7 @@
 #include <limits.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <errno.h>
 
 int	builtin_pwd(t_var **env)
 {
@@ -25,6 +26,8 @@ int	builtin_pwd(t_var **env)
 	if (getcwd(buf, sizeof(buf)) != NULL)
 	{
 		s = ft_strjoin(buf, "\n");
+		if (!s)
+			return (errno);
 		ft_putstr_fd(s, 1);
 		free(s);
 		return (0);
@@ -32,6 +35,8 @@ int	builtin_pwd(t_var **env)
 	else
 	{
 		s = ft_strjoin(get_value(env, "PWD"), "\n");
+		if (errno == ENOMEM)
+			return (errno);
 		if (s)
 			ft_putstr_fd(s, 1);
 		else
