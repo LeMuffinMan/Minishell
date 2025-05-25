@@ -271,6 +271,8 @@ t_var *update_if_known_key(t_var **env, char *var, char *s, int inc)
 	return node;
 }
 
+
+
 int add_or_update_var(t_var **env, char *var)
 {
 	int inc;
@@ -293,6 +295,8 @@ int add_or_update_var(t_var **env, char *var)
 	free(s);
 	return (0);
 }
+
+
 
 int is_var_exportation(char *s)
 {
@@ -348,42 +352,47 @@ int builtin_export_var_exportation(t_var **env, char *arg)
 	return (0);
 }
 
-int builtin_export_parse_args(t_var **env, char **arg, int i)
+int	parse_export_arguments(t_var **env, char **arg, int i, int *exit_code)
 {
-	char *s;
+	char	*s;
 
 	if (is_var_declaration(arg[i]))
-	{ 
+	{
 		if (builtin_export_var_declaration(env, arg, i, &s) != 0)
 			return (errno);
 	}
 	else if (is_var_exportation(arg[i]))
 	{
-		if(builtin_export_var_exportation(env, arg[i]) != 0)
+		if (builtin_export_var_exportation(env, arg[i]) != 0)
 			return (errno);
+	}
+	else
+	{
+		*exit_code = 1;
+		ft_putstr_fd("minishell: export: not a valid identifier\n", 2);
 	}
 	return (0);
 }
 
-int	builtin_export(t_var **env, char **arg)
+int	process_export_args(t_var **env, char **arg)
 {
-	int i;
-	int exit_code;
+	int	i;
+	int	exit_code;
 
 	i = 1;
-	if (!arg[i])
-		return(export_without_argument(env));
 	exit_code = 0;
-	while(arg[i])
+	while (arg[i])
 	{
-		if (builtin_export_parse_args(env, arg, i) != 0)
+		if (parse_export_arguments(env, arg, i, &exit_code) != 0)
 			return (errno);
-		else
-		{
-			exit_code = 1;
-			ft_putstr_fd("minishell: export: not a valid identifier\n", 2);
-		}
 		i++;
 	}
 	return (exit_code);
+}
+
+int	builtin_export(t_var **env, char **arg)
+{
+	if (!arg[1])
+		return (export_without_argument(env));
+	return (process_export_args(env, arg));
 }
