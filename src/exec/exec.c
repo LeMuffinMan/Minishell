@@ -60,7 +60,7 @@ int setup_pipe_signals(struct sigaction *sa_ignore, struct sigaction *sa_orig)
 	sigemptyset(&sa_ignore->sa_mask);
 	sa_ignore->sa_handler = SIG_IGN;
 	sa_ignore->sa_flags = 0;
-	sigaction(SIGINT, sa_ignore, sa_orig); // On sauvegarde dans sa_orig
+	sigaction(SIGINT, sa_ignore, sa_orig);
 	return 0;
 }
 
@@ -69,8 +69,13 @@ int left_child_execution(t_tree **ast, t_lists *lists)
 	int exit_code;
 
 	exit_code = 0;
-	close_origin_fds(lists->origin_fds);
-	close(lists->pipe_fd[0]);
+	if (close_origin_fds(lists->origin_fds) == -1)
+		return (-1);
+	if (close(lists->pipe_fd[0]) == -1)
+	{
+		close_origin_fds(lists->origin_fds);
+		return (-1);
+	}
 	if ((*lists->pipes)->next)
 	{
 		dup2((*lists->pipes)->next->fd[0], STDIN_FILENO);

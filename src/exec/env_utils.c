@@ -43,13 +43,21 @@ int	update_env(t_var **env)
 	old_pwd = is_known_key(env, "OLDPWD");
 	if (!old_pwd)
 	{
-		//seg fault a proteger ici si on fait unset PWD et cd 
-		// ajouter le old_pwd a l'env
+		add_back_var(env, "OLDPWD=", 3);
+		old_pwd = is_known_key(env, "OLDPWD");
 	}
 	pwd = is_known_key(env, "PWD");
+	if (!pwd)
+	{
+		add_back_var(env, "PWD=", 3);
+		pwd = is_known_key(env, "PWD");
+	}
 	if (old_pwd->value)
 		free(old_pwd->value);
-	old_pwd->value = ft_strdup(pwd->value);
+	if (pwd->value)
+		old_pwd->value = ft_strdup(pwd->value);
+	else
+		old_pwd->value = ft_strdup("");
 	if (getcwd(buf, sizeof(buf)) != NULL)
 	{
 		if (pwd->value)
