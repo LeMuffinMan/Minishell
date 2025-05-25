@@ -20,7 +20,7 @@
 // exec.c
 int		exec_ast(t_tree **ast, t_lists *lists);
 int		exec_cmd(t_tree **ast, t_lists *lists);
-int	exec_pipe(t_tree **ast, t_lists *lists);
+int	builtins(char **arg, t_lists *lists);
 // int redirect_stdio(t_tree **ast, t_var **env, int origin_fds[2]);
 // int	builtins(char **arg, t_lists *lists, int origin_fds[2]);
 
@@ -28,6 +28,26 @@ int	exec_pipe(t_tree **ast, t_lists *lists);
 int		file_check(char *file, t_type type, int error_code);
 int		is_a_directory(char *name);
 int		open_dup2_close(char *file, t_type type);
+
+//exec_pipe.c
+int	exec_pipe(t_tree **ast, t_lists *lists);
+int	handle_right_execution(t_tree **ast, t_lists *lists, pid_t left_pid, 
+	struct sigaction *sa_orig);
+int exec_pipe_right_pipe_execution(t_tree **ast, t_lists *lists, pid_t left_pid);
+int exec_pipe_right_execution(t_tree **ast, t_lists *lists, pid_t right_pid, pid_t left_pid);
+int exec_pipe_left_execution(t_tree **ast, t_lists *lists, pid_t pid);
+
+//exec_pipe_parent_child.c
+int left_child_execution_stdio(t_lists *lists);
+int left_child_execution(t_tree **ast, t_lists *lists);
+int left_parent_execution(t_pipe **pipes, int pipefd[2]);
+int right_child_execution(t_tree **ast, t_lists *lists, int pipefd[2], t_pipe **pipes);
+
+//exec_cmd.c
+int exec_cmd_execve_child(t_tree **ast, t_lists *lists);
+int	exec_cmd(t_tree **ast, t_lists *lists);
+int exec_cmd_execve(t_tree **ast, t_lists *lists);
+
 
 // pipe_utils
 int		free_pipes(t_pipe **pipes);

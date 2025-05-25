@@ -14,53 +14,32 @@
 #include "structs.h"
 #include <unistd.h>
 
-/* int	wait_children(pid_t last_child, pid_t first_child) */
-/* { */
-/* 	int		status; */
-/* 	int		exit_code; */
-/**/
-/* 	exit_code = EXIT_SUCCESS; */
-/* 	waitpid(first_child, &status, 0); */
-/* 	waitpid(last_child, &status, 0); */
-/* 	if (WIFEXITED(status)) */
-/* 		exit_code = WEXITSTATUS(status); */
-/* 	else if (WIFSIGNALED(status)) */
-/* 		exit_code = 128 + WTERMSIG(status); */
-/* 	if (exit_code == EXIT_SUCCESS && WIFEXITED(status)) */
-/* 		exit_code = WEXITSTATUS(status); */
-/* 	else if (exit_code == EXIT_SUCCESS && WIFSIGNALED(status)) */
-/* 		exit_code = 128 + WTERMSIG(status); */
-/*   else if (WTERMSIG(status) == SIGINT) */
-/*       write(STDOUT_FILENO, "\n", 1); */
-/* 	return (exit_code); */
-/* } */
-/**/
 int wait_children(pid_t last_child)
 {
-    int status;
-    int last_status;
-    pid_t pid;
+  int status;
+  int last_status;
+  pid_t pid;
 
-    last_status = 0;
-    pid = waitpid(-1, &status, 0);
-    while (pid > 0)
+  last_status = 0;
+  pid = waitpid(-1, &status, 0);
+  while (pid > 0)
+  {
+    if (pid == last_child)
     {
-        if (pid == last_child)
-        {
-            if (WIFEXITED(status))
-                last_status = WEXITSTATUS(status);
-            else if (WIFSIGNALED(status))
-            {
-                last_status = 128 + WTERMSIG(status);
-                if (WTERMSIG(status) == SIGINT)
-                    write(STDOUT_FILENO, "\n", 1);
-                else if (WTERMSIG(status) == SIGQUIT)
-                    write(STDOUT_FILENO, "Quit (core dumped)\n", 19);
-            }
-        }
-        pid = waitpid(-1, &status, 0);
+      if (WIFEXITED(status))
+        last_status = WEXITSTATUS(status);
+      else if (WIFSIGNALED(status))
+      {
+        last_status = 128 + WTERMSIG(status);
+        if (WTERMSIG(status) == SIGINT)
+          write(STDOUT_FILENO, "\n", 1);
+        else if (WTERMSIG(status) == SIGQUIT)
+          write(STDOUT_FILENO, "Quit (core dumped)\n", 19);
+      }
     }
-    return (last_status);
+    pid = waitpid(-1, &status, 0);
+  }
+  return (last_status);
 }
 
 int	add_pipe(int fd[2], t_pipe **pipes)

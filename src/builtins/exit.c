@@ -32,15 +32,9 @@ int	is_only_numeric_argument(char *s)
 
 int exit_no_arg(t_tree **ast, t_lists *lists)
 {
-	/* free_list(lists->env); */
-	/* free_tree(&(*ast)->head); */
-	//free le prompt ici ?
-  /* free_history(history); */
-  (void)ast;
+  (void)ast; // a virer
 	ft_putstr_fd("exit\n", 1);
 	close_origin_fds(lists->origin_fds);
-  /* close(origin_fds[0]); */
-  /* close(origin_fds[1]); */
 	free_lists(lists);
 	exit(0);
 }
@@ -70,10 +64,7 @@ int exit_numeric_argument_required_error(char **arg, t_tree **ast, t_lists *list
 	free(tmp);
 	ft_putstr_fd(s, 2);
 	free(s);
-	/* free_list(env); */
-	/* free_tree(&(*ast)->head); */
 	free_lists(lists);
-  /* free_history(history); */
 	close_origin_fds(lists->origin_fds);
   (void)ast;
 	exit(2);
@@ -86,10 +77,6 @@ int exit_with_valid_arg(char **arg, t_tree **ast, t_lists *lists)
 	n = ft_atoi(arg[1]);
 	if (n > 255)
 		n = n % 256;
-	/* free_list(env); */
-	/* free_tree(&(*ast)->head); */
-	//free le prompt ici ?
-  /* free_history(history); */
 	close_origin_fds(lists->origin_fds);
 	free_lists(lists);
   (void)ast;
