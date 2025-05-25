@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include <stdio.h>
+#include <errno.h>
 #include "aliases.h"
 #include "builtins.h"
 #include "env_utils.h"
@@ -64,30 +65,48 @@ int setup_pipe_signals(struct sigaction *sa_ignore, struct sigaction *sa_orig)
 	return 0;
 }
 
+int left_child_execution_stdio(t_lists *lists)
+{
+	if (close_origin_fds(lists->origin_fds) == -1)
+		return (-1);
+	if (close(lists->pipe_fd[0]) == -1)
+		return (-1);
+	if ((*lists->pipes)->next)
+	{
+		if (dup2((*lists->pipes)->next->fd[0], STDIN_FILENO) == -1)
+			return (-1);
+		if (close((*lists->pipes)->next->fd[0]) == -1)
+			return (-1);
+		free((*lists->pipes)->next);
+		(*lists->pipes)->next = NULL;
+	}
+	if (dup2(lists->pipe_fd[1], STDOUT_FILENO) == -1)
+		return (-1);
+	if (close(lists->pipe_fd[1]) == -1)
+		return (-1);
+	free_pipes(lists->pipes);
+	return (0);
+}
+
+void malloc_error_freelists_exit(t_lists *lists)
+{
+	int saved_errno;
+
+	saved_errno = errno;
+	free_lists(lists);
+	exit(saved_errno);
+}
+
 int left_child_execution(t_tree **ast, t_lists *lists)
 {
 	int exit_code;
 
 	exit_code = 0;
-	if (close_origin_fds(lists->origin_fds) == -1)
-		return (-1);
-	if (close(lists->pipe_fd[0]) == -1)
-	{
-		close_origin_fds(lists->origin_fds);
-		return (-1);
-	}
-	if ((*lists->pipes)->next)
-	{
-		dup2((*lists->pipes)->next->fd[0], STDIN_FILENO);
-		close((*lists->pipes)->next->fd[0]);
-		free((*lists->pipes)->next);
-		(*lists->pipes)->next = NULL;
-	}
-	dup2(lists->pipe_fd[1], STDOUT_FILENO);
-	close(lists->pipe_fd[1]);
-	free_pipes(lists->pipes);
+	if (left_child_execution_stdio(lists) == -1)
+		malloc_error_freelists_exit(lists);
 	exit_code = exec_ast(&(*ast)->left, lists);
-	close_origin_fds(lists->origin_fds);
+	if (errno == ENOMEM)
+		malloc_error_freelists_exit(lists);
 	free_lists(lists);
 	exit(exit_code);
 	return (0);
@@ -97,11 +116,13 @@ int left_parent_execution(t_pipe **pipes, int pipefd[2])
 {
 	if ((*pipes)->next)
 	{
-		close((*pipes)->next->fd[0]);
+		if (close((*pipes)->next->fd[0]) == -1)
+			return (-1);
 		free((*pipes)->next);
 		(*pipes)->next = NULL;
 	}
-	close(pipefd[1]);
+	if (close(pipefd[1]) == -1)
+		return (-1);
 	return (0);
 }
 
@@ -110,12 +131,18 @@ int right_child_execution(t_tree **ast, t_lists *lists, int pipefd[2], t_pipe **
 	int exit_code;
 
 	exit_code = 0;
-	close_origin_fds(lists->origin_fds);
-	dup2(pipefd[0], STDIN_FILENO);
-	close(pipefd[0]);
+	if (close_origin_fds(lists->origin_fds) == -1)
+		malloc_error_freelists_exit(lists);
+	if (dup2(pipefd[0], STDIN_FILENO) == -1)
+		malloc_error_freelists_exit(lists);
+	if (close(pipefd[0]) == -1)
+		malloc_error_freelists_exit(lists);
 	free_pipes(pipes);
 	exit_code = exec_ast(&((*ast)->right), lists);
-	close_origin_fds(lists->origin_fds);
+	if (errno == ENOMEM) // d'autres code d'erreur ?
+		malloc_error_freelists_exit(lists);
+	if (close_origin_fds(lists->origin_fds) == -1)
+		malloc_error_freelists_exit(lists);
 	free_lists(lists);
 	exit(exit_code);
 	return (0);
@@ -124,26 +151,13 @@ int right_child_execution(t_tree **ast, t_lists *lists, int pipefd[2], t_pipe **
 int exec_pipe_left_execution(t_tree **ast, t_lists *lists, pid_t pid)
 {
 	if (pid < 0)
-	{
-		// error
-	}
+		return (errno);
 	if (pid == 0)
-	{
-		if (left_child_execution(ast, lists) == -1)
-			return (-1);
-	}
+		left_child_execution(ast, lists);
 	else
 	{
 		if (left_parent_execution(lists->pipes, lists->pipe_fd) == -1)
-		{
-			free_pipes(lists->pipes);
-			if (lists->pipe_fd[0] > 0)
-			{
-				close(lists->pipe_fd[0]);
-				close(lists->pipe_fd[1]);
-			}
 			return (-1);
-		}
 	}
 	return (0);
 }
@@ -151,17 +165,13 @@ int exec_pipe_left_execution(t_tree **ast, t_lists *lists, pid_t pid)
 int exec_pipe_right_execution(t_tree **ast, t_lists *lists, pid_t right_pid, pid_t left_pid)
 {
 	if (right_pid < 0)
-	{
-		// error
-	}
+		return (errno);
 	if (right_pid == 0)
-	{
-		if (right_child_execution(ast, lists, lists->pipe_fd, lists->pipes) == -1)
-			return (-1);
-	}
+		right_child_execution(ast, lists, lists->pipe_fd, lists->pipes);
 	else
 	{
-		close(lists->pipe_fd[0]);
+		if (close(lists->pipe_fd[0]) == -1)
+			return (-1);
 		free_pipes(lists->pipes);
 		lists->exit_code = wait_children(right_pid, left_pid);
 		return (lists->exit_code);
@@ -171,13 +181,16 @@ int exec_pipe_right_execution(t_tree **ast, t_lists *lists, pid_t right_pid, pid
 
 int malloc_error_close_free_pipes(int pipefd[2], t_pipe **pipes)
 {
+	int saved_errno;
+
+	saved_errno = errno;
 	if (close(pipefd[0]) == -1 || close(pipefd[1]) == -1)
 	{
 		free_pipes(pipes);
-		return (-1);
+		return (saved_errno);
 	}
 	free_pipes(pipes);
-	return (-1);	
+	return (saved_errno);	
 }
 
 int exec_pipe_right_pipe_execution(t_tree **ast, t_lists *lists, pid_t left_pid)
@@ -185,36 +198,58 @@ int exec_pipe_right_pipe_execution(t_tree **ast, t_lists *lists, pid_t left_pid)
 	int exit_code;
 
 	exit_code = exec_pipe(&((*ast)->right), lists);
+	if (errno == ENOMEM)
+		return (errno);
 	exit_code = wait_children(left_pid, left_pid);
 	return (exit_code);
 }
 
-// DEFINE UN MAX PIPEFD ?
+int	handle_pipe_error(t_lists *lists)
+{
+	if (errno == ENOMEM)
+		return (malloc_error_close_free_pipes(lists->pipe_fd, lists->pipes));
+	return (0);
+}
+
+int	handle_right_execution(t_tree **ast, t_lists *lists, pid_t left_pid,
+	struct sigaction *sa_orig)
+{
+	pid_t	right_pid;
+	int		exit_code;
+
+	right_pid = fork();
+	exit_code = exec_pipe_right_execution(ast, lists, right_pid, left_pid);
+	if (handle_pipe_error(lists))
+		return (errno);
+	sigaction(SIGINT, sa_orig, NULL);
+	update_last_arg_var(lists->env, (*ast)->token->content);
+	if (errno == ENOMEM)
+		return (errno);
+	return (exit_code);
+}
+
 int	exec_pipe(t_tree **ast, t_lists *lists)
 {
 	pid_t	left_pid;
-	pid_t	right_pid;
-	int exit_code;
-	struct sigaction sa_ignore, sa_orig;
+	int		exit_code;
+	struct sigaction sa_ignore;
+	struct sigaction sa_orig;
 
 	setup_pipe_signals(&sa_ignore, &sa_orig);
 	add_pipe(lists->pipe_fd, lists->pipes);
+	if (errno == ENOMEM)
+		return (errno);
 	left_pid = fork();
 	if (exec_pipe_left_execution(ast, lists, left_pid) == -1)
 		return (malloc_error_close_free_pipes(lists->pipe_fd, lists->pipes));
 	if ((*ast)->right && (*ast)->right->token->token == PIPE)
-		return (exec_pipe_right_pipe_execution(ast, lists, left_pid));
-	else
 	{
-		right_pid = fork();
-		exit_code = exec_pipe_right_execution(ast, lists, right_pid, left_pid);
-		if (exit_code == -1)
-			return (malloc_error_close_free_pipes(lists->pipe_fd, lists->pipes));
-		sigaction(SIGINT, &sa_orig, NULL);
-		update_last_arg_var(lists->env, (*ast)->token->content); 
+		exit_code = exec_pipe_right_pipe_execution(ast, lists, left_pid);
+		if (handle_pipe_error(lists))
+			return (errno);
 		return (exit_code);
 	}
-	return (1);
+	return (handle_right_execution(ast, lists, left_pid, &sa_orig));
 }
 
 int exec_cmd_execve_child(t_tree **ast, t_lists *lists)
@@ -222,8 +257,11 @@ int exec_cmd_execve_child(t_tree **ast, t_lists *lists)
 	char **strings_env;
 
 	setup_child_signals();
-	close_origin_fds(lists->origin_fds);
+	if (close_origin_fds(lists->origin_fds) == -1)
+		malloc_error_freelists_exit(lists);
 	strings_env = lst_to_array(lists->env);
+	if (errno == ENOMEM)
+		malloc_error_freelists_exit(lists);
 	execve((*ast)->token->content[0], (*ast)->token->content,
 		strings_env);
 	perror("execve");
@@ -251,6 +289,8 @@ int exec_cmd_execve(t_tree **ast, t_lists *lists)
 		set_signals(1);
 		exit_code = wait_children(pid, pid);
 		update_last_arg_var(lists->env, (*ast)->token->content);
+		if (errno == ENOMEM)
+			return (errno);
 		setup_parent_signals();
 		rl_on_new_line();
 		return (exit_code);
@@ -291,9 +331,6 @@ int	redirect_stdio(t_tree **ast, t_lists *lists)
 	t_tree	*right;
 	char *file;
 
-	// doute pour ce if, on devrait le faire au parsing ?
-	if (!(*ast)->token->content[1])
-		return (print_error_file_opening("", "syntax error\n", 2));
 	left = (*ast)->left;
 	right = (*ast)->right;
 	if ((*ast)->token->token == HD)
