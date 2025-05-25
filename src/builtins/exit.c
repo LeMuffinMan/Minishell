@@ -52,11 +52,10 @@ int builtin_exit_malloc_error(t_lists *lists, char *s)
 	exit(saved_errno);
 }
 
-int exit_overflow_error(char **arg)
+int exit_overflow_error(t_lists *lists, char **arg)
 {
 	char *s;
 	char *tmp;
-	int saved_errno;
 
 	s = ft_strjoin("minishell: exit: ", arg[1]);
 	if (!s)
@@ -110,7 +109,7 @@ int	builtin_exit(char **arg, t_tree **ast, t_lists *lists)
 	if (!arg[1])
 		exit_no_arg(ast, lists);
 	if (ft_strlen(arg[1]) > 18)
-		return (exit_overflow_error(arg));
+		return (exit_overflow_error(lists, arg));
 	if (!is_only_numeric_argument(arg[1]))
 	{
 		ft_putstr_fd("minishell: exit: numeric argument required\n", 2);

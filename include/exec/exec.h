@@ -48,6 +48,8 @@ int exec_cmd_execve_child(t_tree **ast, t_lists *lists);
 int	exec_cmd(t_tree **ast, t_lists *lists);
 int exec_cmd_execve(t_tree **ast, t_lists *lists);
 
+//redirect_stdio.c
+
 
 // pipe_utils
 int		free_pipes(t_pipe **pipes);
