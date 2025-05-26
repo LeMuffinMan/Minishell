@@ -22,6 +22,7 @@
 
 typedef struct s_alias
 {
+	//ULTRABONUS
 	char				*name;
 	char				*content;
 	struct s_alias		*next;
@@ -29,6 +30,7 @@ typedef struct s_alias
 
 typedef struct s_shell_fct
 {
+	//ULTRABONUS
 	char				*name;
 	char				**content;
 	struct s_shell_fct	*next;
@@ -57,7 +59,6 @@ typedef struct s_lists
 	t_tree				**ast;
 	t_pipe				**pipes;
 	int					origin_fds[2];
-	// ajouter le close des pipe_fd si necessaire pour le free
 	int					pipe_fd[2];
 	int					exit_code;
 	// ULTRABONUS
@@ -67,25 +68,9 @@ typedef struct s_lists
 	// ULTRABONUS
 }						t_lists;
 
-// ultrabonus
-// typedef struct s_shell_fct
-// {
-// 	char *name;
-// 	char **content;
-// 	struct s_shell_fct *next;
-// } t_shell_fct;
-
-// typedef struct s_env
-// {
-// 	t_var			**heritated_variables;
-// 	t_var			**exported_variables;
-// 	// t_var **aliases;
-// 	// t_fct **shell_fcts;
-// 	struct s_env	*next;
-// }					t_env;
-
 typedef struct s_prompt
 {
+	//ULTRABONUS
 	char				*ps1;
 	char				*user;
 	char				*uid;

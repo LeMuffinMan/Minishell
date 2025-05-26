@@ -10,9 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "exec.h"
+#include "redirect_stdio.h"
 #include <errno.h>
 #include <unistd.h>
+#include "tree.h"
+#include "structs.h"
 
 int	redirect_stdio_right_redirect(t_tree **ast, t_lists *lists)
 {

@@ -21,5 +21,6 @@ int		malloc_error_close_free_pipes(int pipefd[2], t_pipe **pipes);
 int		handle_pipe_error(t_lists *lists);
 int		malloc_error_parenthesis_child(t_lists *lists, t_tree **ast_to_free);
 int		builtin_exit_malloc_error(t_lists *lists, char *s);
+int	malloc_error_close_free_exit(t_lists *lists);
 
 #endif

@@ -67,3 +67,11 @@ int	builtin_exit_malloc_error(t_lists *lists, char *s)
 	close_origin_fds(lists->origin_fds);
 	exit(saved_errno);
 }
+
+int	malloc_error_close_free_exit(t_lists *lists)
+{
+	close_origin_fds(lists->origin_fds);
+	free_lists(lists);
+	exit(errno);
+}
+

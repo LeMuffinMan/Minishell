@@ -20,5 +20,10 @@ int	exec_parenthesis_child(t_tree **ast, t_lists *lists);
 int	exec_parenthesis(t_tree **ast, t_lists *lists);
 int	exec_group_cmd(t_tree **ast, t_lists *lists);
 int	exec_group_boolop(t_tree **ast, t_lists *lists);
+int	exec_pipe(t_tree **ast, t_lists *lists);
+t_tree	*parse(char *line, t_var *list_env, t_lists *lists);
+int		exec_ast(t_tree **ast, t_lists *lists);
+int	redirect_stdio(t_tree **ast, t_lists *lists);
+int	exec_cmd(t_tree **ast, t_lists *lists);
 
 #endif

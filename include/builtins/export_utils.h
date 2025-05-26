@@ -19,5 +19,10 @@ char	*get_full_variable_declaration(char **arg, int i, char **s);
 int		is_var_exportation(char *s);
 int		is_var_declaration(char *arg);
 int		export_without_argument(t_var **env);
+int		add_new_var(t_var **env, char **key_value);
+char	*trim_operator(char *s);
+int		is_increment_operator(char *s);
+char	**concat_var(char **arg);
+int		is_valid_identifier(char *var);
 
 #endif

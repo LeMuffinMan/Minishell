@@ -26,7 +26,8 @@ DIR_EXEC			=	src/ \
 						src/exec/exec_utils \
 						src/init \
 						src/misc \
-						src/builtins 
+						src/builtins \
+						src/signals
 
 DIR_PARSING			=	src/parsing \
 						src/parsing/expand \
@@ -99,7 +100,8 @@ SRC					=	main.c \
 						suffix.c \
 						parser.c \
 					init.c \
-					src/signals.c \
+					src/signals/signals.c \
+					src/signals/signals_setup.c \
 					exec.c \
 					exec_pipe.c \
 					exec_pipe_parent_child.c \

@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "env_utils.h"
-#include "exec.h"
+#include "exec_pipe.h"
 #include "malloc_error_handlers.h"
 #include "signals.h"
 #include "structs.h"

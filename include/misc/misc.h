@@ -14,5 +14,6 @@
 # define MISC_H
 
 int	is_interactive_mode(void);
+int	print_env(t_var **env);
 
 #endif
