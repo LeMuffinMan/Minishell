@@ -13,6 +13,12 @@
 #ifndef MALLOC_ERRORS_HANDLERS_H
 # define MALLOC_ERRORS_HANDLERS_H
 
+#include "structs.h"
+
 int malloc_free_string(char *s);
+void malloc_error_freelists_exit(t_lists *lists);
+int malloc_error_close_free_pipes(int pipefd[2], t_pipe **pipes);
+int	handle_pipe_error(t_lists *lists);
+int malloc_error_parenthesis_child(t_lists *lists, t_tree **ast_to_free);
 
 #endif

@@ -25,5 +25,11 @@ t_var	*is_known_key(t_var **env, char *key);
 int		print_all_variables(t_var **env);
 int		update_exit_code_var(t_var **env, int exit_code);
 t_var	*get_key_node(t_var **env, char *key);
+int	append_to_var(t_var **node, char **key_value);
+int	update_var(t_var **node, char **key_value, int inc);
+int update_existing_value(t_var *node, char *var, int inc);
+t_var *update_if_known_key(t_var **env, char *var, char *s, int inc);
+int add_or_update_var(t_var **env, char *var);
+t_var *is_known_exported_key(t_var **env, char *key);
 
 #endif

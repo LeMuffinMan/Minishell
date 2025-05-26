@@ -212,13 +212,6 @@ int array_size(char **array)
 
 }
 
-//un fichier malloc_errors_handlers
-int malloc_free_string(char *s)
-{
-	if (s)
-		free(s);
-	return (-1);
-}
 
 int is_interactive_mode(void)
 {

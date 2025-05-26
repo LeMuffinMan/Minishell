@@ -156,9 +156,7 @@ int	init_env(t_var **new_env, char **env, char *program_name)
 		}
 		i++;
 	}
-	if (init_last_cmd_var(program_name, new_env) == -1)
-		return (-1);
-	return (add_back_var(new_env, "?=0", 0)); // revoir l'init de l'exit code
+	return (init_last_cmd_var(program_name, new_env) == -1); // revoir l'init de l'exit code
 }
 
 int init(t_lists *lists, char **av, char **env)

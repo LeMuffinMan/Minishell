@@ -39,14 +39,16 @@ int	print_sorted_env(t_var **env)
 	tmp = *env;
 	while (tmp)
 	{
-		/* printf("key = %s | exported = %d\n", tmp->key, tmp->exported); */
-		//cette condition casse tout !
+		// pour fix export TEST et afficher TEST et pas TEST=""
+		// ce test me rend fou
 		if (tmp->exported == 1)
 		{
-			s = ft_strjoin("declare -x ", tmp->key);
+			s = ft_strjoin("declare -x ", tmp->key); // ou export ?
 			temp = s;
 			if (tmp->value)
 			{
+				/* if (!ft_strncmp(tmp->key, "TEST", 5)) */
+				/* 	printf("%s\n", tmp->value); */
 				s = ft_strjoin(s, "=\"");
 				free(temp);
 				temp = s;
@@ -59,7 +61,7 @@ int	print_sorted_env(t_var **env)
 			}
 			else 
 			{
-				s = ft_strjoin(s, "=\"\"\n");
+				s = ft_strjoin(s, "\n");
 				free(temp);
 			}
 			ft_putstr_fd(s, 1);
