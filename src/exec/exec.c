@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:49:28 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/26 18:38:50 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/26 18:44:21 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ int	exec_ast(t_tree **ast, t_lists *lists)
 	t_alias				*alias;
 	t_shell_fct			*shell_fct;
 	struct sigaction	sa_ignore;
-	struct sigation		sa_orig;
+	struct sigaction		sa_orig;
 
 	if (!*ast)
 		return (127);
