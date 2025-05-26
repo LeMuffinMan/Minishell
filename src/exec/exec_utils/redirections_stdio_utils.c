@@ -57,6 +57,23 @@ int	file_check(char *file, t_type type, int error_code)
 	return (0);
 }
 
+int dup2_and_close(int fd, t_type type)
+{
+	if (type == R_IN || type == HD)
+	{
+		if (dup2(fd, STDIN_FILENO) == -1)
+			return (-1);
+	}
+	else if (type == APPEND || type == TRUNC)
+	{
+		if (dup2(fd, STDOUT_FILENO) == -1)
+			return (-1);
+	}
+	if (close(fd) == -1)
+		return (-1);
+	return (0);
+}
+
 int	open_dup2_close(char *file, t_type type)
 {
 	int	fd;
@@ -71,10 +88,5 @@ int	open_dup2_close(char *file, t_type type)
 		fd = -1;
 	if (fd == -1)
 		return (-1);
-	if (type == R_IN || type == HD)
-		dup2(fd, STDIN_FILENO);
-	else if (type == APPEND || type == TRUNC)
-		dup2(fd, STDOUT_FILENO);
-	close(fd);
-	return (0);
+	return (dup2_and_close(fd, type));
 }

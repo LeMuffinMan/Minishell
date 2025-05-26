@@ -75,7 +75,7 @@ int	exec_parenthesis(t_tree **ast, t_lists *lists)
 	sigaction(SIGINT, &sa_ignore, &sa_orig);
 	pid = fork();
 	if (pid < 0)
-		return (errno);
+		return (ENOMEM);
 	if (pid == 0)
 	{
 		exec_parenthesis_child(ast, lists);
@@ -83,8 +83,6 @@ int	exec_parenthesis(t_tree **ast, t_lists *lists)
 	else
 	{
 		lists->exit_code = wait_children(pid, pid);
-		if (errno == ENOMEM)
-			return (errno);
 		sigaction(SIGINT, &sa_orig, NULL);
 		return (lists->exit_code);
 	}
@@ -114,6 +112,8 @@ int	exec_group_boolop(t_tree **ast, t_lists *lists)
 
 	sub_ast = NULL;
 	sub_ast = parse((*ast)->token->content[0], *lists->env, lists);
+	if (errno == ENOMEM)
+		return (errno);
 	lists->exit_code = exec_ast(&sub_ast, lists);
 	free_tree(&sub_ast);
 	return (lists->exit_code);

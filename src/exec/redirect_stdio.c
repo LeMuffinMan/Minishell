@@ -75,8 +75,8 @@ int	redirect_stdio(t_tree **ast, t_lists *lists)
 	if (lists->exit_code != 0)
 		return (lists->exit_code);
 	lists->exit_code = open_dup2_close(file, (*ast)->token->token);
-	if (errno == ENOMEM)
-		return (errno);
+	if (lists->exit_code == -1)
+		return (ENOMEM);
 	redirect_stdio_right(ast, lists);
 	if (errno == ENOMEM)
 		return (errno);

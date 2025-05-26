@@ -49,28 +49,53 @@ int	exec_cmd_execve(t_tree **ast, t_lists *lists)
 	return (1);
 }
 
+static int handle_directory_error(char **s, char *tmp)
+{
+	int exit_code;
+
+	*s = ft_strjoin(*s, ": Is a directory\n");
+	exit_code = 126;
+	if (errno == ENOMEM)
+	{
+		free(tmp);
+		return (errno);
+	}
+	ft_putstr_fd(*s, 2);
+	free(tmp);
+	free(*s);
+	return (exit_code);
+}
+
+static int handle_missing_file_error(char **s, char *tmp)
+{
+	int exit_code;
+
+	*s = ft_strjoin(*s, ": No such file or directory\n");
+	exit_code = 127;
+	if (errno == ENOMEM)
+	{
+		free(tmp);
+		return (errno);
+	}
+	ft_putstr_fd(*s, 2);
+	free(tmp);
+	free(*s);
+	return (exit_code);
+}
+
 static int exec_cmd_print_error(t_tree **ast)
 {
 	char *s;
 	char *tmp;
-	int exit_code;
 
 	s = ft_strjoin("minishell: ", (*ast)->token->content[0]);
+	if (errno == ENOMEM)
+		return (errno);
 	tmp = s;
 	if (access((*ast)->token->content[0], F_OK) == 0)
-	{
-		s = ft_strjoin(s, ": Is a directory\n");
-		exit_code = 126;
-	}
+		return (handle_directory_error(&s, tmp));
 	else
-	{
-		s = ft_strjoin(s, ": No such file or directory\n");
-		exit_code = 127;
-	}
-	free(tmp);
-	ft_putstr_fd(s, 2);
-	free(s);
-	return (exit_code);
+		return (handle_missing_file_error(&s, tmp));
 }
 
 int	exec_cmd(t_tree **ast, t_lists *lists)
