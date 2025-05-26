@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 15:53:21 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/24 03:09:30 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/26 14:45:00 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@ static bool	assign_pointer(t_token **new_node, t_token **start, t_token **end)
 	char	*res;
 	int		i;
 
+	if (!*start || !*end)
+		return (false);
 	i = find_len_new_content(*start, *end);
 	res = ft_calloc(sizeof(char), i + 1);
 	if (!res)
