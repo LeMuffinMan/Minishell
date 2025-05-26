@@ -6,16 +6,16 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 17:33:43 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/20 17:34:03 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/26 18:02:06 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
 #include "env_utils.h"
+#include "libft.h"
+#include <errno.h>
 #include <limits.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <errno.h>
 
 int	builtin_pwd(t_var **env)
 {

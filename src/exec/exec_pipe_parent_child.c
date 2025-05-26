@@ -1,16 +1,26 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exec_pipe_parent_child.c                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/26 18:24:53 by oelleaum          #+#    #+#             */
+/*   Updated: 2025/05/26 18:25:09 by oelleaum         ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
 
-
-#include <stdio.h>
-#include <errno.h>
-#include "malloc_error_handlers.h"
 #include "exec.h"
+#include "malloc_error_handlers.h"
 #include "signals.h"
-#include "utils.h"
-#include <unistd.h>
-#include <stdlib.h>
 #include "structs.h"
+#include "utils.h"
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-int left_child_execution_stdio(t_lists *lists)
+int	left_child_execution_stdio(t_lists *lists)
 {
 	if (close_origin_fds(lists->origin_fds) == -1)
 		return (-1);
@@ -33,10 +43,9 @@ int left_child_execution_stdio(t_lists *lists)
 	return (0);
 }
 
-
-int left_child_execution(t_tree **ast, t_lists *lists)
+int	left_child_execution(t_tree **ast, t_lists *lists)
 {
-	int exit_code;
+	int	exit_code;
 
 	exit_code = 0;
 	if (left_child_execution_stdio(lists) == -1)
@@ -49,7 +58,7 @@ int left_child_execution(t_tree **ast, t_lists *lists)
 	return (0);
 }
 
-int left_parent_execution(t_pipe **pipes, int pipefd[2])
+int	left_parent_execution(t_pipe **pipes, int pipefd[2])
 {
 	if ((*pipes)->next)
 	{
@@ -63,9 +72,10 @@ int left_parent_execution(t_pipe **pipes, int pipefd[2])
 	return (0);
 }
 
-int right_child_execution(t_tree **ast, t_lists *lists, int pipefd[2], t_pipe **pipes)
+int	right_child_execution(t_tree **ast, t_lists *lists, int pipefd[2],
+		t_pipe **pipes)
 {
-	int exit_code;
+	int	exit_code;
 
 	exit_code = 0;
 	if (close_origin_fds(lists->origin_fds) == -1)
@@ -76,7 +86,7 @@ int right_child_execution(t_tree **ast, t_lists *lists, int pipefd[2], t_pipe **
 		malloc_error_freelists_exit(lists);
 	free_pipes(pipes);
 	exit_code = exec_ast(&((*ast)->right), lists);
-	if (errno == ENOMEM) // d'autres code d'erreur ?
+	if (errno == ENOMEM)
 		malloc_error_freelists_exit(lists);
 	if (close_origin_fds(lists->origin_fds) == -1)
 		malloc_error_freelists_exit(lists);
@@ -84,5 +94,3 @@ int right_child_execution(t_tree **ast, t_lists *lists, int pipefd[2], t_pipe **
 	exit(exit_code);
 	return (0);
 }
-
-

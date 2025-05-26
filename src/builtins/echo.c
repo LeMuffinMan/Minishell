@@ -1,13 +1,24 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   echo.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/26 18:02:55 by oelleaum          #+#    #+#             */
+/*   Updated: 2025/05/26 18:02:56 by oelleaum         ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
 
-#include "libft.h"
-#include <stdio.h>
-#include <errno.h>
-#include <stdlib.h>
 #include "echo_utils.h"
+#include "libft.h"
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-int get_options(int *option, char **arg)
+int	get_options(int *option, char **arg)
 {
-	int i;
+	int	i;
 
 	i = 1;
 	while (arg[i] && !ft_strncmp(arg[i], "-n", 2) && is_only_n(arg[i]))
@@ -24,10 +35,10 @@ int get_options(int *option, char **arg)
 	return (i);
 }
 
-int builtin_echo_print(char *s, int option)
+int	builtin_echo_print(char *s, int option)
 {
 	char	*tmp;
-	int saved_errno;
+	int		saved_errno;
 
 	if (option == 0)
 	{
@@ -50,10 +61,10 @@ int builtin_echo_print(char *s, int option)
 	return (0);
 }
 
-int builtin_echo_join_str(char **arg, int i, char **s)
+int	builtin_echo_join_str(char **arg, int i, char **s)
 {
 	char	*tmp;
-	int saved_errno;
+	int		saved_errno;
 
 	while (arg[i])
 	{
@@ -75,7 +86,7 @@ int builtin_echo_join_str(char **arg, int i, char **s)
 int	builtin_echo(char **arg)
 {
 	int		option;
-	int exit_code;
+	int		exit_code;
 	int		i;
 	char	*s;
 

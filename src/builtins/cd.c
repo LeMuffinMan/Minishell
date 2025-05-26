@@ -6,19 +6,19 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 17:36:27 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/16 17:56:24 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/26 18:00:37 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtins.h"
+#include "cd_utils.h"
 #include "env_utils.h"
 #include "libft.h"
 #include "structs.h"
-#include <unistd.h>
 #include <errno.h>
-#include "cd_utils.h"
+#include <unistd.h>
 
-int builtins_cd_oldpwd_path(t_var **env, char **path)
+int	builtins_cd_oldpwd_path(t_var **env, char **path)
 {
 	if (!get_value(env, "OLDPWD"))
 	{
@@ -34,7 +34,7 @@ int builtins_cd_oldpwd_path(t_var **env, char **path)
 	return (0);
 }
 
-int try_change_directory(char *path, t_var **env, char **arg)
+int	try_change_directory(char *path, t_var **env, char **arg)
 {
 	if (!change_directory(path))
 	{
@@ -52,24 +52,25 @@ int try_change_directory(char *path, t_var **env, char **arg)
 	return (1);
 }
 
-int handle_oldpwd(t_var **env, char **path)
+int	handle_oldpwd(t_var **env, char **path)
 {
-	int exit_code;
-	int res;
+	int	exit_code;
+	int	res;
 
 	exit_code = builtins_cd_oldpwd_path(env, path);
 	if (exit_code != 0)
 		return (exit_code);
-	res = try_change_directory(*path, env, (char*[]){"cd", "-", NULL});
+	res = try_change_directory(*path, env, (char *[]){"cd", "-", NULL});
 	free(*path);
 	return (res);
 }
 
-int builtin_cd_with_arg(char **arg, t_var **env)
+int	builtin_cd_with_arg(char **arg, t_var **env)
 {
-	char *path = NULL;
-	int exit_code;
+	char	*path;
+	int		exit_code;
 
+	path = NULL;
 	if (!ft_strncmp(arg[1], "-", 2))
 		return (handle_oldpwd(env, &path));
 	if (!ft_strncmp(arg[1], "..", 3) && access("..", X_OK) != 0)
@@ -96,7 +97,7 @@ int	builtin_cd(char **arg, t_var **env)
 		return (1);
 	}
 	if (array_size(arg) == 1)
-		return(builtin_cd_without_arg(env));
+		return (builtin_cd_without_arg(env));
 	if (array_size(arg) == 2)
 		return (builtin_cd_with_arg(arg, env));
 	return (0);

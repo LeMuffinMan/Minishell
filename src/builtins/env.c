@@ -6,22 +6,22 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 17:31:29 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/20 17:31:43 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/26 18:01:51 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include "structs.h"
-#include <stdlib.h>
 #include <errno.h>
+#include <stdlib.h>
 #include <unistd.h>
 
-int update_underscore_var(t_var **env)
+int	update_underscore_var(t_var **env)
 {
-	t_var *tmp;
+	t_var	*tmp;
 
 	tmp = *env;
-	while(tmp)
+	while (tmp)
 	{
 		if (!ft_strncmp(tmp->key, "_", 2) && tmp->env == 1)
 		{
@@ -35,11 +35,11 @@ int update_underscore_var(t_var **env)
 	return (0);
 }
 
-int error_env(char **content)
+int	error_env(char **content)
 {
-	char *s;
-	char *temp;
-	int saved_errno;
+	char	*s;
+	char	*temp;
+	int		saved_errno;
 
 	s = ft_strjoin("env: \'", content[1]);
 	if (!s)
@@ -69,7 +69,7 @@ int	builtin_env(t_var **env, char **content)
 	if (!*env)
 		return (0);
 	if (content[1])
-		return(error_env(content));
+		return (error_env(content));
 	update_underscore_var(env);
 	if (errno == ENOMEM)
 		return (errno);

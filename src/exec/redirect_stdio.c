@@ -1,9 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   redirect_stdio.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/26 18:25:23 by oelleaum          #+#    #+#             */
+/*   Updated: 2025/05/26 18:25:48 by oelleaum         ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
 
-#include <errno.h>
 #include "exec.h"
+#include <errno.h>
 #include <unistd.h>
 
-int redirect_stdio_right_redirect(t_tree **ast, t_lists *lists)
+int	redirect_stdio_right_redirect(t_tree **ast, t_lists *lists)
 {
 	t_tree	*left;
 	t_tree	*right;
@@ -28,7 +39,7 @@ int redirect_stdio_right_redirect(t_tree **ast, t_lists *lists)
 	return (0);
 }
 
-int redirect_stdio_right(t_tree **ast, t_lists *lists)
+int	redirect_stdio_right(t_tree **ast, t_lists *lists)
 {
 	t_tree	*left;
 	t_tree	*right;
@@ -53,20 +64,21 @@ int redirect_stdio_right(t_tree **ast, t_lists *lists)
 
 int	redirect_stdio(t_tree **ast, t_lists *lists)
 {
-	char *file;
+	char	*file;
 
 	if ((*ast)->token->token == HD)
 		file = (*ast)->token->content[2];
 	else
 		file = (*ast)->token->content[1];
-	lists->exit_code = file_check(file, (*ast)->token->token, (*ast)->token->error);
+	lists->exit_code = file_check(file, (*ast)->token->token,
+			(*ast)->token->error);
 	if (lists->exit_code != 0)
-		return (lists->exit_code); // il faut return ici ?
+		return (lists->exit_code);
 	lists->exit_code = open_dup2_close(file, (*ast)->token->token);
 	if (errno == ENOMEM)
 		return (errno);
 	redirect_stdio_right(ast, lists);
-	if (errno  == ENOMEM)
+	if (errno == ENOMEM)
 		return (errno);
 	if ((*ast)->token->token == HD)
 		unlink(file);

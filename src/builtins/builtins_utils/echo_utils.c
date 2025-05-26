@@ -1,16 +1,27 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   echo_utils.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/26 18:22:37 by oelleaum          #+#    #+#             */
+/*   Updated: 2025/05/26 18:22:38 by oelleaum         ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "libft.h"
 
-int is_a_valid_echo_option(char *s)
+int	is_a_valid_echo_option(char *s)
 {
-	int i;
+	int	i;
 
 	if (!ft_strncmp(s, "-n", 2))
 	{
 		i = 2;
 		while (s[i])
 		{
-			if (s[i] != 'n' && s[i] != ' ') //fix temporaire
+			if (s[i] != 'n' && s[i] != ' ') // fix temporaire
 				return (0);
 			i++;
 		}
@@ -20,9 +31,9 @@ int is_a_valid_echo_option(char *s)
 	return (1);
 }
 
-int is_only_n(char *arg)
+int	is_only_n(char *arg)
 {
-	int i;
+	int	i;
 
 	i = 1;
 	while (arg[i])

@@ -1,11 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cd_utils.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/26 18:20:22 by oelleaum          #+#    #+#             */
+/*   Updated: 2025/05/26 18:22:13 by oelleaum         ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "env_utils.h"
 #include "libft.h"
-#include "structs.h"
 #include "limits.h"
+#include "structs.h"
+#include <errno.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <errno.h>
 
 int	change_directory(char *path)
 {
@@ -42,23 +53,23 @@ int	builtin_cd_without_arg(t_var **env)
 	return (0);
 }
 
-int find_last_slash(char *buf)
+int	find_last_slash(char *buf)
 {
-	int i;
+	int	i;
 
 	i = ft_strlen(buf);
 	while (i >= 0)
 	{
 		if (buf[i] == '/')
-			break;
+			break ;
 		i--;
 	}
 	return (i);
 }
 
-int trim_pwd(char **s)
+int	trim_pwd(char **s)
 {
-	int end;
+	int		end;
 	char	buf[PATH_MAX];
 
 	if (getcwd(buf, sizeof(buf)) != NULL)
@@ -69,10 +80,10 @@ int trim_pwd(char **s)
 			return (-1);
 		return (0);
 	}
-	else 
+	else
 	{
-		ft_putstr_fd("cd: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory", 2);
-		return (1);	
+		ft_putstr_fd("cd: error retrieving current directory: getcwd: \
+			cannot access parent directories: No such file or directory", 2);
+		return (1);
 	}
 }
-

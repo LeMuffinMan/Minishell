@@ -6,7 +6,7 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 16:04:58 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/04 19:22:18 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/26 17:59:51 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@ int		print_array(char **array);
 char	**lst_to_array(t_var **env);
 int		free_pipes(t_pipe **pipes);
 int		swap_nodes(t_var *n1, t_var *n2);
-int close_origin_fds(int origin_fds[2]);
-void free_lists(t_lists *lists);
-int array_size(char **array);
+int		close_origin_fds(int origin_fds[2]);
+void	free_lists(t_lists *lists);
+int		array_size(char **array);
 
 #endif

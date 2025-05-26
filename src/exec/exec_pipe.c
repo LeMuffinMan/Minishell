@@ -1,17 +1,29 @@
-#include <errno.h>
-#include "malloc_error_handlers.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exec_pipe.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/26 18:24:28 by oelleaum          #+#    #+#             */
+/*   Updated: 2025/05/26 18:24:29 by oelleaum         ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "env_utils.h"
 #include "exec.h"
-#include "structs.h"
+#include "malloc_error_handlers.h"
 #include "signals.h"
+#include "structs.h"
+#include <errno.h>
 #include <unistd.h>
 
 int	exec_pipe(t_tree **ast, t_lists *lists)
 {
-	pid_t	left_pid;
-	int		exit_code;
-	struct sigaction sa_ignore;
-	struct sigaction sa_orig;
+	pid_t				left_pid;
+	int					exit_code;
+	struct sigaction	sa_ignore;
+	struct sigaction	sa_orig;
 
 	setup_pipe_signals(&sa_ignore, &sa_orig);
 	add_pipe(lists->pipe_fd, lists->pipes);
@@ -30,7 +42,7 @@ int	exec_pipe(t_tree **ast, t_lists *lists)
 	return (handle_right_execution(ast, lists, left_pid, &sa_orig));
 }
 
-int exec_pipe_left_execution(t_tree **ast, t_lists *lists, pid_t pid)
+int	exec_pipe_left_execution(t_tree **ast, t_lists *lists, pid_t pid)
 {
 	if (pid < 0)
 		return (errno);
@@ -44,7 +56,8 @@ int exec_pipe_left_execution(t_tree **ast, t_lists *lists, pid_t pid)
 	return (0);
 }
 
-int exec_pipe_right_execution(t_tree **ast, t_lists *lists, pid_t right_pid, pid_t left_pid)
+int	exec_pipe_right_execution(t_tree **ast, t_lists *lists, pid_t right_pid,
+		pid_t left_pid)
 {
 	if (right_pid < 0)
 		return (errno);
@@ -61,10 +74,9 @@ int exec_pipe_right_execution(t_tree **ast, t_lists *lists, pid_t right_pid, pid
 	return (0);
 }
 
-
-int exec_pipe_right_pipe_execution(t_tree **ast, t_lists *lists, pid_t left_pid)
+int	exec_pipe_right_pipe_execution(t_tree **ast, t_lists *lists, pid_t left_pid)
 {
-	int exit_code;
+	int	exit_code;
 
 	exit_code = exec_pipe(&((*ast)->right), lists);
 	if (errno == ENOMEM)
@@ -73,9 +85,8 @@ int exec_pipe_right_pipe_execution(t_tree **ast, t_lists *lists, pid_t left_pid)
 	return (exit_code);
 }
 
-
 int	handle_right_execution(t_tree **ast, t_lists *lists, pid_t left_pid,
-	struct sigaction *sa_orig)
+		struct sigaction *sa_orig)
 {
 	pid_t	right_pid;
 	int		exit_code;
@@ -90,4 +101,3 @@ int	handle_right_execution(t_tree **ast, t_lists *lists, pid_t left_pid,
 		return (errno);
 	return (exit_code);
 }
-

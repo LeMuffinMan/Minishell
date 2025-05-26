@@ -1,32 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init.h                                             :+:      :+:    :+:   */
+/*   exit_utils.h                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/14 17:30:41 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/26 17:59:55 by oelleaum         ###   ########lyon.fr   */
+/*   Created: 2025/05/26 18:04:41 by oelleaum          #+#    #+#             */
+/*   Updated: 2025/05/26 18:18:54 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef INIT_H
-# define INIT_H
+#ifndef EXIT_UTILS_H
+# define EXIT_UTILS_H
 
-# include "structs.h"
-
-// init.c
-int		init(t_lists *lists, char **av, char **env);
-
-// init_lists.c
-int		init_lists(t_lists *lists);
-
-// init_utils.c
-int		init_and_incremente_shlvl(char *s, t_var **env);
-int		incremente_shlvl(char *s, char *line);
-int		get_cwd_init(char *s);
-
-// misc.c
-void	free_lists(t_lists *lists);
+int	is_only_numeric_argument(char *s);
 
 #endif

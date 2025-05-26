@@ -6,19 +6,19 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/04 19:22:41 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/04 19:22:42 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/26 18:23:00 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "env_utils.h"
 #include "libft.h"
 #include "utils.h"
-#include <stdlib.h>
 #include <errno.h>
+#include <stdlib.h>
 
-int export_without_argument(t_var **env)
+int	export_without_argument(t_var **env)
 {
-	t_var *copy;
+	t_var	*copy;
 
 	copy = NULL;
 	copy = copy_list(env);
@@ -32,9 +32,9 @@ int export_without_argument(t_var **env)
 	return (0);
 }
 
-int is_var_declaration(char *arg)
+int	is_var_declaration(char *arg)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	if (arg[i] == '=' || ft_isdigit(arg[i]) || !ft_isalnum(arg[i]))
@@ -43,9 +43,10 @@ int is_var_declaration(char *arg)
 	{
 		if (arg[i] == '+' && arg[i + 1] && arg[i + 1] != '=')
 			return (0);
-		if (!ft_isalnum(arg[i])) 
+		if (!ft_isalnum(arg[i]))
 		{
-			if ((arg[i] == '=') || (arg[i + 1] && arg[i] == '+' && arg[i + 1] == '='))
+			if ((arg[i] == '=') || (arg[i + 1] && arg[i] == '+' && arg[i
+						+ 1] == '='))
 				return (1);
 			else
 				return (0);
@@ -55,11 +56,11 @@ int is_var_declaration(char *arg)
 	return (0);
 }
 
-char *get_full_variable_declaration(char **arg, int i, char **s)
+char	*get_full_variable_declaration(char **arg, int i, char **s)
 {
-	if (arg[i][ft_strlen(arg[i]) - 1] == '=') 
+	if (arg[i][ft_strlen(arg[i]) - 1] == '=')
 	{
-		if (arg[i + 1] && !is_var_declaration(arg[i + 1])) 
+		if (arg[i + 1] && !is_var_declaration(arg[i + 1]))
 		{
 			*s = ft_strjoin(arg[i], arg[i + 1]);
 			if (!*s)
@@ -67,12 +68,12 @@ char *get_full_variable_declaration(char **arg, int i, char **s)
 		}
 		else
 		{
-			*s = ft_strdup(arg[i]); 
+			*s = ft_strdup(arg[i]);
 			if (!*s)
 				return (NULL);
 		}
 	}
-	else 
+	else
 	{
 		*s = ft_strdup(arg[i]);
 		if (!*s)
@@ -81,15 +82,14 @@ char *get_full_variable_declaration(char **arg, int i, char **s)
 	return (*s);
 }
 
-
-int is_var_exportation(char *s)
+int	is_var_exportation(char *s)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	if (s[i] == '=' || ft_isdigit(s[i]) || !ft_isalnum(s[i]))
 		return (0);
-	while(s[i + 1])
+	while (s[i + 1])
 	{
 		if (s[i] == '+' && s[i + 1] && s[i + 1] != '=')
 			return (0);

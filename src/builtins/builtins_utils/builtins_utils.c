@@ -6,7 +6,7 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 17:27:22 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/04 19:22:26 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/26 18:00:23 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int	swap_nodes(t_var *n1, t_var *n2)
 	return (0);
 }
 
-int copy_node(t_var **new_node, t_var **tmp)
+int	copy_node(t_var **new_node, t_var **tmp)
 {
 	(*new_node)->key = ft_strdup((*tmp)->key);
 	(*new_node)->value = ft_strdup((*tmp)->value);

@@ -6,19 +6,19 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 17:34:18 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/20 17:35:52 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/26 18:02:03 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
-#include "export_utils.h"
 #include "env_utils.h"
+#include "export_utils.h"
+#include "libft.h"
 #include "malloc_error_handlers.h"
 #include <errno.h>
 
-int builtin_export_var_declaration(t_var **env, char **arg, int i, char **s)
+int	builtin_export_var_declaration(t_var **env, char **arg, int i, char **s)
 {
-	int saved_errno;
+	int	saved_errno;
 
 	get_full_variable_declaration(arg, i, s);
 	if (errno == ENOMEM)
@@ -33,15 +33,16 @@ int builtin_export_var_declaration(t_var **env, char **arg, int i, char **s)
 	}
 	free(*s);
 	return (0);
-} 
+}
 
-int builtin_export_var_exportation(t_var **env, char *arg)
+int	builtin_export_var_exportation(t_var **env, char *arg)
 {
-	t_var *node;
+	t_var	*node;
+
 	node = is_known_key(env, arg);
 	if (node)
 		node->exported = 1;
-	else 
+	else
 	{
 		add_or_update_var(env, arg);
 		if (errno == ENOMEM)

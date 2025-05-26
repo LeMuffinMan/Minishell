@@ -6,55 +6,29 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 17:36:33 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/18 16:11:51 by oelleaum         ###   ########.fr       */
+/*   Updated: 2025/05/26 18:20:04 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "exit_utils.h"
 #include "libft.h"
-#include "structs.h"
+#include "malloc_error_handlers.h"
 #include "utils.h"
-#include <unistd.h>
 #include <errno.h>
+#include <unistd.h>
 
-int	is_only_numeric_argument(char *s)
+int	exit_no_arg(t_lists *lists)
 {
-	int	i;
-
-	i = 0;
-	while (s[i])
-	{
-		if ((s[i] > '9' || s[i] < '0') && (s[i] != '-' && s[i] != '+'))
-			return (0);
-		i++;
-	}
-	return (1);
-}
-
-int exit_no_arg(t_tree **ast, t_lists *lists)
-{
-  (void)ast; // a virer
 	ft_putstr_fd("exit\n", 1);
 	close_origin_fds(lists->origin_fds);
 	free_lists(lists);
 	exit(0);
 }
 
-int builtin_exit_malloc_error(t_lists *lists, char *s)
+int	exit_overflow_error(t_lists *lists, char **arg)
 {
-	int saved_errno;
-
-	saved_errno = errno;
-	if (s)
-		free(s);
-	free_lists(lists);
-	close_origin_fds(lists->origin_fds);
-	exit(saved_errno);
-}
-
-int exit_overflow_error(t_lists *lists, char **arg)
-{
-	char *s;
-	char *tmp;
+	char	*s;
+	char	*tmp;
 
 	s = ft_strjoin("minishell: exit: ", arg[1]);
 	if (!s)
@@ -69,10 +43,11 @@ int exit_overflow_error(t_lists *lists, char **arg)
 	return (2);
 }
 
-int exit_numeric_argument_required_error(char **arg, t_tree **ast, t_lists *lists)
+int	exit_numeric_argument_required_error(char **arg, t_tree **ast,
+		t_lists *lists)
 {
-	char *s;
-	char *tmp;
+	char	*s;
+	char	*tmp;
 
 	s = ft_strjoin("minishell: exit: ", arg[1]);
 	if (!s)
@@ -86,27 +61,27 @@ int exit_numeric_argument_required_error(char **arg, t_tree **ast, t_lists *list
 	free(s);
 	free_lists(lists);
 	close_origin_fds(lists->origin_fds);
-  (void)ast;
+	(void)ast;
 	exit(2);
 }
 
-int exit_with_valid_arg(char **arg, t_tree **ast, t_lists *lists)
+int	exit_with_valid_arg(char **arg, t_tree **ast, t_lists *lists)
 {
-	int n;
+	int	n;
 
 	n = ft_atoi(arg[1]);
 	if (n > 255)
 		n = n % 256;
 	close_origin_fds(lists->origin_fds);
 	free_lists(lists);
-  (void)ast;
+	(void)ast;
 	exit(n);
 }
 
 int	builtin_exit(char **arg, t_tree **ast, t_lists *lists)
 {
 	if (!arg[1])
-		exit_no_arg(ast, lists);
+		exit_no_arg(lists);
 	if (ft_strlen(arg[1]) > 18)
 		return (exit_overflow_error(lists, arg));
 	if (!is_only_numeric_argument(arg[1]))
@@ -122,7 +97,7 @@ int	builtin_exit(char **arg, t_tree **ast, t_lists *lists)
 		return (1);
 	}
 	if (!is_only_numeric_argument(arg[1]))
-		return(exit_numeric_argument_required_error(arg, ast, lists));
+		return (exit_numeric_argument_required_error(arg, ast, lists));
 	exit_with_valid_arg(arg, ast, lists);
 	return (0);
 }

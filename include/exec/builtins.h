@@ -6,7 +6,7 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/04 19:21:36 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/18 16:13:14 by oelleaum         ###   ########.fr       */
+/*   Updated: 2025/05/26 18:18:50 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,8 @@
 # include "structs.h"
 # include "tree.h"
 
-
-//ultrabonus
-int builtin_source(char *arg, t_var **env);
+// ultrabonus
+int		builtin_source(char *arg, t_var **env);
 
 // builtins/export
 int		free_array(char **array);
