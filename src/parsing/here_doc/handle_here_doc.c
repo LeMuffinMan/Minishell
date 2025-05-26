@@ -150,6 +150,7 @@ bool	create_here_doc(t_token *node, t_lists *lists, bool *sig_hd)
       	*sig_hd = 0;
         lists->exit_code = 130; // pour le moment on n'arrive pas a recuperer le bon exit code 
 				write(1, "\n", 1);
+				return (false);
       }
       else
           lists->exit_code = 1;  // a changer !!

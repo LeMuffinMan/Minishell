@@ -138,6 +138,18 @@
 //WEEK END : refacto chacun de notre cote : secu malloc et norme
 //Lundi : verifier le Makefile Et on push
 
+//Mardi 14h merge 
+//Parsing 
+//- fix syntax error parenthesis
+//- fix echo espaces en trop ou en moins
+//- fix echo $
+//- fix redir sur l'ast (les redirs a droite)
+//- fix unset PATH qui casse la reco des builtins
+//- fix ls considere comme file
+//exec 
+//- fix minishell: ./usr/bin/sudo: Is a directory : si execve renvoie 2 (?) imprimer bash: ./usr/bin/sudo: No such file or directory
+
+
 int	malloc_error_close_free_exit(t_lists *lists)
 {
 	close_origin_fds(lists->origin_fds);
