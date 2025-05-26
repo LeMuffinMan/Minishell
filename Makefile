@@ -6,7 +6,7 @@
 #    By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/05/24 03:16:39 by asinsard         ###   ########lyon.fr    #
+#    Updated: 2025/05/26 18:18:32 by oelleaum         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,8 +21,8 @@ STOP_COLOR			=	\e[0m
 
 DIR_EXEC			=	src/ \
 						src/exec \
-						src/exec/builtins \
-						src/exec/builtins/builtins_utils \
+						src/builtins \
+						src/builtins/builtins_utils \
 						src/exec/exec_utils \
 						src/init \
 						src/misc \
@@ -120,6 +120,7 @@ SRC					=	main.c \
 					builtins/builtins_utils/builtins_utils.c \
 					builtins/builtins_utils/cd_utils.c \
 					builtins/builtins_utils/echo_utils.c \
+					builtins/builtins_utils/exit_utils.c \
 					src/env_utils.c \
 					init_env_utils.c \
 					init_utils.c \
