@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 21:44:17 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/26 16:04:56 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/26 18:42:46 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,10 @@ void	is_command_whithout_env(t_token **node, t_var *list_env)
 {
 	is_built_in(node);
 	if ((*node)->token == BUILT_IN)
+	{
 		(*node)->error = SUCCESS;
+		return ;
+	}
 	if (!is_valid_prev((*node)->prev))
 		return ;
 	else if (ft_isslash((*node)->content[0]) || !env_is_alive(list_env))
