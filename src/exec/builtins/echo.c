@@ -21,7 +21,7 @@ int is_a_valid_echo_option(char *s)
 {
 	int i;
 
-	if (s[0] && s[0] == '-' && s[1] && s[1] == 'n' && s[2])
+	if (!ft_strncmp(s, "-n", 2))
 	{
 		i = 2;
 		while (s[i])
@@ -31,6 +31,8 @@ int is_a_valid_echo_option(char *s)
 			i++;
 		}
 	}
+	else
+		return (0);
 	return (1);
 }
 
@@ -56,8 +58,7 @@ int	builtin_echo(char **arg)
 	}
 	s = ft_strdup("");
 	i = 1;
-	/* if (is_a_valid_echo_option(arg[i])) */
-	if ((!ft_strncmp(arg[i], "-n", 3) && ft_strlen(arg[i]) == 2) || (!ft_strncmp(arg[i], "-n ", 4) && ft_strlen(arg[i]) == 3 )) // 2 avant : -n a un espace apres donc 3
+	if (is_a_valid_echo_option(arg[i]) && option == 0)
 	{
 		option = 1;
 		i++;
