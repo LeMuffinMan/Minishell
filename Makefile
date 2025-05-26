@@ -104,6 +104,7 @@ SRC					=	main.c \
 					exec_pipe.c \
 					exec_pipe_parent_child.c \
 					exec_cmd.c \
+					exec_cmd_utils.c \
 					redirect_stdio.c \
 					exec_boolops.c \
 					misc/errors.c \
@@ -125,6 +126,7 @@ SRC					=	main.c \
 					init_env_utils.c \
 					init_utils.c \
 					init_lists.c \
+					add_back_var.c \
 					prints.c \
 					misc.c \
 					malloc_error.c \

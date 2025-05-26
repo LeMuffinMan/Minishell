@@ -13,14 +13,10 @@
 #include "libft.h"
 #include "structs.h"
 #include "utils.h"
+#include "init.h"
 #include <stdlib.h>
 #include <errno.h>
 
-// TODO
-// faire un fichier frees.c
-// une fonction de 25l+ a racrourcir
-
-// a ranger dans un fihcier frees.c
 void	free_list(t_var **l)
 {
 	t_var	*tmp;
@@ -63,18 +59,6 @@ int	set_node(t_var **node, int mode)
 		(*node)->loaded = 1;
 	}
 	return (0);
-}
-
-int	free_node_var(t_var *node, char **array)
-{
-	if (array)
-		free_array(array);
-	if (node->key)
-		free(node->key);
-	if (node->value)
-		free(node->value);
-	free(node);
-	return (-1);
 }
 
 int	add_first_node(t_var **lst, t_var **new, char *s, int mode)
@@ -126,36 +110,4 @@ char **ft_split_on_first_equal(char *s)
     return (splitted);
 }
 
-int	add_back_var(t_var **lst, char *s, int mode)
-{
-	t_var	*ptr;
-	t_var	*new;
-	char	**key_value;
 
-	new = malloc(sizeof(t_var));
-	if (new == NULL)
-		return (-1);
-	if (!lst || *lst == NULL)
-		return (add_first_node(lst, &new, s, mode));
-	ptr = *lst;
-	while (ptr->next)
-		ptr = ptr->next;
-	ptr->next = new;
-	new->next = NULL;
-	new->value = NULL;
-	new->key = NULL;
-	key_value = ft_split_on_first_equal(s);
-	if (errno == ENOMEM)
-		return (free_node_var(new, NULL));
-	new->key = ft_strdup(key_value[0]);
-	if (!new->key)
-		return (free_node_var(new, key_value));
-	if (key_value && key_value[1])
-	{
-		new->value = ft_strdup(key_value[1]);
-		if (!new->value)
-			return (free_node_var(new, key_value));
-	}
-	free_array(key_value);
-	return (set_node(&new, mode));
-}

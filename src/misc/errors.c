@@ -133,3 +133,6 @@ int print_perm_error(char *file)
 	free(s);
 	return (1);
 }
+
+
+

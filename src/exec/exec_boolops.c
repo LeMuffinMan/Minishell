@@ -109,12 +109,20 @@ int	exec_group_cmd(t_tree **ast, t_lists *lists)
 int	exec_group_boolop(t_tree **ast, t_lists *lists)
 {
 	t_tree	*sub_ast;
+	int saved_errno;
 
 	sub_ast = NULL;
 	sub_ast = parse((*ast)->token->content[0], *lists->env, lists);
 	if (errno == ENOMEM)
 		return (errno);
 	lists->exit_code = exec_ast(&sub_ast, lists);
+	if (errno == ENOMEM)
+	{
+		saved_errno = errno;
+		free_tree(&sub_ast);
+		errno = saved_errno;
+		return (errno);
+	}
 	free_tree(&sub_ast);
 	return (lists->exit_code);
 }

@@ -32,7 +32,6 @@ int	find_first_digit(char *s)
 	return (i);
 }
 
-// init_utils
 int	get_cwd_init(char *s)
 {
 	char	buf[PATH_MAX];
