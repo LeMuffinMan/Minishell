@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 16:03:15 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/22 17:22:58 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/26 18:00:48 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,9 @@ t_token	*find_best_priority(t_token *start, t_token *end)
 	current = start;
 	while (current && current != end->next)
 	{
-		if (current->priority <= best->priority)
+		if ((current->priority < PRIO_PARENTHESIS
+			&& current->priority <= best->priority)
+				|| current->priority < best->priority)
 			best = current;
 		current = current->next;
 	}

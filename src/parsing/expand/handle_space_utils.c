@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 15:39:39 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/24 03:12:59 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/26 18:24:22 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,12 @@ bool	verif_is_token_valid(t_type token)
 void	add_space(t_token **node)
 {
 	char	*res;
+	int		len;
 
+	len = ft_strlen((*node)->content[0]);
+	if ((*node)->content[0][len - 1] 
+		&& (*node)->content[0][len - 1] == ' ')
+		return ;
 	res = ft_strjoin((*node)->content[0], " ");
 	if (!res)
 	{
