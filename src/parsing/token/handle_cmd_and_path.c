@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 23:46:28 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/23 23:37:59 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/26 14:43:10 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,6 @@ char	*parse_cmd(char *arg, char **path, int *error, bool flag)
 		cmd = verif_path(path, split_cmd[0], error);
 	else
 		cmd = verif_path(path, arg, error);
-	if (cmd)
 	free_tab(path);
 	free_tab(split_cmd);
 	return (cmd);

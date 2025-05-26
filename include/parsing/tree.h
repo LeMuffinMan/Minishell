@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 21:07:56 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/24 03:09:00 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/26 16:21:37 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ typedef struct s_token	t_token;
 # define PRIO_REDIR 4
 # define PRIO_CMD 5
 # define PRIO_IGNORE 8
+# define IS_EX_VALUE 99
 
 typedef struct s_tree
 {

@@ -14,8 +14,7 @@
 #include "display.h"
 #include "env_utils.h"
 #include "exec.h"
-#include "get_prompt.h"
-	// A VIRER !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#include "get_prompt.h" // A VIRER !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #include "history.h"
 #include "init.h"
 #include "libft.h"
@@ -122,22 +121,34 @@
 //parsing :
  	//done fix sudo -A et sudo -A apt update
 	//done echo $HOME $USER
- 	//fixer export : il faut toujours maitnenir dnas un seul char * chaque couple key=value
+ 	//done fixer export : il faut toujours maitnenir dnas un seul char * chaque couple key=value
 //
  	//done HERE_DOC 
- 	//wildcards 
+ 	//done wildcards 
 //Exec :
 	//done fix exec here_doc + signaux
-	//reparer l'expand de l'exit code pour false || echo $?
+	//done reparer l'expand de l'exit code pour false || echo $?
  	//Refacto de tout exec.c 
   //reparer et tester les builtins
-		//exit arg1 arg2 : il regarde si le premier argument est valid, sinon, il exit avec l'erreur du premier argument
- 		//env s'arrete au = 
+		//done exit arg1 arg2 : il regarde si le premier argument est valid, sinon, il exit avec l'erreur du premier argument
+ 		//done env s'arrete au = 
 //
 //jeudi : merge jeudi 18h : wildcards + DONE signaux (HD + wanted EOF pour HD) + exit_code fixed + export au parsing 
 //vendredi : refacto builtin complet + tests des builtins 
 //WEEK END : refacto chacun de notre cote : secu malloc et norme
 //Lundi : verifier le Makefile Et on push
+
+//Mardi 14h merge 
+//Parsing 
+//- fix syntax error parenthesis
+//- fix echo espaces en trop ou en moins
+//- fix echo $
+//- fix redir sur l'ast (les redirs a droite)
+//- fix unset PATH qui casse la reco des builtins
+//- fix ls considere comme file
+//exec 
+//- fix minishell: ./usr/bin/sudo: Is a directory : si execve renvoie 2 (?) imprimer bash: ./usr/bin/sudo: No such file or directory
+
 
 int	malloc_error_close_free_exit(t_lists *lists)
 {
@@ -278,9 +289,20 @@ int	parse_and_execution_loop(char **env, char **prompt, t_lists *lists,
 	line = readline_loop(prompt, lists, env, exit_code);
 	if (!line)
 		malloc_error_close_free_exit(lists);
+	if (g_signal != 0)
+	{
+		lists->exit_code = g_signal;
+		g_signal = 0; // Réinitialiser le flag de signal
+	}
 	//un free du prompt qui se fait pas sur un test cat << EOF 
 	if (dup_origins_fds(lists->origin_fds) == -1)
 		malloc_error_close_free_exit(lists);
+	if (*prompt && ft_strncmp(*prompt, "[Minishell]$ ", 13))
+	{
+		free(*prompt);
+		*prompt = NULL;
+		prompt = NULL;
+	}
 	//est-ce qu'on a besoin du strings env ou on peut passer direct les lists ou la liste env ?
 	strings_env = lst_to_array(lists->env);
 	(*lists->ast) = parse(line, *lists->env, lists);
@@ -314,7 +336,7 @@ int	main(int ac, char **av, char **env)
 	// decommenter a la toute fin !!!
 	/* is_interactive_mode(); */
 	exit_code = 0;            
-		// on ajoute l'exit code a la megastruct ou on la laisse dans env ?
+	g_signal = 0;
 	/* rl_inhibit_completion = 1; // desactive l'autocompletion */
 	if (init(&lists, av, env) == -1)
 	{

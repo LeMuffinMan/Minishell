@@ -66,7 +66,7 @@ t_tree	*parse(char *line, t_var *list_env, t_lists *lists)
 	handle_wildcard(&token, flag);
 	display_list(token, DEBUG);
 	if (!concat_args(&token, list_env, flag, lists)
-		||!handle_here_doc(&token))
+		||!handle_here_doc(&token, lists))
 		return (NULL);
 	display_list(token, DEBUG);
 	add_to_root(&token, &root);

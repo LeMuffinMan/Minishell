@@ -16,11 +16,12 @@
 # define NAME_LENGTH 10
 
 # include <stdbool.h>
+# include "structs.h"
 
 struct					s_token;
 typedef struct s_token	t_token;
 
-bool					handle_here_doc(t_token **head);
+bool					handle_here_doc(t_token **head, t_lists *lists);
 bool					create_hd_name(t_token **head);
 bool					verif_name(char *name);
 

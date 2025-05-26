@@ -100,6 +100,31 @@ int	add_first_node(t_var **lst, t_var **new, char *s, int mode)
 	return (set_node(new, mode));
 }
 
+char **ft_split_on_first_equal(char *s)
+{
+    char **splitted;
+  	char *equal_ptr;
+  	
+  	splitted = malloc(3 * sizeof(char *));
+    if (!splitted)
+        return (NULL);
+    splitted[0] = NULL;
+    splitted[1] = NULL;
+    splitted[2] = NULL;
+    equal_ptr = ft_strchr(s, '=');
+    if (!equal_ptr)
+    {
+        splitted[0] = ft_strdup(s);
+        return (splitted);
+    }
+    splitted[0] = ft_strndup(s, equal_ptr - s);
+    if (*(equal_ptr + 1))
+        splitted[1] = ft_strdup(equal_ptr + 1);
+    else
+        splitted[1] = ft_strdup("");
+    return (splitted);
+}
+
 // 0 = aucun des deux / 1 = env / 2 = export / 3 = env + export
 // revoir le retour d'erreur
 int	add_back_var(t_var **lst, char *s, int mode)
@@ -120,7 +145,7 @@ int	add_back_var(t_var **lst, char *s, int mode)
 	new->next = NULL;
 	new->value = NULL;
 	new->key = NULL;
-	key_value = ft_split(s, '=');
+	key_value = ft_split_on_first_equal(s);
 	if (!key_value)
 		return (free_node_var(new, NULL));
 	new->key = ft_strdup(key_value[0]);

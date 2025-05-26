@@ -19,13 +19,14 @@ BOLD_CYAN			=	\e[1;36m
 STOP_COLOR			=	\e[0m
 
 
-DIR_EXEC			=	src \
+DIR_EXEC			=	src/ \
 						src/exec \
 						src/exec/builtins \
 						src/exec/builtins/builtins_utils \
 						src/exec/exec_utils \
 						src/init \
-						src/misc
+						src/misc \
+						src/builtins 
 
 DIR_PARSING			=	src/parsing \
 						src/parsing/expand \
@@ -40,7 +41,7 @@ DIR_ULTRABONUS		=	src/ultrabonus \
 						src/ultrabonus/get_prompt 
 
 vpath %.c $(DIR_EXEC) $(DIR_PARSING) $(DIR_ULTRABONUS)
-vpath %.h include:include/parsing:include/exec:include/init:include/misc:src/libft/include
+vpath %.h include:include/parsing:include/exec:include/init:include/misc:src/libft/include:include/builtins
 vpath %.a src/libft/obj
 
 CC					=	cc
@@ -51,7 +52,7 @@ HEAD				=	display.h $(HEAD_EXEC)
 
 HEAD_DIR			=	include
 
-INC_HEAD			=	-I$(HEAD_DIR) -I$(HEAD_DIR)/parsing -I$(HEAD_DIR)/exec -I$(HEAD_DIR)/init -I$(HEAD_DIR)/misc -I$(HEAD_DIR)/ultrabonus
+INC_HEAD			=	-I$(HEAD_DIR) -I$(HEAD_DIR)/parsing -I$(HEAD_DIR)/exec -I$(HEAD_DIR)/init -I$(HEAD_DIR)/misc -I$(HEAD_DIR)/ultrabonus -I$(HEAD_DIR)/builtins
 
 LIBFT_DIR			=	src/libft
 LIBFT_HEAD_DIR		=	src/libft/include
@@ -98,26 +99,34 @@ SRC					=	main.c \
 						suffix.c \
 						parser.c \
 					init.c \
-					signals.c \
+					src/signals.c \
 					exec.c \
-					errors.c \
-    				echo.c \
-    				cd.c \
-    				pwd.c \
-    				unset.c \
-    				export.c \
-    				env.c \
-    				exit.c \
+					exec_pipe.c \
+					exec_pipe_parent_child.c \
+					exec_cmd.c \
+					redirect_stdio.c \
+					exec_boolops.c \
+					misc/errors.c \
+    				builtins/echo.c \
+    				builtins/cd.c \
+    				builtins/pwd.c \
+    				builtins/unset.c \
+    				builtins/export.c \
+    				builtins/env.c \
+    				builtins/exit.c \
 					redirections_stdio_utils.c \
 					pipe_utils.c \
-					export_utils.c \
-					builtins_utils.c \
-					exec/env_utils.c \
+					builtins/builtins_utils/export_utils.c \
+					builtins/builtins_utils/builtins_utils.c \
+					builtins/builtins_utils/cd_utils.c \
+					builtins/builtins_utils/echo_utils.c \
+					src/env_utils.c \
 					init_env_utils.c \
 					init_utils.c \
 					init_lists.c \
 					prints.c \
 					misc.c \
+					malloc_error.c \
 					source.c \
 					get_prompt.c \
 					get_prompt_free.c \

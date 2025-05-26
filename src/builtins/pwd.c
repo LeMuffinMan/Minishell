@@ -15,12 +15,8 @@
 #include <limits.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <errno.h>
 
-// des cas nuls ?
-// tester en unsetant PWD ...
-// tester un unset avec un env vide
-		//  1 ou errno ?
-//  si on est dans un dossier supprimer proteger !
 int	builtin_pwd(t_var **env)
 {
 	char	buf[PATH_MAX];
@@ -30,6 +26,8 @@ int	builtin_pwd(t_var **env)
 	if (getcwd(buf, sizeof(buf)) != NULL)
 	{
 		s = ft_strjoin(buf, "\n");
+		if (!s)
+			return (errno);
 		ft_putstr_fd(s, 1);
 		free(s);
 		return (0);
@@ -37,6 +35,8 @@ int	builtin_pwd(t_var **env)
 	else
 	{
 		s = ft_strjoin(get_value(env, "PWD"), "\n");
+		if (errno == ENOMEM)
+			return (errno);
 		if (s)
 			ft_putstr_fd(s, 1);
 		else
@@ -45,13 +45,3 @@ int	builtin_pwd(t_var **env)
 	}
 	return (0);
 }
-
-/* Print the absolute pathname of the current working directory. If the
-	-P option */
-/* is supplied, the pathname printed will not contain symbolic links. If the
-	-L */
-/* option is supplied, the pathname printed may contain symbolic links.
- * The */
-/* return status is zero unless an error is encountered while
- * determining the name */
-/* of the current directory or an invalid option is supplied. */

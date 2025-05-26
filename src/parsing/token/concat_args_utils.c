@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:44:43 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/24 02:07:08 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/26 15:33:31 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,6 +121,58 @@ static t_token	*set_parenthesis_error(t_token *node)
 	return (head);
 }
 
+bool	case_is_left_parenthesis(t_token *tmp, t_token **head)
+{
+	if (tmp->token == L_PARENTHESIS)
+	{
+		if (tmp->prev
+			&& tmp->prev->token != O_AND && tmp->prev->token != O_OR)
+		{
+			*head = set_parenthesis_error(tmp);
+			return (true);
+		}
+		if (!tmp->next || tmp->next->token == R_PARENTHESIS)
+		{
+			*head = set_parenthesis_error(tmp);
+			return (true);
+		}
+	}
+	return (false);
+}
+
+bool	case_is_right_parenthesis(t_token *tmp, t_token **head)
+{
+	if (tmp->token == R_PARENTHESIS)
+	{
+		if (tmp->next
+			&& tmp->next->token != O_AND && tmp->next->token != O_OR)
+		{
+			*head = set_parenthesis_error(tmp);
+			return (true);
+		}
+	}
+	return (false);
+}
+
+bool	case_is_operator(t_token *tmp, t_token **head)
+{
+	if (tmp->token == O_OR || tmp->token == O_AND || tmp->token == PIPE)
+	{
+		if (!tmp->prev || !tmp->next
+			|| (tmp->prev->token != CMD && tmp->prev->token != BUILT_IN
+				&& tmp->prev->token != R_PARENTHESIS && tmp->prev->token != NO_TOKEN
+				&& tmp->prev->token != D_QUOTE && tmp->prev->token != S_QUOTE)
+			|| (tmp->next->token != CMD && tmp->next->token != BUILT_IN
+				&& tmp->next->token != L_PARENTHESIS && tmp->next->token != NO_TOKEN 
+				&& tmp->next->token != D_QUOTE && tmp->next->token != S_QUOTE))
+		{
+			*head = set_syntax_error(tmp);
+			return (true);
+		}
+	}
+	return (false);
+}
+
 bool	syntax_error_for_op(t_token **head)
 {
 	t_token	*tmp;
@@ -128,48 +180,27 @@ bool	syntax_error_for_op(t_token **head)
 	tmp = *head;
 	while (tmp)
 	{
-		if (tmp->token == O_OR || tmp->token == O_AND || tmp->token == PIPE)
-		{
-			if (!tmp->prev || !tmp->next
-				|| (tmp->prev->token != CMD && tmp->prev->token != BUILT_IN
-					&& tmp->prev->token != R_PARENTHESIS && tmp->prev->token != NO_TOKEN
-					&& tmp->prev->token != D_QUOTE && tmp->prev->token != S_QUOTE)
-				|| (tmp->next->token != CMD && tmp->next->token != BUILT_IN
-					&& tmp->next->token != L_PARENTHESIS && tmp->next->token != NO_TOKEN 
-					&& tmp->next->token != D_QUOTE && tmp->next->token != S_QUOTE))
-			{
-				*head = set_syntax_error(tmp);
-				return (true);
-			}
-		}
-		if (tmp->token == L_PARENTHESIS)
-		{
-			if (tmp->prev
-				&& tmp->prev->token != O_AND && tmp->prev->token != O_OR
-				&& tmp->prev->token != PIPE && tmp->prev->token != L_PARENTHESIS)
-			{
-				*head = set_parenthesis_error(tmp);
-				return (true);
-			}
-			if (!tmp->next || tmp->next->token == R_PARENTHESIS)
-			{
-				*head = set_parenthesis_error(tmp);
-				return (true);
-			}
-		}
-		if (tmp->token == R_PARENTHESIS)
-		{
-			if (tmp->next
-				&& tmp->next->token != O_AND && tmp->next->token != O_OR
-				&& tmp->next->token != PIPE && tmp->next->token != R_PARENTHESIS)
-			{
-				*head = set_parenthesis_error(tmp);
-				return (true);
-			}
-		}
+		if (case_is_operator(tmp, head))
+			return (true);
+		if (case_is_left_parenthesis(tmp, head))
+			return (true);
+		if (case_is_right_parenthesis(tmp, head))
+			return (true);
 		tmp = tmp->next;
 	}
 	return (false);
+}
+
+static void	alloc_operator_for_error(t_type token, char **operator)
+{
+	if (token == S_QUOTE)
+		*operator = ft_strdup("'");
+	else if (token == D_QUOTE)
+		*operator = ft_strdup("\"");
+	else if (token == L_PARENTHESIS)
+		*operator = ft_strdup("(");
+	else
+		*operator = ft_strdup(")");
 }
 
 static t_token	*set_quote_or_par_error(t_token *node, t_type token)
@@ -181,14 +212,7 @@ static t_token	*set_quote_or_par_error(t_token *node, t_type token)
 
 	if (!node || !node->content)
 		return (NULL);
-	if (token == S_QUOTE)
-		operator = ft_strdup("'");
-	else if (token == D_QUOTE)
-		operator = ft_strdup("\"");
-	else if (token == L_PARENTHESIS)
-		operator = ft_strdup("(");
-	else
-		operator = ft_strdup(")");
+	alloc_operator_for_error(token, &operator);
 	if (!operator)
 		return (NULL);
 	free_parse(node, NULL, 0);
@@ -284,6 +308,6 @@ void	check_syntax_error(t_token **head)
 			case_of_directory_error(&tmp);
 			return ;
 		}
-			tmp = tmp->next;
+		tmp = tmp->next;
 	}
 }

@@ -13,8 +13,8 @@
 #include "libft.h"
 #include "structs.h"
 #include "utils.h"
-#include "tree.h"
 #include <unistd.h>
+#include <errno.h>
 
 int	is_only_numeric_argument(char *s)
 {
@@ -32,27 +32,37 @@ int	is_only_numeric_argument(char *s)
 
 int exit_no_arg(t_tree **ast, t_lists *lists)
 {
-	/* free_list(lists->env); */
-	/* free_tree(&(*ast)->head); */
-	//free le prompt ici ?
-  /* free_history(history); */
-  (void)ast;
+  (void)ast; // a virer
 	ft_putstr_fd("exit\n", 1);
 	close_origin_fds(lists->origin_fds);
-  /* close(origin_fds[0]); */
-  /* close(origin_fds[1]); */
 	free_lists(lists);
 	exit(0);
 }
 
-int exit_overflow_error(char **arg)
+int builtin_exit_malloc_error(t_lists *lists, char *s)
+{
+	int saved_errno;
+
+	saved_errno = errno;
+	if (s)
+		free(s);
+	free_lists(lists);
+	close_origin_fds(lists->origin_fds);
+	exit(saved_errno);
+}
+
+int exit_overflow_error(t_lists *lists, char **arg)
 {
 	char *s;
 	char *tmp;
 
 	s = ft_strjoin("minishell: exit: ", arg[1]);
+	if (!s)
+		return (errno);
 	tmp = s;
 	s = ft_strjoin(s, ": numeric argument required\n");
+	if (!s)
+		builtin_exit_malloc_error(lists, tmp);
 	free(tmp);
 	ft_putstr_fd(s, 2);
 	free(s);
@@ -65,15 +75,16 @@ int exit_numeric_argument_required_error(char **arg, t_tree **ast, t_lists *list
 	char *tmp;
 
 	s = ft_strjoin("minishell: exit: ", arg[1]);
+	if (!s)
+		builtin_exit_malloc_error(lists, NULL);
 	tmp = s;
 	s = ft_strjoin(s, "numeric argument required\n");
+	if (!s)
+		builtin_exit_malloc_error(lists, tmp);
 	free(tmp);
 	ft_putstr_fd(s, 2);
 	free(s);
-	/* free_list(env); */
-	/* free_tree(&(*ast)->head); */
 	free_lists(lists);
-  /* free_history(history); */
 	close_origin_fds(lists->origin_fds);
   (void)ast;
 	exit(2);
@@ -86,10 +97,6 @@ int exit_with_valid_arg(char **arg, t_tree **ast, t_lists *lists)
 	n = ft_atoi(arg[1]);
 	if (n > 255)
 		n = n % 256;
-	/* free_list(env); */
-	/* free_tree(&(*ast)->head); */
-	//free le prompt ici ?
-  /* free_history(history); */
 	close_origin_fds(lists->origin_fds);
 	free_lists(lists);
   (void)ast;
@@ -101,13 +108,13 @@ int	builtin_exit(char **arg, t_tree **ast, t_lists *lists)
 	if (!arg[1])
 		exit_no_arg(ast, lists);
 	if (ft_strlen(arg[1]) > 18)
-		return (exit_overflow_error(arg));
+		return (exit_overflow_error(lists, arg));
 	if (!is_only_numeric_argument(arg[1]))
 	{
 		ft_putstr_fd("minishell: exit: numeric argument required\n", 2);
 		free_lists(lists);
+		close_origin_fds(lists->origin_fds);
 		exit(2);
-		
 	}
 	if (arg[2])
 	{
