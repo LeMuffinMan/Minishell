@@ -14,101 +14,90 @@
 #include "libft.h"
 #include "utils.h"
 #include <stdlib.h>
+#include <errno.h>
 
-int	is_valid_identifier(char *var)
+int export_without_argument(t_var **env)
 {
-	int	i;
-	int	j;
+	t_var *copy;
+
+	copy = NULL;
+	copy = copy_list(env);
+	if (!copy)
+		return (errno);
+	sort_list(&copy);
+	if (errno == ENOMEM)
+		return (errno);
+	print_sorted_env(&copy);
+	free_list(&copy);
+	return (0);
+}
+
+int is_var_declaration(char *arg)
+{
+	int i;
 
 	i = 0;
-	j = 0;
-	while (var[i])
+	if (arg[i] == '=' || ft_isdigit(arg[i]) || !ft_isalnum(arg[i]))
+		return (0);
+	while (arg[i])
 	{
-		if (var[i] == '=')
-			break ;
+		if (arg[i] == '+' && arg[i + 1] && arg[i + 1] != '=') // += pas valide !
+			return (0);
+		if (!ft_isalnum(arg[i]))
+		{
+			if ((arg[i] == '=') || (arg[i + 1] && arg[i] == '+' && arg[i + 1] == '='))
+				return (1);
+			else
+				return (0);
+		}
 		i++;
 	}
-	j = 0;
-	while (j < i)
+	return (0);
+}
+
+char *get_full_variable_declaration(char **arg, int i, char **s)
+{
+	if (arg[i][ft_strlen(arg[i]) - 1] == '=') 
 	{
-		if (var[j] == '+' || var[j] == '-' || var[j] == '/' || var[j] == '*')
+		if (arg[i + 1] && !is_var_declaration(arg[i + 1])) 
 		{
-			if (!(j == i - 1 && var[j] == '+'))
-				return (1);
+			*s = ft_strjoin(arg[i], arg[i + 1]);
+			if (!*s)
+				return (NULL);
 		}
-		j++;
+		else
+		{
+			*s = ft_strdup(arg[i]); 
+			if (!*s)
+				return (NULL);
+		}
 	}
-	return (0);
+	else 
+	{
+		*s = ft_strdup(arg[i]);
+		if (!*s)
+			return (NULL);
+	}
+	return (*s);
 }
 
-char **concat_var(char **arg)
-{
-    char **key_value;
-    char *tmp;
-    int i;
 
-    if (arg[0] && arg[1] && !arg[2])
-    {
-        key_value = malloc(sizeof(char *) * 3);
-        if (!key_value)
-            return (NULL);
-        key_value[0] = ft_strdup(arg[0]);
-        key_value[1] = ft_strdup(arg[1]);
-        key_value[2] = NULL;
-        free_array(arg);
-        return (key_value);
-    }
-    key_value = malloc(sizeof(char *) * 3);
-    if (!key_value)
-        return (NULL);
-    key_value[0] = ft_strdup(arg[0]);
-    key_value[1] = ft_strdup("");
-    if (!arg[0])
-        return (key_value);
-    i = 1;
-    while (arg[i])
-    {
-        tmp = key_value[1];
-        key_value[1] = ft_strjoin(key_value[1], arg[i]);
-        free(tmp);
-        i++;
-    }
-    key_value[2] = NULL;
-    free_array(arg);
-    return (key_value);
-}
-
-int	is_increment_operator(char *s)
+int is_var_exportation(char *s)
 {
-	if (s[ft_strlen(s) - 1] == '+')
-		return (1);
-	else
+	int i;
+
+	i = 0;
+	if (s[i] == '=' || ft_isdigit(s[i]) || !ft_isalnum(s[i]))
 		return (0);
-}
-
-char	*trim_operator(char *s)
-{
-	char	*trimmed;
-
-	trimmed = NULL;
-	trimmed = malloc(sizeof(char) * ft_strlen(s));
-	ft_strlcpy(trimmed, s, ft_strlen(s));
-	free(s);
-	return (trimmed);
-}
-
-int	add_new_var(t_var **env, char **key_value)
-{
-	char	*s;
-	char	*tmp;
-
-	// si ce n'est pas une variable protegee !
-	s = ft_strjoin(key_value[0], "=");
-	tmp = s;
-	s = ft_strjoin(s, key_value[1]);
-	free(tmp);
-
-	add_back_var(env, s, 3);
-	free(s);
-	return (0);
+	while(s[i + 1])
+	{
+		if (s[i] == '+' && s[i + 1] && s[i + 1] != '=')
+			return (0);
+		if ((s[i] < '0' || s[i] > 'z'))
+			return (0);
+		i++;
+	}
+	if (s[i] == '=')
+		return (0);
+	return (1);
 }
