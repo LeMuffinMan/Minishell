@@ -13,11 +13,6 @@
 #include "utils.h"
 #include <stdlib.h>
 
-// TODO
-// Mettre des calloc partout
-// faire un fichier ultrabonus_init_lists.c
-
-// METTRE QUE DES CALLOC !
 int	init_lists_env(t_lists *lists)
 {
 	lists->env = NULL;
@@ -109,7 +104,6 @@ int	init_lists_shell_functions(t_lists *lists)
 
 int	init_lists(t_lists *lists)
 {
-	/* lists = malloc(sizeof(t_lists)); */
 	if (!lists)
 		return (-1);
 	if (init_lists_env(lists) == -1)

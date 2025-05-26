@@ -18,10 +18,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-//TODO
-//voir comment ferer le getcwd qui foire a l'init
-
-// misc
 int	find_first_digit(char *s)
 {
 	int	i;
@@ -46,16 +42,13 @@ int	get_cwd_init(char *s)
 	else
 	{
 		perror("getcwd");
-		/* free(s); */
 		return (1);
-			// return 1 ? comment gerer un cas ou getcwd foire au demarrage ?
 	}
 	if (!s)
 		return (-1);
 	return (0);
 }
 
-// init_utils
 int	incremente_shlvl(char *s, char **line)
 {
 	int		n;
@@ -81,8 +74,6 @@ int	incremente_shlvl(char *s, char **line)
 	return (0);
 }
 
-// init_utils
-// a tester
 int	init_and_incremente_shlvl(char *s, t_var **env)
 {
 	int		i;
@@ -91,7 +82,7 @@ int	init_and_incremente_shlvl(char *s, t_var **env)
 	i = 7;
 	line = NULL;
 	i = find_first_digit(s);
-	if (!((size_t)i == ft_strlen(s))) // pas sur de ma logique la
+	if (!((size_t)i == ft_strlen(s)))
 	{
 		if (incremente_shlvl(s, &line) == -1)
 			return (-1);

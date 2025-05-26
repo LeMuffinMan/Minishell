@@ -14,6 +14,7 @@
 #include "structs.h"
 #include "utils.h"
 #include <stdlib.h>
+#include <errno.h>
 
 // TODO
 // faire un fichier frees.c
@@ -125,8 +126,6 @@ char **ft_split_on_first_equal(char *s)
     return (splitted);
 }
 
-// 0 = aucun des deux / 1 = env / 2 = export / 3 = env + export
-// revoir le retour d'erreur
 int	add_back_var(t_var **lst, char *s, int mode)
 {
 	t_var	*ptr;
@@ -146,7 +145,7 @@ int	add_back_var(t_var **lst, char *s, int mode)
 	new->value = NULL;
 	new->key = NULL;
 	key_value = ft_split_on_first_equal(s);
-	if (!key_value)
+	if (errno == ENOMEM)
 		return (free_node_var(new, NULL));
 	new->key = ft_strdup(key_value[0]);
 	if (!new->key)

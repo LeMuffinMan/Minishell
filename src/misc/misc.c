@@ -15,6 +15,33 @@
 #include "utils.h"
 #include <stdlib.h>
 #include <unistd.h>
+#include <errno.h>
+
+int node_to_str(t_var *tmp, char **array, int i)
+{
+    char *s;
+    char *temp;
+
+    if (tmp->value)
+    {
+        s = ft_strjoin(tmp->key, "=");
+        if (errno == ENOMEM)
+            return (errno);
+        temp = s;
+        array[i] = ft_strjoin(s, tmp->value);
+        free(temp);
+    }
+    else
+        array[i] = ft_strdup(tmp->key);
+    if (!array[i])
+    {
+        while (i-- > 0)
+            free(array[i]);
+        free(array);
+        return (ENOMEM);
+    }
+    return (0);
+}
 
 char **lst_to_array(t_var **env)
 {
@@ -22,41 +49,25 @@ char **lst_to_array(t_var **env)
     char **array;
     int i;
     int count = 0;
-    char *s;
-    char *temp;
 
     tmp = *env;
     while (tmp && ++count)
         tmp = tmp->next;
     array = malloc(sizeof(char *) * (count + 1));
     if (!array)
-        return NULL;
+        return (NULL);
     tmp = *env;
     i = 0;
     while (tmp)
     {
-        if (tmp->value)
-        {
-            s = ft_strjoin(tmp->key, "=");
-            temp = s;
-            array[i] = ft_strjoin(s, tmp->value);
-            free(temp);
-        }
-        else
-            array[i] = ft_strdup(tmp->key);
-        
-        if (!array[i])
-        {
-            while (i-- > 0)
-                free(array[i]);
-            free(array);
-            return NULL;
-        }
+        node_to_str(tmp, array, i);
+        if (errno == ENOMEM)
+            return (NULL);
         i++;
         tmp = tmp->next;
     }
     array[i] = NULL;
-    return array;
+    return (array);
 }
 
 int	compare_keys(char *key1, char *key2)
@@ -112,6 +123,7 @@ int	free_array(char **array)
 
 int free_aliases(t_alias **aliases)
 {
+    //ULTRABONUS !!!
     t_alias *tmp;
     t_alias *next;
 
@@ -133,6 +145,7 @@ int free_aliases(t_alias **aliases)
 
 int free_shell_fcts(t_shell_fct **shell_fcts)
 {
+    //ULTRABONUS !!!
     t_shell_fct *tmp;
     t_shell_fct *last;
     
@@ -170,6 +183,7 @@ void free_lists(t_lists *lists)
         free_list(lists->env);
         free(lists->env);
     }
+    //ULTRABONUS
     if (lists->history)
     {
         free_history(lists->history);
@@ -209,7 +223,6 @@ int array_size(char **array)
   while (array && array[i])
     i++;
   return (i);
-
 }
 
 

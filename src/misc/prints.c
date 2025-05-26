@@ -13,59 +13,96 @@
 #include "libft.h"
 #include "structs.h"
 #include <stdio.h>
+#include <errno.h>
 
-int	print_array(char **array)
+static char	*create_base_export_line(t_var *var)
 {
-	int		i;
-	char	*output;
+	char	*line;
 
-	i = 0;
-	while (array[i])
+	line = ft_strjoin("declare -x ", var->key);
+	if (errno == ENOMEM)
+		return (NULL);
+	return (line);
+}
+
+static char *join_with(char *line, char *to_join)
+{
+	char *new_line;
+
+	new_line = ft_strjoin(line, to_join);
+  if (errno == ENOMEM)
+  {
+      free(line);
+      return (NULL);
+  }
+  free(line);
+  return (new_line);
+}
+
+static char *append_value_to_line(char *line, t_var *var)
+{
+    line = join_with(line, "=\"");
+    if (!line)
+        return (NULL);
+    line = join_with(line, var->value);
+    if (!line)
+        return (NULL);
+    line = join_with(line, "\"");
+    if (!line)
+        return (NULL);
+    return (line);
+}
+
+static char	*create_export_line(t_var *var)
+{
+	char	*line;
+
+	line = create_base_export_line(var);
+	if (!line)
+		return (NULL);
+	if (var->value)
 	{
-		output = ft_strjoin(array[i], "\n");
-		ft_putstr_fd(output, 1);
-		free(output);
-		i++;
+		line = append_value_to_line(line, var);
+		if (!line)
+			return (NULL);
 	}
+	return (line);
+}
+
+static int	print_export_line(t_var *var)
+{
+	char	*line;
+	char	*temp;
+
+	line = create_export_line(var);
+	if (!line)
+		return (errno);
+	temp = line;
+	line = ft_strjoin(line, "\n");
+	if (errno == ENOMEM)
+	{
+		free(temp);
+		return (errno);
+	}
+	free(temp);
+	ft_putstr_fd(line, 1);
+	free(line);
 	return (0);
 }
 
 int	print_sorted_env(t_var **env)
 {
 	t_var	*tmp;
-	char	*s;
-	char	*temp;
+	int		exit_code;
 
 	tmp = *env;
 	while (tmp)
 	{
-		// pour fix export TEST et afficher TEST et pas TEST=""
-		// ce test me rend fou
 		if (tmp->exported == 1)
 		{
-			s = ft_strjoin("declare -x ", tmp->key); // ou export ?
-			temp = s;
-			if (tmp->value)
-			{
-				/* if (!ft_strncmp(tmp->key, "TEST", 5)) */
-				/* 	printf("%s\n", tmp->value); */
-				s = ft_strjoin(s, "=\"");
-				free(temp);
-				temp = s;
-				s = ft_strjoin(s, tmp->value);
-				free(temp);
-				temp = s;
-				s = ft_strjoin(s, "\"\n");
-				free(temp);
-				temp = s;
-			}
-			else 
-			{
-				s = ft_strjoin(s, "\n");
-				free(temp);
-			}
-			ft_putstr_fd(s, 1);
-			free(s);
+			exit_code = print_export_line(tmp);
+			if (exit_code != 0)
+				return (exit_code);
 		}
 		tmp = tmp->next;
 	}

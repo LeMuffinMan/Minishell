@@ -28,9 +28,7 @@ int	init_last_cmd_var(char *name, t_var **env)
 	if (getcwd(buf, sizeof(buf)) != NULL)
 		s = ft_strjoin(buf, name);
 	else
-	{
 		s = ft_strdup(name);
-	}
 	if (!s)
 		return (-1);
 	if (add_back_var(env, s, 1) == -1)
@@ -42,7 +40,6 @@ int	init_last_cmd_var(char *name, t_var **env)
 	return (0);
 }
 
-// Add_shell_Vars
 int	add_default_shell_vars(t_var **env)
 {
 	char	*s;
@@ -115,8 +112,6 @@ int	init_pwd(t_var **env)
 	}
 }
 
-// revoir la variable _
-// 25 lignes qund on aura fix l'exit code et la var _
 int	init_env(t_var **new_env, char **env, char *program_name)
 {
 	int	i;
@@ -148,25 +143,19 @@ int	init_env(t_var **new_env, char **env, char *program_name)
 		i++;
 	}
 	return (init_last_cmd_var(program_name, new_env) == -1);
-		// revoir l'init de l'exit code
 }
 
 int	init(t_lists *lists, char **av, char **env)
 {
-	// revoir retour d'erreur
 	if (init_lists(lists) == -1)
 	{
 		return (-1);
 	}
-	/* utiliser getenv ?
-		* Si on n'a pas d'env uniquement ?*/
 	if (init_env(lists->env, env, av[0]) == -1)
 	{
 		free_lists(lists);
 		return (-1);
 	}
-	/* print_all_variables(lists->env); */
-	/* print_env(lists->env); */
 	//
 	// ULTRABONUS
 	if (isatty(0) && env && *env && find_and_load_startup_files(lists, env) ==
