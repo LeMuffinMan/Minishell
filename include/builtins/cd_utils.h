@@ -17,5 +17,7 @@ int	change_directory(char *path);
 int	builtin_cd_without_arg(t_var **env);
 int	find_last_slash(char *buf);
 int	trim_pwd(char **s);
+int		builtin_pwd(t_var **env);
+int		array_size(char **array);
 
 #endif
