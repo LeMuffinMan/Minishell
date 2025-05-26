@@ -59,9 +59,6 @@ int	error_env(char **content)
 	return (127);
 }
 
-// ne pas afficher les variables non exportees ? ou justement on affiche tout ?
-// NE PAS AFFICHER LES VARIABLES SANS VALEUR !
-// //revoir la valeur de return en cas d'erreur
 int	builtin_env(t_var **env, char **content)
 {
 	t_var	*tmp;

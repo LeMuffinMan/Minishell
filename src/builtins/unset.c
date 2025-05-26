@@ -36,9 +36,8 @@ int	free_node(t_var **node)
 	return (0);
 }
 
-int	free_single_node(t_var **node, t_var **env)
+int	free_single_node(t_var **node)
 {
-	(void)env;
 	free_node(node);
 	env = NULL;
 	return (0);
@@ -51,7 +50,7 @@ int	delete_node(t_var **node, t_var **env)
 
 	last = NULL;
 	if (env_size(*env) == 1)
-		return (free_single_node(node, env));
+		return (free_single_node(node));
 	tmp = *env;
 	while (tmp)
 	{

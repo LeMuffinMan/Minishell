@@ -26,7 +26,7 @@ int	builtin_pwd(t_var **env)
 	if (getcwd(buf, sizeof(buf)) != NULL)
 	{
 		s = ft_strjoin(buf, "\n");
-		if (!s)
+		if (errno == ENOMEM)
 			return (errno);
 		ft_putstr_fd(s, 1);
 		free(s);

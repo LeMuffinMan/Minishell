@@ -13,6 +13,7 @@
 #include "libft.h"
 #include "structs.h"
 #include <stdlib.h>
+#include <errno.h>
 
 int	swap_nodes(t_var *n1, t_var *n2)
 {
@@ -39,18 +40,42 @@ int	swap_nodes(t_var *n1, t_var *n2)
 int	copy_node(t_var **new_node, t_var **tmp)
 {
 	(*new_node)->key = ft_strdup((*tmp)->key);
+	if (errno == ENOMEM)
+		return (errno);
 	(*new_node)->value = ft_strdup((*tmp)->value);
+	if (errno == ENOMEM)
+		return (errno);
 	(*new_node)->exported = (*tmp)->exported;
 	(*new_node)->env = (*tmp)->env;
 	(*new_node)->next = NULL;
 	return (0);
 }
 
+static t_var	*create_and_link_node(t_var *tmp, t_var **last, t_var **copy)
+{
+	t_var	*new_node;
+
+	new_node = malloc(sizeof(t_var));
+	if (!new_node)
+		return (NULL);
+	copy_node(&new_node, &tmp);
+	if (errno == ENOMEM)
+	{
+		free(new_node);
+		return (NULL);
+	}
+	if (*last)
+		(*last)->next = new_node;
+	else
+		*copy = new_node;
+	*last = new_node;
+	return (new_node);
+}
+
 t_var	*copy_list(t_var **env)
 {
 	t_var	*tmp;
 	t_var	*last;
-	t_var	*new_node;
 	t_var	*copy;
 
 	tmp = *env;
@@ -58,15 +83,8 @@ t_var	*copy_list(t_var **env)
 	copy = NULL;
 	while (tmp)
 	{
-		new_node = malloc(sizeof(t_var));
-		if (!new_node)
+		if (!create_and_link_node(tmp, &last, &copy))
 			return (NULL);
-		copy_node(&new_node, &tmp);
-		if (last)
-			last->next = new_node;
-		else
-			copy = new_node;
-		last = new_node;
 		tmp = tmp->next;
 	}
 	return (copy);
