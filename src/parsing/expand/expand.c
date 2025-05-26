@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:49:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/24 02:12:53 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/26 18:18:23 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ static bool	to_expand(t_token **node, t_var *list_env, t_lists *lists)
 	flag = false;
 	while ((*node)->content[0][j] && errno != MEM_ALLOC)
 	{
-		if ((*node)->content[0][j] == '$')
+		if ((*node)->content[0][j] == '$' && (*node)->content[0][j + 1])
 		{
 			if ((j > 0 && (*node)->content[0][j - 1] == '\\')
 			|| ((*node)->content[0][j + 1]
