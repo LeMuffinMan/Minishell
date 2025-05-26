@@ -44,7 +44,6 @@ int exec_boolop(t_tree **ast, t_lists *lists)
 
 int  exec_parenthesis_child(t_tree **ast, t_lists *lists)
 {
-	char **strings_env;
 	t_tree *sub_ast;
 	int exit_code;
 
@@ -52,13 +51,9 @@ int  exec_parenthesis_child(t_tree **ast, t_lists *lists)
 	if (close_origin_fds(lists->origin_fds) == -1)
 		malloc_error_parenthesis_child(lists, NULL);
 	setup_child_signals();
-	strings_env = lst_to_array(lists->env);
+	sub_ast = parse((*ast)->token->group->content[0], *lists->env, lists);
 	if (errno == ENOMEM)
 		malloc_error_parenthesis_child(lists, NULL);
-	sub_ast = parse((*ast)->token->group->content[0], strings_env, *lists->env, lists);
-	if (errno == ENOMEM)
-		malloc_error_parenthesis_child(lists, NULL);
-	free_array(strings_env);
 	exit_code = exec_ast(&sub_ast, lists);
 	if (errno == ENOMEM)
 		malloc_error_parenthesis_child(lists, &sub_ast);
@@ -113,13 +108,10 @@ int exec_group_cmd(t_tree **ast, t_lists *lists)
 
 int exec_group_boolop(t_tree **ast, t_lists *lists)
 {
-	char **strings_env;
 	t_tree *sub_ast;
 
 	sub_ast = NULL;
-	strings_env = lst_to_array(lists->env);
-	sub_ast = parse((*ast)->token->content[0], strings_env, *lists->env, lists);
-	free_array(strings_env);
+	sub_ast = parse((*ast)->token->content[0], *lists->env, lists);
 	lists->exit_code = exec_ast(&sub_ast, lists);
 	free_tree(&sub_ast);
 	return (lists->exit_code);
