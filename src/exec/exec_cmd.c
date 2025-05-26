@@ -18,8 +18,8 @@
 #include "structs.h"
 #include "utils.h"
 #include <errno.h>
-#include <readline/readline.h>
 #include <stdio.h>
+#include <readline/readline.h>
 #include <unistd.h>
 
 int	exec_cmd_execve(t_tree **ast, t_lists *lists)
@@ -49,11 +49,33 @@ int	exec_cmd_execve(t_tree **ast, t_lists *lists)
 	return (1);
 }
 
+static int exec_cmd_print_error(t_tree **ast)
+{
+	char *s;
+	char *tmp;
+	int exit_code;
+
+	s = ft_strjoin("minishell: ", (*ast)->token->content[0]);
+	tmp = s;
+	if (access((*ast)->token->content[0], F_OK) == 0)
+	{
+		s = ft_strjoin(s, ": Is a directory\n");
+		exit_code = 126;
+	}
+	else
+	{
+		s = ft_strjoin(s, ": No such file or directory\n");
+		exit_code = 127;
+	}
+	free(tmp);
+	ft_putstr_fd(s, 2);
+	free(s);
+	return (exit_code);
+}
+
 int	exec_cmd(t_tree **ast, t_lists *lists)
 {
 	int		exit_code;
-	char	*s;
-	char	*tmp;
 
 	if ((*ast)->token->token == BUILT_IN
 		|| !ft_strncmp((*ast)->token->content[0], "source", 7))
@@ -62,15 +84,7 @@ int	exec_cmd(t_tree **ast, t_lists *lists)
 		return (exit_code);
 	}
 	if (is_a_directory((*ast)->token->content[0]))
-	{
-		s = ft_strjoin("minishell: ", (*ast)->token->content[0]);
-		tmp = s;
-		s = ft_strjoin(s, ": Is a directory\n");
-		free(tmp);
-		ft_putstr_fd(s, 2);
-		free(s);
-		return (126);
-	}
+		return (exec_cmd_print_error(ast));
 	if ((*ast)->token->token == CMD)
 		return (exec_cmd_execve(ast, lists));
 	return (1);

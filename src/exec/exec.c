@@ -18,9 +18,9 @@
 #include "libft.h"
 #include "shell_fct.h"
 #include "utils.h"
+#include <stdio.h>
 #include <readline/readline.h>
 #include <signals.h>
-#include <stdio.h>
 #include <unistd.h>
 
 // ULTRABONUS
