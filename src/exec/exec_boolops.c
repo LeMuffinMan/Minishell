@@ -1,37 +1,38 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exec_boolops.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/26 18:35:22 by oelleaum          #+#    #+#             */
+/*   Updated: 2025/05/26 18:37:36 by oelleaum         ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
 
-#include <errno.h>
-#include "malloc_error_handlers.h"
 #include "exec.h"
 #include "libft.h"
+#include "malloc_error_handlers.h"
 #include "signals.h"
 #include "utils.h"
+#include <errno.h>
+#include <stdio.h>
 #include <unistd.h>
 
-#include <stdio.h>
-int exec_boolop(t_tree **ast, t_lists *lists)
+int	exec_boolop(t_tree **ast, t_lists *lists)
 {
-	int exit_code;
+	int	exit_code;
 
 	exit_code = 0;
-	/* if ((*ast)->left->token->token == GROUP_PARENTHESIS) */
-	/* 	dprintf(2, "(*ast)->left token = GROUP_PARENTHESIS\n"); */
-	/* if ((*ast)->left->token->token == GROUP_BOOLOP) */
-	/* 	dprintf(2, "(*ast)->left token = GROUP_BOOLOP\n"); */
-	/* if ((*ast)->right->token->token == GROUP_PARENTHESIS) */
-	/* 	dprintf(2, "(*ast)->right token = GROUP_PARENTHESIS\n"); */
-	/* if ((*ast)->right->token->token == GROUP_BOOLOP) */
-	/* 	dprintf(2, "(*ast)->right token = GROUP_BOOLOP\n"); */
 	if ((*ast)->left)
 	{
 		exit_code = exec_ast(&((*ast)->left), lists);
-		/* dprintf(2, "exit_code left = %d\n", exit_code); */
 		if (errno == ENOMEM)
 			return (errno);
-		if ((exit_code == 0 && (*ast)->token->token == O_AND) || 
-			(exit_code != 0 && (*ast)->token->token == O_OR))
+		if ((exit_code == 0 && (*ast)->token->token == O_AND) || (exit_code != 0
+				&& (*ast)->token->token == O_OR))
 		{
 			exit_code = exec_ast(&((*ast)->right), lists);
-			/* dprintf(2, "exit_code right = %d\n", exit_code); */
 			if (errno == ENOMEM)
 				return (errno);
 			return (exit_code);
@@ -39,13 +40,13 @@ int exec_boolop(t_tree **ast, t_lists *lists)
 		else
 			return (exit_code);
 	}
-	return (1); //cas ou left existe pas dans un node AND
+	return (1);
 }
 
-int  exec_parenthesis_child(t_tree **ast, t_lists *lists)
+int	exec_parenthesis_child(t_tree **ast, t_lists *lists)
 {
-	t_tree *sub_ast;
-	int exit_code;
+	t_tree	*sub_ast;
+	int		exit_code;
 
 	exit_code = 0;
 	if (close_origin_fds(lists->origin_fds) == -1)
@@ -59,14 +60,15 @@ int  exec_parenthesis_child(t_tree **ast, t_lists *lists)
 		malloc_error_parenthesis_child(lists, &sub_ast);
 	free_tree(&sub_ast);
 	free_lists(lists);
-	exit (exit_code);
+	exit(exit_code);
 }
 
-int exec_parenthesis(t_tree **ast, t_lists *lists)
+int	exec_parenthesis(t_tree **ast, t_lists *lists)
 {
-	pid_t pid;
+	pid_t				pid;
+	struct sigaction	sa_ignore;
+	struct sigaction	sa_orig;
 
-	struct sigaction sa_ignore, sa_orig;
 	sigemptyset(&sa_ignore.sa_mask);
 	sa_ignore.sa_handler = SIG_IGN;
 	sa_ignore.sa_flags = 0;
@@ -86,29 +88,29 @@ int exec_parenthesis(t_tree **ast, t_lists *lists)
 		sigaction(SIGINT, &sa_orig, NULL);
 		return (lists->exit_code);
 	}
-	return (1); // cas impossible ?
+	return (1);
 }
 
-
-int exec_group_cmd(t_tree **ast, t_lists *lists)
+int	exec_group_cmd(t_tree **ast, t_lists *lists)
 {
 	if ((*ast)->token->token == R_IN || (*ast)->token->token == APPEND
 		|| (*ast)->token->token == TRUNC || (*ast)->token->token == HD)
 		return (redirect_stdio(ast, lists));
 	if ((*ast)->token->token == PIPE)
 		return (exec_pipe(ast, lists));
-	if ((*ast)->token->error != 126 && ((*ast)->token->token == BUILT_IN || (*ast)->token->token == CMD
-		|| !ft_strncmp((*ast)->token->content[0], "source", 7))) // exclure les codes d'erreurs
+	if ((*ast)->token->error != 126 && ((*ast)->token->token == BUILT_IN
+			|| (*ast)->token->token == CMD
+			|| !ft_strncmp((*ast)->token->content[0], "source", 7)))
 	{
 		lists->exit_code = exec_cmd(ast, lists);
 		return (lists->exit_code);
 	}
-	return (-1); // impossible d'arriver ici : quelle code d'erreur ?
+	return (-1);
 }
 
-int exec_group_boolop(t_tree **ast, t_lists *lists)
+int	exec_group_boolop(t_tree **ast, t_lists *lists)
 {
-	t_tree *sub_ast;
+	t_tree	*sub_ast;
 
 	sub_ast = NULL;
 	sub_ast = parse((*ast)->token->content[0], *lists->env, lists);
@@ -116,4 +118,3 @@ int exec_group_boolop(t_tree **ast, t_lists *lists)
 	free_tree(&sub_ast);
 	return (lists->exit_code);
 }
-
