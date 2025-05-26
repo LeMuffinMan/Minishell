@@ -7,21 +7,31 @@
 #include "utils.h"
 #include <unistd.h>
 
-
+#include <stdio.h>
 int exec_boolop(t_tree **ast, t_lists *lists)
 {
 	int exit_code;
 
 	exit_code = 0;
+	/* if ((*ast)->left->token->token == GROUP_PARENTHESIS) */
+	/* 	dprintf(2, "(*ast)->left token = GROUP_PARENTHESIS\n"); */
+	/* if ((*ast)->left->token->token == GROUP_BOOLOP) */
+	/* 	dprintf(2, "(*ast)->left token = GROUP_BOOLOP\n"); */
+	/* if ((*ast)->right->token->token == GROUP_PARENTHESIS) */
+	/* 	dprintf(2, "(*ast)->right token = GROUP_PARENTHESIS\n"); */
+	/* if ((*ast)->right->token->token == GROUP_BOOLOP) */
+	/* 	dprintf(2, "(*ast)->right token = GROUP_BOOLOP\n"); */
 	if ((*ast)->left)
 	{
 		exit_code = exec_ast(&((*ast)->left), lists);
+		/* dprintf(2, "exit_code left = %d\n", exit_code); */
 		if (errno == ENOMEM)
 			return (errno);
 		if ((exit_code == 0 && (*ast)->token->token == O_AND) || 
 			(exit_code != 0 && (*ast)->token->token == O_OR))
 		{
 			exit_code = exec_ast(&((*ast)->right), lists);
+			/* dprintf(2, "exit_code right = %d\n", exit_code); */
 			if (errno == ENOMEM)
 				return (errno);
 			return (exit_code);
@@ -67,10 +77,12 @@ int exec_parenthesis(t_tree **ast, t_lists *lists)
 	sa_ignore.sa_flags = 0;
 	sigaction(SIGINT, &sa_ignore, &sa_orig);
 	pid = fork();
-	if (!pid)
+	if (pid < 0)
 		return (errno);
 	if (pid == 0)
+	{
 		exec_parenthesis_child(ast, lists);
+	}
 	else
 	{
 		lists->exit_code = wait_children(pid, pid);

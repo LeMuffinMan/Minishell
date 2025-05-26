@@ -63,6 +63,7 @@ int exec_error_cases(t_tree **ast)
 	return (-1); //quelle code d'erreur si on est entre dans aucun case ?
 }
 
+	#include <stdio.h>
 int	exec_ast(t_tree **ast, t_lists *lists)
 {
 	t_alias		*alias;
@@ -71,6 +72,14 @@ int	exec_ast(t_tree **ast, t_lists *lists)
 	if (!*ast)
 		return (127); // on devrait peut etre reagir dans le main pour ca
 	//signaux a virer ?
+	/* if ((*ast)->token->token == GROUP_PARENTHESIS) */
+	/* 	dprintf(2, "(*ast) token = GROUP_PARENTHESIS\n"); */
+	/* if ((*ast)->token->token == GROUP_BOOLOP) */
+	/* 	dprintf(2, "(*ast) token = GROUP_BOOLOP\n"); */
+	/* if ((*ast)->token->token == GROUP_PARENTHESIS) */
+	/* 	dprintf(2, "(*ast) token = GROUP_PARENTHESIS\n"); */
+	/* if ((*ast)->token->token == GROUP_BOOLOP) */
+	/* 	dprintf(2, "(*ast) token = GROUP_BOOLOP\n"); */
 	struct sigaction sa_ignore, sa_orig;
 	sigemptyset(&sa_ignore.sa_mask);
 	sa_ignore.sa_handler = SIG_IGN;

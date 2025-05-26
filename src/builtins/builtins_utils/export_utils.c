@@ -41,9 +41,9 @@ int is_var_declaration(char *arg)
 		return (0);
 	while (arg[i])
 	{
-		if (arg[i] == '+' && arg[i + 1] && arg[i + 1] != '=') // += pas valide !
+		if (arg[i] == '+' && arg[i + 1] && arg[i + 1] != '=')
 			return (0);
-		if (!ft_isalnum(arg[i]))
+		if (!ft_isalnum(arg[i])) 
 		{
 			if ((arg[i] == '=') || (arg[i + 1] && arg[i] == '+' && arg[i + 1] == '='))
 				return (1);
