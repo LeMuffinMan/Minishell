@@ -44,8 +44,6 @@ int free_single_node(t_var **node, t_var **env)
 	return (0);
 }
 
-//return 0 si a trouve le node a free
-//return 1 si il n'a pas trouve de node a free
 int delete_node(t_var **node, t_var **env)
 {
 	t_var *tmp;
@@ -68,7 +66,7 @@ int delete_node(t_var **node, t_var **env)
 		last = tmp;
 		tmp = tmp->next;
 	}
-	return (1); // 1 ?
+	return (1);
 }
 
 int builtin_unset(t_var **env, char **arg)

@@ -10,11 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "exec.h"
 #include "libft.h"
-#include "builtins.h"
 #include "export_utils.h"
-#include "utils.h"
 #include "env_utils.h"
 #include "malloc_error_handlers.h"
 #include <errno.h>

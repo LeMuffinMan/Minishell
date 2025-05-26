@@ -108,6 +108,7 @@ SRC					=	main.c \
 					builtins/builtins_utils/export_utils.c \
 					builtins/builtins_utils/builtins_utils.c \
 					builtins/builtins_utils/cd_utils.c \
+					builtins/builtins_utils/echo_utils.c \
 					src/env_utils.c \
 					init_env_utils.c \
 					init_utils.c \

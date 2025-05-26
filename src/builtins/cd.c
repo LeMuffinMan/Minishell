@@ -14,8 +14,6 @@
 #include "env_utils.h"
 #include "libft.h"
 #include "structs.h"
-#include "limits.h"
-#include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
 #include "cd_utils.h"
