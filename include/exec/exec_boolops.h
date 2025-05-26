@@ -25,5 +25,7 @@ t_tree	*parse(char *line, t_var *list_env, t_lists *lists);
 int		exec_ast(t_tree **ast, t_lists *lists);
 int	redirect_stdio(t_tree **ast, t_lists *lists);
 int	exec_cmd(t_tree **ast, t_lists *lists);
+int		close_origin_fds(int origin_fds[2]);
+void	free_lists(t_lists *lists);
 
 #endif

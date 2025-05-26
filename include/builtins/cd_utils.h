@@ -13,11 +13,14 @@
 #ifndef CD_UTILS_H
 # define CD_UTILS_H
 
+#include <structs.h>
+
 int	change_directory(char *path);
 int	builtin_cd_without_arg(t_var **env);
 int	find_last_slash(char *buf);
 int	trim_pwd(char **s);
 int		builtin_pwd(t_var **env);
 int		array_size(char **array);
+int		builtin_pwd(t_var **env);
 
 #endif

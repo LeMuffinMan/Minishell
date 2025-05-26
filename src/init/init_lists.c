@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "utils.h"
+#include "init.h"
 #include <stdlib.h>
 
 int	init_lists_env(t_lists *lists)

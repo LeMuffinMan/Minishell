@@ -24,5 +24,7 @@ typedef struct s_token	t_token;
 bool					handle_here_doc(t_token **head, t_lists *lists);
 bool					create_hd_name(t_token **head);
 bool					verif_name(char *name);
+int		close_origin_fds(int origin_fds[2]);
+void	free_lists(t_lists *lists);
 
 #endif

@@ -12,7 +12,7 @@
 
 #include "structs.h"
 #include "libft.h"
-#include "utils.h"
+#include "shell_fct.h"
 #include "exec.h"
 
 t_shell_fct *is_a_known_shell_fct(char *word, t_shell_fct **shell_functions)

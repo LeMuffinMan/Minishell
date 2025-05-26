@@ -13,6 +13,7 @@ int	malloc_error_close_free_exit(t_lists *lists);
 void free_lists(t_lists *lists);
 int	close_origin_fds(int origin_fds[2]);
 void collect_signal_exit_code(t_lists *lists);
+int	is_interactive_mode(void);
 
 #endif
 

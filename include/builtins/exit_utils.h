@@ -13,6 +13,10 @@
 #ifndef EXIT_UTILS_H
 # define EXIT_UTILS_H
 
+#include "structs.h"
+
 int	is_only_numeric_argument(char *s);
+int		close_origin_fds(int origin_fds[2]);
+void	free_lists(t_lists *lists);
 
 #endif

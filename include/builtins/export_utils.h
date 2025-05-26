@@ -24,5 +24,9 @@ char	*trim_operator(char *s);
 int		is_increment_operator(char *s);
 char	**concat_var(char **arg);
 int		is_valid_identifier(char *var);
+t_var	*copy_list(t_var **env);
+int		sort_list(t_var **l);
+void	free_list(t_var **l);
+int	print_sorted_env(t_var **env);
 
 #endif

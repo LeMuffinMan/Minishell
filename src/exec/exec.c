@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "aliases.h"
-#include "builtins.h"
 #include "env_utils.h"
 #include "exec.h"
 #include "exec_boolops.h"

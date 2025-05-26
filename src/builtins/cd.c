@@ -10,11 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "builtins.h"
 #include "cd_utils.h"
 #include "env_utils.h"
 #include "libft.h"
-#include "structs.h"
 #include <errno.h>
 #include <unistd.h>
 

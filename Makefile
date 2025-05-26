@@ -27,7 +27,8 @@ DIR_EXEC			=	src/ \
 						src/init \
 						src/misc \
 						src/builtins \
-						src/signals
+						src/signals \
+						src/env
 
 DIR_PARSING			=	src/parsing \
 						src/parsing/expand \
@@ -124,7 +125,10 @@ SRC					=	main.c \
 					builtins/builtins_utils/cd_utils.c \
 					builtins/builtins_utils/echo_utils.c \
 					builtins/builtins_utils/exit_utils.c \
-					src/env_utils.c \
+					src/env/env_utils.c \
+					src/env/add_or_update_var.c \
+					src/env/update_env.c \
+					src/env/update_var.c \
 					init_env_utils.c \
 					init_utils.c \
 					init_lists.c \

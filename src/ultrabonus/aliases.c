@@ -12,7 +12,7 @@
 
 #include "structs.h"
 #include "exec.h"
-#include "utils.h"
+#include "aliases.h"
 #include "libft.h"
 #include <stdlib.h>
 

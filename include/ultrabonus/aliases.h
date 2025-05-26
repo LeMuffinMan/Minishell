@@ -18,5 +18,8 @@
 t_alias *is_a_known_alias(char *word, t_alias **aliases);
 char *expand_alias(char **content, t_alias **alias);
 int exec_alias(t_tree **ast, t_lists *lists, t_alias *alias);
+int		free_array(char **array);
+char	**lst_to_array(t_var **env);
+int		array_size(char **array);
 
 #endif

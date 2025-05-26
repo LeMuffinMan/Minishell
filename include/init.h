@@ -25,6 +25,7 @@ int	free_node_var(t_var *node, char **array);
 char **ft_split_on_first_equal(char *s);
 int	add_first_node(t_var **lst, t_var **new, char *s, int mode);
 int	set_node(t_var **node, int mode);
-int	init_lists(t_lists *lists);
+int		free_array(char **array);
+void	free_lists(t_lists *lists);
 
 #endif
