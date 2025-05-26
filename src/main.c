@@ -14,8 +14,7 @@
 #include "display.h"
 #include "env_utils.h"
 #include "exec.h"
-#include "get_prompt.h"
-	// A VIRER !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#include "get_prompt.h" // A VIRER !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #include "history.h"
 #include "init.h"
 #include "libft.h"
@@ -326,7 +325,6 @@ int	main(int ac, char **av, char **env)
 	/* is_interactive_mode(); */
 	exit_code = 0;            
 	g_signal = 0;
-		// on ajoute l'exit code a la megastruct ou on la laisse dans env ?
 	/* rl_inhibit_completion = 1; // desactive l'autocompletion */
 	if (init(&lists, av, env) == -1)
 	{
