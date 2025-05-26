@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 15:58:38 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/24 03:12:00 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/26 23:16:41 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,10 +56,7 @@ static void	handle_space_for_echo(t_token **node)
 			|| tmp->token == NO_TOKEN || tmp->token == DIREC
 			|| tmp->token == FLE || tmp->token == ARG || tmp->error != 0))
 	{
-		if ((tmp->token == S_QUOTE || tmp->token == EXPAND
-				|| tmp->error != 0)
-			&& (tmp->next && tmp->next->token == SPACE
-				&& ft_strncmp(tmp->content[0], "-n", 2)))
+		if (is_valid_arg(tmp, tmp->content[0]))
 		{
 			if (tmp->next->next && (tmp->next->next->token != R_IN
 					&& tmp->next->next->token != HD

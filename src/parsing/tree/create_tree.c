@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 21:12:15 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/24 01:14:57 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/27 00:38:12 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,15 +118,7 @@ void	free_tree(t_tree **head)
 		free_tree(&left);
 	if (right)
 		free_tree(&right);
-	if (tmp_token)
-	{
-		if (tmp_token->group)
-			free_parse(tmp_token->group, NULL, 0);
-		if (tmp_token->content)
-			free_tab(tmp_token->content);
-		free(tmp_token);
-		tmp_token = NULL;
-	}
+	free_token(&tmp_token);
 	if (tmp_head)
 		free(tmp_head);
 }

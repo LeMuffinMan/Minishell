@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 01:19:19 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/26 18:20:39 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/26 23:46:09 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,134 +16,6 @@
 #include "libft.h"
 #include <stdlib.h>
 #include <errno.h>
-
-static void	case_of_directory_error(t_token **node)
-{
-	int	len;
-
-	len = ft_strlen((*node)->content[0]);
-	if ((*node)->content[0][len - 1] == '/')
-		(*node)->error = IS_A_DIR;
-	else
-		(*node)->error = CMD_NOT_FOUND;
-}
-
-static t_token	*set_syntax_error(t_token *node)
-{
-	t_token	*head;
-	char	*operator;
-	char	*tmp;
-	char	*new_content;
-
-	if (!node || !node->content || !node->content[0])
-		return (NULL);
-	operator = ft_strdup(node->content[0]);
-	if (!operator)
-		return (NULL);
-	free_parse(node, NULL, 0);
-	tmp = ft_strjoin("syntax error near unexpected token `", operator);
-	free(operator);
-	if (!tmp)
-		return (NULL);
-	new_content = ft_strjoin(tmp, "'");
-	free(tmp);
-	if (!new_content)
-		return (NULL);
-	head = add_new_token(new_content, NO_F_OR_D);
-	free(new_content);
-	if (!head)
-		return (NULL);
-	return (head);
-}
-
-static t_token	*set_parenthesis_error(t_token *node)
-{
-	t_token	*head;
-	char	*new_content;
-
-	if (!node || !node->content || !node->content[0])
-		return (NULL);
-	free_parse(node, NULL, 0);
-	new_content = ft_strdup("Usage: Use parenthesis for priorities of '&&' and '||'\n");
-	if (!new_content)
-		return (NULL);
-	head = add_new_token(new_content, E_IO);
-	free(new_content);
-	if (!head)
-		return (NULL);
-	return (head);
-}
-
-bool	case_is_left_parenthesis(t_token *tmp, t_token **head)
-{
-	if (tmp->token == L_PARENTHESIS)
-	{
-		if (tmp->prev
-			&& tmp->prev->token != O_AND && tmp->prev->token != O_OR
-			&& tmp->prev->token != L_PARENTHESIS)
-		{
-			*head = set_parenthesis_error(tmp);
-			return (true);
-		}
-		if (!tmp->next || tmp->next->token == R_PARENTHESIS)
-		{
-			*head = set_parenthesis_error(tmp);
-			return (true);
-		}
-	}
-	return (false);
-}
-
-bool	case_is_right_parenthesis(t_token *tmp, t_token **head)
-{
-	if (tmp->token == R_PARENTHESIS)
-	{
-		if (tmp->next
-			&& tmp->next->token != O_AND && tmp->next->token != O_OR
-			&& tmp->next->token != R_PARENTHESIS)
-		{
-			*head = set_parenthesis_error(tmp);
-			return (true);
-		}
-	}
-	return (false);
-}
-
-bool	case_is_boolop(t_token *tmp, t_token **head)
-{
-	if (tmp->token == O_OR || tmp->token == O_AND)
-	{
-		if (!tmp->prev || !tmp->next
-			|| (tmp->prev->token != CMD && tmp->prev->token != BUILT_IN
-				&& tmp->prev->token != R_PARENTHESIS && tmp->prev->token != NO_TOKEN
-				&& tmp->prev->token != D_QUOTE && tmp->prev->token != S_QUOTE)
-			|| (tmp->next->token != CMD && tmp->next->token != BUILT_IN
-				&& tmp->next->token != L_PARENTHESIS && tmp->next->token != NO_TOKEN 
-				&& tmp->next->token != D_QUOTE && tmp->next->token != S_QUOTE))
-		{
-			*head = set_syntax_error(tmp);
-			return (true);
-		}
-	}
-	return (false);
-}
-
-bool	case_is_pipe(t_token *tmp, t_token **head)
-{
-	if (tmp->token == PIPE && (!tmp->prev || !tmp->next
-		|| (tmp->prev->token != CMD && tmp->prev->token != BUILT_IN
-		&& tmp->prev->error == CMD_NOT_FOUND 
-		&& tmp->prev->error == PERMISSION_DENIED)
-		|| (tmp->next->token != CMD
-		&& tmp->next->token != BUILT_IN
-		&& tmp->next->error == CMD_NOT_FOUND 
-		&& tmp->next->error == PERMISSION_DENIED)))
-	{
-		*head = set_syntax_error(tmp);
-		return (true);
-	}
-	return (false);
-}
 
 bool	syntax_error_for_op(t_token **head)
 {
@@ -163,18 +35,6 @@ bool	syntax_error_for_op(t_token **head)
 		tmp = tmp->next;
 	}
 	return (false);
-}
-
-static void	alloc_operator_for_error(t_type token, char **operator)
-{
-	if (token == S_QUOTE)
-		*operator = ft_strdup("'");
-	else if (token == D_QUOTE)
-		*operator = ft_strdup("\"");
-	else if (token == L_PARENTHESIS)
-		*operator = ft_strdup("(");
-	else
-		*operator = ft_strdup(")");
 }
 
 static t_token	*set_quote_or_par_error(t_token *node, t_type token)
@@ -198,7 +58,7 @@ static t_token	*set_quote_or_par_error(t_token *node, t_type token)
 	free(tmp);
 	if (!new_content)
 		return (NULL);
-	head = add_new_token(new_content, NO_F_OR_D);
+	head = add_new_token(new_content, NO_F_OR_D, false);
 	free(new_content);
 	if (!head)
 		return (NULL);

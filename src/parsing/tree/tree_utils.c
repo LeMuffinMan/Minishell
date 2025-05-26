@@ -6,13 +6,27 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 16:03:15 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/26 18:00:48 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/27 00:39:45 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "token.h"
 #include "tree.h"
+#include "libft.h"
 #include <stdlib.h>
+
+void	free_token(t_token **node)
+{
+	if (node)
+	{
+		if ((*node)->group)
+			free_parse((*node)->group, NULL, 0);
+		if ((*node)->content)
+			free_tab((*node)->content);
+		free(*node);
+		*node = NULL;
+	}
+}
 
 static void	cost_priority(t_token **node)
 {
@@ -73,12 +87,12 @@ t_token	*find_best_priority(t_token *start, t_token *end)
 	while (current && current != end->next)
 	{
 		if ((current->priority < PRIO_PARENTHESIS
-			&& current->priority <= best->priority)
-				|| current->priority < best->priority)
+				&& current->priority <= best->priority)
+			|| current->priority < best->priority)
 			best = current;
 		current = current->next;
 	}
-	if ((best->priority == 10) || (best->seq == false))
+	if (best->priority == 10)
 		return (NULL);
 	return (best);
 }

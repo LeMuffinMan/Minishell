@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 19:51:51 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/26 16:36:45 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/26 23:36:10 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,4 +135,9 @@ void	is_built_in(t_token **node)
 		(*node)->token = BUILT_IN;
 	else if (ft_strncmp((*node)->content[0], "exit", 5) == 0)
 		(*node)->token = BUILT_IN;
+	if ((*node)->token == BUILT_IN)
+	{
+		if ((*node)->curr_dir)
+			free((*node)->curr_dir);
+	}
 }

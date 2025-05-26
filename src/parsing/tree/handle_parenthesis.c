@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 15:53:21 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/26 14:45:00 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/26 23:46:44 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static bool	assign_pointer(t_token **new_node, t_token **start, t_token **end)
 		(*new_node)->prev->next = (*new_node);
 	if ((*new_node)->next)
 		(*new_node)->next->prev = (*new_node);
-	(*new_node)->group = add_new_token(res, SUCCESS);
+	(*new_node)->group = add_new_token(res, SUCCESS, false);
 	if (!res)
 		return (false);
 	free(res);
@@ -61,7 +61,7 @@ static t_token	*set_group_parenthesis(t_token **start, t_token **end,
 	}
 	else
 		flag = true;
-	tmp = add_new_token("()", SUCCESS);
+	tmp = add_new_token("()", SUCCESS, false);
 	if (!tmp || !assign_pointer(&tmp, start, end))
 	{
 		free_parse(*start, NULL, MEM_ALLOC);

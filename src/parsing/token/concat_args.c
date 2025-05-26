@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 04:50:03 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/26 17:34:41 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/27 00:33:21 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,10 +112,10 @@ bool	handle_expand_and_join(t_token **head, t_var *list_env,
 				free_parse(*head, NULL, MEM_ALLOC);
 				return (false);
 			}
-			assign_token(head, list_env, true);
-			if (errno == MEM_ALLOC)
+			if (!parse_again(head, list_env, &flag))
 			{
 				free_parse(*head, NULL, MEM_ALLOC);
+				errno = MEM_ALLOC;
 				return (false);
 			}
 		}

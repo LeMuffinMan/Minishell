@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:44:43 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/26 17:35:29 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/26 21:26:23 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,5 +63,3 @@ void	handle_is_command(t_token *node, char *cmd_w_path, bool flag)
 		node->token = CMD;
 	}
 }
-
-
