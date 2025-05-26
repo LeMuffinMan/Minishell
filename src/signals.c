@@ -27,7 +27,7 @@ int setup_pipe_signals(struct sigaction *sa_ignore, struct sigaction *sa_orig)
 	sa_ignore->sa_handler = SIG_IGN;
 	sa_ignore->sa_flags = 0;
 	sigaction(SIGINT, sa_ignore, sa_orig);
-	return 0;
+	return (0);
 }
 
 void	do_nothing_sig(int sig)
