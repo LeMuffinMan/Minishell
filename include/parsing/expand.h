@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:28:16 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/22 16:08:04 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/23 20:33:27 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,5 +32,6 @@ bool					init_expand(t_token **head, t_var *list_env, t_lists *lists);
 void					handle_space(t_token **head);
 void					delete_space_content(t_token **node);
 void					delete_node_pointer(t_token **node);
+
 
 #endif

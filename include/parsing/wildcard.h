@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 20:04:26 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/21 22:49:08 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/24 02:47:53 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,18 @@ struct					s_token;
 typedef struct s_token	t_token;
 
 bool					is_wildcard(char *str);
-void					handle_wildcard(t_token **head, bool flag);
+bool					handle_current_dir(int *i, char ***res);
+
+bool					handle_wildcard(t_token **head, bool flag);
+char					**extract_current_dir(void);
+int						which_case_of_wildcard(char *str);
+void					is_joker(t_token **node, char **current_dir);
+void					is_suffix(t_token **node, char **current_dir);
+void					is_prefix(t_token **node, char **current_dir);
+void					is_infix(t_token **node, char **current_dir);
+void					assign_wildcard(t_token **node, char **res, int count);
+
+bool					find_prefix(char *str, char *src);
+bool					find_suffix(char *str, char *src);
 
 #endif

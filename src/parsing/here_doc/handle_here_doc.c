@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 15:20:38 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/23 16:15:25 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/26 14:19:04 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 #include "signals.h"
 #include "utils.h"
 #include <sys/stat.h>
+#include <errno.h>
 
 bool	verif_name(char *name)
 {
@@ -38,14 +39,16 @@ bool	extract_stdin(int fd, char *limiter)
 {
 	int		len;
 	char	*line;
-	char *tmp;
+	char	*tmp;
 
 	while (1)
 	{
 		line = readline("> ");
 		if (!line)
 		{
-			printf("minishell: warning: here-document delimited by end-of-file (wanted `%s')\n", limiter);
+			printf(
+				"minishell: here-doc delimited by end-of-file (wanted `%s')\n",
+				limiter);
 			break ;
 		}
 		tmp = line;
@@ -169,14 +172,22 @@ bool	handle_here_doc(t_token **head, t_lists *lists)
 	if (!head || !*head)
 		return (false);
 	if (!create_hd_name(head))
+	{
+		free_parse(*head, NULL, MEM_ALLOC);
+		errno = MEM_ALLOC;
 		return (false);
+	}
 	tmp = *head;
 	while (tmp)
 	{
 		if (tmp->token == HD && sig_hd)
 		{
 			if (!create_here_doc(tmp, lists, &sig_hd))
+			{
+				free_parse(*head, NULL, MEM_ALLOC);
+				errno = MEM_ALLOC;
 				return (false);
+			}
 		}
 		tmp = tmp->next;
 	}

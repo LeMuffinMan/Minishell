@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 15:39:39 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/22 17:15:54 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/24 03:12:59 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,33 @@
 #include "list.h"
 #include "libft.h"
 #include <stdlib.h>
+#include <errno.h>
+
+bool	verif_is_token_valid(t_type token)
+{
+	if (token == SPACE || token == O_AND || token == O_OR
+		|| token == R_IN || token == HD || token == APPEND
+		|| token == TRUNC || token == PIPE
+		|| token == L_PARENTHESIS || token == R_PARENTHESIS)
+		return (false);
+	else
+		return (true);
+}
+
+void	add_space(t_token **node)
+{
+	char	*res;
+
+	res = ft_strjoin((*node)->content[0], " ");
+	if (!res)
+	{
+		free_parse(*node, NULL, MEM_ALLOC);
+		errno = MEM_ALLOC;
+		return ;
+	}
+	free((*node)->content[0]);
+	(*node)->content[0] = res;
+}
 
 static void	assign_content_without_space(char *str, char *res, int i, int j)
 {
@@ -48,11 +75,20 @@ void	delete_space_content(t_token **node)
 
 	res = ft_calloc(sizeof(char), ft_strlen((*node)->content[0]) + 1);
 	if (!res)
-		free_parse(*node,
-			"Malloc failed in function 'delete_space_content'", MEM_ALLOC);
+	{
+		free_parse(*node, NULL, MEM_ALLOC);
+		errno = MEM_ALLOC;
+		return ;
+	}
 	assign_content_without_space((*node)->content[0], res, 0, 0);
 	free((*node)->content[0]);
 	(*node)->content[0] = ft_strdup(res);
+	if (!(*node)->content[0])
+	{
+		free_parse(*node, NULL, MEM_ALLOC);
+		errno = MEM_ALLOC;
+		return ;
+	}
 	free(res);
 }
 

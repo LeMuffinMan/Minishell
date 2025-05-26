@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/08 21:12:15 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/17 19:18:39 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/24 01:14:57 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "list.h"
 #include <stdlib.h>
 #include "libft.h"
+#include <errno.h>
 
 static void	assign_head(t_tree **root, t_tree *head)
 {
@@ -88,6 +89,11 @@ void	add_to_root(t_token **node, t_tree **root)
 		start->priority = 0;
 	*root = parse_list(*node, end);
 	handle_boolop_group(root);
+	if (!*root)
+	{
+		errno = MEM_ALLOC;
+		return ;
+	}
 	assign_head(root, *root);
 }
 

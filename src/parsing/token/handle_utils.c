@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 13:54:05 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/22 19:33:38 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/24 01:18:45 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static bool	verif_pwd(char **path_splited, char *name_dir)
 		if (ft_strcmp(path_splited[i], name_dir) == 0)
 		{
 			flag = false;
-			break;
+			break ;
 		}
 		i++;
 	}

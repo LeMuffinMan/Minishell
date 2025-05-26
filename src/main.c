@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:21:52 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/21 13:35:04 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/23 21:54:35 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -293,7 +293,7 @@ int	parse_and_execution_loop(char **env, char **prompt, t_lists *lists,
 	}
 	//est-ce qu'on a besoin du strings env ou on peut passer direct les lists ou la liste env ?
 	strings_env = lst_to_array(lists->env);
-	(*lists->ast) = parse(line, strings_env, *lists->env, lists);
+	(*lists->ast) = parse(line, *lists->env, lists);
 	/* if (errno = ENOMEM) // tant qu'on detecte le malloc qui foire avec un if (str == NULL), on peut faire remonter l'erreur avec un if (errno == ENOMEM)  */
 	/* 	malloc_error_close_free_exi et(lists); */
 	free_array(strings_env);

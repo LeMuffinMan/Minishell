@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 14:31:45 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/29 18:50:48 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/23 21:54:11 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,6 @@ int print_perm_error(char *file);
 int	redirect_stdio(t_tree **ast, t_lists *lists);
 int exec_redirection(t_tree **ast, t_lists *lists);
 
-t_tree	*parse(char *line, char **envp, t_var *new_env, t_lists *lists);
+t_tree	*parse(char *line, t_var *new_env, t_lists *lists);
 
 #endif

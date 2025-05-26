@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 00:13:42 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/14 19:09:14 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/23 22:49:15 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@ typedef struct s_lexer
 	char			*arg;
 }	t_lexer;
 
-void					parse_line(char *str, t_lexer **list);
-void					free_lexer(t_lexer *head, const char *str, int error);
+bool					parse_line(char *str, t_lexer **list);
+void					free_lexer(t_lexer *head);
 void					add_lexer_back(t_lexer **head, char *str);
 void					alloc_operator_to_lexer(char *str, int i,
 							t_lexer **list);

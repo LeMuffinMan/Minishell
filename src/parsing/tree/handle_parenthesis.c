@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 15:53:21 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/17 16:15:26 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/26 14:45:00 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,83 +14,19 @@
 #include "token.h"
 #include "libft.h"
 #include <stdlib.h>
+#include <errno.h>
 
-static int	find_len_new_content(t_token *node, t_token *end)
-{
-	int	len;
-	int	i;
-
-	len = 0;
-	i = 0;
-	while (node)
-	{
-		i = -1;
-		while (node->content[++i])
-			len += ft_strlen(node->content[i]) + 1;
-		if (node == end)
-			break ;
-		node = node->next;
-	}
-	return (len);
-}
-
-static void	copy_nodes_content(t_token *start, t_token *end, char **res,
-				t_type current_token)
-{
-	int		pos;
-	int		i;
-	int 	word_len;
-
-	pos = 0;
-	while (start)
-	{
-		i = -1;
-		while (start->content[++i])
-		{
-			if (current_token == start->token
-				|| start->token == R_PARENTHESIS)
-				break ;
-			word_len = ft_strlen(start->content[i]);
-			ft_memcpy(*res + pos, start->content[i], word_len);
-			pos += word_len;
-			(*res)[pos++] = ' ';
-		}
-		if (start == end)
-			break ;
-		start = start->next;
-	}
-	if (pos > 0 && (*res)[pos - 1] == ' ')
-		(*res)[pos - 1] = '\0';
-}
-
-static void	free_node_unused(t_token *node)
-{
-	t_token	*next_node;
-
-	if (node->next)
-		next_node = node->next;
-	while (node)
-	{
-		next_node = node->next;
-		if (node->content)
-			free_tab(node->content);
-		if (node)
-			free(node);
-		node = NULL;
-		node = next_node;
-	}
-}
-
-// need to resolve leak when we have some groups
-static void	assign_pointer(t_token **new_node, t_token **start, t_token **end)
+static bool	assign_pointer(t_token **new_node, t_token **start, t_token **end)
 {
 	char	*res;
 	int		i;
 
+	if (!*start || !*end)
+		return (false);
 	i = find_len_new_content(*start, *end);
 	res = ft_calloc(sizeof(char), i + 1);
 	if (!res)
-		free_parse(*new_node, "Malloc failed in function 'assign_pointer'", MEM_ALLOC);
+		return (false);
 	copy_nodes_content(*start, *end, &res, (*start)->token);
 	(*new_node)->prev = (*start)->prev;
 	(*new_node)->next = (*end)->next;
@@ -99,11 +35,14 @@ static void	assign_pointer(t_token **new_node, t_token **start, t_token **end)
 	if ((*new_node)->next)
 		(*new_node)->next->prev = (*new_node);
 	(*new_node)->group = add_new_token(res, SUCCESS);
+	if (!res)
+		return (false);
 	free(res);
 	(*new_node)->token = GROUP_PARENTHESIS;
 	(*start)->prev = NULL;
 	(*end)->next = NULL;
 	free_node_unused(*start);
+	return (true);
 }
 
 static t_token	*set_group_parenthesis(t_token **start, t_token **end,
@@ -123,10 +62,12 @@ static t_token	*set_group_parenthesis(t_token **start, t_token **end,
 	else
 		flag = true;
 	tmp = add_new_token("()", SUCCESS);
-	if (!tmp)
-		free_parse(*start,
-			"Malloc failed in 'add_new_token' for group", MEM_ALLOC);
-	assign_pointer(&tmp, start, end);
+	if (!tmp || !assign_pointer(&tmp, start, end))
+	{
+		free_parse(*start, NULL, MEM_ALLOC);
+		errno = MEM_ALLOC;
+		return (NULL);
+	}
 	(*current) = tmp;
 	if (flag)
 		new_head = tmp;
@@ -142,7 +83,8 @@ void	handle_parenthesis(t_token **head)
 	tmp = *head;
 	left_par = NULL;
 	right_par = NULL;
-	while (tmp)
+	errno = SUCCESS;
+	while (tmp && errno != MEM_ALLOC)
 	{
 		if (tmp->token == L_PARENTHESIS)
 		{

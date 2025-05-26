@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   shell_functions.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:28:18 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/24 16:28:19 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/23 21:55:34 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,7 +161,7 @@ int exec_shell_fct(t_tree **ast, t_lists *lists, t_shell_fct *shell_fct)
 	while (expanded_fct_content[i])
 	{
 		strings_env = lst_to_array(lists->env);	
-		tree_to_free = parse(expanded_fct_content[i], strings_env, *lists->env, lists);
+		tree_to_free = parse(expanded_fct_content[i], *lists->env, lists);
 		exit_code = exec_ast(&tree_to_free, lists);
 		free_tree(&tree_to_free);
 		tree_to_free = NULL;
