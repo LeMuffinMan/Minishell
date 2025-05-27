@@ -24,12 +24,9 @@ void	free_list(t_var **l)
 	tmp = *l;
 	if (!*l)
 		return ;
-	#include <stdio.h>
 	while (tmp)
 	{
 		next_node = tmp->next;
-		printf("(*new)->key = %s %p\n", tmp->key, tmp->key);
-		printf("(*new)->value = %s\n", tmp->value);
 		free(tmp->key);
 		free(tmp->value);
 		free(tmp);
@@ -68,22 +65,19 @@ int	add_first_node(t_var **lst, t_var **new, char *s, int mode)
 {
 	char	**key_value;
 
-#include <stdio.h>
 	(*new)->key = NULL;
 	(*new)->value = NULL;
 	key_value = ft_split(s, '=');
 	if (!key_value)
 		return (free_node_var(*new, NULL));
 	(*new)->key = ft_strdup(key_value[0]);
-	printf("(*new)->key = %s %p\n", (*new)->key, (*new)->key);
-	/* if (errno == ENOMEM) */
-	/* 	return (free_node_var(*new, key_value)); */
+	if (errno == ENOMEM)
+		return (free_node_var(*new, key_value));
 	if (key_value[1])
 	{
 		(*new)->value = ft_strdup(key_value[1]);
-		printf("(*new)->value = %s\n", (*new)->value);
-		/* if (errno == ENOMEM) */
-		/* 	return (free_node_var(*new, key_value)); */
+		if (errno == ENOMEM)
+			return (free_node_var(*new, key_value));
 	}
 	free_array(key_value);
 	*lst = *new;

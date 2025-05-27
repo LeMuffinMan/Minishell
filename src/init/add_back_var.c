@@ -46,14 +46,20 @@ static int	process_key_value(t_var *new, char *s)
 	key_value = ft_split_on_first_equal(s);
 	if (errno == ENOMEM)
 		return (free_node_var(new, NULL));
-	new->key = ft_strdup(key_value[0]);
 	if (!new->key)
-		return (free_node_var(new, key_value));
+	{
+		new->key = ft_strdup(key_value[0]);
+		if (!new->key)
+			return (free_node_var(new, key_value));
+	}
 	if (key_value && key_value[1])
 	{
-		new->value = ft_strdup(key_value[1]);
 		if (!new->value)
-			return (free_node_var(new, key_value));
+		{
+			new->value = ft_strdup(key_value[1]);
+			if (!new->value)
+				return (free_node_var(new, key_value));
+		}
 	}
 	free_array(key_value);
 	return (0);
@@ -63,15 +69,9 @@ static int	add_node_to_list(t_var **lst, t_var *new, char *s, int mode)
 {
 	t_var	*ptr;
 
-	#include <stdio.h>
 	if (!lst || *lst == NULL)
 		return (add_first_node(lst, &new, s, mode));
 	ptr = *lst;
-	if (ptr->next == NULL)
-	{
-		//ici, je n'ai pas la meme adresse qu'au moment ou je l'ai alloue
-		printf("key = %s | value = %s | %p\n", ptr->key, ptr->value, ptr->key);
-	}
 	while (ptr->next)
 		ptr = ptr->next;
 	ptr->next = new;
