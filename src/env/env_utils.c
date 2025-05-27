@@ -57,9 +57,7 @@ t_var	*is_known_exported_key(t_var **env, char *key)
 	while (tmp)
 	{
 		if ((!ft_strncmp(tmp->key, key, ft_strlen(tmp->key) + 1)
-				&& tmp->exported == 1) || (!ft_strncmp(tmp->key, "PS1",
-					ft_strlen(tmp->key) + 1) && !ft_strncmp(key, tmp->key,
-					ft_strlen(tmp->key)))) // A VIRERRRRR !!!!!!!!
+				&& tmp->exported == 1))
 			return (tmp);
 		tmp = tmp->next;
 	}

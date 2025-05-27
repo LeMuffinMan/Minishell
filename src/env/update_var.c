@@ -31,7 +31,6 @@ int	update_last_cmd_var(t_var **env, char *last_cmd)
 		add_back_var(env, last_cmd, 1);
 	else
 	{
-		/* printf("update\n"); */
 		free(tmp->value);
 		tmp->value = ft_strdup(last_cmd);
 	}
@@ -51,7 +50,7 @@ int	update_last_arg_var(t_var **env, char **content)
 			i = 0;
 			while (content[i])
 				i++;
-			if (tmp->value) // mettre cette protection partout !
+			if (tmp->value)
 				free(tmp->value);
 			tmp->value = ft_strdup(content[i]);
 			return (0);
