@@ -71,6 +71,7 @@ int	end_of_file_exit(char **prompt, t_lists *lists, int exit_code)
 	free_prompt_string(*prompt);
 	close_origin_fds(lists->origin_fds);
 	free_lists(lists);
+	write(1, "exit\n", 5);
 	exit(exit_code); // Normal exit when readline returns NULL (Ctrl+D)
 }
 
