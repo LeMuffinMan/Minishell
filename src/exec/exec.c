@@ -6,16 +6,14 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:49:28 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/27 13:35:35 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/27 17:56:37 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "aliases.h"
 #include "env_utils.h"
 #include "exec.h"
 #include "exec_boolops.h"
 #include "libft.h"
-#include "shell_fct.h"
 #include <readline/readline.h>
 #include <signals.h>
 #include <stdio.h>

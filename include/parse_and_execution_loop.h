@@ -6,7 +6,7 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 13:47:30 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/27 13:47:31 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/27 17:56:20 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 # include "structs.h"
 
-int		parse_and_execution_loop(char **env, char **prompt, t_lists *lists,
+int		parse_and_execution_loop(char **prompt, t_lists *lists,
 			int exit_code);
 int		init(t_lists *lists, char **av, char **env);
 int		exec_ast(t_tree **ast, t_lists *lists);

@@ -6,7 +6,7 @@
 #    By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/05/27 17:40:59 by oelleaum         ###   ########lyon.fr    #
+#    Updated: 2025/05/27 18:03:25 by oelleaum         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -40,10 +40,7 @@ DIR_PARSING			=	src/parsing \
 						src/parsing/tree \
 						src/parsing/wildcard
 
-DIR_ULTRABONUS		=	src/ultrabonus \
-						src/ultrabonus/get_prompt 
-
-vpath %.c $(DIR_EXEC) $(DIR_PARSING) $(DIR_ULTRABONUS)
+vpath %.c $(DIR_EXEC) $(DIR_PARSING) 
 vpath %.h include:include/parsing:include/exec:include/init:include/misc:src/libft/include:include/builtins:include/misc
 vpath %.a src/libft/obj
 
@@ -55,7 +52,7 @@ HEAD				=	misc/display.h $(HEAD_EXEC)
 
 HEAD_DIR			=	include
 
-INC_HEAD			=	-I$(HEAD_DIR) -I$(HEAD_DIR)/parsing -I$(HEAD_DIR)/exec -I$(HEAD_DIR)/init -I$(HEAD_DIR)/misc -I$(HEAD_DIR)/ultrabonus -I$(HEAD_DIR)/builtins 
+INC_HEAD			=	-I$(HEAD_DIR) -I$(HEAD_DIR)/parsing -I$(HEAD_DIR)/exec -I$(HEAD_DIR)/init -I$(HEAD_DIR)/misc -I$(HEAD_DIR)/builtins 
 
 LIBFT_DIR			=	src/libft
 LIBFT_HEAD_DIR		=	src/libft/include
@@ -141,18 +138,11 @@ SRC					=	main.c \
 					init_lists.c \
 					add_back_var.c \
 					prints.c \
+					prints_bis.c \
+					print_sorted_env_utils.c \
 					misc.c \
 					malloc_error.c \
-					source.c \
-					get_prompt.c \
-					get_prompt_free.c \
-					git_branch_utils.c \
-					load_minishellrc.c \
-					prompt_gets_fcts.c \
-					prompt_gets_fcts_utils.c \
-					history.c \
-					aliases.c \
-					shell_functions.c
+					malloc_error_bis.c 
 
 
 DEPS				=	$(SRC:%.c=$(OBJ_DIR)%.d)

@@ -6,15 +6,15 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 15:53:47 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/14 16:13:49 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/27 17:42:54 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "env_utils.h"
 #include "libft.h"
-#include "malloc_error_handlers.h" //pour le malloc error
+#include "malloc_error_handlers.h" 
 #include <limits.h>
-#include <stdio.h> // le perror
+#include <stdio.h> 
 #include <stdlib.h>
 #include <unistd.h>
 

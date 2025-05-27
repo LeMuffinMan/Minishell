@@ -6,7 +6,7 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 16:12:30 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/27 17:42:12 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/27 17:47:38 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,12 +70,6 @@ int	init_lists(t_lists *lists)
 	if (init_lists_pipes(lists) == -1)
 		return (-1);
 	if (init_lists_origin_fds(lists) == -1)
-		return (-1);
-	if (init_lists_history(lists) == -1)
-		return (-1);
-	if (init_lists_alias(lists) == -1)
-		return (-1);
-	if (init_lists_shell_functions(lists) == -1)
 		return (-1);
 	lists->exit_code = 0;
 	return (0);
