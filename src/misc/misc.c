@@ -6,7 +6,7 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 17:58:12 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/27 13:40:50 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/27 18:08:20 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,21 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <unistd.h>
+
+int	dup_origins_fds(int origin_fds[2])
+{
+	origin_fds[0] = dup(STDIN_FILENO);
+	if (origin_fds[0] == -1)
+	{
+		return (-1);
+	}
+	origin_fds[1] = dup(STDOUT_FILENO);
+	if (origin_fds[1] == -1)
+	{
+		return (-1);
+	}
+	return (0);
+}
 
 int	node_to_str(t_var *tmp, char **array, int i)
 {

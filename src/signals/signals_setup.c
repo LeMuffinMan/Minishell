@@ -6,7 +6,7 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 13:41:38 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/27 13:41:39 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/27 18:05:50 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,11 +65,10 @@ int	set_signals(int mode)
 	if (mode == 0)
 		sa.sa_handler = handle_sig;
 	else if (mode == 1)
-		sa.sa_handler = SIG_IGN; // ou do nothing ?
+		sa.sa_handler = SIG_IGN;
 	if ((sigaction(SIGINT, &sa, NULL)) == -1)
 		return (-1);
 	if ((sigaction(SIGQUIT, &sa, NULL)) == -1)
 		return (-1);
-	/* sa.sa_handler = SIG_IGN; // On ignore SIGQUIT dans le shell principal */
 	return (0);
 }

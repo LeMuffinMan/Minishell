@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:21:52 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/27 17:56:08 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/27 18:09:02 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,26 +20,12 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-// Mardi 14h merge
-// Parsing
-//- fix syntax error parenthesis
-//- fix echo espaces en trop ou en moins
-//- fix echo $
-//- fix redir sur l'ast (les redirs a droite)
-//- fix unset PATH qui casse la reco des builtins
-//- fix ls considere comme file
-// exec
-//- fix minishell: ./usr/bin/sudo: Is a directory : si execve renvoie 2 (?) imprimer bash: ./usr/bin/sudo: No such file or directory
-
-
-
-
 int	end_of_file_exit(t_lists *lists, int exit_code)
 {
 	close_origin_fds(lists->origin_fds);
 	free_lists(lists);
 	write(1, "exit\n", 5);
-	exit(exit_code); // Normal exit when readline returns NULL (Ctrl+D)
+	exit(exit_code);
 }
 
 char	*readline_loop(char **prompt, t_lists *lists, int exit_code)
@@ -60,21 +46,6 @@ char	*readline_loop(char **prompt, t_lists *lists, int exit_code)
 			add_history(line);
 	}
 	return (line);
-}
-
-int	dup_origins_fds(int origin_fds[2])
-{
-	origin_fds[0] = dup(STDIN_FILENO);
-	if (origin_fds[0] == -1)
-	{
-		return (-1);
-	}
-	origin_fds[1] = dup(STDOUT_FILENO);
-	if (origin_fds[1] == -1)
-	{
-		return (-1);
-	}
-	return (0);
 }
 
 int	clean_post_execution(int origin_fds[2], t_lists *lists, char **line)
@@ -100,8 +71,7 @@ int	clean_post_execution(int origin_fds[2], t_lists *lists, char **line)
 	return (0);
 }
 
-int	parse_and_execution_loop(char **prompt, t_lists *lists,
-		int exit_code)
+int	parse_and_execution_loop(char **prompt, t_lists *lists, int exit_code)
 {
 	char	*line;
 
@@ -135,7 +105,6 @@ int	main(int ac, char **av, char **env)
 		exit(1);
 	}
 	prompt = "[Minishell]$ ";
-	// decommenter a la toute fin !!!
 	/* is_interactive_mode(); */
 	exit_code = 0;
 	g_signal = 0;

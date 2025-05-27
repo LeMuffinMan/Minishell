@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 19:15:40 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/23 21:15:25 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/27 18:07:12 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,6 @@ static void	display_group(t_token *group)
 {
 	printf("%s   GROUP = %s[%s%s%s]%s\n", BOLD_CYAN,
 		BOLD_BLUE, BOLD_YELLOW, group->content[0], BOLD_BLUE, STOP_COLOR);
-	// group = group->next;
-	// while (group)
-	// {
-	// 	printf("-->[%s%s%s]", BOLD_YELLOW, group->content[0], BOLD_BLUE);
-	// 	group = group->next;
-	// }
-	// printf("-->%s NULL%s\n\n", BOLD_YELLOW, STOP_COLOR);
 }
 
 static void	display_valid(t_token *node, int i, char **arg, const char **tok)
