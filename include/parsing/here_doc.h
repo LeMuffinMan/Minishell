@@ -26,5 +26,8 @@ bool					create_hd_name(t_token **head);
 bool					verif_name(char *name);
 int		close_origin_fds(int origin_fds[2]);
 void	free_lists(t_lists *lists);
+bool	exec_here_doc(t_token *node, t_lists *lists);
+bool	extract_stdin(int fd, char *limiter);
+bool	create_hd_name(t_token **head);
 
 #endif

@@ -69,27 +69,6 @@ bool	extract_stdin(int fd, char *limiter)
 	return (true);
 }
 
-/* void	here_doc_signal_handler(int signum) */
-/* { */
-/* 	if (signum == SIGINT) */
-/* 		g_signal = SIGINT; */
-/* } */
-
-/* void	setup_here_doc_signals(void) */
-/* { */
-/* 	struct sigaction	sa; */
-/**/
-/* 	sa.sa_handler = here_doc_signal_handler; */
-/* 	sigemptyset(&sa.sa_mask); */
-/* 	sa.sa_flags = 0; */
-/* 	sigaction(SIGINT, &sa, NULL); */
-/* 	 */
-/* 	// Ignorer SIGQUIT */
-/* 	sa.sa_handler = SIG_IGN; */
-/* 	sigaction(SIGQUIT, &sa, NULL); */
-/* } */
-
-//j'ai regulierement  minishell: Problem with here_doc creation en essayant de faire plusieurs here_docs
 bool	create_here_doc(t_token *node, t_lists *lists, bool *sig_hd)
 {
 	int		fd;
@@ -185,7 +164,10 @@ bool	handle_here_doc(t_token **head, t_lists *lists)
 			if (!create_here_doc(tmp, lists, &sig_hd))
 			{
 				free_parse(*head, NULL, MEM_ALLOC);
-				errno = MEM_ALLOC;
+				if (lists->exit_code == 130)
+					errno = 130;
+				else 
+					errno = MEM_ALLOC;
 				return (false);
 			}
 		}

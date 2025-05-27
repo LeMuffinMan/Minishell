@@ -68,6 +68,7 @@ SRC					=	main.c \
 						handle_space_utils.c \
 						quote_utils.c \
 						quote.c \
+						exec_here_doc.c \
 						create_here_doc.c \
 						handle_here_doc.c \
 						lexer_utils.c \
