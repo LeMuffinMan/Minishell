@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 02:23:46 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/26 16:21:44 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/26 23:46:29 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ static int	set_boolop_group(t_tree **ast_node, t_token *token_node)
 	copy_boolop_group_content(*ast_node, &res, &pos);
 	if (pos > 0 && res[pos - 1] == ' ')
 		res[pos - 1] = '\0';
-	new_token = add_new_token(res, SUCCESS);
+	new_token = add_new_token(res, SUCCESS, false);
 	if (!new_token)
 		return (-1);
 	set_boolop_pointer(ast_node, token_node, new_token);

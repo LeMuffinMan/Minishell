@@ -6,7 +6,7 @@
 #    By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/05/26 18:18:32 by oelleaum         ###   ########lyon.fr    #
+#    Updated: 2025/05/27 00:34:24 by asinsard         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,10 +32,10 @@ DIR_EXEC			=	src/ \
 
 DIR_PARSING			=	src/parsing \
 						src/parsing/expand \
-						src/parsing/handle_quote \
 						src/parsing/here_doc \
 						src/parsing/lexer \
 						src/parsing/token \
+						src/parsing/quote \
 						src/parsing/tree \
 						src/parsing/wildcard
 
@@ -79,6 +79,8 @@ SRC					=	main.c \
 						handle_cmd_and_path.c \
 						handle_utils.c \
 						join_token.c \
+						new_parse.c \
+						settings_syntax_error.c \
 						syntax_error_utils.c \
 						syntax_error.c \
 						token_utils.c \

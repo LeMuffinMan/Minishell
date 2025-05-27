@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:28:16 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/23 20:33:27 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/27 00:55:32 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,16 +22,20 @@ typedef struct s_token	t_token;
 struct					s_var;
 typedef struct s_var	t_var;
 
+/* ----------------------EXPAND---------------------- */
 char					*alloc_first_expand(char *value,
 							char *str_to_expand, int index);
+
+/* -------------------EXPAND UTILS------------------- */
+bool					init_expand(t_token **head, t_var *list_env,
+							t_lists *lists);
+bool					is_valid_arg(t_token *node, char *str);
 char					*ft_strjoin3(char *str_node, char *value,
 							int j, int index);
 void					copy_value(t_token *node, char *value,
 							char **value_cpy);
-bool					init_expand(t_token **head, t_var *list_env, t_lists *lists);
-void					handle_space(t_token **head);
-void					delete_space_content(t_token **node);
 void					delete_node_pointer(t_token **node);
-
+void					delete_space_content(t_token **node);
+void					handle_space(t_token **head);
 
 #endif

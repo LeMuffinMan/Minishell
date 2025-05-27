@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 20:47:42 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/23 17:38:57 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/26 23:34:24 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,26 @@
 #include "libft.h"
 #include "list.h"
 #include <stdlib.h>
+
+bool	is_valid_arg(t_token *node, char *str)
+{
+	int	i;
+
+	if ((node->token == S_QUOTE || node->token == EXPAND || node->error != 0)
+		&& node->next && node->next->token == SPACE)
+	{
+		if (str[0] != '-' || str[1] != 'n')
+			return (true);
+		i = 2;
+		while (str[i])
+		{
+			if (str[i] != 'n')
+				return (true);
+			i++;
+		}
+	}
+	return (false);
+}
 
 void	copy_value(t_token *node, char *value, char **value_cpy)
 {

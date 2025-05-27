@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 03:09:12 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/24 01:17:57 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/26 22:20:57 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 #include <unistd.h>
 #include <stdio.h>
 
-static bool	lexing_and_tokenize(char *line, t_token **token,
+bool	lexing_and_tokenize(char *line, t_token **token,
 								t_var *list_env, bool *flag)
 {
 	t_lexer	*lexer;
