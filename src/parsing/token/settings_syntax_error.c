@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 20:30:04 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/26 23:43:44 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/27 14:27:42 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,10 +55,12 @@ bool	case_is_boolop(t_token *tmp, t_token **head)
 		if (!tmp->prev || !tmp->next
 			|| (tmp->prev->token != CMD && tmp->prev->token != BUILT_IN
 				&& tmp->prev->token != R_PARENTHESIS
+				&& tmp->prev->token != HD
 				&& tmp->prev->token != NO_TOKEN
 				&& tmp->prev->token != D_QUOTE && tmp->prev->token != S_QUOTE)
 			|| (tmp->next->token != CMD && tmp->next->token != BUILT_IN
 				&& tmp->next->token != L_PARENTHESIS
+				&& tmp->next->token != HD
 				&& tmp->next->token != NO_TOKEN
 				&& tmp->next->token != D_QUOTE && tmp->next->token != S_QUOTE))
 		{
