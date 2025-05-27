@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 23:51:21 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/27 00:55:39 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/27 17:12:29 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,17 @@ typedef struct s_token	t_token;
 
 /* ----------------------HERE DOC---------------------- */
 bool					create_hd_name(t_token **head);
+bool					exec_here_doc(t_token *node, t_lists *lists);
+bool					extract_stdin(int fd, char *limiter);
 bool					handle_here_doc(t_token **head, t_lists *lists);
+
+/* -------------------HERE DOC UTILS------------------- */
+bool					case_is_limiter(char *line, char *limiter, int fd, int len);
+bool					free_lim_close_fd(char *limiter, int fd);
+bool					verif_here_doc(t_token **head);
 bool					verif_name(char *name);
-int		close_origin_fds(int origin_fds[2]);
-void	free_lists(t_lists *lists);
-bool	exec_here_doc(t_token *node, t_lists *lists);
-bool	extract_stdin(int fd, char *limiter);
-bool	create_hd_name(t_token **head);
+char					*get_limiter(char *s, int fd);
+int						close_origin_fds(int origin_fds[2]);
+void					free_lists(t_lists *lists);
 
 #endif
