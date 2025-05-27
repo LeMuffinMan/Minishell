@@ -6,7 +6,7 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:47:57 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/26 18:40:28 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/27 13:34:52 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ int	file_check(char *file, t_type type, int error_code)
 	return (0);
 }
 
-int dup2_and_close(int fd, t_type type)
+int	dup2_and_close(int fd, t_type type)
 {
 	if (type == R_IN || type == HD)
 	{

@@ -6,44 +6,45 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 16:27:24 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/04/24 16:29:16 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/27 13:40:03 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-#include <stdlib.h>
 #include <errno.h>
+#include <stdlib.h>
 
-int malloc_error_cmd(char *to_free)
+int	malloc_error_cmd(char *to_free)
 {
-	int saved_errno;
-	
+	int	saved_errno;
+
 	saved_errno = errno;
 	free(to_free);
 	errno = saved_errno;
 	return (errno);
 }
 
-int error_cmd_dot_case(char *cmd)
+int	error_cmd_dot_case(char *cmd)
 {
 	if (!ft_strncmp(cmd, ".", 2) && ft_strlen(cmd) == 1)
 	{
-		ft_putstr_fd("minishell: .: filename argument required\n.: usage: . filename [arguments]\n", 2);
+		ft_putstr_fd("minishell: .: filename argument required\n.: \
+			usage: . filename [arguments]\n", 2);
 		return (2);
 	}
 	return (0);
 }
 
-int error_cmd_is_a_directory(char *cmd)
+int	error_cmd_is_a_directory(char *cmd)
 {
-	char *s;
-	char *tmp;
+	char	*s;
+	char	*tmp;
 
-	s = ft_strjoin("minishell: ", cmd);	
+	s = ft_strjoin("minishell: ", cmd);
 	if (errno == ENOMEM)
 		return (errno);
 	tmp = s;
-	s = ft_strjoin(s, ": Is a directory\n");	
+	s = ft_strjoin(s, ": Is a directory\n");
 	if (errno == ENOMEM)
 		return (malloc_error_cmd(tmp));
 	free(tmp);
@@ -52,16 +53,16 @@ int error_cmd_is_a_directory(char *cmd)
 	return (126);
 }
 
-int error_cmd(char *cmd, int error_code)
+int	error_cmd(char *cmd, int error_code)
 {
-	char *s;
-	char *tmp;
+	char	*s;
+	char	*tmp;
 
 	if (error_cmd_dot_case(cmd) == 2)
 		return (2);
 	if (error_code == 21)
 		return (error_cmd_is_a_directory(cmd));
-	s = ft_strjoin("minishell: ", cmd);	
+	s = ft_strjoin("minishell: ", cmd);
 	if (errno == ENOMEM)
 		return (errno);
 	tmp = s;
@@ -79,10 +80,10 @@ int error_cmd(char *cmd, int error_code)
 	return (127);
 }
 
-int print_error_file_opening(char *file, char *error, int error_code)
+int	print_error_file_opening(char *file, char *error, int error_code)
 {
-	char *s;
-	char *tmp;
+	char	*s;
+	char	*tmp;
 
 	s = ft_strjoin("minishell: ", file);
 	tmp = s;
@@ -93,10 +94,10 @@ int print_error_file_opening(char *file, char *error, int error_code)
 	return (error_code);
 }
 
-int error_not_valid_identifier(char *s)
+int	error_not_valid_identifier(char *s)
 {
-	char *tmp;
-	
+	char	*tmp;
+
 	s = ft_strjoin("minishell: export: `", s);
 	tmp = s;
 	s = ft_strjoin(s, "\': not a valid identifier\n");
@@ -106,10 +107,10 @@ int error_not_valid_identifier(char *s)
 	return (1);
 }
 
-int print_error_is_a_directory(char *file)
+int	print_error_is_a_directory(char *file)
 {
-	char *s;
-	char *tmp;
+	char	*s;
+	char	*tmp;
 
 	s = ft_strjoin("minishell: ", file);
 	tmp = s;
@@ -120,10 +121,10 @@ int print_error_is_a_directory(char *file)
 	return (1);
 }
 
-int print_perm_error(char *file)
+int	print_perm_error(char *file)
 {
-	char *s;
-	char *tmp;
+	char	*s;
+	char	*tmp;
 
 	s = ft_strjoin("minishell: ", file);
 	tmp = s;
@@ -133,6 +134,3 @@ int print_perm_error(char *file)
 	free(s);
 	return (1);
 }
-
-
-

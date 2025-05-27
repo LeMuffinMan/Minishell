@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 14:31:45 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/26 17:58:59 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/27 13:45:32 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 # include "tree.h"
 # include <sys/wait.h>
 
-//ULTRABOMUS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+// ULTRABOMUS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 int		builtin_source(char *arg, t_var **env);
 
 // exec.c
@@ -32,14 +32,13 @@ int		error_not_valid_identifier(char *s);
 int		print_error_is_a_directory(char *file);
 int		print_perm_error(char *file);
 
-
 int		builtin_cd(char **arg, t_var **env);
 int		builtin_echo(char **arg);
 int		builtin_env(t_var **env, char **arg);
 int		builtin_exit(char **arg, t_tree **ast, t_lists *lists);
 int		builtin_pwd(t_var **env);
 int		builtin_unset(t_var **env, char **arg);
-int	builtin_export(t_var **env, char **arg);
+int		builtin_export(t_var **env, char **arg);
 
 t_tree	*parse(char *line, t_var *new_env, t_lists *lists);
 

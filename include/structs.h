@@ -6,7 +6,7 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 16:00:46 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/26 17:59:36 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/27 13:48:17 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,13 @@
 
 //
 # include "history.h"
-typedef struct s_hist t_hist;
+typedef struct s_hist	t_hist;
+
 //
 
 typedef struct s_alias
 {
-	//ULTRABONUS
+	// ULTRABONUS
 	char				*name;
 	char				*content;
 	struct s_alias		*next;
@@ -31,7 +32,7 @@ typedef struct s_alias
 
 typedef struct s_shell_fct
 {
-	//ULTRABONUS
+	// ULTRABONUS
 	char				*name;
 	char				**content;
 	struct s_shell_fct	*next;
@@ -71,7 +72,7 @@ typedef struct s_lists
 
 typedef struct s_prompt
 {
-	//ULTRABONUS
+	// ULTRABONUS
 	char				*ps1;
 	char				*user;
 	char				*uid;

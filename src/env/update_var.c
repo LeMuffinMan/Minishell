@@ -1,9 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   update_var.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/27 13:39:16 by oelleaum          #+#    #+#             */
+/*   Updated: 2025/05/27 13:39:19 by oelleaum         ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
 
+#include "env_utils.h"
 #include "libft.h"
-#include <stdlib.h>
 #include "structs.h"
 #include <errno.h>
-#include "env_utils.h"
+#include <stdlib.h>
 
 int	update_last_cmd_var(t_var **env, char *last_cmd)
 {
@@ -50,10 +61,10 @@ int	update_last_arg_var(t_var **env, char **content)
 	return (1);
 }
 
-int update_existing_value(t_var *node, char *var, int inc)
+int	update_existing_value(t_var *node, char *var, int inc)
 {
-	char *value;
-	char *tmp;
+	char	*value;
+	char	*tmp;
 
 	value = ft_strchr(var, '=');
 	if (!value)
@@ -76,10 +87,10 @@ int update_existing_value(t_var *node, char *var, int inc)
 	return (0);
 }
 
-t_var *update_if_known_key(t_var **env, char *var, char *s, int inc)
+t_var	*update_if_known_key(t_var **env, char *var, char *s, int inc)
 {
-	t_var *node;
-	char **key;
+	t_var	*node;
+	char	**key;
 
 	key = ft_split(s, '=');
 	if (!key)
@@ -91,5 +102,5 @@ t_var *update_if_known_key(t_var **env, char *var, char *s, int inc)
 		if (update_existing_value(node, var, inc) == -1)
 			return (NULL);
 	}
-	return node;
+	return (node);
 }

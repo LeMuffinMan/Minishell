@@ -1,9 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   add_back_var.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/27 13:36:00 by oelleaum          #+#    #+#             */
+/*   Updated: 2025/05/27 13:36:02 by oelleaum         ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
 
-#include <stdlib.h>
-#include <errno.h>
-#include "structs.h"
 #include "init.h"
 #include "libft.h"
+#include "structs.h"
+#include <errno.h>
+#include <stdlib.h>
 
 int	free_node_var(t_var *node, char **array)
 {

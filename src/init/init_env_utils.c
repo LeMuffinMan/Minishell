@@ -6,15 +6,15 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 17:04:05 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/14 16:13:21 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/27 13:36:47 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "init.h"
 #include "libft.h"
 #include "structs.h"
-#include "init.h"
-#include <stdlib.h>
 #include <errno.h>
+#include <stdlib.h>
 
 void	free_list(t_var **l)
 {
@@ -84,29 +84,27 @@ int	add_first_node(t_var **lst, t_var **new, char *s, int mode)
 	return (set_node(new, mode));
 }
 
-char **ft_split_on_first_equal(char *s)
+char	**ft_split_on_first_equal(char *s)
 {
-    char **splitted;
-  	char *equal_ptr;
-  	
-  	splitted = malloc(3 * sizeof(char *));
-    if (!splitted)
-        return (NULL);
-    splitted[0] = NULL;
-    splitted[1] = NULL;
-    splitted[2] = NULL;
-    equal_ptr = ft_strchr(s, '=');
-    if (!equal_ptr)
-    {
-        splitted[0] = ft_strdup(s);
-        return (splitted);
-    }
-    splitted[0] = ft_strndup(s, equal_ptr - s);
-    if (*(equal_ptr + 1))
-        splitted[1] = ft_strdup(equal_ptr + 1);
-    else
-        splitted[1] = ft_strdup("");
-    return (splitted);
+	char	**splitted;
+	char	*equal_ptr;
+
+	splitted = malloc(3 * sizeof(char *));
+	if (!splitted)
+		return (NULL);
+	splitted[0] = NULL;
+	splitted[1] = NULL;
+	splitted[2] = NULL;
+	equal_ptr = ft_strchr(s, '=');
+	if (!equal_ptr)
+	{
+		splitted[0] = ft_strdup(s);
+		return (splitted);
+	}
+	splitted[0] = ft_strndup(s, equal_ptr - s);
+	if (*(equal_ptr + 1))
+		splitted[1] = ft_strdup(equal_ptr + 1);
+	else
+		splitted[1] = ft_strdup("");
+	return (splitted);
 }
-
-

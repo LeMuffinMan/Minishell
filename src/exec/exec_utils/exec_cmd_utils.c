@@ -1,15 +1,24 @@
-
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exec_cmd_utils.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/27 13:34:42 by oelleaum          #+#    #+#             */
+/*   Updated: 2025/05/27 13:34:46 by oelleaum         ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "libft.h"
-#include <stdlib.h>
-#include <errno.h>
 #include "tree.h"
+#include <errno.h>
+#include <stdlib.h>
 #include <unistd.h>
 
-
-int directory_error(char **s, char *tmp)
+int	directory_error(char **s, char *tmp)
 {
-	int exit_code;
+	int	exit_code;
 
 	*s = ft_strjoin(*s, ": Is a directory\n");
 	exit_code = 126;
@@ -24,9 +33,9 @@ int directory_error(char **s, char *tmp)
 	return (exit_code);
 }
 
-int missing_file_error(char **s, char *tmp)
+int	missing_file_error(char **s, char *tmp)
 {
-	int exit_code;
+	int	exit_code;
 
 	*s = ft_strjoin(*s, ": No such file or directory\n");
 	exit_code = 127;
@@ -41,10 +50,10 @@ int missing_file_error(char **s, char *tmp)
 	return (exit_code);
 }
 
-int exec_cmd_print_error(t_tree **ast)
+int	exec_cmd_print_error(t_tree **ast)
 {
-	char *s;
-	char *tmp;
+	char	*s;
+	char	*tmp;
 
 	s = ft_strjoin("minishell: ", (*ast)->token->content[0]);
 	if (errno == ENOMEM)

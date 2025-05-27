@@ -1,22 +1,33 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   malloc_error.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/27 13:40:28 by oelleaum          #+#    #+#             */
+/*   Updated: 2025/05/27 13:40:31 by oelleaum         ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
 
+#include "malloc_error_handlers.h"
+#include "structs.h"
 #include <errno.h>
 #include <stdlib.h>
-#include "structs.h"
-#include "malloc_error_handlers.h"
 #include <unistd.h>
 
-void malloc_error_freelists_exit(t_lists *lists)
+void	malloc_error_freelists_exit(t_lists *lists)
 {
-	int saved_errno;
+	int	saved_errno;
 
 	saved_errno = errno;
 	free_lists(lists);
 	exit(saved_errno);
 }
 
-int malloc_error_close_free_pipes(int pipefd[2], t_pipe **pipes)
+int	malloc_error_close_free_pipes(int pipefd[2], t_pipe **pipes)
 {
-	int saved_errno;
+	int	saved_errno;
 
 	saved_errno = errno;
 	if (close(pipefd[0]) == -1 || close(pipefd[1]) == -1)
@@ -25,7 +36,7 @@ int malloc_error_close_free_pipes(int pipefd[2], t_pipe **pipes)
 		return (saved_errno);
 	}
 	free_pipes(pipes);
-	return (saved_errno);	
+	return (saved_errno);
 }
 
 int	handle_pipe_error(t_lists *lists)
@@ -35,20 +46,20 @@ int	handle_pipe_error(t_lists *lists)
 	return (0);
 }
 
-int malloc_error_parenthesis_child(t_lists *lists, t_tree **ast_to_free)
+int	malloc_error_parenthesis_child(t_lists *lists, t_tree **ast_to_free)
 {
-	int saved_errno;
+	int	saved_errno;
 
 	saved_errno = errno;
-	if (ast_to_free && *ast_to_free) 
+	if (ast_to_free && *ast_to_free)
 		free_tree(ast_to_free);
 	free_lists(lists);
 	exit(saved_errno);
 }
 
-int malloc_free_string(char *s)
+int	malloc_free_string(char *s)
 {
-	int saved_errno;
+	int	saved_errno;
 
 	saved_errno = errno;
 	if (s)
@@ -74,4 +85,3 @@ int	malloc_error_close_free_exit(t_lists *lists)
 	free_lists(lists);
 	exit(errno);
 }
-

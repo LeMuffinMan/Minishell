@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   update_env.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/27 13:38:49 by oelleaum          #+#    #+#             */
+/*   Updated: 2025/05/27 13:39:09 by oelleaum         ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "env_utils.h"
 #include "libft.h"
@@ -58,9 +69,10 @@ static int	update_pwd(t_var *pwd)
 	}
 	else if (errno == ENOENT)
 	{
-		ft_putstr_fd("cd: error retrieving current directory: " \
-			"getcwd: cannot access parent directories: " \
-			"No such file or directory\n", 2);
+		ft_putstr_fd("cd: error retrieving current directory: "
+			"getcwd: cannot access parent directories: "
+			"No such file or directory\n",
+			2);
 		pwd->value = ft_strjoin(pwd->value, "/..");
 		if (!pwd->value)
 			return (ENOMEM);

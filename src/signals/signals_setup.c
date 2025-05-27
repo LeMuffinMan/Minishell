@@ -1,12 +1,23 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   signals_setup.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/27 13:41:38 by oelleaum          #+#    #+#             */
+/*   Updated: 2025/05/27 13:41:39 by oelleaum         ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
 
-#include <signals.h>
 #include "libft.h"
 #include "signals.h"
+#include <readline/readline.h>
+#include <signals.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <readline/readline.h>
 
-int setup_pipe_signals(struct sigaction *sa_ignore, struct sigaction *sa_orig)
+int	setup_pipe_signals(struct sigaction *sa_ignore, struct sigaction *sa_orig)
 {
 	sigemptyset(&sa_ignore->sa_mask);
 	sa_ignore->sa_handler = SIG_IGN;
@@ -30,14 +41,13 @@ void	setup_child_signals(void)
 
 void	sigint_prompt_handler(int sig)
 {
-  (void)sig;
-  g_signal = 130;
+	(void)sig;
+	g_signal = 130;
 	write(STDOUT_FILENO, "\n", 1);
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
 }
-
 
 void	setup_parent_signals(void)
 {

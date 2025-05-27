@@ -1,11 +1,23 @@
-#include <stdlib.h>
-#include <errno.h>
-#include "libft.h"
-#include "env_utils.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   add_or_update_var.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/27 13:37:22 by oelleaum          #+#    #+#             */
+/*   Updated: 2025/05/27 13:37:24 by oelleaum         ###   ########lyon.fr   */
+/*                                                                            */
+/* ************************************************************************** */
 
-static int is_an_incrementation(char *arg)
+#include "env_utils.h"
+#include "libft.h"
+#include <errno.h>
+#include <stdlib.h>
+
+static int	is_an_incrementation(char *arg)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (arg[i])
@@ -19,7 +31,7 @@ static int is_an_incrementation(char *arg)
 
 static char	*copy_after_plus(char *arg, char *s, int i)
 {
-	int j;
+	int	j;
 
 	s[i] = '=';
 	j = i + 1;
@@ -36,8 +48,8 @@ static char	*copy_after_plus(char *arg, char *s, int i)
 
 static char	*clean_inc_operator(char *arg)
 {
-	int i;
-	char *s;
+	int		i;
+	char	*s;
 
 	i = 0;
 	if (!arg)
@@ -58,9 +70,9 @@ static char	*clean_inc_operator(char *arg)
 	return (copy_after_plus(arg, s, i));
 }
 
-static char *prepare_var_string(char *var, int *inc)
+static char	*prepare_var_string(char *var, int *inc)
 {
-	char *s;
+	char	*s;
 
 	if (is_an_incrementation(var))
 	{
@@ -78,11 +90,11 @@ static char *prepare_var_string(char *var, int *inc)
 	return (s);
 }
 
-int add_or_update_var(t_var **env, char *var)
+int	add_or_update_var(t_var **env, char *var)
 {
-	int inc;
-	char *s;
-	t_var *node;
+	int		inc;
+	char	*s;
+	t_var	*node;
 
 	inc = 0;
 	s = prepare_var_string(var, &inc);
@@ -100,6 +112,3 @@ int add_or_update_var(t_var **env, char *var)
 	free(s);
 	return (0);
 }
-
-
-

@@ -6,7 +6,7 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 17:58:29 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/26 17:58:37 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/27 13:45:21 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,6 @@ int		is_valid_identifier(char *var);
 t_var	*copy_list(t_var **env);
 int		sort_list(t_var **l);
 void	free_list(t_var **l);
-int	print_sorted_env(t_var **env);
+int		print_sorted_env(t_var **env);
 
 #endif

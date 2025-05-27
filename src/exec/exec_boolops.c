@@ -6,7 +6,7 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 18:35:22 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/26 18:37:36 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/27 13:35:42 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ int	exec_group_cmd(t_tree **ast, t_lists *lists)
 int	exec_group_boolop(t_tree **ast, t_lists *lists)
 {
 	t_tree	*sub_ast;
-	int saved_errno;
+	int		saved_errno;
 
 	sub_ast = NULL;
 	sub_ast = parse((*ast)->token->content[0], *lists->env, lists);

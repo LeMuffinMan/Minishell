@@ -6,7 +6,7 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 17:02:11 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/26 18:41:06 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/27 13:43:14 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@
 #include <limits.h>
 #include <stdio.h>
 #include <unistd.h>
+
+//une fonction en trop
 
 int	init_last_cmd_var(char *name, t_var **env)
 {
@@ -106,7 +108,8 @@ int	init_pwd(t_var **env)
 	}
 	else
 	{
-		ft_putstr_fd("shell-init: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory\n",
+		ft_putstr_fd("shell-init: error retrieving current directory: getcwd: \
+			cannot access parent directories: No such file or directory\n",
 			2);
 		return (1);
 	}
@@ -158,7 +161,7 @@ int	init(t_lists *lists, char **av, char **env)
 	}
 	//
 	// ULTRABONUS
-	if (isatty(0) && env && *env && find_and_load_startup_files(lists, env) ==
+	if (isatty(0) && env && *env && find_and_load_startup_files(lists, env) == \
 		-1)
 	{
 		free_lists(lists);

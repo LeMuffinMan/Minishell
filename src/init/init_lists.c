@@ -6,7 +6,7 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 16:12:30 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/14 16:13:15 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/27 13:36:54 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,11 +52,11 @@ int	init_lists_pipes(t_lists *lists)
 	return (0);
 }
 
-int init_lists_origin_fds(t_lists *lists)
+int	init_lists_origin_fds(t_lists *lists)
 {
-    lists->origin_fds[0] = -1;
-    lists->origin_fds[1] = -1;
-    return (0);
+	lists->origin_fds[0] = -1;
+	lists->origin_fds[1] = -1;
+	return (0);
 }
 
 // Ultra bonus

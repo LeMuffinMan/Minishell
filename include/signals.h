@@ -6,7 +6,7 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/04 19:21:28 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/26 18:01:26 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/27 13:47:36 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,6 @@ void		setup_parent_signals(void);
 int			setup_pipe_signals(struct sigaction *sa_ignore,
 				struct sigaction *sa_orig);
 int			wait_children(pid_t last_child, pid_t first_child);
-void	handle_child_sigquit(int sig);
+void		handle_child_sigquit(int sig);
 
 #endif
