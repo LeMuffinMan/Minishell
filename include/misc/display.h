@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   display.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
+/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 02:33:29 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/27 18:10:12 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/27 18:28:34 by oelleaum         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,10 @@
 # include "list.h"
 # include "tree.h"
 
-struct s_token;
+struct					s_token;
 typedef struct s_token	t_token;
 
-struct s_lexer;
+struct					s_lexer;
 typedef struct s_lexer	t_lexer;
 
 void					display_list(t_token *head, int debug);

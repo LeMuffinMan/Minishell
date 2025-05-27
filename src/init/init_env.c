@@ -66,7 +66,7 @@ static int	process_env_vars(t_var **new_env, char **env)
 
 int	init_env(t_var **new_env, char **env, char *program_name)
 {
-	if (!env || !*env)
+	if (!env)
 		return (build_minimal_env(new_env, program_name));
 	if (process_env_vars(new_env, env) == -1)
 		return (-1);
