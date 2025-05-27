@@ -14,7 +14,6 @@
 #include "libft.h"
 #include "malloc_error_handlers.h"
 #include "signals.h"
-#include "utils.h"
 #include <errno.h>
 #include <stdio.h>
 #include <unistd.h>

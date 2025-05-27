@@ -19,7 +19,6 @@
 #include <readline/readline.h>
 #include <unistd.h>
 #include "signals.h"
-#include "utils.h"
 #include <sys/stat.h>
 #include <errno.h>
 

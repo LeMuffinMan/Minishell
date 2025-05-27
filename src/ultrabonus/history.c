@@ -12,7 +12,6 @@
 
 #include <stdlib.h>
 #include "libft.h"
-#include "utils.h"
 #include "history.h"
 #include "env_utils.h"
 #include <fcntl.h>

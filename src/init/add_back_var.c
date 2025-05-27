@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <errno.h>
 #include "structs.h"
-#include "utils.h"
 #include "init.h"
 #include "libft.h"
 

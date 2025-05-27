@@ -64,3 +64,39 @@ t_var *is_known_exported_key(t_var **env, char *key)
 	return (NULL);
 }
 
+int	sort_list(t_var **l)
+{
+	t_var	*tmp;
+	int		sorted;
+
+	sorted = 0;
+	tmp = *l;
+	if (!tmp)
+		return (1);
+	while (sorted == 0)
+	{
+		sorted = 1;
+		tmp = *l;
+		while (tmp->next)
+		{
+			if (compare_keys(tmp->key, tmp->next->key) > 0)
+			{
+				sorted = 0;
+				swap_nodes(tmp, tmp->next);
+			}
+			tmp = tmp->next;
+		}
+	}
+	return (0);
+}
+
+int	compare_keys(char *key1, char *key2)
+{
+	char	*longest_key;
+
+	if (ft_strlen(key1) > ft_strlen(key2))
+		longest_key = key1;
+	else
+		longest_key = key2;
+	return (ft_strncmp(key1, key2, ft_strlen(longest_key)));
+}

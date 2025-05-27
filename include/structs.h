@@ -18,6 +18,7 @@
 
 //
 # include "history.h"
+typedef struct s_hist t_hist;
 //
 
 typedef struct s_alias

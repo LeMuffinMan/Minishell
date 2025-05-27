@@ -2,7 +2,6 @@
 #include <errno.h>
 #include <stdlib.h>
 #include "structs.h"
-#include "utils.h"
 #include "malloc_error_handlers.h"
 #include <unistd.h>
 

@@ -16,7 +16,6 @@
 #include "exec_boolops.h"
 #include "libft.h"
 #include "shell_fct.h"
-#include "utils.h"
 #include <stdio.h>
 #include <readline/readline.h>
 #include <signals.h>

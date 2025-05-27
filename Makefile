@@ -129,6 +129,7 @@ SRC					=	main.c \
 					src/env/add_or_update_var.c \
 					src/env/update_env.c \
 					src/env/update_var.c \
+					src/misc/free_fcts.c \
 					init_env_utils.c \
 					init_utils.c \
 					init_lists.c \

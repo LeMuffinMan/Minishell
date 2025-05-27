@@ -27,5 +27,8 @@ int		add_or_update_var(t_var **env, char *var);
 t_var	*is_known_exported_key(t_var **env, char *key);
 int		malloc_free_string(char *s);
 int	free_array(char **array);
+int	swap_nodes(t_var *n1, t_var *n2);
+int	compare_keys(char *key1, char *key2);
+void	free_list(t_var **l);
 
 #endif

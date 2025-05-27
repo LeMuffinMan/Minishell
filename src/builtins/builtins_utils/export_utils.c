@@ -13,7 +13,6 @@
 #include "env_utils.h"
 #include "export_utils.h"
 #include "libft.h"
-#include "utils.h"
 #include <errno.h>
 #include <stdlib.h>
 

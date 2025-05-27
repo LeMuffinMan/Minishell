@@ -13,7 +13,6 @@
 #include "exit_utils.h"
 #include "libft.h"
 #include "malloc_error_handlers.h"
-#include "utils.h"
 #include <errno.h>
 #include <unistd.h>
 
