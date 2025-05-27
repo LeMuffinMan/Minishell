@@ -6,7 +6,7 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 16:00:54 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/27 17:48:55 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/27 18:10:25 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,6 @@ int		malloc_error_close_free_exit(t_lists *lists);
 void	free_lists(t_lists *lists);
 int		free_pipes(t_pipe **pipes);
 int		close_origin_fds(int origin_fds[2]);
-int	malloc_error_cmd(char *to_free);
+int		malloc_error_cmd(char *to_free);
 
 #endif
