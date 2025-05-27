@@ -1,0 +1,27 @@
+{
+  Readline_All_Functions
+  Memcheck:Leak
+  ...
+  obj:*/libreadline.so*
+}
+
+{
+  Grep_All_Functions
+  Memcheck:Leak
+  ...
+  obj:*/usr/bin/grep
+}
+
+{
+  ls
+  Memcheck:Leak
+  ...
+  obj:*/usr/bin/ls
+}
+
+{
+  ls
+  Memcheck:Leak
+  ...
+  obj:*/usr/bin/cat
+}
