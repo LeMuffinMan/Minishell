@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "token.h"
-#include "display.h"
+#include "misc/display.h"
 #include "tree.h"
 #include "libft.h"
 #include "quote.h"

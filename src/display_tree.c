@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "display.h"
+#include "misc/display.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

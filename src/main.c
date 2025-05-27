@@ -69,8 +69,7 @@ int	end_of_file_exit(char **prompt, t_lists *lists, int exit_code)
 	if (save_history(lists->env, lists->history) == -1)
 		malloc_error_close_free_exit(lists);
 	free_prompt_string(*prompt);
-	if (close_origin_fds(lists->origin_fds) == -1)
-		malloc_error_close_free_exit(lists);
+	close_origin_fds(lists->origin_fds);
 	free_lists(lists);
 	exit(exit_code); // Normal exit when readline returns NULL (Ctrl+D)
 }

@@ -63,9 +63,15 @@ static int	add_node_to_list(t_var **lst, t_var *new, char *s, int mode)
 {
 	t_var	*ptr;
 
+	#include <stdio.h>
 	if (!lst || *lst == NULL)
 		return (add_first_node(lst, &new, s, mode));
 	ptr = *lst;
+	if (ptr->next == NULL)
+	{
+		//ici, je n'ai pas la meme adresse qu'au moment ou je l'ai alloue
+		printf("key = %s | value = %s | %p\n", ptr->key, ptr->value, ptr->key);
+	}
 	while (ptr->next)
 		ptr = ptr->next;
 	ptr->next = new;
@@ -75,15 +81,15 @@ static int	add_node_to_list(t_var **lst, t_var *new, char *s, int mode)
 int	add_back_var(t_var **lst, char *s, int mode)
 {
 	t_var	*new;
-	int		ret;
+	int		exit_code;
 
 	if (new_node_allocation(&new) == -1)
 		return (-1);
-	ret = add_node_to_list(lst, new, s, mode);
-	if (ret != 0)
-		return (ret);
-	ret = process_key_value(new, s);
-	if (ret != 0)
-		return (ret);
+	exit_code = add_node_to_list(lst, new, s, mode);
+	if (exit_code != 0)
+		return (exit_code);
+	exit_code = process_key_value(new, s);
+	if (exit_code != 0)
+		return (exit_code);
 	return (set_node(&new, mode));
 }

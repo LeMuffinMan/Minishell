@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "display.h"
+#include "misc/display.h"
 #include <stdio.h>
 
 void	display_lexer(t_lexer *head, int debug)
