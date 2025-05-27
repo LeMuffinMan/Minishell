@@ -21,7 +21,7 @@ int	is_a_valid_echo_option(char *s)
 		i = 2;
 		while (s[i])
 		{
-			if (s[i] != 'n' && s[i] != ' ') // fix temporaire
+			if (s[i] != 'n')
 				return (0);
 			i++;
 		}
