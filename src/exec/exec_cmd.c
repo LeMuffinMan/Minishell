@@ -53,8 +53,7 @@ int	exec_cmd(t_tree **ast, t_lists *lists)
 {
 	int		exit_code;
 
-	if ((*ast)->token->token == BUILT_IN
-		|| !ft_strncmp((*ast)->token->content[0], "source", 7))
+	if ((*ast)->token->token == BUILT_IN)
 	{
 		exit_code = builtins((*ast)->token->content, lists);
 		return (exit_code);

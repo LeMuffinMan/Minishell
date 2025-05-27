@@ -21,17 +21,6 @@
 #include <stdio.h>
 #include <unistd.h>
 
-// ULTRABONUS
-int	builtins_ultra_bonus(char **arg, t_lists *lists)
-{
-	if (!ft_strncmp(arg[0], "source", 7)) // mieux proteger ULTRA BONUS
-		return (builtin_source((*lists->ast)->right->token->content[0],
-				lists->env));
-	/* else if (!ft_strncmp(arg[0], "history", 7)) // ULTRA BONUS */
-	/* 	return (builtin_history((*ast)->right->token->content[0], env)); */
-	return (1);
-}
-
 int	builtins(char **arg, t_lists *lists)
 {
 	if (!*arg)
@@ -51,7 +40,7 @@ int	builtins(char **arg, t_lists *lists)
 	else if (!ft_strncmp(arg[0], "exit", 5))
 		return (builtin_exit(arg, lists->ast, lists));
 	else
-		return (builtins_ultra_bonus(arg, lists));
+		return (1);
 }
 
 int	exec_error_cases(t_tree **ast)
@@ -67,10 +56,19 @@ int	exec_error_cases(t_tree **ast)
 	return (-1);
 }
 
+int	exec_ast_boolops_cases(t_tree **ast, t_lists *lists)
+{
+	if ((*ast)->token->token == O_AND || (*ast)->token->token == O_OR)
+		return (exec_boolop(ast, lists));
+	if ((*ast)->token->token == GROUP_PARENTHESIS)
+		return (exec_parenthesis(ast, lists));
+	if ((*ast)->token->token == GROUP_BOOLOP)
+		return (exec_group_boolop(ast, lists));
+	return (1);
+}
+
 int	exec_ast(t_tree **ast, t_lists *lists)
 {
-	t_alias				*alias;
-	t_shell_fct			*shell_fct;
 	struct sigaction	sa_ignore;
 	struct sigaction	sa_orig;
 
@@ -80,12 +78,10 @@ int	exec_ast(t_tree **ast, t_lists *lists)
 	sa_ignore.sa_handler = SIG_IGN;
 	sa_ignore.sa_flags = 0;
 	sigaction(SIGINT, &sa_ignore, &sa_orig);
-	if ((*ast)->token->token == O_AND || (*ast)->token->token == O_OR)
-		return (exec_boolop(ast, lists));
-	if ((*ast)->token->token == GROUP_PARENTHESIS)
-		return (exec_parenthesis(ast, lists));
-	if ((*ast)->token->token == GROUP_BOOLOP)
-		return (exec_group_boolop(ast, lists));
+	if ((*ast)->token->token == O_AND || (*ast)->token->token == O_OR
+		|| (*ast)->token->token == GROUP_PARENTHESIS
+		|| (*ast)->token->token == GROUP_BOOLOP)
+		return (exec_ast_boolops_cases(ast, lists));
 	if ((*ast)->token->error == 2)
 	{
 		ft_putendl_fd((*ast)->token->content[0], 2);
@@ -97,16 +93,5 @@ int	exec_ast(t_tree **ast, t_lists *lists)
 			&& ((*ast)->token->token == BUILT_IN
 				|| (*ast)->token->token == CMD)))
 		return (exec_group_cmd(ast, lists));
-	//
-	// un token Alias
-	alias = is_a_known_alias((*ast)->token->content[0], lists->aliases);
-	if ((*ast)->token->error == 127 && alias)
-		return (exec_alias(ast, lists, alias));
-	// un token shell_func
-	shell_fct = is_a_known_shell_fct((*ast)->token->content[0],
-			lists->shell_fcts);
-	if (shell_fct)
-		if ((*ast)->token->error == 127 && shell_fct)
-			return (exec_shell_fct(ast, lists, shell_fct));
 	return (exec_error_cases(ast));
 }

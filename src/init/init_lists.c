@@ -6,7 +6,7 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/14 16:12:30 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/27 13:36:54 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/27 17:42:12 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,49 +58,6 @@ int	init_lists_origin_fds(t_lists *lists)
 	lists->origin_fds[1] = -1;
 	return (0);
 }
-
-// Ultra bonus
-//
-int	init_lists_history(t_lists *lists)
-{
-	lists->history = NULL;
-	lists->history = malloc(sizeof(t_hist *));
-	if (!lists->history)
-	{
-		free_lists(lists);
-		return (-1);
-	}
-	*lists->history = NULL;
-	return (0);
-}
-
-int	init_lists_alias(t_lists *lists)
-{
-	lists->aliases = NULL;
-	lists->aliases = malloc(sizeof(t_alias *));
-	if (!lists->aliases)
-	{
-		free_lists(lists);
-		return (-1);
-	}
-	*lists->aliases = NULL;
-	return (0);
-}
-
-int	init_lists_shell_functions(t_lists *lists)
-{
-	lists->shell_fcts = NULL;
-	lists->shell_fcts = malloc(sizeof(t_shell_fct *));
-	if (!lists->shell_fcts)
-	{
-		free_lists(lists);
-		return (-1);
-	}
-	*lists->shell_fcts = NULL;
-	return (0);
-}
-// ULtra bonus
-//
 
 int	init_lists(t_lists *lists)
 {

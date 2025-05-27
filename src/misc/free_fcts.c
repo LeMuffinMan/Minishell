@@ -14,6 +14,25 @@
 #include "structs.h"
 #include <stdlib.h>
 
+void	free_list(t_var **l)
+{
+	t_var	*tmp;
+	t_var	*next_node;
+
+	tmp = *l;
+	if (!*l)
+		return ;
+	while (tmp)
+	{
+		next_node = tmp->next;
+		free(tmp->key);
+		free(tmp->value);
+		free(tmp);
+		tmp = next_node;
+	}
+	*l = NULL;
+}
+
 int	free_array(char **array)
 {
 	int	i;

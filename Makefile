@@ -6,7 +6,7 @@
 #    By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/05/27 00:34:24 by asinsard         ###   ########lyon.fr    #
+#    Updated: 2025/05/27 17:40:59 by oelleaum         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -136,6 +136,8 @@ SRC					=	main.c \
 					src/misc/free_fcts.c \
 					init_env_utils.c \
 					init_utils.c \
+					init_env.c \
+					init_pwd.c \
 					init_lists.c \
 					add_back_var.c \
 					prints.c \

@@ -6,21 +6,18 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 17:02:11 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/27 13:43:14 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/27 17:41:34 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "env_utils.h"
 #include "init.h"
 #include "libft.h"
-#include "load_minishellrc.h"
 #include "malloc_error_handlers.h"
 #include "structs.h"
 #include <limits.h>
 #include <stdio.h>
 #include <unistd.h>
-
-//une fonction en trop
 
 int	init_last_cmd_var(char *name, t_var **env)
 {
@@ -46,106 +43,19 @@ int	add_default_shell_vars(t_var **env)
 {
 	char	*s;
 
-	s = ft_strdup("SHLVL=1"); // si le SHLVL est negatif il met SHLVL = 0
+	s = ft_strdup("SHLVL=1");
 	if (!s)
 		return (malloc_free_string(s));
 	if (add_back_var(env, s, 3) == -1)
 		return (malloc_free_string(s));
 	free(s);
-	s = ft_strdup("OLDPWD="); // updated in CD seulement ?
+	s = ft_strdup("OLDPWD=");
 	if (!s)
 		return (malloc_free_string(s));
 	if (add_back_var(env, s, 1) == -1)
 		return (malloc_free_string(s));
 	free(s);
 	return (0);
-}
-
-int	build_minimal_env(t_var **env, char *arg)
-{
-	char	*s;
-
-	s = NULL;
-	if (get_cwd_init(s) == -1)
-		return (-1);
-	if (!s)
-		return (-1);
-	s = ft_strjoin("PWD=", s);
-	if (!s)
-		return (malloc_free_string(s));
-	if (add_back_var(env, s, 3) == -1)
-		return (malloc_free_string(s));
-	free(s);
-	if (add_default_shell_vars(env) == -1)
-		return (-1);
-	if (init_last_cmd_var(arg, env) == -1)
-		return (-1);
-	return (add_back_var(env, "_=env", 0));
-}
-
-int	init_pwd(t_var **env)
-{
-	char	buf[PATH_MAX];
-	char	*s;
-	char	*tmp;
-
-	s = "PWD=";
-	if (getcwd(buf, sizeof(buf)) != NULL)
-	{
-		s = ft_strjoin(s, buf);
-		if (!s)
-			return (-1);
-		tmp = s;
-		s = ft_strjoin(s, "\n");
-		if (!s)
-		{
-			free(tmp);
-			return (-1);
-		}
-		free(tmp);
-		add_back_var(env, s, 3); // 3 en mode ?
-		return (0);
-	}
-	else
-	{
-		ft_putstr_fd("shell-init: error retrieving current directory: getcwd: \
-			cannot access parent directories: No such file or directory\n",
-			2);
-		return (1);
-	}
-}
-
-int	init_env(t_var **new_env, char **env, char *program_name)
-{
-	int	i;
-
-	if (!env && !*env)
-		return (build_minimal_env(new_env, program_name));
-	i = 0;
-	while (env[i])
-	{
-		if (!ft_strncmp("_=", env[i], 2))
-			i++;
-		if (!env[i])
-			break ;
-		if (!ft_strncmp("SHLVL=", env[i], 6))
-		{
-			if (init_and_incremente_shlvl(env[i], new_env) == -1)
-				return (-1);
-		}
-		else if (!ft_strncmp("PWD=", env[i], 5))
-		{
-			if (init_pwd(new_env) == -1)
-				return (-1);
-		}
-		else
-		{
-			if (add_back_var(new_env, env[i], 3) == -1) // pas sur
-				return (-1);
-		}
-		i++;
-	}
-	return (init_last_cmd_var(program_name, new_env) == -1);
 }
 
 int	init(t_lists *lists, char **av, char **env)
@@ -159,15 +69,5 @@ int	init(t_lists *lists, char **av, char **env)
 		free_lists(lists);
 		return (-1);
 	}
-	//
-	// ULTRABONUS
-	if (isatty(0) && env && *env && find_and_load_startup_files(lists, env) == \
-		-1)
-	{
-		free_lists(lists);
-		return (-1);
-	}
-	// ULTRABONUS
-	//
 	return (0);
 }

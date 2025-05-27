@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 17:04:05 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/27 13:36:47 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/27 17:42:00 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,25 +15,6 @@
 #include "structs.h"
 #include <errno.h>
 #include <stdlib.h>
-
-void	free_list(t_var **l)
-{
-	t_var	*tmp;
-	t_var	*next_node;
-
-	tmp = *l;
-	if (!*l)
-		return ;
-	while (tmp)
-	{
-		next_node = tmp->next;
-		free(tmp->key);
-		free(tmp->value);
-		free(tmp);
-		tmp = next_node;
-	}
-	*l = NULL;
-}
 
 int	set_node(t_var **node, int mode)
 {
@@ -59,7 +40,6 @@ int	set_node(t_var **node, int mode)
 	}
 	return (0);
 }
-
 
 int	add_first_node(t_var **lst, t_var **new, char *s, int mode)
 {
@@ -108,4 +88,26 @@ char	**ft_split_on_first_equal(char *s)
 	else
 		splitted[1] = ft_strdup("");
 	return (splitted);
+}
+
+int	build_minimal_env(t_var **env, char *arg)
+{
+	char	*s;
+
+	s = NULL;
+	if (get_cwd_init(s) == -1)
+		return (-1);
+	if (!s)
+		return (-1);
+	s = ft_strjoin("PWD=", s);
+	if (!s)
+		return (malloc_free_string(s));
+	if (add_back_var(env, s, 3) == -1)
+		return (malloc_free_string(s));
+	free(s);
+	if (add_default_shell_vars(env) == -1)
+		return (-1);
+	if (init_last_cmd_var(arg, env) == -1)
+		return (-1);
+	return (add_back_var(env, "_=env", 0));
 }

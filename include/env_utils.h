@@ -6,7 +6,7 @@
 /*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/04 19:21:43 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/27 13:47:14 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/27 17:32:38 by oelleaum         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,5 +30,6 @@ int		free_array(char **array);
 int		swap_nodes(t_var *n1, t_var *n2);
 int		compare_keys(char *key1, char *key2);
 void	free_list(t_var **l);
+int		init_env(t_var **new_env, char **env, char *program_name);
 
 #endif

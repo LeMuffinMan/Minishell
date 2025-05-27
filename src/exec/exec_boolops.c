@@ -96,8 +96,7 @@ int	exec_group_cmd(t_tree **ast, t_lists *lists)
 	if ((*ast)->token->token == PIPE)
 		return (exec_pipe(ast, lists));
 	if ((*ast)->token->error != 126 && ((*ast)->token->token == BUILT_IN
-			|| (*ast)->token->token == CMD
-			|| !ft_strncmp((*ast)->token->content[0], "source", 7)))
+			|| (*ast)->token->token == CMD))
 	{
 		lists->exit_code = exec_cmd(ast, lists);
 		return (lists->exit_code);
