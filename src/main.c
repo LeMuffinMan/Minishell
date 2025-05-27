@@ -102,10 +102,11 @@ int	main(int ac, char **av, char **env)
 	if (ac != 1)
 	{
 		ft_putstr_fd("Minishell does not accept arguments\n", 2);
+		close(0);
 		exit(1);
 	}
 	prompt = "[Minishell]$ ";
-	/* is_interactive_mode(); */
+	is_interactive_mode();
 	exit_code = 0;
 	g_signal = 0;
 	if (init(&lists, av, env) == -1)
