@@ -10,7 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+<<<<<<< Updated upstream
 #include "misc/display.h"
+=======
+#include "include/misc/display.h"
+>>>>>>> Stashed changes
 #include <stdio.h>
 
 void	display_lexer(t_lexer *head, int debug)
