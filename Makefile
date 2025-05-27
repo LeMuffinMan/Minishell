@@ -32,10 +32,7 @@ DIR_EXEC			=	src/ \
 
 DIR_PARSING			=	src/parsing \
 						src/parsing/expand \
-<<<<<<< Updated upstream
-=======
 						src/parsing/quote \
->>>>>>> Stashed changes
 						src/parsing/here_doc \
 						src/parsing/lexer \
 						src/parsing/token \
