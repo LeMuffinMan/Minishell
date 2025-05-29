@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 00:33:04 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/29 18:22:09 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/29 20:16:05 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,14 +59,13 @@ static char	*create_new_line(t_token *head)
 	int		pos;
 
 	len = find_len_for_new_line(head);
-	line = ft_calloc(sizeof(char), len + 3);
+	line = ft_calloc(sizeof(char), len + 1);
 	if (!line)
 		return (NULL);
 	pos = 0;
 	while (head)
 	{
-		if (head->token == EXPAND && head->prev && head->prev->prev
-			&& !ft_strncmp(head->prev->prev->content[0], "echo", 5))
+		if (head->token == EXPAND)
 			case_is_expand(head->content[0], &pos, &line);
 		else
 		{

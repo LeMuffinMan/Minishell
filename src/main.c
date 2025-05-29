@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:21:52 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/27 18:09:02 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/05/29 20:21:25 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ int	main(int ac, char **av, char **env)
 		exit(1);
 	}
 	prompt = "[Minishell]$ ";
-	is_interactive_mode();
+	// is_interactive_mode();
 	exit_code = 0;
 	g_signal = 0;
 	if (init(&lists, av, env) == -1)
