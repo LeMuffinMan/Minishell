@@ -6,12 +6,13 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 20:30:04 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/27 14:27:42 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/29 18:21:59 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "token.h"
 #include "list.h"
+#include <errno.h>
 
 bool	case_is_left_parenthesis(t_token *tmp, t_token **head)
 {
@@ -22,11 +23,15 @@ bool	case_is_left_parenthesis(t_token *tmp, t_token **head)
 			&& tmp->prev->token != L_PARENTHESIS)
 		{
 			*head = set_parenthesis_error(tmp);
+			if (!*head)
+				errno = MEM_ALLOC;
 			return (true);
 		}
 		if (!tmp->next || tmp->next->token == R_PARENTHESIS)
 		{
 			*head = set_parenthesis_error(tmp);
+			if (!*head)
+				errno = MEM_ALLOC;
 			return (true);
 		}
 	}
@@ -42,6 +47,8 @@ bool	case_is_right_parenthesis(t_token *tmp, t_token **head)
 			&& tmp->next->token != R_PARENTHESIS)
 		{
 			*head = set_parenthesis_error(tmp);
+			if (!*head)
+				errno = MEM_ALLOC;
 			return (true);
 		}
 	}
@@ -65,6 +72,8 @@ bool	case_is_boolop(t_token *tmp, t_token **head)
 				&& tmp->next->token != D_QUOTE && tmp->next->token != S_QUOTE))
 		{
 			*head = set_syntax_error(tmp);
+			if (!*head)
+				errno = MEM_ALLOC;
 			return (true);
 		}
 	}
@@ -83,6 +92,8 @@ bool	case_is_pipe(t_token *tmp, t_token **head)
 				&& tmp->next->error == PERMISSION_DENIED)))
 	{
 		*head = set_syntax_error(tmp);
+		if (!*head)
+			errno = MEM_ALLOC;
 		return (true);
 	}
 	return (false);

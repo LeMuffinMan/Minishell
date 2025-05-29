@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 04:50:03 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/27 00:33:21 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/29 18:37:35 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,8 @@ static bool	is_same_family(t_token *node)
 				|| (node->next->token == EXPAND)
 				|| (node->next->token == DIREC)
 				|| (node->next->token == FLE)
-				|| (node->next->token == WILDCARD))
+				|| (node->next->token == WILDCARD)
+				|| (node->next->token == ARG))
 				return (true);
 		}
 	}
@@ -147,10 +148,7 @@ bool	concat_args(t_token **head, t_var *list_env, bool flag, t_lists *lists)
 			tmp = tmp->next;
 	}
 	check_syntax_error(head);
-	if (!head || !*head)
-	{
-		errno = MEM_ALLOC;
+	if (errno == MEM_ALLOC)
 		return (false);
-	}
 	return (true);
 }

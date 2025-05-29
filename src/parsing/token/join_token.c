@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/23 18:26:02 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/26 14:50:09 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/29 17:10:07 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ bool	join_token(t_token **head)
 			tmp = tmp->next;
 		else if (token_valid_for_join(tmp->token)
 			&& tmp->next && tmp->next->token != SPACE
-			&& tmp->next->token != R_PARENTHESIS)
+			&& token_valid_for_join(tmp->next->token))
 		{
 			change_node(&tmp, false);
 			if (tmp->prev)

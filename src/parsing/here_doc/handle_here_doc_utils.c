@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 16:59:29 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/27 17:19:27 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/29 18:28:25 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ bool	case_is_limiter(char *line, char *limiter, int fd, int len)
 bool	verif_here_doc(t_token **head)
 {
 	if (!head || !*head)
-		return (false);
+		return (true);
 	if (!create_hd_name(head))
 	{
 		free_parse(*head, NULL, MEM_ALLOC);

@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 00:33:04 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/27 00:35:24 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/29 18:22:09 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,9 +31,25 @@ static int	find_len_for_new_line(t_token *head)
 		while (head->content[0][j])
 			j++;
 		len += j + 1;
+		if (head->token == EXPAND)
+			len += 2;
 		head = head->next;
 	}
 	return (len);
+}
+
+static void	case_is_expand(char *src, int *pos, char **line)
+{
+	int	len;
+
+	len = ft_strlen(src);
+	(*line)[*pos] = '"';
+	(*pos)++;
+	ft_memcpy(&(*line)[*pos], src, len);
+	*pos += len;
+	(*line)[*pos] = '"';
+	(*pos)++;
+	(*line)[*pos] = ' ';
 }
 
 static char	*create_new_line(t_token *head)
@@ -43,16 +59,22 @@ static char	*create_new_line(t_token *head)
 	int		pos;
 
 	len = find_len_for_new_line(head);
-	line = ft_calloc(sizeof(char), len + 1);
+	line = ft_calloc(sizeof(char), len + 3);
 	if (!line)
 		return (NULL);
 	pos = 0;
 	while (head)
 	{
-		len = ft_strlen(head->content[0]);
-		ft_memcpy(&line[pos], head->content[0], len);
-		pos += len;
-		line[pos] = ' ';
+		if (head->token == EXPAND && head->prev && head->prev->prev
+			&& !ft_strncmp(head->prev->prev->content[0], "echo", 5))
+			case_is_expand(head->content[0], &pos, &line);
+		else
+		{
+			len = ft_strlen(head->content[0]);
+			ft_memcpy(&line[pos], head->content[0], len);
+			pos += len;
+			line[pos] = ' ';
+		}
 		head = head->next;
 	}
 	line[pos] = '\0';

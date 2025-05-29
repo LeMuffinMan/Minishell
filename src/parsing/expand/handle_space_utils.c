@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 15:39:39 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/26 21:26:01 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/05/29 17:14:21 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,8 @@ void	add_space(t_token **node)
 	int		len;
 
 	len = ft_strlen((*node)->content[0]);
-	if ((*node)->content[0][len - 1]
-		&& (*node)->content[0][len - 1] == ' ')
+	if (!len || ((*node)->content[0][len - 1]
+		&& (*node)->content[0][len - 1] == ' '))
 		return ;
 	res = ft_strjoin((*node)->content[0], " ");
 	if (!res)
