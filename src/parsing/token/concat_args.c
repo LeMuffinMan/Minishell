@@ -20,27 +20,25 @@
 
 bool	is_same_family(t_token *node)
 {
-	if ((node->token == APPEND)
-		|| (node->token == HD)
-		|| (node->token == R_IN) || (node->token == TRUNC))
+	t_token	*next_node;
+
+	next_node = node->next;
+	if (next_node && (next_node->token == APPEND
+		|| next_node->token == HD
+		|| next_node->token == R_IN || next_node->token == TRUNC))
+		next_node = next_node->next;
+	if ((node->token == BUILT_IN) || (node->token == CMD))
 	{
-		if (!node->content[1] && node->next
-			&& node->next->token != APPEND && node->next->token != HD
-			&& node->next->token != R_IN && node->next->token != TRUNC)
-			return (true);
-	}
-	else if ((node->token == BUILT_IN) || (node->token == CMD))
-	{
-		if (node->next)
+		if (next_node)
 		{
-			if ((node->next->error != 0) || (node->next->token == CMD)
-				|| (node->next->token == D_QUOTE)
-				|| (node->next->token == S_QUOTE)
-				|| (node->next->token == EXPAND)
-				|| (node->next->token == DIREC)
-				|| (node->next->token == FLE)
-				|| (node->next->token == WILDCARD)
-				|| (node->next->token == ARG))
+			if ((next_node->error != 0) || (next_node->token == CMD)
+				|| (next_node->token == D_QUOTE)
+				|| (next_node->token == S_QUOTE)
+				|| (next_node->token == EXPAND)
+				|| (next_node->token == DIREC)
+				|| (next_node->token == FLE)
+				|| (next_node->token == WILDCARD)
+				|| (next_node->token == ARG))
 				return (true);
 		}
 	}
@@ -76,8 +74,17 @@ void	handle_change_node(t_token **node, bool flag)
 {
 	t_token	*next_node;
 	char	**new_content;
+	bool	is_not_redir;
 
+	is_not_redir = false;
 	next_node = (*node)->next;
+	if (next_node && (next_node->token == APPEND
+		|| next_node->token == HD
+		|| next_node->token == R_IN || next_node->token == TRUNC))
+	{
+		next_node = next_node->next;
+		is_not_redir = true;
+	}
 	if (!next_node)
 		return ;
 	if (flag)
@@ -88,7 +95,7 @@ void	handle_change_node(t_token **node, bool flag)
 				(*node)->content, next_node->content);
 	if (!new_content)
 		return ;
-	change_node(node, next_node, new_content);
+	change_node(node, next_node, new_content, is_not_redir);
 }
 
 bool	handle_expand_and_join(t_token **head, t_var *list_env,

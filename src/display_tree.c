@@ -29,6 +29,8 @@ void	print_spaces(int count)
 
 void	print_ast(t_tree *node, int indent)
 {
+	if (!node)
+		return ;
 	print_spaces(indent);
 	if (node->token && node->token->content && node->token->content[0])
 		printf(" %s", node->token->content[0]);

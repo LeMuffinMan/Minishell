@@ -86,7 +86,7 @@ char					*verif_command(t_token **node, char *tmp,
 void					alloc_cmd_split(char ***split_cmd, char **path,
 							char *arg, int *error);
 void					change_node(t_token **node, t_token *next_node,
-							char **new_content);
+							char **new_content, bool flag);
 void					change_redir(t_token **head);
 void					handle_cmd(t_token **node, t_var *list_env, bool flag);
 void					handle_is_command(t_token *node,
@@ -96,6 +96,7 @@ void					is_command(t_token **node, t_var *list_env, bool flag);
 void					is_command_whithout_env(t_token **node,
 							t_var *list_env);
 bool					is_same_family(t_token *node);
+bool					is_same_family_redir(t_token *node);
 
 /* --------------------Token Utils------------------- */
 bool					env_is_alive(t_var *list_env);
