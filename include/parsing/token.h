@@ -69,7 +69,7 @@ char					**join_content(t_token *node, char **old, char **new);
 t_token					*add_new_token(char *str, int error_code, bool flag);
 void					assign_token(t_token **head, t_var *list_env,
 							bool flag);
-void					change_node(t_token **node, bool flag);
+void					handle_change_node(t_token **node, bool flag);
 void					delete_space_node(t_token **head);
 void					delete_space_node(t_token **head);
 
@@ -85,6 +85,9 @@ char					*verif_command(t_token **node, char *tmp,
 							char **path, t_var *list_env);
 void					alloc_cmd_split(char ***split_cmd, char **path,
 							char *arg, int *error);
+void					change_node(t_token **node, t_token *next_node,
+							char **new_content);
+void					change_redir(t_token **head);
 void					handle_cmd(t_token **node, t_var *list_env, bool flag);
 void					handle_is_command(t_token *node,
 							char *cmd_w_path, bool flag);
@@ -92,6 +95,7 @@ void					is_built_in(t_token **node);
 void					is_command(t_token **node, t_var *list_env, bool flag);
 void					is_command_whithout_env(t_token **node,
 							t_var *list_env);
+bool					is_same_family(t_token *node);
 
 /* --------------------Token Utils------------------- */
 bool					env_is_alive(t_var *list_env);

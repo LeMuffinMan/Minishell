@@ -15,6 +15,7 @@
 #include "token.h"
 #include "list.h"
 #include "libft.h"
+#include "tree.h"
 #include "quote.h"
 #include <stdlib.h>
 #include <errno.h>
@@ -38,18 +39,45 @@ static int	find_len_for_new_line(t_token *head)
 	return (len);
 }
 
-static void	case_is_expand(char *src, int *pos, char **line)
+static void	copy_expand(t_token *node, char **line, int *pos, int i)
 {
 	int	len;
 
-	len = ft_strlen(src);
+	len = ft_strlen(&node->content[0][i]);
 	(*line)[*pos] = '"';
 	(*pos)++;
-	ft_memcpy(&(*line)[*pos], src, len);
+	ft_memcpy(&(*line)[*pos], &node->content[0][i], len);
 	*pos += len;
 	(*line)[*pos] = '"';
 	(*pos)++;
 	(*line)[*pos] = ' ';
+}
+
+static void	case_is_expand(t_token *node, int *pos, char **line)
+{
+	int		i;
+	bool	flag;
+
+	i = 0;
+	flag = false;
+	if (node->error != LITERAL_EXPAND)
+	{
+		i = ft_countword(node->content[0]);
+		if (i > 1)
+		{
+			flag = true;
+			i = 0;
+			while (node->content[0][i] && !ft_isspace(node->content[0][i]))
+			{
+				(*line)[*pos] = node->content[0][i];
+				i++;
+				(*pos)++;
+			}
+		}
+	}
+	if (!flag)
+		i = 0;
+	copy_expand(node, line, pos, i);
 }
 
 static char	*create_new_line(t_token *head)
@@ -66,7 +94,7 @@ static char	*create_new_line(t_token *head)
 	while (head)
 	{
 		if (head->token == EXPAND)
-			case_is_expand(head->content[0], &pos, &line);
+			case_is_expand(head, &pos, &line);
 		else
 		{
 			len = ft_strlen(head->content[0]);
@@ -83,12 +111,10 @@ static char	*create_new_line(t_token *head)
 bool	parse_again(t_token **head, t_var *list_env, bool *flag)
 {
 	char	*line;
-	t_lexer	*lexer;
 
 	line = create_new_line(*head);
 	if (!line)
 		return (false);
-	lexer = NULL;
 	free_parse(*head, NULL, MEM_ALLOC);
 	*head = NULL;
 	if (!lexing_and_tokenize(line, head, list_env, flag)

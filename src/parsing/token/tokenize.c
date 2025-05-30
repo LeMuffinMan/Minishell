@@ -63,8 +63,6 @@ static void	is_redirection_or_f_or_d(t_token **node, t_var *list_env)
 				(*node)->token = DIREC;
 		}
 	}
-	if ((*node)->curr_dir)
-		free((*node)->curr_dir);
 	free(tmp);
 }
 

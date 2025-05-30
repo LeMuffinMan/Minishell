@@ -74,7 +74,7 @@ bool	join_token(t_token **head)
 			&& tmp->next && tmp->next->token != SPACE
 			&& token_valid_for_join(tmp->next->token))
 		{
-			change_node(&tmp, false);
+			handle_change_node(&tmp, false);
 			if (tmp->prev)
 				tmp->token = ARG;
 			flag = true;
