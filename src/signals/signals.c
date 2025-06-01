@@ -20,6 +20,7 @@
 
 int		g_signal = 0;
 
+//renommer 
 void	do_nothing_sig(int sig)
 {
 	(void)sig;
