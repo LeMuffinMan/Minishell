@@ -25,7 +25,6 @@
 int	exec_cmd_execve(t_tree **ast, t_lists *lists)
 {
 	pid_t	pid;
-	int		exit_code;
 
 	pid = fork();
 	if (pid == -1)
@@ -38,25 +37,23 @@ int	exec_cmd_execve(t_tree **ast, t_lists *lists)
 	else
 	{
 		set_signals(1);
-		exit_code = wait_children(pid, pid);
+		lists->exit_code = wait_children(pid, pid);
 		update_last_arg_var(lists->env, (*ast)->token->content);
 		if (errno == ENOMEM)
 			return (errno);
 		setup_parent_signals();
 		rl_on_new_line();
-		return (exit_code);
+		return (lists->exit_code);
 	}
 	return (1);
 }
 
 int	exec_cmd(t_tree **ast, t_lists *lists)
 {
-	int		exit_code;
-
 	if ((*ast)->token->token == BUILT_IN)
 	{
-		exit_code = builtins((*ast)->token->content, lists);
-		return (exit_code);
+		lists->exit_code = builtins((*ast)->token->content, lists);
+		return (lists->exit_code);
 	}
 	if (is_a_directory((*ast)->token->content[0]))
 		return (exec_cmd_print_error(ast));

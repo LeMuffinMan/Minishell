@@ -39,7 +39,7 @@ int	exit_overflow_error(t_lists *lists, char **arg)
 	free(tmp);
 	ft_putstr_fd(s, 2);
 	free(s);
-	return (2);
+	exit (2);
 }
 
 int	exit_numeric_argument_required_error(char **arg, t_tree **ast,

@@ -96,18 +96,16 @@ int	parse_and_execution_loop(char **prompt, t_lists *lists, int exit_code)
 int	main(int ac, char **av, char **env)
 {
 	char	*prompt;
-	int		exit_code;
 	t_lists	lists;
 
+	// is_interactive_mode();
 	if (ac != 1)
 	{
 		ft_putstr_fd("Minishell does not accept arguments\n", 2);
-		close(0);
 		exit(1);
 	}
 	prompt = "[Minishell]$ ";
-	// is_interactive_mode();
-	exit_code = 0;
+	lists.exit_code = 0;
 	g_signal = 0;
 	if (init(&lists, av, env) == -1)
 	{
@@ -115,7 +113,7 @@ int	main(int ac, char **av, char **env)
 		return (errno);
 	}
 	while (1)
-		exit_code = parse_and_execution_loop(&prompt, &lists, exit_code);
+		lists.exit_code = parse_and_execution_loop(&prompt, &lists, lists.exit_code);
 	free_lists(&lists);
-	return (exit_code);
+	return (lists.exit_code);
 }

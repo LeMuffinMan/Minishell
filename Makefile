@@ -6,7 +6,7 @@
 #    By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/05/27 17:18:16 by asinsard         ###   ########lyon.fr    #
+#    Updated: 2025/06/01 14:55:32 by oelleaum         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -103,6 +103,7 @@ SRC					=	main.c \
 						parser.c \
 					init.c \
 					src/signals/signals.c \
+					src/signals/signals_here_doc.c \
 					src/signals/signals_setup.c \
 					exec.c \
 					exec_pipe.c \
@@ -188,4 +189,4 @@ re: fclean all
 
 -include $(DEPS)
 
-.PHONY: all clean fclean re bonus debug
+.PHONY: all clean fclean re debug

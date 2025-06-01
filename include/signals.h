@@ -28,5 +28,7 @@ int			setup_pipe_signals(struct sigaction *sa_ignore,
 				struct sigaction *sa_orig);
 int			wait_children(pid_t last_child, pid_t first_child);
 void		handle_child_sigquit(int sig);
+void		setup_here_doc_signals(void);
+void		sigint_here_doc_handler(int sig);
 
 #endif
