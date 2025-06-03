@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:49:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/26 18:18:23 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/03 16:53:39 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,8 @@ static int	export_value(char *str, char **value)
 		if (ft_isspace(str[index])
 			|| (index > 0
 				&& str[index] == '$' && str[index - 1] != '\\')
-			|| str[index] == '/')
+			|| str[index] == '/'
+			|| str[index] == '\'')
 			break ;
 		index++;
 	}

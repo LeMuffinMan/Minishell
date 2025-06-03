@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/23 18:26:02 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/29 17:10:07 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/03 16:13:41 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,14 @@
 #include "expand.h"
 #include <errno.h>
 
-static bool	token_valid_for_join(t_type token)
+static bool	token_valid_for_join(t_token *node)
 {
-	if (token == O_AND || token == O_OR
-		|| token == R_IN || token == HD || token == APPEND
-		|| token == TRUNC || token == PIPE
-		|| token == L_PARENTHESIS || token == R_PARENTHESIS)
+	if (node->token == O_AND || node->token == O_OR
+		|| node->token == R_IN || node->token == HD || node->token == APPEND
+		|| node->token == TRUNC || node->token == PIPE
+		|| node->token == L_PARENTHESIS || node->token == R_PARENTHESIS
+		|| (node->content[0] && node->content[0][0]
+		&& ft_isspace(node->content[0][0])))
 		return (false);
 	else
 		return (true);
@@ -70,9 +72,9 @@ bool	join_token(t_token **head)
 	{
 		if (tmp->token == SPACE)
 			tmp = tmp->next;
-		else if (token_valid_for_join(tmp->token)
+		else if (token_valid_for_join(tmp)
 			&& tmp->next && tmp->next->token != SPACE
-			&& token_valid_for_join(tmp->next->token))
+			&& token_valid_for_join(tmp->next))
 		{
 			handle_change_node(&tmp, false);
 			if (tmp->prev)

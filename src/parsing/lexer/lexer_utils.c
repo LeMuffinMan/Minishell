@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 01:45:03 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/23 22:48:09 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/03 15:49:20 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ int	alloc_space_to_lexer(char *str, t_lexer **list)
 	int		i;
 
 	i = 0;
-	while (str[i] && str[i] == ' ')
+	while (str[i] && ft_isspace(str[i]))
 		i++;
 	word = ft_strndup(str, i);
 	if (!word)

@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 02:25:07 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/24 02:48:24 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/03 18:39:41 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ int	which_case_of_wildcard(char *str)
 	int	i;
 
 	i = 0;
+	sort_of = 0;
 	while (str[i])
 	{
 		if (str[i] == '*')
@@ -70,6 +71,7 @@ int	which_case_of_wildcard(char *str)
 				sort_of = SUFFIX;
 			else
 				sort_of = JOKER;
+			return (sort_of);
 		}
 		i++;
 	}

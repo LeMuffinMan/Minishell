@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 21:44:17 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/26 23:29:54 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/03 16:30:12 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,8 +86,6 @@ void	is_command_whithout_env(t_token **node, t_var *list_env)
 			if ((*node)->error != PERMISSION_DENIED)
 				(*node)->error = SUCCESS;
 			(*node)->token = CMD;
-			if ((*node)->curr_dir)
-				free((*node)->curr_dir);
 		}
 	}
 }

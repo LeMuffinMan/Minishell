@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 20:03:53 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/24 02:56:56 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/03 18:42:52 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,8 @@ static bool	make_wildcard(t_token **node, bool flag)
 	if (!current_dir || !*current_dir)
 		return (false);
 	sort_of = which_case_of_wildcard((*node)->content[0]);
+	#include <stdio.h>
+	printf("%d\n", sort_of);
 	if (sort_of == INFIX)
 		is_infix(node, current_dir);
 	else if (sort_of == PREFIX)
@@ -112,10 +114,10 @@ bool	handle_wildcard(t_token **head, bool flag)
 	is_echo = false;
 	while (tmp)
 	{
-		if (tmp->token == WILDCARD)
+		if (tmp->token == WILDCARD || is_wildcard(tmp->content[0]))
 		{
-			if (tmp->prev && tmp->prev->prev
-				&& !ft_strncmp(tmp->prev->prev->content[0], "echo", 5))
+			if (tmp->prev
+				&& !ft_strncmp(tmp->prev->content[0], "echo", 5))
 				is_echo = true;
 			if (!make_wildcard(&tmp, is_echo))
 			{

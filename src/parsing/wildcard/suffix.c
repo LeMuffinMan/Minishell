@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 02:28:30 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/24 02:55:00 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/03 19:01:53 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,14 +51,14 @@ bool	find_suffix(char *str, char *src)
 	j = 0;
 	while (str[i])
 		i++;
-	while (src[j])
+	while (src[j] && (src[j + 1] && src[j + 1] != '*'))
 		j++;
 	while (j > 0)
 	{
-		i--;
-		j--;
 		if (src[j] != str[i])
 			return (false);
+		i--;
+		j--;
 	}
 	return (true);
 }
