@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 02:28:30 by asinsard          #+#    #+#             */
-/*   Updated: 2025/06/03 19:01:53 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/03 19:15:00 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,27 +42,105 @@ static void	alloc_suffix(t_token **node, char **current_dir, char **res)
 	assign_wildcard(node, res, count);
 }
 
+// static int	len_without_joker(char *str)
+// {
+// 	int	len;
+// 	int	i;
+
+// 	len = 0;
+// 	i = 0;
+// 	while (str[i])
+// 	{
+// 		if (str[i] != '*')
+// 			len++;
+// 		i++;
+// 	}
+// 	return (len);
+// }
+
+// bool	find_suffix(char *str, char *src)
+// {
+// 	int		i;
+// 	int		j;
+// 	int		suffix;
+// 	int		len;
+
+// 	i = 0;
+// 	j = 0;
+// 	len = len_without_joker(src);
+// 	while (str[i])
+// 	{
+// 		j = 0;
+// 		suffix = i;
+// 		while (src[j] && (src[j + 1] && src[j + 1] != '*'))
+// 		{
+// 			if (src[j] != str[i])
+// 				break ;
+// 			j++;
+// 			suffix++;
+// 		}
+// 		if (j == len)
+// 			return (true);
+// 		i++;
+// 	}
+// 	return (false);
+// }
+
+#include <stdbool.h>
+#include <string.h>
+
+// static int	len_without_joker(char *str)
+// {
+// 	int	len = 0;
+// 	while (*str)
+// 	{
+// 		if (*str != '*')
+// 			len++;
+// 		str++;
+// 	}
+// 	return (len);
+// }
+
 bool	find_suffix(char *str, char *src)
 {
 	int	i;
 	int	j;
+	int	len_str = strlen(str);
+	// int	len_suffix = len_without_joker(src);
 
-	i = 0;
-	j = 0;
-	while (str[i])
-		i++;
-	while (src[j] && (src[j + 1] && src[j + 1] != '*'))
-		j++;
-	while (j > 0)
+	// On commence la comparaison len_suffix caractères avant la fin de str
+	i = len_str - 1;
+	j = strlen(src) - 1;
+
+	while (j >= 0 && i >= 0)
 	{
-		if (src[j] != str[i])
-			return (false);
+		if (src[j] == '*')
+		{
+			j--;
+			continue;
+		}
+		if (str[i] != src[j])
+			return false;
 		i--;
 		j--;
 	}
-	return (true);
+
+	// On a comparé tous les caractères non-* de src jusqu’au bout
+	return (j < 0 || (j == 0 && src[0] == '*'));
 }
 
+
+	// while (str[i])
+	// 	i++;
+	// while (src[j] && (src[j + 1] && src[j + 1] != '*'))
+	// 	j++;
+	// while (j > 0)
+	// {
+	// 	if (src[j] != str[i])
+	// 		return (false);
+	// 	i--;
+	// 	j--;
+	// }
 void	is_suffix(t_token **node, char **current_dir)
 {
 	int		i;
