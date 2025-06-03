@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 15:39:39 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/29 17:14:21 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/03 22:59:05 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,5 +112,7 @@ void	delete_node_pointer(t_token **node)
 	to_delete->next = NULL;
 	to_delete->prev = NULL;
 	free_tab(to_delete->content);
+	if (to_delete->curr_dir)
+		free(to_delete->curr_dir);
 	free(to_delete);
 }

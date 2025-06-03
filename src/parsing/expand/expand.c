@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:49:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/06/03 16:53:39 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/04 00:26:27 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,8 @@ static int	export_value(char *str, char **value)
 	{
 		if (ft_isspace(str[index])
 			|| (index > 0
-				&& str[index] == '$' && str[index - 1] != '\\')
+				&& ((str[index] == '$' && str[index - 1] != '\\')
+					|| str[index - 1] == '?' || str[index] == '*'))
 			|| str[index] == '/'
 			|| str[index] == '\'')
 			break ;
@@ -83,13 +84,13 @@ static void	expand_node_content(t_token **node,
 		errno = MEM_ALLOC;
 		return ;
 	}
-	if (!ft_strncmp((*node)->content[0], "$?", 3))
+	if (!ft_strncmp((*node)->content[0], "$?", 2))
 		res = ft_itoa(lists->exit_code);
 	else
 		res = get_value(&list_env, value);
 	free(value);
 	new_content = alloc_new_expand(node, res, index, j - 1);
-	if (!ft_strncmp((*node)->content[0], "$?", 3))
+	if (!ft_strcmp((*node)->content[0], "$?"))
 		free(res);
 	free((*node)->content[0]);
 	(*node)->content[0] = new_content;
@@ -103,11 +104,13 @@ static bool	to_expand(t_token **node, t_var *list_env, t_lists *lists)
 	int		j;
 	bool	flag;
 
-	j = 0;
+	j = -1;
 	flag = false;
-	while ((*node)->content[0][j] && errno != MEM_ALLOC)
+	while ((*node)->content[0][++j] && errno != MEM_ALLOC)
 	{
-		if ((*node)->content[0][j] == '$' && (*node)->content[0][j + 1])
+		if ((*node)->content[0][j] == '$' && ((*node)->content[0][j + 1]
+			|| ((*node)->next && ((*node)->next->token == S_QUOTE
+			|| (*node)->next->token == D_QUOTE))))
 		{
 			if ((j > 0 && (*node)->content[0][j - 1] == '\\')
 			|| ((*node)->content[0][j + 1]
@@ -121,7 +124,6 @@ static bool	to_expand(t_token **node, t_var *list_env, t_lists *lists)
 				j = -1;
 			}
 		}
-		j++;
 	}
 	return (flag);
 }

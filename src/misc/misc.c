@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   misc.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/20 17:58:12 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/27 18:08:20 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/06/03 23:48:05 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,8 @@ int	is_interactive_mode(void)
 	if (!isatty(0) || !isatty(1))
 	{
 		if (!isatty(1))
-			ft_putstr_fd("Minishell does not support non-interactive mode\n", 2);
+			ft_putstr_fd(
+				"Minishell does not support non-interactive mode\n", 2);
 		exit(0);
 	}
 	return (0);

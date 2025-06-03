@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:44:43 by asinsard          #+#    #+#             */
-/*   Updated: 2025/06/03 19:30:55 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/04 00:14:00 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void	change_redir(t_token **head)
 	while (tmp && errno != MEM_ALLOC)
 	{
 		if ((tmp->token == R_IN || tmp->token == HD
-			|| tmp->token == APPEND || tmp->token == TRUNC)
+				|| tmp->token == APPEND || tmp->token == TRUNC)
 			&& is_same_family_redir(tmp))
 			handle_change_node(&tmp, true);
 		else

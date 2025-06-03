@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 19:51:51 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/29 16:12:36 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/03 23:14:42 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include "expand.h"
 #include "quote.h"
 #include <stdlib.h>
+#include <sys/stat.h>
 #include <errno.h>
 
 void	del_last_space_for_arg(t_token **node, char **tmp)
@@ -121,18 +122,12 @@ char	*verif_command(t_token **node, char *tmp, char **path, t_var *list_env)
 
 void	is_built_in(t_token **node)
 {
-	if (ft_strncmp((*node)->content[0], "echo", 5) == 0)
-		(*node)->token = BUILT_IN;
-	else if (ft_strncmp((*node)->content[0], "cd", 3) == 0)
-		(*node)->token = BUILT_IN;
-	else if (ft_strncmp((*node)->content[0], "pwd", 4) == 0)
-		(*node)->token = BUILT_IN;
-	else if (ft_strncmp((*node)->content[0], "export", 7) == 0)
-		(*node)->token = BUILT_IN;
-	else if (ft_strncmp((*node)->content[0], "unset", 6) == 0)
-		(*node)->token = BUILT_IN;
-	else if (ft_strncmp((*node)->content[0], "env", 4) == 0)
-		(*node)->token = BUILT_IN;
-	else if (ft_strncmp((*node)->content[0], "exit", 5) == 0)
+	if (!ft_strncmp((*node)->content[0], "echo", 5)
+		|| !ft_strncmp((*node)->content[0], "cd", 3)
+		|| !ft_strncmp((*node)->content[0], "pwd", 4)
+		|| !ft_strncmp((*node)->content[0], "export", 7)
+		|| !ft_strncmp((*node)->content[0], "unset", 6)
+		|| !ft_strncmp((*node)->content[0], "env", 4)
+		|| !ft_strncmp((*node)->content[0], "exit", 5))
 		(*node)->token = BUILT_IN;
 }

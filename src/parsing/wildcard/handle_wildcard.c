@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 20:03:53 by asinsard          #+#    #+#             */
-/*   Updated: 2025/06/03 19:08:34 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/03 23:48:34 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,33 @@ static void	add_space_for_wildcard(t_token **node)
 	}
 }
 
+static void	sort_wildcard_arg(char **array)
+{
+	int		i;
+	bool	sorted;
+	char	*tmp;
+
+	if (!array)
+		return ;
+	sorted = false;
+	while (!sorted)
+	{
+		sorted = true;
+		i = 0;
+		while (array[i] && array[i + 1])
+		{
+			if (compare_content(array[i], array[i + 1]) > 0)
+			{
+				tmp = array[i];
+				array[i] = array[i + 1];
+				array[i + 1] = tmp;
+				sorted = false;
+			}
+			i++;
+		}
+	}
+}
+
 static bool	make_wildcard(t_token **node, bool flag)
 {
 	char	**current_dir;
@@ -94,6 +121,7 @@ static bool	make_wildcard(t_token **node, bool flag)
 	free_tab(current_dir);
 	if (errno == MEM_ALLOC)
 		return (false);
+	sort_wildcard_arg((*node)->content);
 	if (flag)
 		add_space_for_wildcard(node);
 	if (errno == MEM_ALLOC)
@@ -112,7 +140,8 @@ bool	handle_wildcard(t_token **head, bool flag)
 	is_echo = false;
 	while (tmp)
 	{
-		if (tmp->token == WILDCARD || is_wildcard(tmp->content[0]))
+		if (tmp->token == WILDCARD
+			|| (tmp->token != S_QUOTE && is_wildcard(tmp->content[0])))
 		{
 			if (tmp->prev
 				&& !ft_strncmp(tmp->prev->content[0], "echo", 5))

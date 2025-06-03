@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 04:50:03 by asinsard          #+#    #+#             */
-/*   Updated: 2025/06/03 19:29:28 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/04 00:13:48 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,9 @@ bool	is_same_family(t_token *node)
 
 	next_node = node->next;
 	if (next_node && (next_node->token == APPEND
-		|| next_node->token == HD
-		|| next_node->token == R_IN || next_node->token == TRUNC))
+			|| next_node->token == HD
+			|| next_node->token == R_IN
+			|| next_node->token == TRUNC))
 		next_node = next_node->next;
 	if ((node->token == BUILT_IN) || (node->token == CMD))
 	{
@@ -80,8 +81,9 @@ void	handle_change_node(t_token **node, bool flag)
 	is_not_redir = false;
 	next_node = (*node)->next;
 	if (next_node && (next_node->token == APPEND
-		|| next_node->token == HD
-		|| next_node->token == R_IN || next_node->token == TRUNC))
+			|| next_node->token == HD
+			|| next_node->token == R_IN
+			|| next_node->token == TRUNC))
 	{
 		next_node = next_node->next;
 		is_not_redir = true;

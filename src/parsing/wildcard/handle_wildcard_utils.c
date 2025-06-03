@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 02:25:07 by asinsard          #+#    #+#             */
-/*   Updated: 2025/06/03 20:12:37 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/03 21:11:38 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,4 +88,26 @@ void	assign_wildcard(t_token **node, char **res, int count)
 	}
 	else
 		free_tab(res);
+}
+
+int	compare_content(char *s1, char *s2)
+{
+	int		i;
+	char	c1;
+	char	c2;
+
+	i = 0;
+	while (s1[i] || s2[i])
+	{
+		c1 = s1[i];
+		c2 = s2[i];
+		if (s1[i] >= 'A' && s1[i] <= 'Z')
+			c1 = s1[i] + 32;
+		if (s2[i] >= 'A' && s2[i] <= 'Z')
+			c2 = s2[i] + 32;
+		if (c1 != c2)
+			return (c1 - c2);
+		i++;
+	}
+	return (s1[i] - s2[i]);
 }

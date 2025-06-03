@@ -6,7 +6,7 @@
 #    By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/06/03 16:27:55 by asinsard         ###   ########lyon.fr    #
+#    Updated: 2025/06/04 00:16:26 by asinsard         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,7 +41,7 @@ DIR_PARSING			=	src/parsing \
 						src/parsing/wildcard
 
 vpath %.c $(DIR_EXEC) $(DIR_PARSING) 
-vpath %.h include:include/parsing:include/exec:include/init:include/misc:src/libft/include:include/builtins:include/misc
+vpath %.h include include/parsing include/exec include/init include/misc src/libft/include include/builtins include/misc
 vpath %.a src/libft/obj
 
 CC					=	cc
@@ -54,8 +54,8 @@ HEAD_DIR			=	include
 
 INC_HEAD			=	-I$(HEAD_DIR) -I$(HEAD_DIR)/parsing -I$(HEAD_DIR)/exec -I$(HEAD_DIR)/init -I$(HEAD_DIR)/misc -I$(HEAD_DIR)/builtins 
 
-LIBFT_DIR			=	src/libft
-LIBFT_HEAD_DIR		=	src/libft/include
+LIBFT_DIR			=	libft
+LIBFT_HEAD_DIR		=	$(LIBFT_DIR)/include
 LIB_LIBFT			=	$(LIBFT_DIR)/obj/libft.a
 LIBFT_FLAG			=	-L$(LIBFT_DIR)/src/ $(LIB_LIBFT)
 
