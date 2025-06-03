@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 02:23:46 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/26 23:46:29 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/03 19:18:16 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ static int	set_boolop_pointer(t_tree **ast_node,
 	else
 		new_token->next = NULL;
 	free_tab((*ast_node)->token->content);
+	if ((*ast_node)->token->curr_dir)
+		free((*ast_node)->token->curr_dir);
 	free((*ast_node)->token);
 	(*ast_node)->token = new_token;
 	(*ast_node)->token->group = NULL;
