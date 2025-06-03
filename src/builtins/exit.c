@@ -39,6 +39,8 @@ int	exit_overflow_error(t_lists *lists, char **arg)
 	free(tmp);
 	ft_putstr_fd(s, 2);
 	free(s);
+	free_lists(lists);
+	close_origin_fds(lists->origin_fds);
 	exit (2);
 }
 
