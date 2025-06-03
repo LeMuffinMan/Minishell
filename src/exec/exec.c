@@ -71,7 +71,7 @@ int	exec_ast(t_tree **ast, t_lists *lists)
 	struct sigaction	sa_orig;
 
 	if (!*ast)
-		return (0);
+		return (lists->exit_code);
 	sigemptyset(&sa_ignore.sa_mask);
 	sa_ignore.sa_handler = SIG_IGN;
 	sa_ignore.sa_flags = 0;
