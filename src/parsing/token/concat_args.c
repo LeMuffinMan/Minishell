@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 04:50:03 by asinsard          #+#    #+#             */
-/*   Updated: 2025/06/03 18:31:35 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/03 19:29:28 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,8 +98,7 @@ void	handle_change_node(t_token **node, bool flag)
 		return ;
 	change_node(node, next_node, new_content, is_not_redir);
 }
-#include <stdio.h>
-#include "display.h"
+
 bool	handle_expand_and_join(t_token **head, t_var *list_env,
 								t_lists *lists, bool flag)
 {

@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 03:07:28 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/24 03:13:15 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/03 19:23:07 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,8 @@ void	free_node_unused(t_token *node)
 		next_node = node->next;
 		if (node->content)
 			free_tab(node->content);
+		if (node->curr_dir)
+			free(node->curr_dir);
 		if (node)
 			free(node);
 		node = NULL;

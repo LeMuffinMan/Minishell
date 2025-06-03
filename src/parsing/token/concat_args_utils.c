@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:44:43 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/26 21:26:23 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/03 19:30:55 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,8 @@ void	change_node(t_token **node, t_token *next_node,
 		if ((*node)->next)
 			(*node)->next->prev = *node;
 		free_tab(next_node->content);
+		if (next_node->curr_dir)
+			free(next_node->curr_dir);
 		free(next_node);
 		if ((*node)->token == APPEND
 			|| (*node)->token == HD
