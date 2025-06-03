@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 15:58:38 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/26 23:16:41 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/03 16:22:06 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,8 @@ static void	handle_space_for_echo(t_token **node)
 					&& tmp->next->next->token != PIPE))
 				add_space(&tmp);
 		}
+		if (tmp->token != SPACE && ft_isspace(tmp->content[0][0]))
+			delete_first_space(&tmp);
 		tmp = tmp->next;
 	}
 }

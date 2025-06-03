@@ -6,7 +6,7 @@
 #    By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/06/01 14:55:32 by oelleaum         ###   ########lyon.fr    #
+#    Updated: 2025/06/03 16:27:55 by asinsard         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -60,6 +60,7 @@ LIB_LIBFT			=	$(LIBFT_DIR)/obj/libft.a
 LIBFT_FLAG			=	-L$(LIBFT_DIR)/src/ $(LIB_LIBFT)
 
 SRC					=	main.c \
+						delete_useless_space.c \
 						expand_utils.c \
 						expand.c \
 						handle_space.c \

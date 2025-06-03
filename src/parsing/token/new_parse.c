@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 00:33:04 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/29 20:16:05 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/03 18:23:07 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,13 +41,25 @@ static int	find_len_for_new_line(t_token *head)
 
 static void	copy_expand(t_token *node, char **line, int *pos, int i)
 {
-	int	len;
+	int		len;
+	bool	flag;
 
 	len = ft_strlen(&node->content[0][i]);
+	flag = false;
+	if (node->content[0][i] && node->content[0][i] == ' ')
+	{
+		(*line)[*pos] = ' ';
+		(*pos)++;
+		i++;
+		flag = true;
+	}
 	(*line)[*pos] = '"';
 	(*pos)++;
 	ft_memcpy(&(*line)[*pos], &node->content[0][i], len);
-	*pos += len;
+	if (flag)
+		*pos += len - 1;
+	else
+		*pos += len;
 	(*line)[*pos] = '"';
 	(*pos)++;
 	(*line)[*pos] = ' ';
@@ -129,6 +141,6 @@ bool	parse_again(t_token **head, t_var *list_env, bool *flag)
 		errno = MEM_ALLOC;
 		return (false);
 	}
-	handle_wildcard(head, *flag);
+	// handle_wildcard(head, *flag);
 	return (true);
 }
