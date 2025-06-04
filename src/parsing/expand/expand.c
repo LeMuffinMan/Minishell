@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:49:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/06/04 00:26:27 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/04 18:13:59 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,7 +137,10 @@ bool	init_expand(t_token **head, t_var *list_env, t_lists *lists)
 	flag = false;
 	while (tmp)
 	{
-		if (tmp->token == S_QUOTE)
+		if (tmp->token == S_QUOTE || (tmp->prev
+			&& tmp->prev->token == HD)
+			|| (tmp->prev && tmp->prev->prev
+			&& tmp->prev->prev->token == HD))
 			tmp = tmp->next;
 		else
 		{

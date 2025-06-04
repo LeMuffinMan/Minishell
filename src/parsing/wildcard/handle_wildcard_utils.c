@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 02:25:07 by asinsard          #+#    #+#             */
-/*   Updated: 2025/06/03 21:11:38 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/04 18:20:50 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "list.h"
 #include "libft.h"
 #include <stdlib.h>
+#include <errno.h>
 
 bool	is_wildcard(char *str)
 {
@@ -38,7 +39,10 @@ char	**extract_current_dir(void)
 	handle_current_dir(&i, NULL);
 	res = malloc(sizeof(char *) * (i + 1));
 	if (!res)
+	{
+		errno = MEM_ALLOC;
 		return (NULL);
+	}
 	i = 0;
 	if (!handle_current_dir(&i, &res))
 	{
