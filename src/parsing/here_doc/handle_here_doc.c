@@ -33,9 +33,10 @@ bool	extract_stdin(int fd, char *limiter)
 		line = readline("> ");
 		if (g_signal == 130)
 		{
-			free(limiter);
+			if (limiter)
+				free(limiter);
 			close(fd);
-			exit(130);
+			return (true);
 		}
 		if (!line)
 		{
@@ -81,15 +82,20 @@ pid_t	manage_here_doc_fork(int fd, t_lists *lists,
 		{
 			if (errno == ENOMEM)
 			{
+				if (limiter)
 				free(limiter);
 				close(fd);
 				exit(errno);
 			}
-			free(limiter);
+			if (limiter)
+				free(limiter);
 			close(fd);
 			exit(EXIT_FAILURE);
 		}
-		free(limiter);
+		if (g_signal == 130)
+			exit(130);
+		if (limiter)
+			free(limiter);
 		close(fd);
 		exit(EXIT_SUCCESS);
 	}
@@ -166,10 +172,16 @@ bool	handle_here_doc(t_token **head, t_lists *lists)
 			if (!create_here_doc(tmp, lists, &sig_hd))
 			{
 				free_parse(*head, NULL, MEM_ALLOC);
+
 				if (lists->exit_code == 130)
-					errno = 130;
+					errno = 130; // on peut pas le mettre a 130 
 				else
 					errno = MEM_ALLOC;
+				return (false);
+			}
+			if (g_signal == 130)
+			{
+				free_parse(*head, NULL, MEM_ALLOC);
 				return (false);
 			}
 		}

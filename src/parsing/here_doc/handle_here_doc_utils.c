@@ -40,6 +40,7 @@ bool	free_lim_close_fd(char *limiter, int fd)
 char	*get_limiter(char *s, int fd)
 {
 	char	*limiter;
+	char *tmp;
 
 	limiter = ft_strdup(s);
 	if (!limiter)
@@ -47,6 +48,9 @@ char	*get_limiter(char *s, int fd)
 		close(fd);
 		return (NULL);
 	}
+	tmp = limiter;
+	limiter = ft_strjoin(limiter, "\n");
+	free(tmp);
 	return (limiter);
 }
 

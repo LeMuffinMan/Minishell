@@ -17,7 +17,6 @@
 void sigint_here_doc_handler(int sig)
 {
        (void)sig;
-       /* rl_done = 1; */
        close(0);
        g_signal = 130;
 }
