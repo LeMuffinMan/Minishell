@@ -51,6 +51,8 @@ int	exec_error_cases(t_tree **ast)
 		ft_putstr_fd((*ast)->token->content[0], 2);
 		return (5);
 	}
+	if ((*ast)->token->token == D_QUOTE && (*ast)->token->error == 130)
+		return (error_cmd(ft_strdup("command not found\n"), 130)); // a ameliorer 
 	return (-1);
 }
 

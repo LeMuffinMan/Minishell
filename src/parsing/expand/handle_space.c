@@ -23,7 +23,7 @@ void	delete_space_node(t_token **head)
 
 	if (!head || !*head)
 		return ;
-	tmp = *head;
+	tmp = (*head)->next;
 	while (tmp)
 	{
 		if (tmp->token == SPACE || !tmp->content || !tmp->content[0]
