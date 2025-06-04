@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 19:51:51 by asinsard          #+#    #+#             */
-/*   Updated: 2025/06/03 23:14:42 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/04 16:05:01 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void	del_last_space_for_arg(t_token **node, char **tmp)
 
 	i = 0;
 	len = ft_strlen((*node)->content[0]);
-	if ((*node)->content[0][len - 1] == ' ')
+	if (len > 0 && (*node)->content[0][len - 1] == ' ')
 	{
 		while ((*node)->content[0][i] && (*node)->content[0][i] != ' ')
 			i++;
