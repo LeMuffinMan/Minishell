@@ -52,8 +52,10 @@ int	exec_error_cases(t_tree **ast)
 		return (5);
 	}
 	if ((*ast)->token->token == D_QUOTE && (*ast)->token->error == 130)
-		return (error_cmd(ft_strdup("command not found\n"), 130)); // a ameliorer 
-	return (-1);
+		return (error_cmd("\"\"", 127)); // a ameliorer 
+	if ((*ast)->token->token == SPACE && (*ast)->token->error == 0)
+		return (0);
+	return (0);
 }
 
 int	exec_ast_boolops_cases(t_tree **ast, t_lists *lists)

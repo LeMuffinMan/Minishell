@@ -54,7 +54,10 @@ int	error_cmd(char *cmd, int error_code)
 	if (error_code == 127)
 		s = ft_strjoin(s, ": command not found\n");
 	if (errno == ENOMEM)
+	{
+		free(tmp);
 		return (malloc_error_cmd(tmp));
+	}
 	free(tmp);
 	ft_putstr_fd(s, 2);
 	free(s);
