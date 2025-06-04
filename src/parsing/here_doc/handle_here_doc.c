@@ -40,6 +40,7 @@ bool	extract_stdin(int fd, char *limiter)
 		}
 		if (!line)
 		{
+			limiter[ft_strlen(limiter) - 1] = '\0'; 
 			printf(
 				"minishell: here-doc delimited by end-of-file (wanted `%s')\n",
 				limiter);
