@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 21:44:17 by asinsard          #+#    #+#             */
-/*   Updated: 2025/06/03 23:39:39 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/04 15:27:26 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,8 @@
 #include <sys/stat.h>
 #include <errno.h>
 
-static void	is_operand_or_quote(t_token **node)
+static void	is_operand(t_token **node)
 {
-	if (is_quote(node))
-		return ;
 	if (!ft_strncmp((*node)->content[0], "&&", 3))
 		(*node)->token = O_AND;
 	else if (!ft_strncmp((*node)->content[0], "||", 3))
@@ -39,11 +37,12 @@ static void	is_operand_or_quote(t_token **node)
 		(*node)->token = SPACE;
 }
 
-static void	is_redirection_or_f_or_d(t_token **node, t_var *list_env)
+static void	is_redir_file_dir_quote(t_token **node, t_var *list_env)
 {
 	struct stat	status;
 	char		*tmp;
 
+	is_quote(node);
 	del_last_space_for_arg(node, &tmp);
 	if (!ft_strncmp((*node)->content[0], ">>", 3))
 		(*node)->token = APPEND;
@@ -123,11 +122,11 @@ void	assign_token(t_token **head, t_var *list_env, bool flag)
 	while (tmp && errno != MEM_ALLOC)
 	{
 		if (tmp->token == NO_TOKEN)
-			is_redirection_or_f_or_d(&tmp, list_env);
+			is_redir_file_dir_quote(&tmp, list_env);
 		if (tmp->token != ARG)
 			is_command_whithout_env(&tmp, list_env);
 		if (tmp->token == NO_TOKEN)
-			is_operand_or_quote(&tmp);
+			is_operand(&tmp);
 		if (tmp->error == PB_QUOTE)
 			return ;
 		if (tmp->token == NO_TOKEN
