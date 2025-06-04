@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/14 16:01:39 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/23 23:21:27 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/03 22:26:53 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,14 +34,16 @@ static bool	case_only_quote(t_token **node)
 	return (false);
 }
 
-static bool	is_one_quote(char **content, char c)
+static bool	is_one_quote(char **content)
 {
-	int	i;
-	int	j;
-	int	count;
+	int		i;
+	int		j;
+	int		count;
+	char	c;
 
 	i = 0;
 	count = 0;
+	c = content[0][0];
 	while (content[i])
 	{
 		j = 0;
@@ -85,9 +87,7 @@ static bool	del_quote_char(t_token **node)
 
 static bool	parse_quote(t_token **node)
 {
-	if (is_one_quote((*node)->content, '\''))
-		(*node)->error = PB_QUOTE;
-	if (is_one_quote((*node)->content, '"'))
+	if (is_one_quote((*node)->content))
 		(*node)->error = PB_QUOTE;
 	if (((*node)->token == D_QUOTE || (*node)->token == D_QUOTE
 			|| (*node)->error == QUOTE)

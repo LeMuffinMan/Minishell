@@ -20,12 +20,6 @@
 
 int		g_signal = 0;
 
-//renommer 
-void	do_nothing_sig(int sig)
-{
-	(void)sig;
-}
-
 void	handle_sig(int sig)
 {
 	g_signal = sig;
@@ -38,7 +32,7 @@ void	handle_sig(int sig)
 	}
 	if (sig == SIGQUIT)
 	{
-		do_nothing_sig(sig);
+		
 	}
 }
 

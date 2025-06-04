@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 20:04:26 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/27 00:55:14 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/03 20:54:44 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ void					assign_wildcard(t_token **node, char **res, int count);
 bool					find_prefix(char *str, char *src);
 bool					find_suffix(char *str, char *src);
 char					**extract_current_dir(void);
+int						compare_content(char *s1, char *s2);
 int						which_case_of_wildcard(char *str);
 void					is_infix(t_token **node, char **current_dir);
 void					is_joker(t_token **node, char **current_dir);

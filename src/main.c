@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:21:52 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/06/03 15:45:14 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/04 00:15:06 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,8 @@ int	main(int ac, char **av, char **env)
 		return (errno);
 	}
 	while (1)
-		lists.exit_code = parse_and_execution_loop(&prompt, &lists, lists.exit_code);
+		lists.exit_code = parse_and_execution_loop(
+				&prompt, &lists, lists.exit_code);
 	free_lists(&lists);
 	return (lists.exit_code);
 }

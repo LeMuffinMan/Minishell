@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/02 21:44:17 by asinsard          #+#    #+#             */
-/*   Updated: 2025/06/03 16:30:12 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/03 23:39:39 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,11 @@ static void	is_operand_or_quote(t_token **node)
 {
 	if (is_quote(node))
 		return ;
-	if (!ft_strcmp((*node)->content[0], "&&"))
+	if (!ft_strncmp((*node)->content[0], "&&", 3))
 		(*node)->token = O_AND;
-	else if (!ft_strcmp((*node)->content[0], "||"))
+	else if (!ft_strncmp((*node)->content[0], "||", 3))
 		(*node)->token = O_OR;
-	else if (!ft_strcmp((*node)->content[0], "|"))
+	else if (!ft_strncmp((*node)->content[0], "|", 2))
 		(*node)->token = PIPE;
 	else if (is_wildcard((*node)->content[0]))
 		(*node)->token = WILDCARD;
@@ -45,13 +45,13 @@ static void	is_redirection_or_f_or_d(t_token **node, t_var *list_env)
 	char		*tmp;
 
 	del_last_space_for_arg(node, &tmp);
-	if (!ft_strcmp((*node)->content[0], ">>"))
+	if (!ft_strncmp((*node)->content[0], ">>", 3))
 		(*node)->token = APPEND;
-	else if (!ft_strcmp((*node)->content[0], "<<"))
+	else if (!ft_strncmp((*node)->content[0], "<<", 3))
 		(*node)->token = HD;
-	else if (!ft_strcmp((*node)->content[0], "<"))
+	else if (!ft_strncmp((*node)->content[0], "<", 2))
 		(*node)->token = R_IN;
-	else if (!ft_strcmp((*node)->content[0], ">"))
+	else if (!ft_strncmp((*node)->content[0], ">", 2))
 		(*node)->token = TRUNC;
 	else if (is_pwd_valid(list_env, *node))
 	{
@@ -122,10 +122,10 @@ void	assign_token(t_token **head, t_var *list_env, bool flag)
 	errno = SUCCESS;
 	while (tmp && errno != MEM_ALLOC)
 	{
-		if (tmp->token != ARG)
-			is_command_whithout_env(&tmp, list_env);
 		if (tmp->token == NO_TOKEN)
 			is_redirection_or_f_or_d(&tmp, list_env);
+		if (tmp->token != ARG)
+			is_command_whithout_env(&tmp, list_env);
 		if (tmp->token == NO_TOKEN)
 			is_operand_or_quote(&tmp);
 		if (tmp->error == PB_QUOTE)

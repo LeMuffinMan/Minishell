@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 20:47:42 by asinsard          #+#    #+#             */
-/*   Updated: 2025/06/03 20:22:02 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/03 23:48:46 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ bool	is_valid_arg(t_token *node, char *str)
 	int	i;
 
 	if ((node->token == S_QUOTE || node->token == EXPAND || node->error != 0
-		|| node->token == WILDCARD)
+			|| node->token == WILDCARD)
 		&& node->next && node->next->token == SPACE)
 	{
 		if (str[0] != '-' || str[1] != 'n')

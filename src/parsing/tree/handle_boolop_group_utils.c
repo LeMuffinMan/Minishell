@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 03:04:14 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/26 16:24:30 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/03 22:36:23 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ static void	case_is_ex_value(t_tree *ast_node, char **res, int *pos, int i)
 		(*pos)++;
 	}
 	(*res)[(*pos)++] = '"';
+	(*res)[(*pos)++] = ' ';
 }
 
 void	copy_boolop_group_content(t_tree *ast_node, char **res, int *pos)
