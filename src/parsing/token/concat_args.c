@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 04:50:03 by asinsard          #+#    #+#             */
-/*   Updated: 2025/06/04 18:21:34 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/04 18:23:39 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,8 +124,7 @@ bool	handle_expand_and_join(t_token **head, t_var *list_env,
 	if (join_token(head))
 		assign_token(head, list_env, true);
 	delete_space_node(head);
-	handle_wildcard(head, flag);
-	if (errno == MEM_ALLOC)
+	if (!handle_wildcard(head, flag))
 		return (false);
 	return (true);
 }

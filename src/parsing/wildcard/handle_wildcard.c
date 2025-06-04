@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 20:03:53 by asinsard          #+#    #+#             */
-/*   Updated: 2025/06/03 23:48:34 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/04 18:31:49 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ static bool	make_wildcard(t_token **node, bool flag)
 	int		sort_of;
 
 	current_dir = extract_current_dir();
-	if (!current_dir || !*current_dir)
+	if (errno == MEM_ALLOC)
 		return (false);
 	sort_of = which_case_of_wildcard((*node)->content[0]);
 	if (sort_of == INFIX)

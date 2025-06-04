@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 02:25:07 by asinsard          #+#    #+#             */
-/*   Updated: 2025/06/04 18:20:50 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/04 18:32:43 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ int	compare_content(char *s1, char *s2)
 	char	c2;
 
 	i = 0;
-	while (s1[i] && s2[i]) // c'etait un || 
+	while (s1[i] || s2[i])
 	{
 		c1 = s1[i];
 		c2 = s2[i];
@@ -113,6 +113,5 @@ int	compare_content(char *s1, char *s2)
 			return (c1 - c2);
 		i++;
 	}
-	//Si on tombe sur un char de s1 ou s2 : inexistant : on doit renvoyer une valeur inverse  
 	return (s1[i] - s2[i]);
 }
