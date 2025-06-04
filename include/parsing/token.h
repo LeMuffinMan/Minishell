@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 01:26:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/27 00:53:51 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/04 18:09:54 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@
 # define LITERAL_EXPAND 200
 
 # include <stdbool.h>
-// # include "structs.h"
 
 struct					s_token;
 typedef struct s_token	t_token;
@@ -105,6 +104,8 @@ bool					is_valid_prev(t_token *prev);
 bool					verif_is_token_valid(t_type token);
 char					**copy_tab(t_token *node,
 							char **dest, char **src, int index);
+int						find_len_for_new_line(t_token *head);
+void					case_is_expand(t_token *node, int *pos, char **line);
 void					add_space(t_token **node);
 void					del_last_space_for_arg(t_token **node, char **tmp);
 void					replace_tab(t_token **node, char *str);

@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 00:33:04 by asinsard          #+#    #+#             */
-/*   Updated: 2025/06/03 22:26:40 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/04 18:09:29 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ static char	*create_new_line(t_token *head)
 	pos = 0;
 	while (head)
 	{
-		if (head->token == EXPAND)
+		if (head->token == EXPAND || head->token == WILDCARD)
 			case_is_expand(head, &pos, &line);
 		else
 		{
