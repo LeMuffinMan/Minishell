@@ -97,7 +97,7 @@ int	compare_content(char *s1, char *s2)
 	char	c2;
 
 	i = 0;
-	while (s1[i] || s2[i])
+	while (s1[i] && s2[i]) // c'etait un || 
 	{
 		c1 = s1[i];
 		c2 = s2[i];
@@ -109,5 +109,6 @@ int	compare_content(char *s1, char *s2)
 			return (c1 - c2);
 		i++;
 	}
+	//Si on tombe sur un char de s1 ou s2 : inexistant : on doit renvoyer une valeur inverse  
 	return (s1[i] - s2[i]);
 }
