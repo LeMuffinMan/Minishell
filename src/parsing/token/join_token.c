@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/23 18:26:02 by asinsard          #+#    #+#             */
-/*   Updated: 2025/06/03 16:13:41 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/05 00:13:05 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,14 +41,14 @@ char	**join_content(t_token *node, char **old, char **new)
 	res = malloc(sizeof(char *) * 2);
 	if (!res)
 	{
-		free_parse(node, NULL, MEM_ALLOC);
+		free_parse(node);
 		errno = MEM_ALLOC;
 		return (NULL);
 	}
 	res[0] = malloc(sizeof(char) * (len_old + len_new + 1));
 	if (!res[0])
 	{
-		free_parse(node, NULL, MEM_ALLOC);
+		free_parse(node);
 		errno = MEM_ALLOC;
 		return (NULL);
 	}

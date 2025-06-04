@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 04:50:03 by asinsard          #+#    #+#             */
-/*   Updated: 2025/06/04 18:23:39 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/05 00:12:13 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ static char	**join_node_content(t_token *node, char **old, char **new)
 	if (!res)
 	{
 		errno = MEM_ALLOC;
-		free_parse(node, NULL, MEM_ALLOC);
+		free_parse(node);
 		return (NULL);
 	}
 	res = copy_tab(node, res, old, 0);
@@ -110,12 +110,12 @@ bool	handle_expand_and_join(t_token **head, t_var *list_env,
 		{
 			if (errno == MEM_ALLOC)
 			{
-				free_parse(*head, NULL, MEM_ALLOC);
+				free_parse(*head);
 				return (false);
 			}
 			if (!parse_again(head, list_env, &flag))
 			{
-				free_parse(*head, NULL, MEM_ALLOC);
+				free_parse(*head);
 				errno = MEM_ALLOC;
 				return (false);
 			}

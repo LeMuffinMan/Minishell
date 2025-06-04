@@ -36,6 +36,6 @@ typedef struct s_token
 
 /* ----------------------LIST---------------------- */
 bool					add_back(t_token **head, char *str);
-void					free_parse(t_token *list, const char *str, int error);
+void					free_parse(t_token *list);
 
 #endif

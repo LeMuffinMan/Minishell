@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 00:33:04 by asinsard          #+#    #+#             */
-/*   Updated: 2025/06/04 19:06:24 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/05 00:13:13 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,7 +127,7 @@ bool	parse_again(t_token **head, t_var *list_env, bool *flag)
 	line = create_new_line(*head);
 	if (!line)
 		return (false);
-	free_parse(*head, NULL, MEM_ALLOC);
+	free_parse(*head);
 	*head = NULL;
 	if (!lexing_and_tokenize(line, head, list_env, flag)
 		|| !error_one_quote(head))

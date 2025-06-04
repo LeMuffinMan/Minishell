@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 03:09:12 by asinsard          #+#    #+#             */
-/*   Updated: 2025/06/04 00:14:07 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/05 00:09:43 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,10 +67,11 @@ t_tree	*parse(char *line, t_var *list_env, t_lists *lists)
 	if (!concat_args(&token, list_env, flag, lists)
 		||!handle_here_doc(&token, lists))
 		return (NULL);
+	verif_wildcard(&token);
 	display_list(token, DEBUG);
 	add_to_root(&token, &root);
 	if (!root)
-		free_parse(token, NULL, 0);
+		free_parse(token);
 	display_ast(root, DEBUG);
 	return (root);
 }

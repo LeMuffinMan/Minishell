@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 20:03:53 by asinsard          #+#    #+#             */
-/*   Updated: 2025/06/04 18:31:49 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/05 00:16:12 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,90 +16,6 @@
 #include <stdio.h>
 #include <dirent.h>
 #include <errno.h>
-
-bool	handle_current_dir(int *i, char ***res)
-{
-	DIR				*dir;
-	struct dirent	*current;
-
-	dir = opendir(".");
-	if (!dir)
-		return (false);
-	current = readdir(dir);
-	while (current)
-	{
-		if (ft_strncmp(current->d_name, ".", 1))
-		{
-			if (!res)
-				(*i)++;
-			else
-			{
-				(*res)[*i] = ft_strdup(current->d_name);
-				if (!(*res)[*i])
-					return (false);
-				(*i)++;
-			}
-		}
-		current = readdir(dir);
-	}
-	closedir(dir);
-	return (true);
-}
-
-static void	add_space_for_wildcard(t_token **node)
-{
-	int		i;
-	char	*res;
-
-	i = 0;
-	while ((*node)->content[i + 1])
-	{
-		res = ft_strjoin((*node)->content[i], " ");
-		if (!res)
-		{
-			free_parse(*node, NULL, MEM_ALLOC);
-			errno = MEM_ALLOC;
-			return ;
-		}
-		free((*node)->content[i]);
-		(*node)->content[i] = ft_strdup(res);
-		free(res);
-		if (!(*node)->content[i])
-		{
-			free_parse(*node, NULL, MEM_ALLOC);
-			errno = MEM_ALLOC;
-			return ;
-		}
-		i++;
-	}
-}
-
-static void	sort_wildcard_arg(char **array)
-{
-	int		i;
-	bool	sorted;
-	char	*tmp;
-
-	if (!array)
-		return ;
-	sorted = false;
-	while (!sorted)
-	{
-		sorted = true;
-		i = 0;
-		while (array[i] && array[i + 1])
-		{
-			if (compare_content(array[i], array[i + 1]) > 0)
-			{
-				tmp = array[i];
-				array[i] = array[i + 1];
-				array[i + 1] = tmp;
-				sorted = false;
-			}
-			i++;
-		}
-	}
-}
 
 static bool	make_wildcard(t_token **node, bool flag)
 {
@@ -129,30 +45,62 @@ static bool	make_wildcard(t_token **node, bool flag)
 	return (true);
 }
 
+static bool	is_valid_arg_for_echo(t_type token)
+{
+	if (token == R_IN || token == HD || token == APPEND
+		|| token == TRUNC || token == PIPE || token == O_OR
+		|| token == O_AND || token == CMD)
+		return (true);
+	return (false);
+}
+
+static bool	is_an_echo_arg(t_token *node)
+{
+	bool	flag;
+
+	flag = false;
+	while (node && !is_valid_arg_for_echo(node->token))
+	{
+		if (node
+			&& !ft_strncmp(node->content[0], "echo", 5))
+			flag = true;
+		node = node->prev;
+	}
+	return (flag);
+}
+
+static bool	wildcard_processing(t_token **node)
+{
+	bool	is_echo;
+
+	is_echo = false;
+	if ((*node)->token == WILDCARD
+		|| ((*node)->token != S_QUOTE
+			&& is_wildcard((*node)->content[0])))
+	{
+		if (is_an_echo_arg(*node))
+			is_echo = true;
+		if (!make_wildcard(node, is_echo))
+		{
+			free_parse(*node);
+			errno = MEM_ALLOC;
+			return (false);
+		}
+	}
+	return (true);
+}
+
 bool	handle_wildcard(t_token **head, bool flag)
 {
 	t_token	*tmp;
-	bool	is_echo;
 
 	if (!head || !*head || !flag)
 		return (true);
 	tmp = *head;
-	is_echo = false;
 	while (tmp)
 	{
-		if (tmp->token == WILDCARD
-			|| (tmp->token != S_QUOTE && is_wildcard(tmp->content[0])))
-		{
-			if (tmp->prev
-				&& !ft_strncmp(tmp->prev->content[0], "echo", 5))
-				is_echo = true;
-			if (!make_wildcard(&tmp, is_echo))
-			{
-				free_parse(*head, NULL, MEM_ALLOC);
-				errno = MEM_ALLOC;
-				return (false);
-			}
-		}
+		if (!wildcard_processing(&tmp))
+			return (false);
 		tmp = tmp->next;
 	}
 	return (true);

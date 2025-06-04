@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/21 15:20:38 by asinsard          #+#    #+#             */
-/*   Updated: 2025/06/01 14:55:03 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/06/05 00:11:15 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ pid_t	manage_here_doc_fork(int fd, t_lists *lists,
 		setup_here_doc_signals();
 		close_origin_fds(lists->origin_fds);
 		free_lists(lists);
-		free_parse(node, NULL, 0);
+		free_parse(node);
 		if (!extract_stdin(fd, limiter))
 		{
 			if (errno == ENOMEM)
@@ -172,7 +172,7 @@ bool	handle_here_doc(t_token **head, t_lists *lists)
 		{
 			if (!create_here_doc(tmp, lists, &sig_hd))
 			{
-				free_parse(*head, NULL, MEM_ALLOC);
+				free_parse(*head);
 
 				if (lists->exit_code == 130)
 					errno = 130; // on peut pas le mettre a 130 
@@ -182,7 +182,7 @@ bool	handle_here_doc(t_token **head, t_lists *lists)
 			}
 			if (g_signal == 130)
 			{
-				free_parse(*head, NULL, MEM_ALLOC);
+				free_parse(*head);
 				return (false);
 			}
 		}

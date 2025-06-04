@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 20:47:42 by asinsard          #+#    #+#             */
-/*   Updated: 2025/06/03 23:48:46 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/05 00:09:55 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,7 @@ void	copy_value(t_token *node, char *value, char **value_cpy)
 	else
 		*value_cpy = ft_strdup(value);
 	if (!*value_cpy)
-		free_parse(node,
-			"Malloc failed in function 'copy_value'", MEM_ALLOC);
+		free_parse(node);
 }
 
 char	*alloc_first_expand(char *value, char *str_to_expand, int index)

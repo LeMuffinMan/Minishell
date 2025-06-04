@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 03:14:44 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/24 03:15:49 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/05 00:13:29 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ char	**copy_tab(t_token *node, char **dest, char **src, int index)
 		if (!dest[index])
 		{
 			free_tab(dest);
-			free_parse(node, NULL, MEM_ALLOC);
+			free_parse(node);
 			errno = MEM_ALLOC;
 			return (NULL);
 		}

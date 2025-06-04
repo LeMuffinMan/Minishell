@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 01:31:22 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/26 23:46:22 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/05 00:13:18 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ t_token	*set_syntax_error(t_token *node)
 	operator = ft_strdup(node->content[0]);
 	if (!operator)
 		return (NULL);
-	free_parse(node, NULL, 0);
+	free_parse(node);
 	tmp = ft_strjoin("syntax error near unexpected token `", operator);
 	free(operator);
 	if (!tmp)
@@ -74,7 +74,7 @@ t_token	*set_parenthesis_error(t_token *node)
 
 	if (!node || !node->content || !node->content[0])
 		return (NULL);
-	free_parse(node, NULL, 0);
+	free_parse(node);
 	new_content = ft_strdup(
 			"Usage: Use parenthesis for priorities of '&&' and '||'\n");
 	if (!new_content)

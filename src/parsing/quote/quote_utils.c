@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 21:46:52 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/24 02:57:26 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/05 00:11:21 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ bool	del_last_quote(t_token **node)
 		if (!end)
 		{
 			errno = MEM_ALLOC;
-			free_parse(*node, NULL, MEM_ALLOC);
+			free_parse(*node);
 			return (false);
 		}
 		free((*node)->content[0]);

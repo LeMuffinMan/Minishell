@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 00:53:37 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/26 14:36:50 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/05 00:12:52 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ static void	case_of_absolute_path(t_token **node)
 	tmp = ft_strdup((*node)->content[0]);
 	if (!tmp)
 	{
-		free_parse(*node, NULL, MEM_ALLOC);
+		free_parse(*node);
 		errno = MEM_ALLOC;
 		return ;
 	}
@@ -47,7 +47,7 @@ static void	case_of_absolute_path(t_token **node)
 	(*node)->content = ft_split(tmp, ' ');
 	if (!(*node)->content || !(*node)->content[0])
 	{
-		free_parse(*node, NULL, MEM_ALLOC);
+		free_parse(*node);
 		free(tmp);
 		errno = MEM_ALLOC;
 		return ;
@@ -83,7 +83,7 @@ void	replace_tab(t_token **node, char *str)
 		tmp = ft_strdup((*node)->content[0]);
 		if (!tmp)
 		{
-			free_parse(*node, NULL, MEM_ALLOC);
+			free_parse(*node);
 			errno = MEM_ALLOC;
 			return ;
 		}
@@ -91,7 +91,7 @@ void	replace_tab(t_token **node, char *str)
 		(*node)->content = ft_split(str, ' ');
 		if (!(*node)->content || !(*node)->content[0])
 		{
-			free_parse(*node, NULL, MEM_ALLOC);
+			free_parse(*node);
 			errno = MEM_ALLOC;
 		}
 		free(tmp);

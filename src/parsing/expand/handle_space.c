@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 15:58:38 by asinsard          #+#    #+#             */
-/*   Updated: 2025/06/03 23:02:48 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/05 00:10:39 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ static void	add_space_for_export(t_token **node)
 	res = malloc(sizeof(char) * (new_content + 1));
 	if (!res)
 	{
-		free_parse((*node), NULL, MEM_ALLOC);
+		free_parse(*node);
 		errno = MEM_ALLOC;
 		return ;
 	}

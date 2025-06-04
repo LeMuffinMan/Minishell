@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/13 15:39:39 by asinsard          #+#    #+#             */
-/*   Updated: 2025/06/03 22:59:05 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/05 00:10:23 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void	add_space(t_token **node)
 	res = ft_strjoin((*node)->content[0], " ");
 	if (!res)
 	{
-		free_parse(*node, NULL, MEM_ALLOC);
+		free_parse(*node);
 		errno = MEM_ALLOC;
 		return ;
 	}
@@ -81,7 +81,7 @@ void	delete_space_content(t_token **node)
 	res = ft_calloc(sizeof(char), ft_strlen((*node)->content[0]) + 1);
 	if (!res)
 	{
-		free_parse(*node, NULL, MEM_ALLOC);
+		free_parse(*node);
 		errno = MEM_ALLOC;
 		return ;
 	}
@@ -90,7 +90,7 @@ void	delete_space_content(t_token **node)
 	(*node)->content[0] = ft_strdup(res);
 	if (!(*node)->content[0])
 	{
-		free_parse(*node, NULL, MEM_ALLOC);
+		free_parse(*node);
 		errno = MEM_ALLOC;
 		return ;
 	}

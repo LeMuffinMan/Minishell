@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 19:51:51 by asinsard          #+#    #+#             */
-/*   Updated: 2025/06/04 16:05:01 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/05 00:13:37 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	del_last_space_for_arg(t_token **node, char **tmp)
 		*tmp = ft_strndup((*node)->content[0], i);
 		if (!*tmp)
 		{
-			free_parse(*node, NULL, MEM_ALLOC);
+			free_parse(*node);
 			errno = MEM_ALLOC;
 		}
 	}
@@ -42,7 +42,7 @@ void	del_last_space_for_arg(t_token **node, char **tmp)
 		*tmp = ft_strdup((*node)->content[0]);
 		if (!*tmp)
 		{
-			free_parse(*node, NULL, MEM_ALLOC);
+			free_parse(*node);
 			errno = MEM_ALLOC;
 		}
 	}
@@ -83,7 +83,7 @@ static char	*case_of_cmd_quote(t_token *node)
 		cmd_in_quote = ft_strdup(node->content[0]);
 		if (!cmd_in_quote)
 		{
-			free_parse(node, NULL, MEM_ALLOC);
+			free_parse(node);
 			errno = MEM_ALLOC;
 			return (NULL);
 		}
@@ -100,7 +100,7 @@ char	*verif_command(t_token **node, char *tmp, char **path, t_var *list_env)
 	path = split_the_path(tmp);
 	if (!path)
 	{
-		free_parse(*node, NULL, MEM_ALLOC);
+		free_parse(*node);
 		errno = MEM_ALLOC;
 		return (NULL);
 	}
@@ -114,7 +114,7 @@ char	*verif_command(t_token **node, char *tmp, char **path, t_var *list_env)
 		return (NULL);
 	if (!tmp)
 	{
-		free_parse(*node, NULL, MEM_ALLOC);
+		free_parse(*node);
 		errno = MEM_ALLOC;
 	}
 	return (tmp);

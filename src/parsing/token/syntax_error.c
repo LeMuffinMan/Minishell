@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 01:19:19 by asinsard          #+#    #+#             */
-/*   Updated: 2025/05/26 23:46:09 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/05 00:13:23 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ static t_token	*set_quote_or_par_error(t_token *node, t_type token)
 	alloc_operator_for_error(token, &operator);
 	if (!operator)
 		return (NULL);
-	free_parse(node, NULL, 0);
+	free_parse(node);
 	tmp = ft_strjoin("syntax error near unexpected token `", operator);
 	free(operator);
 	if (!tmp)

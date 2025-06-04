@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd_utils.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: oelleaum <oelleaum@student.42.fr>          +#+  +:+       +#+        */
+/*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/26 18:20:22 by oelleaum          #+#    #+#             */
-/*   Updated: 2025/05/26 18:22:13 by oelleaum         ###   ########lyon.fr   */
+/*   Updated: 2025/06/04 23:36:34 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int	builtin_cd_without_arg(t_var **env)
 	s = get_value(env, "HOME");
 	if (!s)
 	{
-		ft_putstr_fd("minishell: cd: HOME not set\n", 1);
+		ft_putstr_fd("minishell: cd: HOME not set\n", 2);
 		return (1);
 	}
 	else

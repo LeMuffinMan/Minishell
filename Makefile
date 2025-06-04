@@ -6,7 +6,7 @@
 #    By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/01 17:29:24 by oelleaum          #+#    #+#              #
-#    Updated: 2025/06/04 00:16:26 by asinsard         ###   ########lyon.fr    #
+#    Updated: 2025/06/04 23:44:37 by asinsard         ###   ########lyon.fr    #
 #                                                                              #
 # **************************************************************************** #
 
@@ -65,6 +65,7 @@ SRC					=	main.c \
 						expand.c \
 						handle_space.c \
 						handle_space_utils.c \
+						init_expand.c \
 						quote_utils.c \
 						quote.c \
 						create_here_doc.c \
@@ -101,6 +102,7 @@ SRC					=	main.c \
 						joker.c \
 						prefix.c \
 						suffix.c \
+						wildcard_utils.c \
 						parser.c \
 					init.c \
 					src/signals/signals.c \

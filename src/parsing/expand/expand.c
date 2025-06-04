@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:49:57 by asinsard          #+#    #+#             */
-/*   Updated: 2025/06/04 18:13:59 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/05 00:10:09 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static char	*alloc_new_expand(t_token **node, char *value,
 		res = alloc_first_expand(value_cpy, (*node)->content[0], index + 1);
 		if (!res)
 		{
-			free_parse(*node, NULL, MEM_ALLOC);
+			free_parse(*node);
 			errno = MEM_ALLOC;
 		}
 		return (res);
@@ -41,7 +41,7 @@ static char	*alloc_new_expand(t_token **node, char *value,
 	free(value_cpy);
 	if (!res)
 	{
-		free_parse(*node, NULL, MEM_ALLOC);
+		free_parse(*node);
 		errno = MEM_ALLOC;
 	}
 	return (res);
@@ -69,8 +69,8 @@ static int	export_value(char *str, char **value)
 	return (index);
 }
 
-static void	expand_node_content(t_token **node,
-								t_var *list_env, int j, t_lists *lists)
+void	expand_node_content(t_token **node,
+							t_var *list_env, int j, t_lists *lists)
 {
 	char	*res;
 	char	*value;
@@ -80,7 +80,7 @@ static void	expand_node_content(t_token **node,
 	index = export_value(&(*node)->content[0][j], &value);
 	if (errno == MEM_ALLOC)
 	{
-		free_parse(*node, NULL, MEM_ALLOC);
+		free_parse(*node);
 		errno = MEM_ALLOC;
 		return ;
 	}
@@ -97,59 +97,4 @@ static void	expand_node_content(t_token **node,
 	(*node)->token = EXPAND;
 	if ((*node)->error != LITERAL_EXPAND)
 		(*node)->error = SUCCESS;
-}
-
-static bool	to_expand(t_token **node, t_var *list_env, t_lists *lists)
-{
-	int		j;
-	bool	flag;
-
-	j = -1;
-	flag = false;
-	while ((*node)->content[0][++j] && errno != MEM_ALLOC)
-	{
-		if ((*node)->content[0][j] == '$' && ((*node)->content[0][j + 1]
-			|| ((*node)->next && ((*node)->next->token == S_QUOTE
-			|| (*node)->next->token == D_QUOTE))))
-		{
-			if ((j > 0 && (*node)->content[0][j - 1] == '\\')
-			|| ((*node)->content[0][j + 1]
-			&& ft_isspace((*node)->content[0][j + 1])))
-				j++;
-			else
-			{
-				expand_node_content(node, list_env, j + 1, lists);
-				if ((*node)->content[0][0])
-					flag = true;
-				j = -1;
-			}
-		}
-	}
-	return (flag);
-}
-
-bool	init_expand(t_token **head, t_var *list_env, t_lists *lists)
-{
-	t_token	*tmp;
-	bool	flag;
-
-	tmp = *head;
-	flag = false;
-	while (tmp)
-	{
-		if (tmp->token == S_QUOTE || (tmp->prev
-			&& tmp->prev->token == HD)
-			|| (tmp->prev && tmp->prev->prev
-			&& tmp->prev->prev->token == HD))
-			tmp = tmp->next;
-		else
-		{
-			flag = to_expand(&tmp, list_env, lists);
-			if (errno == MEM_ALLOC)
-				return (false);
-			tmp = tmp->next;
-		}
-	}
-	handle_space(head);
-	return (flag);
 }

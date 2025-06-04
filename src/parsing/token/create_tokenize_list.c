@@ -6,7 +6,7 @@
 /*   By: asinsard <asinsard@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 02:24:25 by asinsard          #+#    #+#             */
-/*   Updated: 2025/06/03 16:54:48 by asinsard         ###   ########lyon.fr   */
+/*   Updated: 2025/06/05 00:12:37 by asinsard         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ bool	add_back(t_token **head, char *str)
 	new_node = add_new_token(str, SUCCESS, true);
 	if (!new_node)
 	{
-		free_parse(*head, NULL, 0);
+		free_parse(*head);
 		errno = MEM_ALLOC;
 		return (false);
 	}
@@ -114,7 +114,7 @@ bool	add_back(t_token **head, char *str)
 	return (true);
 }
 
-void	free_parse(t_token *list, const char *str, int error)
+void	free_parse(t_token *list)
 {
 	t_token	*next_node;
 	t_token	*group;
@@ -136,9 +136,7 @@ void	free_parse(t_token *list, const char *str, int error)
 			free(list->curr_dir);
 		free(list);
 		if (group)
-			free_parse(group, NULL, SUCCESS);
+			free_parse(group);
 		list = next_node;
 	}
-	if (str)
-		ft_error(str, error);
 }
