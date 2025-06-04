@@ -52,8 +52,6 @@ bool	extract_stdin(int fd, char *limiter)
 		len = ft_strlen(limiter);
 		if (case_is_limiter(line, limiter, fd, len))
 			break ;
-		else
-			return (false);
 		free(line);
 	}
 	return (true);

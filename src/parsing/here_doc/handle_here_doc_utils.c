@@ -62,7 +62,7 @@ bool	case_is_limiter(char *line, char *limiter, int fd, int len)
 		free(line);
 		return (false);
 	}
-	return (true);
+	return (false);//passe de true a false pour fix here doc qui se ferme a a 1ere ligne
 }
 
 bool	verif_here_doc(t_token **head)
