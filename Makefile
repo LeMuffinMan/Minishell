@@ -154,13 +154,13 @@ DEPS				=	$(SRC:%.c=$(OBJ_DIR)%.d)
 OBJ					=	$(SRC:%.c=$(OBJ_DIR)%.o)
 OBJ_DIR				=	.objs/
 
-$(OBJ_DIR)%.o:%.c $(LIB_LIBFT) Makefile
+all: lib $(NAME)
+
+$(OBJ_DIR)%.o:%.c Makefile
 	@mkdir -p $(@D) 
 	@echo "$(BOLD_YELLOW)Compilling" $@ "$(BOLD_PURPLE)"
 	@$(CC) $(FLAGS) -c $< -o $@
 	@echo -n "$(STOP_COLOR)"
-
-all: lib $(NAME)
 
 debug:
 	@echo "				$(BOLD_BLUE)DEBUG"
@@ -193,4 +193,4 @@ re: fclean all
 
 -include $(DEPS)
 
-.PHONY: all clean fclean re debug
+.PHONY: all clean fclean re debug lib
