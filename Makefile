@@ -70,6 +70,7 @@ SRC					=	main.c \
 						quote.c \
 						create_here_doc.c \
 						handle_here_doc_utils.c \
+						here_doc_fork_and_signals_utils.c \
 						handle_here_doc.c \
 						lexer_utils.c \
 						lexer.c \

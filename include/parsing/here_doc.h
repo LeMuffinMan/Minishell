@@ -18,7 +18,7 @@
 # include "structs.h"
 # include <stdbool.h>
 
-struct					s_token;
+struct s_token;
 typedef struct s_token	t_token;
 
 /* ----------------------HERE DOC---------------------- */
@@ -36,5 +36,15 @@ bool					verif_name(char *name);
 char					*get_limiter(char *s, int fd);
 int						close_origin_fds(int origin_fds[2]);
 void					free_lists(t_lists *lists);
+
+/* -------------HERE DOC FORK AND SIGNALS-------------- */
+pid_t					manage_here_doc_fork(int fd, t_lists *lists,
+							char *limiter, t_token *node);
+int						open_and_fill_here_docs(t_token *tmp, bool sig_hd,
+							t_lists *lists, t_token **head);
+bool					create_here_doc(t_token *node, t_lists *lists,
+							bool *sig_hd);
+int						here_doc_readline_signals_handler(char **line,
+							char *limiter, int fd);
 
 #endif

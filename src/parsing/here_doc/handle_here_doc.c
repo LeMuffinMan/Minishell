@@ -11,41 +11,32 @@
 /* ************************************************************************** */
 
 #include "here_doc.h"
-#include "token.h"
-#include "list.h"
 #include "libft.h"
-#include <fcntl.h>
-#include <stdio.h>
-#include <readline/readline.h>
-#include <unistd.h>
+#include "list.h"
 #include "signals.h"
-#include <sys/stat.h>
+#include "token.h"
 #include <errno.h>
+#include <fcntl.h>
+#include <readline/readline.h>
+#include <stdio.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 bool	extract_stdin(int fd, char *limiter)
 {
 	int		len;
 	char	*line;
 	char	*tmp;
+	int		exit_code;
 
+	exit_code = 0;
 	while (1)
 	{
-		line = readline("> ");
-		if (g_signal == 130)
-		{
-			if (limiter)
-				free(limiter);
-			close(fd);
-			return (true);
-		}
-		if (!line)
-		{
-			limiter[ft_strlen(limiter) - 1] = '\0'; 
-			printf(
-				"minishell: here-doc delimited by end-of-file (wanted `%s')\n",
-				limiter);
+		exit_code = here_doc_readline_signals_handler(&line, limiter, fd);
+		if (exit_code == -1)
 			break ;
-		}
+		else if (exit_code == 1)
+			return (true);
 		tmp = line;
 		line = ft_strjoin(line, "\n");
 		if (errno == ENOMEM)
@@ -57,51 +48,6 @@ bool	extract_stdin(int fd, char *limiter)
 		free(line);
 	}
 	return (true);
-}
-
-pid_t	manage_here_doc_fork(int fd, t_lists *lists,
-			char *limiter, t_token *node)
-{
-	pid_t	pid;
-
-	signal(SIGINT, SIG_IGN);
-  signal(SIGQUIT, SIG_IGN);
-	pid = fork();
-	if (pid < 0)
-	{
-		close(fd);
-		free(limiter);
-		return (-1);
-	}
-	if (pid == 0)
-	{
-		setup_here_doc_signals();
-		close_origin_fds(lists->origin_fds);
-		free_lists(lists);
-		free_parse(node);
-		if (!extract_stdin(fd, limiter))
-		{
-			if (errno == ENOMEM)
-			{
-				if (limiter)
-				free(limiter);
-				close(fd);
-				exit(errno);
-			}
-			if (limiter)
-				free(limiter);
-			close(fd);
-			exit(EXIT_FAILURE);
-		}
-		if (g_signal == 130)
-			exit(130);
-		if (limiter)
-			free(limiter);
-		close(fd);
-		exit(EXIT_SUCCESS);
-	}
-	setup_parent_signals();
-	return (pid);
 }
 
 bool	wait_here_doc(pid_t pid, t_lists *lists, bool *sig_hd)
@@ -119,7 +65,7 @@ bool	wait_here_doc(pid_t pid, t_lists *lists, bool *sig_hd)
 	{
 		if (WTERMSIG(status) == SIGINT)
 		{
-			lists->exit_code = 130; // a virer ?
+			lists->exit_code = 130;
 			write(1, "\n", 1);
 			return (false);
 		}
@@ -166,28 +112,7 @@ bool	handle_here_doc(t_token **head, t_lists *lists)
 	if (!verif_here_doc(head))
 		return (false);
 	tmp = *head;
-	while (tmp)
-	{
-		if (tmp->token == HD && sig_hd == true)
-		{
-			if (!create_here_doc(tmp, lists, &sig_hd))
-			{
-				free_parse(*head);
-
-				if (lists->exit_code == 130)
-					errno = 130; // on peut pas le mettre a 130 
-				else
-					errno = MEM_ALLOC;
-				return (false);
-			}
-			if (g_signal == 130)
-			{
-				free_parse(*head);
-				return (false);
-			}
-		}
-	/* *sig_hd = true; */
-		tmp = tmp->next;
-	}
+	if (open_and_fill_here_docs(tmp, sig_hd, lists, head))
+		return (false);
 	return (true);
 }
