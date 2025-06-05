@@ -10,12 +10,12 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <sys/stat.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <unistd.h>
 #include "here_doc.h"
 #include "libft.h"
+#include <errno.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 bool	verif_name(char *name)
 {
@@ -40,7 +40,7 @@ bool	free_lim_close_fd(char *limiter, int fd)
 char	*get_limiter(char *s, int fd)
 {
 	char	*limiter;
-	char *tmp;
+	char	*tmp;
 
 	limiter = ft_strdup(s);
 	if (!limiter)
@@ -66,7 +66,7 @@ bool	case_is_limiter(char *line, char *limiter, int fd, int len)
 		free(line);
 		return (false);
 	}
-	return (false);//passe de true a false pour fix here doc qui se ferme a a 1ere ligne
+	return (false);
 }
 
 bool	verif_here_doc(t_token **head)

@@ -30,21 +30,18 @@ int	error_cmd_dot_case(char *cmd)
 	if (!ft_strncmp(cmd, ".", 2) && ft_strlen(cmd) == 1)
 	{
 		ft_putstr_fd("minishell: .: filename argument required\n.: \
-			usage: . filename [arguments]\n", 2);
+			usage: . filename [arguments]\n",
+			2);
 		return (2);
 	}
 	return (0);
 }
 
-int	error_cmd(char *cmd, int error_code)
+int	error_cmd_perm_not_found(char *cmd, int error_code)
 {
 	char	*s;
 	char	*tmp;
 
-	if (error_cmd_dot_case(cmd) == 2)
-		return (2);
-	if (error_code == 21)
-		return (error_cmd_is_a_directory(cmd));
 	s = ft_strjoin("minishell: ", cmd);
 	if (errno == ENOMEM)
 		return (errno);
@@ -64,4 +61,13 @@ int	error_cmd(char *cmd, int error_code)
 	if (error_code == 126)
 		return (126);
 	return (127);
+}
+
+int	error_cmd(char *cmd, int error_code)
+{
+	if (error_cmd_dot_case(cmd) == 2)
+		return (2);
+	if (error_code == 21)
+		return (error_cmd_is_a_directory(cmd));
+	return (error_cmd_perm_not_found(cmd, error_code));
 }

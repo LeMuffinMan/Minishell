@@ -52,7 +52,7 @@ int	exec_error_cases(t_tree **ast)
 		return (5);
 	}
 	if ((*ast)->token->token == D_QUOTE && (*ast)->token->error == 130)
-		return (error_cmd("\"\"", 127)); // a ameliorer 
+		return (error_cmd("\"\"", 127));
 	if ((*ast)->token->token == SPACE && (*ast)->token->error == 0)
 		return (0);
 	return (0);
