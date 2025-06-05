@@ -98,7 +98,7 @@ int	main(int ac, char **av, char **env)
 	char	*prompt;
 	t_lists	lists;
 
-	// is_interactive_mode();
+	is_interactive_mode();
 	if (ac != 1)
 	{
 		ft_putstr_fd("Minishell does not accept arguments\n", 2);
