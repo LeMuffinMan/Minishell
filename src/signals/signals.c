@@ -32,7 +32,6 @@ void	handle_sig(int sig)
 	}
 	if (sig == SIGQUIT)
 	{
-		
 	}
 }
 

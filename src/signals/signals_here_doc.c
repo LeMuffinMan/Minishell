@@ -10,18 +10,18 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <readline/readline.h>
 #include <signals.h>
 #include <unistd.h>
-#include <readline/readline.h>
 
-void sigint_here_doc_handler(int sig)
+void	sigint_here_doc_handler(int sig)
 {
-       (void)sig;
-       close(0);
-       g_signal = 130;
+	(void)sig;
+	close(0);
+	g_signal = 130;
 }
 
-void setup_here_doc_signals()
+void	setup_here_doc_signals(void)
 {
-       signal(SIGINT, sigint_here_doc_handler);
+	signal(SIGINT, sigint_here_doc_handler);
 }
