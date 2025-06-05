@@ -31,7 +31,6 @@ bool	parse_path_without_env(t_token *node)
 	if (!tmp_cmd[0])
 	{
 		free_tab(tmp_cmd);
-		errno = MEM_ALLOC;
 		return (false);
 	}
 	if (!verif_access_exec(tmp_cmd[0], &node->error))
