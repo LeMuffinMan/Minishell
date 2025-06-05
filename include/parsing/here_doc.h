@@ -18,7 +18,7 @@
 # include "structs.h"
 # include <stdbool.h>
 
-struct				s_token;
+struct					s_token;
 typedef struct s_token	t_token;
 
 /* ----------------------HERE DOC---------------------- */
