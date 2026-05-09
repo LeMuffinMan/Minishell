@@ -14,10 +14,10 @@
 #include "exec.h"
 #include "exec_boolops.h"
 #include "libft.h"
-#include <readline/readline.h>
-#include <signals.h>
+#include "signals.h"
 #include <stdio.h>
 #include <unistd.h>
+#include <readline/readline.h>
 
 int	builtins(char **arg, t_lists *lists)
 {

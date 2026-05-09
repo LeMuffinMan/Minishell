@@ -62,12 +62,10 @@ static char	*create_new_line(t_token *head)
 bool	parse_again(t_token **head, t_var *list_env, bool *flag)
 {
 	char	*line;
-	t_lexer	*lexer;
 
 	line = create_new_line(*head);
 	if (!line)
 		return (false);
-	lexer = NULL;
 	free_parse(*head, NULL, MEM_ALLOC);
 	*head = NULL;
 	if (!lexing_and_tokenize(line, head, list_env, flag)

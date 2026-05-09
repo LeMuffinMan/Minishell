@@ -12,10 +12,9 @@
 
 #include "libft.h"
 #include "signals.h"
-#include <readline/readline.h>
-#include <signals.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <readline/readline.h>
 
 int	setup_pipe_signals(struct sigaction *sa_ignore, struct sigaction *sa_orig)
 {

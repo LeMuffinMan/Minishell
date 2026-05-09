@@ -13,10 +13,10 @@
 #include "libft.h"
 #include "signals.h"
 #include "structs.h"
-#include <readline/readline.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <readline/readline.h>
 
 int		g_signal = 0;
 

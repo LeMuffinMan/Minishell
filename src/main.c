@@ -14,11 +14,10 @@
 #include "parse_and_execution_loop.h"
 #include "signals.h"
 #include <errno.h>
+#include <stdio.h>
+#include <unistd.h>
 #include <readline/history.h>
 #include <readline/readline.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
 
 int	end_of_file_exit(t_lists *lists, int exit_code)
 {
