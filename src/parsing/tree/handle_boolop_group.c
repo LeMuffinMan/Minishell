@@ -13,6 +13,7 @@
 #include "token.h"
 #include "tree.h"
 #include "libft.h"
+#include <stdlib.h>
 
 static int	set_boolop_pointer(t_tree **ast_node,
 								t_token *token_node, t_token *new_token)
@@ -26,6 +27,7 @@ static int	set_boolop_pointer(t_tree **ast_node,
 	else
 		new_token->next = NULL;
 	free_tab((*ast_node)->token->content);
+	free((*ast_node)->token->curr_dir);
 	free((*ast_node)->token);
 	(*ast_node)->token = new_token;
 	(*ast_node)->token->group = NULL;

@@ -135,9 +135,4 @@ void	is_built_in(t_token **node)
 		(*node)->token = BUILT_IN;
 	else if (ft_strncmp((*node)->content[0], "exit", 5) == 0)
 		(*node)->token = BUILT_IN;
-	if ((*node)->token == BUILT_IN)
-	{
-		if ((*node)->curr_dir)
-			free((*node)->curr_dir);
-	}
 }

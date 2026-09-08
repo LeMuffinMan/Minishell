@@ -23,6 +23,7 @@ void	free_token(t_token **node)
 			free_parse((*node)->group, NULL, 0);
 		if ((*node)->content)
 			free_tab((*node)->content);
+		free((*node)->curr_dir);
 		free(*node);
 		*node = NULL;
 	}

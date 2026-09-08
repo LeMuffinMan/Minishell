@@ -4,7 +4,7 @@
 
 A POSIX-compliant shell written in C, implementing the core features of Bash: prompt, history, pipes, redirections, environment variable expansion, signal handling, and a full set of builtins.
 
-Includes bonus: `&&` / `||` logical operators with parentheses grouping, and wildcard `*` expansion.
+Bonus features are built in by default: `&&` / `||` logical operators with parentheses grouping, and wildcard `*` expansion.
 
 ---
 
@@ -53,7 +53,6 @@ make        # build minishell
 make clean  # remove object files
 make fclean # remove object files + binary
 make re     # fclean + build
-make bonus  # build with bonus features
 ```
 
 ### Run
@@ -62,7 +61,7 @@ make bonus  # build with bonus features
 ./minishell
 ```
 
-No arguments accepted. The shell runs interactively.
+No arguments accepted. The shell runs interactively only — it refuses a non-tty stdin, so it cannot be driven by a pipe or a script.
 
 ---
 

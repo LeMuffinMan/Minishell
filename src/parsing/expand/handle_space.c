@@ -14,6 +14,7 @@
 #include "expand.h"
 #include "list.h"
 #include "libft.h"
+#include "tree.h"
 #include <errno.h>
 
 void	delete_space_node(t_token **head)
@@ -37,8 +38,7 @@ void	delete_space_node(t_token **head)
 			if (*head == tmp)
 				*head = tmp->next;
 			tmp = tmp->next;
-			free_tab(old_node->content);
-			free(old_node);
+			free_token(&old_node);
 		}
 		else
 			tmp = tmp->next;

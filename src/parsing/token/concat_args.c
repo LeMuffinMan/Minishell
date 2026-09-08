@@ -13,6 +13,7 @@
 #include "list.h"
 #include "libft.h"
 #include "quote.h"
+#include "tree.h"
 #include "expand.h"
 #include "structs.h"
 #include <stdlib.h>
@@ -92,8 +93,7 @@ void	change_node(t_token **node, bool flag)
 	(*node)->next = next_node->next;
 	if ((*node)->next)
 		(*node)->next->prev = *node;
-	free_tab(next_node->content);
-	free(next_node);
+	free_token(&next_node);
 	if (((*node)->token == APPEND)
 		|| ((*node)->token == HD)
 		|| ((*node)->token == R_IN) || ((*node)->token == TRUNC))

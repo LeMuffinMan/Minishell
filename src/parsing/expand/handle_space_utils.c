@@ -112,5 +112,6 @@ void	delete_node_pointer(t_token **node)
 	to_delete->next = NULL;
 	to_delete->prev = NULL;
 	free_tab(to_delete->content);
+	free(to_delete->curr_dir);
 	free(to_delete);
 }

@@ -75,6 +75,7 @@ void	free_node_unused(t_token *node)
 		next_node = node->next;
 		if (node->content)
 			free_tab(node->content);
+		free(node->curr_dir);
 		if (node)
 			free(node);
 		node = NULL;

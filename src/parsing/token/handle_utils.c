@@ -52,11 +52,6 @@ static bool	verif_pwd(char **path_splited, char *name_dir, t_token **node)
 		}
 		i++;
 	}
-	if ((*node)->curr_dir)
-	{
-		free((*node)->curr_dir);
-		(*node)->curr_dir = NULL;
-	}
 	free_tab(path_splited);
 	free(name_dir);
 	return (flag);

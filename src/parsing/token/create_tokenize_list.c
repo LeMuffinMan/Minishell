@@ -129,6 +129,7 @@ void	free_parse(t_token *list, const char *str, int error)
 		group = list->group;
 		if (list->content)
 			free_tab(list->content);
+		free(list->curr_dir);
 		list->next = NULL;
 		list->prev = NULL;
 		list->group = NULL;

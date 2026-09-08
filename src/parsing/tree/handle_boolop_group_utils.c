@@ -104,6 +104,7 @@ void	free_partial_tree(t_tree *node)
 	if (node->token)
 	{
 		free_tab(node->token->content);
+		free(node->token->curr_dir);
 		free(node->token);
 	}
 	free(node);
