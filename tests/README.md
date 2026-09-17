@@ -39,6 +39,14 @@ messages (`command not found`, `Permission denied`, `syntax error`, …) plus th
 total number of error lines. Add your own wording to `ERROR_PATTERNS` in
 `compare.sh` if your shell phrases things differently.
 
+**Why other programs are not audited.** `--trace-children` follows the shell
+into everything it execs, so a pipe also reports what `/usr/bin/cat` does with
+its own descriptors — and cat opens a pipe for `splice()` that it never closes.
+A process that has exec'd carries a `Command:` line naming its binary and is
+left out of the counts; a child that forked but has not exec'd yet has no
+`Command:` line of its own, is still minishell, and stays under watch. That is
+where a shell actually leaks.
+
 **Why fd 0, 1 and 2 are ignored.** `--track-fds` reports every descriptor
 valgrind considers user-owned. A shell that saved its standard streams and
 `dup2`'d them back at cleanup shows up there without having done anything
@@ -61,11 +69,14 @@ To point the suite at another build:
 MINISHELL=/path/to/other/minishell ./tests/cases.sh
 ```
 
-Every shell runs inside `tests/.sandbox/run`, which is wiped and rebuilt
-**before minishell and again before bash**. The cases create and delete
-files, so replaying the second shell on whatever the first one left behind
-would compare two different situations. Reports land in
-`tests/.sandbox/results`, outside the directory that gets wiped.
+Each run gets its own directory under `tests/.sandbox`, named after its pid,
+so a suite and a REPL running side by side never overwrite each other. Inside
+it, the shells run in `run/`, which is wiped and rebuilt **before minishell
+and again before bash**: the cases create and delete files, and replaying the
+second shell on whatever the first one left behind would compare two different
+situations. Reports land in `results/`, outside the directory that gets wiped.
+A run drops the sandboxes of runs whose process is gone, so the last one stays
+readable until the next one starts.
 
 ---
 

@@ -58,6 +58,7 @@ static int	update_oldpwd(t_var *old_pwd, t_var *pwd)
 static int	update_pwd(t_var *pwd)
 {
 	char	buf[PATH_MAX];
+	char	*tmp;
 
 	if (getcwd(buf, sizeof(buf)) != NULL)
 	{
@@ -73,7 +74,9 @@ static int	update_pwd(t_var *pwd)
 			"getcwd: cannot access parent directories: "
 			"No such file or directory\n",
 			2);
-		pwd->value = ft_strjoin(pwd->value, "/..");
+		tmp = pwd->value;
+		pwd->value = ft_strjoin(tmp, "/..");
+		free(tmp);
 		if (!pwd->value)
 			return (ENOMEM);
 		return (1);

@@ -2,7 +2,7 @@
 
 # Minishell — As beautiful as a shell
 
-A POSIX-compliant shell written in C, implementing the core features of Bash: prompt, history, pipes, redirections, environment variable expansion, signal handling, and a full set of builtins.
+A Unix shell rebuilt from scratch in C, implementing the core features of Bash: prompt, history, pipes, redirections, environment variable expansion, signal handling, and a full set of builtins.
 
 Bonus features are built in by default: `&&` / `||` logical operators with parentheses grouping, and wildcard `*` expansion.
 

@@ -12,7 +12,14 @@ source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 resolve_minishell || exit 1
 clean_stale_sandboxes
 
-TIMEOUT_DURATION="${TIMEOUT_DURATION:-10}"
+# valgrind runs the shell tens of times slower, so the budget follows the
+# tool: at 10s a pipeline through grep times out under load and the suite
+# reports a failure that is only the machine being busy.
+if [[ ${TEST_LEAKS:-0} == 1 ]]; then
+	TIMEOUT_DURATION="${TIMEOUT_DURATION:-60}"
+else
+	TIMEOUT_DURATION="${TIMEOUT_DURATION:-10}"
+fi
 
 # print what we have so far if the run is interrupted
 trap 'print_summary; exit 130' INT

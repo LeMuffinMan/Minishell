@@ -33,8 +33,7 @@ void	add_space(t_token **node)
 	int		len;
 
 	len = ft_strlen((*node)->content[0]);
-	if ((*node)->content[0][len - 1]
-		&& (*node)->content[0][len - 1] == ' ')
+	if (len > 0 && (*node)->content[0][len - 1] == ' ')
 		return ;
 	res = ft_strjoin((*node)->content[0], " ");
 	if (!res)

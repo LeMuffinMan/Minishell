@@ -41,7 +41,7 @@ int	builtin_pwd(t_var **env)
 			ft_putstr_fd(s, 1);
 		else
 			perror("pwd");
+		free(s);
 		return (1);
 	}
-	return (0);
 }

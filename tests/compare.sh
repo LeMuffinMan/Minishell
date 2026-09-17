@@ -113,17 +113,33 @@ if [[ $LEAKS_FLAG == 1 ]]; then
 $INPUT
 EOF
 
+  # --trace-children follows the shell into the programs it execs, so a pipe
+  # also reports what /usr/bin/cat does with its own descriptors -- and cat
+  # opens a pipe for splice() that it never closes. That belongs to coreutils,
+  # not to minishell. A process that has exec'd carries a Command: line naming
+  # its binary; a child that forked but has not exec'd yet has none and is
+  # still minishell, which is exactly what has to stay under watch.
+  FOREIGN=$(awk -v self="$MINISHELL" \
+    '/^==[0-9]+== Command: / { pid = $1; gsub(/[^0-9]/, "", pid);
+      if ($3 != self) print pid }' "$LOG_DIR/valgrind_output")
+  if [[ -n $FOREIGN ]]; then
+    grep -Ev "^==($(tr '\n' '|' <<< "$FOREIGN" | sed 's/|$//'))== " \
+      "$LOG_DIR/valgrind_output" > "$LOG_DIR/valgrind_own"
+  else
+    cp "$LOG_DIR/valgrind_output" "$LOG_DIR/valgrind_own"
+  fi
+
   # Basically, if we find this line in the log file, it means there's a segfault
-  if grep -q "Process terminating with default action of signal 11 (SIGSEGV)" "$LOG_DIR/valgrind_output"; then
+  if grep -q "Process terminating with default action of signal 11 (SIGSEGV)" "$LOG_DIR/valgrind_own"; then
     echo -e "${RED}SEGMENTATION FAULT !${NC}"
     LEAKS=1
   fi
 
   # if anything is lost or still reachable, one of these lines is non-zero
-  if grep -q "definitely lost: 0 bytes in 0 blocks" "$LOG_DIR/valgrind_output" &&
-    grep -q "indirectly lost: 0 bytes in 0 blocks" "$LOG_DIR/valgrind_output" &&
-    grep -q "possibly lost: 0 bytes in 0 blocks" "$LOG_DIR/valgrind_output" &&
-    grep -q "still reachable: 0 bytes in 0 blocks" "$LOG_DIR/valgrind_output"; then
+  if grep -q "definitely lost: 0 bytes in 0 blocks" "$LOG_DIR/valgrind_own" &&
+    grep -q "indirectly lost: 0 bytes in 0 blocks" "$LOG_DIR/valgrind_own" &&
+    grep -q "possibly lost: 0 bytes in 0 blocks" "$LOG_DIR/valgrind_own" &&
+    grep -q "still reachable: 0 bytes in 0 blocks" "$LOG_DIR/valgrind_own"; then
     echo -e "${GREEN}NO LEAKS${NC}"
   else
     LEAKS=1
@@ -134,7 +150,7 @@ EOF
   # --track-fds only names the ones valgrind considers user-owned, so a shell
   # that dup2'd its saved stdin/stdout back onto 0 and 1 shows up here even
   # though it did nothing wrong. Only fd 3 and above is a real leak.
-  LEAKED_FDS=$(grep -oE "^==[0-9]+== Open file descriptor [0-9]+" "$LOG_DIR/valgrind_output" |
+  LEAKED_FDS=$(grep -oE "^==[0-9]+== Open file descriptor [0-9]+" "$LOG_DIR/valgrind_own" |
     grep -oE "[0-9]+$" | awk '$1 >= 3' | sort -un | tr '\n' ' ')
   if [[ -z $LEAKED_FDS ]]; then
     echo -e "${GREEN}FD CLOSED${NC}"
@@ -147,9 +163,9 @@ EOF
   # --trace-children there is one summary per process, so they are summed.
   # Every "Open file descriptor" report is also counted as an error by valgrind,
   # so those are subtracted: they are reported separately just above.
-  TOTAL_ERRORS=$(grep -oE "ERROR SUMMARY: [0-9]+ errors" "$LOG_DIR/valgrind_output" |
+  TOTAL_ERRORS=$(grep -oE "ERROR SUMMARY: [0-9]+ errors" "$LOG_DIR/valgrind_own" |
     grep -oE "[0-9]+" | awk '{s += $1} END {print s + 0}')
-  FD_REPORTS=$(grep -cE "^==[0-9]+== Open file descriptor [0-9]+" "$LOG_DIR/valgrind_output")
+  FD_REPORTS=$(grep -cE "^==[0-9]+== Open file descriptor [0-9]+" "$LOG_DIR/valgrind_own")
   NB_ERR=$((TOTAL_ERRORS - FD_REPORTS))
   [[ $NB_ERR -lt 0 ]] && NB_ERR=0
   if [[ $NB_ERR == 0 ]]; then
