@@ -80,6 +80,8 @@ SRC					=	main.c \
 						new_parse.c \
 						settings_syntax_error.c \
 						syntax_error_utils.c \
+						syntax_error_bis.c \
+						redir_args.c \
 						syntax_error.c \
 						token_utils.c \
 						tokenize_utils.c \
@@ -182,10 +184,22 @@ clean:
 fclean: clean
 	@echo "$(BOLD_BLUE)Make fclean...$(STOP_COLOR)"
 	@rm -f $(LIB_LIBFT) $(NAME) $(BONUS) here_doc
+	@chmod -R u+w tests/.sandbox 2> /dev/null || true
+	@rm -rf tests/.sandbox
 	@echo "$(BOLD_RED)SUCCESS !!!$(STOP_COLOR)"
 
 re: fclean all
 
+test: all
+	@./tests/cases.sh
+
+test-leaks: all
+	@TEST_LEAKS=1 ./tests/cases.sh
+
+test-clean:
+	@chmod -R u+w tests/.sandbox 2> /dev/null || true
+	@rm -rf tests/.sandbox
+
 -include $(DEPS)
 
-.PHONY: all clean fclean re debug
+.PHONY: all clean fclean re debug test test-leaks test-clean

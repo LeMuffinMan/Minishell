@@ -112,6 +112,8 @@ bool					case_is_right_parenthesis(t_token *tmp, t_token **head);
 bool					error_one_parenthesis(t_token **head);
 t_token					*set_parenthesis_error(t_token *node);
 t_token					*set_syntax_error(t_token *node);
+t_token					*set_redir_syntax_error(t_token *node);
+void					attach_args_after_redir(t_token **head);
 void					alloc_operator_for_error(t_type token, char **operator);
 void					case_of_directory_error(t_token **node);
 void					check_syntax_error(t_token **head);

@@ -15,5 +15,4 @@
 *.out
 
 minishell
-.gitignore
 .minishell_history

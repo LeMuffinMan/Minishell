@@ -61,7 +61,18 @@ make re     # fclean + build
 ./minishell
 ```
 
-No arguments accepted. The shell runs interactively only — it refuses a non-tty stdin, so it cannot be driven by a pipe or a script.
+No arguments accepted. The shell runs interactively only — it refuses a non-tty
+stdin, so it cannot be driven by a pipe or a script. The test suite opts out of
+that refusal explicitly with `MINISHELL_TEST=1`; nothing else does.
+
+### Test
+
+```bash
+make test        # replay 240 input sequences through minishell and bash, and diff
+make test-leaks  # same, under valgrind
+```
+
+See [tests/README.md](tests/README.md).
 
 ---
 
@@ -83,6 +94,8 @@ src/
 ├── signals/         — signal handlers (SIGINT, SIGQUIT)
 ├── init/            — shell initialization
 └── misc/            — error handling, memory management
+
+tests/               — differential test suite (see tests/README.md)
 ```
 
 ---

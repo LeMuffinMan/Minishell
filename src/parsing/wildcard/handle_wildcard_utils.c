@@ -29,6 +29,32 @@ bool	is_wildcard(char *str)
 	return (false);
 }
 
+// bash lists what a wildcard matches in alphabetical order. readdir makes
+// no promise about the order it hands the entries back in.
+static void	sort_names(char **names, int count)
+{
+	int		i;
+	int		j;
+	char	*tmp;
+
+	i = 0;
+	while (i < count - 1)
+	{
+		j = 0;
+		while (j < count - 1 - i)
+		{
+			if (ft_strcmp(names[j], names[j + 1]) > 0)
+			{
+				tmp = names[j];
+				names[j] = names[j + 1];
+				names[j + 1] = tmp;
+			}
+			j++;
+		}
+		i++;
+	}
+}
+
 char	**extract_current_dir(void)
 {
 	int		i;
@@ -46,6 +72,7 @@ char	**extract_current_dir(void)
 		return (NULL);
 	}
 	res[i] = NULL;
+	sort_names(res, i);
 	return (res);
 }
 

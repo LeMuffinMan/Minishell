@@ -72,7 +72,7 @@ bool	join_token(t_token **head)
 			tmp = tmp->next;
 		else if (token_valid_for_join(tmp->token)
 			&& tmp->next && tmp->next->token != SPACE
-			&& tmp->next->token != R_PARENTHESIS)
+			&& token_valid_for_join(tmp->next->token))
 		{
 			change_node(&tmp, false);
 			if (tmp->prev)

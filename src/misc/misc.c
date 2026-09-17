@@ -98,7 +98,7 @@ int	array_size(char **array)
 
 int	is_interactive_mode(void)
 {
-	if (!isatty(0))
+	if (!isatty(0) && !getenv("MINISHELL_TEST"))
 	{
 		ft_putstr_fd("Minishell does not support non-interactive mode\n", 2);
 		exit(0);

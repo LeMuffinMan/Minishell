@@ -83,7 +83,8 @@ int	exec_ast(t_tree **ast, t_lists *lists)
 	if ((*ast)->token->error == 2)
 	{
 		ft_putendl_fd((*ast)->token->content[0], 2);
-		return ((*ast)->token->error);
+		lists->exit_code = (*ast)->token->error;
+		return (lists->exit_code);
 	}
 	if (((*ast)->token->token == R_IN || (*ast)->token->token == APPEND
 			|| (*ast)->token->token == TRUNC) || ((*ast)->token->token == PIPE)
@@ -91,5 +92,6 @@ int	exec_ast(t_tree **ast, t_lists *lists)
 			&& ((*ast)->token->token == BUILT_IN
 				|| (*ast)->token->token == CMD)))
 		return (exec_group_cmd(ast, lists));
-	return (exec_error_cases(ast));
+	lists->exit_code = exec_error_cases(ast);
+	return (lists->exit_code);
 }

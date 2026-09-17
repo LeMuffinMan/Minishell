@@ -52,7 +52,7 @@ int	exit_numeric_argument_required_error(char **arg, t_tree **ast,
 	if (!s)
 		builtin_exit_malloc_error(lists, NULL);
 	tmp = s;
-	s = ft_strjoin(s, "numeric argument required\n");
+	s = ft_strjoin(s, ": numeric argument required\n");
 	if (!s)
 		builtin_exit_malloc_error(lists, tmp);
 	free(tmp);
@@ -84,19 +84,12 @@ int	builtin_exit(char **arg, t_tree **ast, t_lists *lists)
 	if (ft_strlen(arg[1]) > 18)
 		return (exit_overflow_error(lists, arg));
 	if (!is_only_numeric_argument(arg[1]))
-	{
-		ft_putstr_fd("minishell: exit: numeric argument required\n", 2);
-		free_lists(lists);
-		close_origin_fds(lists->origin_fds);
-		exit(2);
-	}
+		return (exit_numeric_argument_required_error(arg, ast, lists));
 	if (arg[2])
 	{
 		ft_putstr_fd("minishell: exit: too many arguments\n", 2);
-		return (1);
+		return (2);
 	}
-	if (!is_only_numeric_argument(arg[1]))
-		return (exit_numeric_argument_required_error(arg, ast, lists));
 	exit_with_valid_arg(arg, ast, lists);
 	return (0);
 }

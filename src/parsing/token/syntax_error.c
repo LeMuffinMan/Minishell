@@ -109,9 +109,9 @@ bool	error_one_parenthesis(t_token **head)
 		tmp = tmp->next;
 	}
 	if (left > right)
-		*head = set_quote_or_par_error(*head, R_PARENTHESIS);
-	else if (left < right)
 		*head = set_quote_or_par_error(*head, L_PARENTHESIS);
+	else if (left < right)
+		*head = set_quote_or_par_error(*head, R_PARENTHESIS);
 	if (!*head)
 		return (false);
 	return (true);
@@ -132,7 +132,7 @@ void	check_syntax_error(t_token **head)
 					|| (tmp->token == TRUNC) || (tmp->token == APPEND))
 				&& !tmp->content[1]))
 		{
-			*head = set_syntax_error(tmp);
+			*head = set_redir_syntax_error(tmp);
 			if (!*head)
 				errno = MEM_ALLOC;
 			return ;

@@ -85,9 +85,9 @@ static bool	del_quote_char(t_token **node)
 
 static bool	parse_quote(t_token **node)
 {
-	if (is_one_quote((*node)->content, '\''))
+	if ((*node)->token == S_QUOTE && is_one_quote((*node)->content, '\''))
 		(*node)->error = PB_QUOTE;
-	if (is_one_quote((*node)->content, '"'))
+	if ((*node)->token == D_QUOTE && is_one_quote((*node)->content, '"'))
 		(*node)->error = PB_QUOTE;
 	if (((*node)->token == D_QUOTE || (*node)->token == D_QUOTE
 			|| (*node)->error == QUOTE)

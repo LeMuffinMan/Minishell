@@ -92,7 +92,7 @@ int	builtin_cd(char **arg, t_var **env)
 	if (array_size(arg) > 2)
 	{
 		ft_putstr_fd("minishell: cd: too many arguments\n", 2);
-		return (1);
+		return (2);
 	}
 	if (array_size(arg) == 1)
 		return (builtin_cd_without_arg(env));
